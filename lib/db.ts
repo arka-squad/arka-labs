@@ -1,7 +1,7 @@
 import { Pool } from 'pg';
 import { sql } from '@vercel/postgres';
 
-let pool: Pool | null = null;
+let pool: any = null;
 
 export function getDb() {
   if (!pool) {
