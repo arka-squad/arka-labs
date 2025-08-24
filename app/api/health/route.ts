@@ -1,26 +1,30 @@
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
-import { gatherMetrics } from '@/lib/metrics';
+import { sql } from '@vercel/postgres';
 
 export async function GET() {
-  const db = getDb();
+  const required = ['POSTGRES_URL', 'MODE', 'ALLOWLIST_REPOS'];
+  const missing = required.filter((k) => !process.env[k]);
+
   let dbOk = false;
+  let now: string | null = null;
   try {
-    await db.query('select 1');
+    const result = await sql`select now()`;
     dbOk = true;
+    const value = result.rows[0]?.now;
+    now = value instanceof Date ? value.toISOString() : String(value);
   } catch {
     dbOk = false;
   }
-  const required = [
-    'POSTGRES_URL',
-    'OPENAI_API_KEY',
-    'GITHUB_APP_ID',
-    'GITHUB_PRIVATE_KEY',
-    'GITHUB_WEBHOOK_SECRET',
-    'ALLOWLIST_REPOS',
-    'MODE',
-    'MEMORY_PR',
-  ];
-  const missing = required.filter((k) => !process.env[k]);
-  return NextResponse.json({ ok: dbOk && missing.length === 0, db: dbOk, missing, metrics: gatherMetrics() });
+
+  const status = dbOk && missing.length === 0 ? 'ok' : 'degraded';
+
+  return NextResponse.json({
+    status,
+    env: { missing, mode: process.env.MODE },
+    db: { ok: dbOk, now },
+    app: {
+      commit: process.env.VERCEL_GIT_COMMIT_SHA || null,
+      branch: process.env.VERCEL_GIT_COMMIT_REF || null,
+    },
+  });
 }
