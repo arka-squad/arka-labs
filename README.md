@@ -25,3 +25,16 @@ npm run dev
 
 Deploy with Vercel and set the environment variables above. Cron job for `/api/jobs/drain` is configured in `vercel.json`.
 Test webhook, Test webhook 2
+
+## Development
+
+Run locally:
+
+```bash
+npm install
+npm run dev
+```
+
+Health check: `/api/health`
+
+Deployment: pushing to `main` triggers Vercel.
