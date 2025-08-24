@@ -17,7 +17,7 @@ npm run dev
 - `GITHUB_APP_ID`
 - `GITHUB_PRIVATE_KEY`
 - `GITHUB_WEBHOOK_SECRET`
-- `ALLOWLIST_REPOS`
+- `ALLOWLIST_REPOS` (default: `nova-ora/nova-meta,nova-ora/nova.assist,nova-ora/Nova.companion,nova-ora/nova-audio-bridge`)
 - `MODE` (`shadow` or `active`)
 - `MEMORY_PR` (`true` to append memory)
 
