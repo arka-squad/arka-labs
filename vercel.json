@@ -1,8 +1,24 @@
 {
+  "version": 2,
   "crons": [
+    { "path": "/api/jobs/drain", "schedule": "*/5 * * * *" }
+  ],
+  "headers": [
     {
-      "path": "/api/jobs/drain",
-      "schedule": "0 * * * *"
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
+    {
+      "source": "/api/threads/(.*)/stream",
+      "headers": [
+        { "key": "Content-Type", "value": "text/event-stream" },
+        { "key": "Cache-Control", "value": "no-cache" },
+        { "key": "Connection", "value": "keep-alive" },
+        { "key": "X-Accel-Buffering", "value": "no" }
+      ]
     }
   ]
 }
+

@@ -1,4 +1,5 @@
 import { Pool } from 'pg';
+import { sql } from '@vercel/postgres';
 
 let pool: Pool | null = null;
 
@@ -8,3 +9,5 @@ export function getDb() {
   }
   return pool;
 }
+
+export { sql };
