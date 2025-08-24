@@ -2,7 +2,7 @@
 
 Mini console for orchestrating agents and tracking memory via GitHub pull requests.
 
-## Quick Setup
+## Installation
 
 ```bash
 npm install
@@ -10,31 +10,27 @@ cp .env.example .env
 npm run dev
 ```
 
-## Environment Variables
+## Environment variables
 
-- `POSTGRES_URL`
-- `OPENAI_API_KEY`
-- `GITHUB_APP_ID`
-- `GITHUB_PRIVATE_KEY`
-- `GITHUB_WEBHOOK_SECRET`
-- `ALLOWLIST_REPOS` (default: `nova-ora/nova-meta,nova-ora/nova.assist,nova-ora/Nova.companion,nova-ora/nova-audio-bridge`)
-- `MODE` (`shadow` or `active`)
-- `MEMORY_PR` (`true` to append memory)
+| Variable | Description |
+| --- | --- |
+| `POSTGRES_URL` | PostgreSQL connection string |
+| `MODE` | `shadow` (default) or `active` |
+| `ALLOWLIST_REPOS` | Comma separated repo full names allowed for webhooks |
+| `GITHUB_APP_ID` | GitHub App identifier |
+| `GITHUB_PRIVATE_KEY` | Private key for the GitHub App |
+| `GITHUB_WEBHOOK_SECRET` | Secret used to validate webhook signatures |
+| `MEMORY_PR` | `true` to append memory comments on pull requests |
+| `OPENAI_API_KEY` | Optional – used by agents |
 
-## Vercel
+## Usage
 
-Deploy with Vercel and set the environment variables above. Cron job for `/api/jobs/drain` is configured in `vercel.json`.
-Test webhook, Test webhook 2
+- Start the dev server with `npm run dev`.
+- Health endpoint: [http://localhost:3000/api/health](http://localhost:3000/api/health)
+- Webhook ping test: send a `ping` event with the secret to `/api/webhook/github`.
+- Pushing to `main` deploys to Vercel. Cron for `/api/jobs/drain` is defined in `vercel.json`.
 
-## Development
+## Deployment
 
-Run locally:
+Set the environment variables on Vercel and push to `main` to trigger deployment.
 
-```bash
-npm install
-npm run dev
-```
-
-Health check: `/api/health`
-
-Deployment: pushing to `main` triggers Vercel.

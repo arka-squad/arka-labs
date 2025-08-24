@@ -57,36 +57,44 @@ CREATE TABLE thread_state (
 
 CREATE TABLE agent_events (
   id SERIAL PRIMARY KEY,
-  project_id TEXT DEFAULT 'arka',
-  agent_id INTEGER REFERENCES agents(id),
-  thread_id UUID,
-  type TEXT,
-  payload JSONB,
-  hash TEXT UNIQUE,
+  agent TEXT,
+  event TEXT,
+  title TEXT,
+  summary TEXT,
+  labels TEXT[],
+  links JSONB,
+  kpis JSONB,
+  decisions JSONB,
+  author TEXT,
+  source TEXT,
+  repo TEXT,
+  issue_ref TEXT,
+  pr_ref TEXT,
   delivery_id TEXT,
+  hash TEXT UNIQUE,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
 CREATE TABLE lots_state (
-  id SERIAL PRIMARY KEY,
-  project_id TEXT DEFAULT 'arka',
-  ref TEXT,
+  lot_key TEXT PRIMARY KEY,
   state JSONB,
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
 CREATE TABLE lots_history (
   id SERIAL PRIMARY KEY,
-  project_id TEXT DEFAULT 'arka',
-  ref TEXT,
+  lot_key TEXT,
   event JSONB,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
 CREATE TABLE action_queue (
   id SERIAL PRIMARY KEY,
-  project_id TEXT DEFAULT 'arka',
-  action JSONB,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  processed_at TIMESTAMPTZ
+  kind TEXT NOT NULL,
+  payload JSONB NOT NULL,
+  status TEXT NOT NULL,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  dedupe_key TEXT UNIQUE,
+  scheduled_at TIMESTAMPTZ DEFAULT now(),
+  created_at TIMESTAMPTZ DEFAULT now()
 );

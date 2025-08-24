@@ -1,50 +1,30 @@
-import { NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { NextRequest, NextResponse } from 'next/server';
+import { sql } from '../../../../lib/db';
 
-export async function GET(req: Request) {
-  const isCron = req.headers.get('x-vercel-cron') === '1' || req.headers.has('x-vercel-cron');
-  if (!isCron && process.env.MODE !== 'dev') {
-    return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+export const runtime = 'nodejs';
+
+export async function GET(req: NextRequest) {
+  const cron = req.headers.get('x-vercel-cron');
+  if (!cron && process.env.MODE !== 'dev') {
+    return NextResponse.json({ error: 'forbidden' }, { status: 401 });
   }
 
-  let picked = 0;
+  const jobs = await sql`SELECT id, kind, payload FROM action_queue WHERE status='queued' ORDER BY scheduled_at, id LIMIT 10`;
+
   let done = 0;
   let failed = 0;
 
-  const toRun = await sql`
-    with picked as (
-      select id from action_queue
-      where status = 'queued'
-        and (scheduled_at is null or scheduled_at <= now())
-      order by scheduled_at nulls first, id
-      limit 10
-      for update skip locked
-    )
-    update action_queue q
-    set status = 'running', attempts = attempts + 1
-    from picked
-    where q.id = picked.id
-    returning q.id, q.kind, q.payload
-  `;
-
-  picked = (toRun as any).rowCount ?? toRun.rows.length;
-
-  for (const row of toRun.rows) {
+  for (const job of jobs.rows) {
     try {
-      switch (row.kind) {
-        case 'create_pr':
-        case 'run_checks':
-        default:
-          break;
-      }
-      await sql`update action_queue set status='done' where id=${row.id}`;
+      await sql`UPDATE action_queue SET status='running', attempts = attempts + 1 WHERE id=${job.id}`;
+      // placeholder no-op processing
+      await sql`UPDATE action_queue SET status='done' WHERE id=${job.id}`;
       done++;
-    } catch (e) {
-      await sql`update action_queue set status='failed' where id=${row.id}`;
+    } catch {
+      await sql`UPDATE action_queue SET status='failed' WHERE id=${job.id}`;
       failed++;
     }
   }
 
-  return NextResponse.json({ picked, done, failed });
+  return NextResponse.json({ picked: jobs.rowCount, done, failed });
 }
-
