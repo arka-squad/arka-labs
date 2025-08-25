@@ -1,75 +1,104 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { verifySignature, parseAllowlist, hashCanonical } from '../../../../lib/github';
-import { sql } from '../../../../lib/db';
+import crypto from 'crypto';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 
-const requiredSecret = process.env.GITHUB_WEBHOOK_SECRET || '';
-const allowlisted = parseAllowlist(process.env.ALLOWLIST_REPOS);
+function verify(signature256: string | undefined, payload: string, secret: string) {
+  if (!signature256) return false;
+  const hmac = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+  const expected = `sha256=${hmac}`;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(signature256), Buffer.from(expected));
+  } catch {
+    return false;
+  }
+}
+
+function appJwt(appId: string, pk: string) {
+  const header = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64url');
+  const now = Math.floor(Date.now() / 1000);
+  const payload = Buffer.from(
+    JSON.stringify({ iat: now - 60, exp: now + 540, iss: appId })
+  ).toString('base64url');
+  const toSign = `${header}.${payload}`;
+  const sign = crypto.createSign('RSA-SHA256').update(toSign).sign(pk, 'base64url');
+  return `${toSign}.${sign}`;
+}
+
+async function installationToken(appId: string, pk: string, owner: string, repo: string) {
+  const jwt = appJwt(appId, pk);
+  const instRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/installation`, {
+    headers: { Authorization: `Bearer ${jwt}`, Accept: 'application/vnd.github+json' },
+    cache: 'no-store',
+  });
+  if (!instRes.ok) throw new Error(`installation lookup failed: ${instRes.status}`);
+  const inst = await instRes.json();
+  const tokRes = await fetch(
+    `https://api.github.com/app/installations/${inst.id}/access_tokens`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${jwt}`, Accept: 'application/vnd.github+json' },
+    }
+  );
+  if (!tokRes.ok) throw new Error(`create token failed: ${tokRes.status}`);
+  const tok = await tokRes.json();
+  return tok.token as string;
+}
 
 export async function POST(req: NextRequest) {
-  const signature = req.headers.get('x-hub-signature-256') || '';
-  const delivery = req.headers.get('x-github-delivery') || '';
-  const eventName = req.headers.get('x-github-event') || '';
-
   const raw = await req.text();
-  if (!verifySignature(requiredSecret, raw, signature)) {
-    return NextResponse.json({ error: 'invalid signature' }, { status: 401 });
+  const sig = req.headers.get('x-hub-signature-256') || undefined;
+  const event = req.headers.get('x-github-event') || undefined;
+  const secret = process.env.GITHUB_WEBHOOK_SECRET || '';
+
+  if (!verify(sig, raw, secret)) {
+    return new NextResponse('bad signature', { status: 401 });
   }
 
-  if (eventName === 'ping') {
-    return NextResponse.json({ ok: true });
+  const payload = JSON.parse(raw || '{}');
+  const repoFull = payload?.repository?.full_name as string | undefined;
+  const [owner, repo] = (repoFull || '').split('/');
+
+  const allowlist = (process.env.ALLOWLIST_REPOS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const allowed = repoFull && allowlist.includes(repoFull);
+
+  const shouldDispatch =
+    allowed &&
+    ['pull_request', 'issues', 'issue_comment', 'check_run', 'push'].includes(event || '');
+
+  console.log(
+    `[ARKA] event=${event} repo=${repoFull} decision=${shouldDispatch ? 'dispatch' : 'no-op'}`
+  );
+
+  if (shouldDispatch && owner && repo) {
+    try {
+      const appId = process.env.GITHUB_APP_ID || '';
+      const pk = (process.env.GITHUB_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+      const token = await installationToken(appId, pk, owner, repo);
+
+      const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/dispatches`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github+json',
+        },
+        body: JSON.stringify({
+          event_type: 'arka-event',
+          client_payload: { source: 'arka', reason: event },
+        }),
+      });
+      if (!r.ok) {
+        const t = await r.text();
+        console.error('[ARKA] dispatch failed', r.status, t);
+      }
+    } catch (e) {
+      console.error('[ARKA] dispatch error', e);
+    }
   }
 
-  const payload: any = JSON.parse(raw || '{}');
-  const repo = payload?.repository?.full_name || '';
-  if (!allowlisted.has(repo)) {
-    return NextResponse.json({ error: 'repo not allowed' }, { status: 403 });
-  }
-
-  const title = payload.pull_request?.title || payload.issue?.title || '';
-  const summary = payload.pull_request?.body || payload.issue?.body || payload.head_commit?.message || '';
-  const labels = (payload.pull_request?.labels || payload.issue?.labels || []).map((l: any) => l.name);
-  const links = { html: payload.pull_request?.html_url || payload.issue?.html_url || payload.repository?.html_url };
-  const kpis: any = {};
-  const eventRecord = {
-    agent: 'github',
-    event: eventName,
-    title,
-    summary,
-    labels,
-    links,
-    kpis,
-    decisions: [],
-    author: payload.sender?.login || '',
-    source: 'webhook',
-    repo,
-    issue_ref: payload.issue?.number ? String(payload.issue.number) : null,
-    pr_ref: payload.pull_request?.number ? String(payload.pull_request.number) : null,
-    delivery_id: delivery,
-  };
-  const hash = hashCanonical(eventRecord);
-
-  await sql`INSERT INTO agent_events
-    (agent, event, title, summary, labels, links, kpis, decisions, author, source, repo, issue_ref, pr_ref, delivery_id, hash)
-    VALUES (${eventRecord.agent}, ${eventRecord.event}, ${eventRecord.title}, ${eventRecord.summary}, ${eventRecord.labels}, ${sql.json(eventRecord.links)}, ${sql.json(eventRecord.kpis)}, ${sql.json(eventRecord.decisions)}, ${eventRecord.author}, ${eventRecord.source}, ${eventRecord.repo}, ${eventRecord.issue_ref}, ${eventRecord.pr_ref}, ${eventRecord.delivery_id}, ${hash})
-    ON CONFLICT (hash) DO NOTHING;`;
-
-  const lotLabel = labels.find((l: string) => l.startsWith('lot:'));
-  if (lotLabel) {
-    const lotKey = lotLabel.split(':')[1];
-    await sql`INSERT INTO lots_state (lot_key, state)
-      VALUES (${lotKey}, ${sql.json(payload)})
-      ON CONFLICT (lot_key) DO UPDATE SET state = EXCLUDED.state, updated_at = now();`;
-  }
-
-  if (eventName === 'pull_request' && payload.pull_request?.number) {
-    const dedupe = `run_checks:${repo}#${payload.pull_request.number}`;
-    const jobPayload = { repo, number: payload.pull_request.number, url: payload.pull_request.html_url, delivery_id: delivery };
-    await sql`INSERT INTO action_queue (kind, payload, status, attempts, dedupe_key)
-      VALUES ('run_checks', ${sql.json(jobPayload)}, 'queued', 0, ${dedupe})
-      ON CONFLICT (dedupe_key) DO NOTHING;`;
-  }
-
-  return NextResponse.json({ ok: true });
+  return new NextResponse(null, { status: 204 });
 }
