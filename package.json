@@ -16,8 +16,9 @@
     "react-dom": "18.2.0",
     "pg": "^8.11.1",
     "openai": "^4.5.0",
-    "@vercel/postgres": "^0.5.1"
-
+    "@vercel/postgres": "^0.5.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "typescript": "^5.4.0",
