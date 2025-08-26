@@ -1,26 +1,27 @@
 import { NextResponse } from 'next/server';
 import { sql } from '../../../lib/db';
+import { withAuth } from '../../../lib/rbac';
+import { hit } from '../../../lib/rate-limit';
+import { log } from '../../../lib/logger';
 
-export async function GET() {
-  const required = ['POSTGRES_URL', 'MODE', 'ALLOWLIST_REPOS'];
-  const missing = required.filter((v) => !process.env[v]);
-
-  let dbOk = false;
+export const GET = withAuth(['viewer', 'operator', 'owner'], async (req) => {
+  const start = Date.now();
+  const route = '/api/health';
+  const ip = req.headers.get('x-forwarded-for') || 'global';
+  if (hit(`health:${ip}`, 300, 60_000)) {
+    log('info', 'health ratelimit', { route, status: 200, duration_ms: Date.now() - start });
+    return NextResponse.json({ status: 'ratelimited' });
+  }
+  let db: 'OK' | 'ERROR' = 'ERROR';
   try {
     await sql`select now()`;
-    dbOk = true;
+    db = 'OK';
   } catch {
-    dbOk = false;
+    db = 'ERROR';
   }
-
-  const status = dbOk && missing.length === 0 ? 'ok' : 'degraded';
-  const commit = process.env.VERCEL_GIT_COMMIT_SHA || process.env.COMMIT_SHA || '';
-  const branch = process.env.VERCEL_GIT_COMMIT_REF || process.env.GIT_BRANCH || '';
-
-  return NextResponse.json({
-    status,
-    env: { missing },
-    db: { ok: dbOk },
-    app: { commit, branch },
-  });
-}
+  const uptime = process.uptime();
+  const version = process.env.VERCEL_GIT_COMMIT_SHA || 'dev';
+  const pr_bot_status: 'UNKNOWN' | 'OK' | 'ERROR' = 'UNKNOWN';
+  log('info', 'health', { route, status: 200, duration_ms: Date.now() - start });
+  return NextResponse.json({ db, uptime, version, pr_bot_status });
+});
