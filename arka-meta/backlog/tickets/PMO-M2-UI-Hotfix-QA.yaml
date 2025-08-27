@@ -1,0 +1,33 @@
+meta:
+  version: PMO-M2-UI-Hotfix-QA v2.2
+  lot: M2
+  scope: "QA post-hotfix UI M2 – validation stub SSO, landing/login nettoyés"
+  labels: ["Type/qa","Lot/lot:M2","Hotfix"]
+
+suite:
+  smoke_navigation:
+    - "Given '/', When click CTA, Then route '/login'"
+    - "Given login 200, When redirect, Then route '/console'"
+  login_flow:
+    - "Given remember-me checked, Then email pré-rempli après reload"
+    - "Given login 401, Then message erreur visible"
+    - "Given login 200, Then localStorage.token set"
+  sso_stub:
+    - "Given GET /api/auth/sso/start, Then response 501 JSON {error:'not implemented'}"
+    - "Given click bouton SSO, Then toast 'Indisponible' visible"
+  rbac_ui:
+    - "viewer: Prompt Builder en lecture seule"
+    - "owner: Prompt Builder édition active"
+  logs_ui:
+    - "Mount/CTA/login_success/login_fail/nav visibles en console.info(JSON)"
+  perf_a11y:
+    - "LCP '/' ≤ 2500ms"
+    - "TTI '/console' ≤ 2000ms"
+    - "CLS global < 0.1"
+    - "Contrastes AA sur CTA et NavItem actifs"
+reporting:
+  evidence: "Captures Lighthouse + vidéos e2e après hotfix"
+  kpis:
+    - "lcp_home_ms_p95"
+    - "tti_console_ms_p95"
+    - "cls_max"

@@ -1,9 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { uiLog } from '../../lib/ui-log';
 
-export default function LoginPage() {
+export default function Page() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +16,7 @@ export default function LoginPage() {
     if (saved) setEmail(saved);
   }, []);
 
-  async function submit(e: React.FormEvent) {
+  async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
     const res = await fetch('/api/auth/login', {

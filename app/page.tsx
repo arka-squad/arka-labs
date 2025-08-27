@@ -1,10 +1,16 @@
 'use client';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { uiLog } from '../lib/ui-log';
 
-export default function LandingPage() {
+const features = [
+  { key: 'Rapide', text: 'Des performances optimisées.' },
+  { key: 'Sécurisé', text: 'RBAC intégré.' },
+  { key: 'Extensible', text: 'Composants réutilisables.' },
+];
+
+export default function Page() {
   const router = useRouter();
   useEffect(() => {
     uiLog('mount');
@@ -25,21 +31,13 @@ export default function LandingPage() {
         </button>
       </section>
       <section className="mt-16 grid gap-8 sm:grid-cols-3">
-        <div className="space-y-2">
-          <Image src="/placeholder.svg" alt="Rapide" width={80} height={80} loading="lazy" />
-          <h2 className="font-semibold">Rapide</h2>
-          <p className="text-sm text-slate-300">Des performances optimisées.</p>
-        </div>
-        <div className="space-y-2">
-          <Image src="/placeholder.svg" alt="Sécurisé" width={80} height={80} loading="lazy" />
-          <h2 className="font-semibold">Sécurisé</h2>
-          <p className="text-sm text-slate-300">RBAC intégré.</p>
-        </div>
-        <div className="space-y-2">
-          <Image src="/placeholder.svg" alt="Extensible" width={80} height={80} loading="lazy" />
-          <h2 className="font-semibold">Extensible</h2>
-          <p className="text-sm text-slate-300">Composants réutilisables.</p>
-        </div>
+        {features.map(({ key, text }) => (
+          <div key={key} className="space-y-2">
+            <Image src="/placeholder.svg" alt={key} width={80} height={80} loading="lazy" />
+            <h2 className="font-semibold">{key}</h2>
+            <p className="text-sm text-slate-300">{text}</p>
+          </div>
+        ))}
       </section>
     </main>
   );
