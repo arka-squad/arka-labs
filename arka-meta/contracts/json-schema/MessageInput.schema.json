@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arka.local/json-schema/MessageInput.schema.json",
+  "title": "MessageInput",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["role", "content"],
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": ["user", "assistant"]
+    },
+    "content": {
+      "type": "string"
+    },
+    "tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

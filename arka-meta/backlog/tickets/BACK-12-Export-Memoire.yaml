@@ -1,0 +1,33 @@
+meta:
+  version: PMO-M2-BACK v1.1
+  lot: M2
+  labels: ["Type/codex","Lot/lot:M2","Priority/P1","Domain/export","Service/api"]
+
+ticket_codex:
+  id: BACK-12-Export-Memoire
+  title: "Export mémoire thread — JSONL & Markdown"
+  description: >
+    Exporter les messages d’un thread pour archivage/IA fine-tune (streaming de la réponse).
+  deliverables:
+    - routes: "GET /api/threads/:id/export?format=jsonl|md&anonymize=0|1"
+    - formats:
+        jsonl: "1 ligne/message → {role,content,tokens?,meta?,created_at}"
+        md:    "# Thread <id>\n- <date> <role>: <content>"
+    - streaming: "réponse en flux (ReadableStream)"
+    - anonymisation: "masquage emails/tel si anonymize=1"
+    - headers: "Content-Disposition: attachment; filename=thread-<id>.<ext>"
+    - docs: ["../../contracts/openapi.yaml#/paths/~1api~1threads~1{threadId}~1export", "README_lot.md#export"]
+  tasks:
+    - "Query paginé des messages (ordre asc)"
+    - "Générateur JSONL et MD en flux"
+    - "Util anonymize(text) (regex emails/tel)"
+    - "RBAC lecture: viewer/operator/owner"
+    - "OpenAPI + exemples"
+  criteria:
+    - "Given thread large (1000+), Then export OK en flux"
+    - "Given anonymize=1, Then emails/tel masqués"
+    - "Then headers de téléchargement présents"
+  tests:
+    - unit: ["anonymize()", "format lines"]
+    - integration: ["2 formats + headers + RBAC"]
+  labels: ["Status/ready-for-codex"]

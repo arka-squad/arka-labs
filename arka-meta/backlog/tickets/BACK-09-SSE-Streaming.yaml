@@ -1,0 +1,42 @@
+meta:
+  version: PMO-M2-BACK v1.1
+  lot: M2
+  owner: "@pmo-arka"
+  labels: ["Type/codex","Lot/lot:M2","Priority/P0","Domain/chat","Service/api"]
+
+ticket_codex:
+  id: BACK-09-SSE-Streaming
+  title: "GET /api/threads/:id/stream — SSE chat streaming"
+  description: >
+    Implémenter un flux SSE pour diffuser en temps réel les messages d’un thread.
+    Inclure heartbeat, reconnexion, RBAC (operator/owner), et ratelimit.
+  deliverables:
+    - file: app/api/threads/[threadId]/stream/route.ts
+    - headers: ["Content-Type: text/event-stream","Cache-Control: no-cache","Connection: keep-alive"]
+    - events: ["message","error","ping"]
+    - heartbeat_ms: 15000
+    - rbac: ["operator","owner"]
+    - rate_limit: "100 req/10m/ip (middleware)"
+    - schema_out: "MessageOutput = {id, thread_id, role, content, created_at, tokens?, meta?}"
+    - docs: ["../../contracts/openapi.yaml#/paths/~1api~1threads~1{threadId}~1stream", "README_lot.md#sse"]
+  tasks:
+    - "Créer route GET /api/threads/[threadId]/stream (Next.js route handler)"
+    - "Middleware ratelimit (IP) + auth via withAuth(['operator','owner'])"
+    - "Émettre ping: 'event: ping\\n\\n' toutes 15s (setInterval)"
+    - "Écouter INSERT sur messages (poll DB simple ou channel NOTIFY/LISTEN si dispo)"
+    - "Sérialiser message en 'event: message\\n data: <json>\\n\\n' <500ms P95"
+    - "Gérer close/abort signal (res.closed, req.signal)"
+    - "Journaliser {cat:'api',event:'sse_connect|sse_close',thread,session_id?}"
+    - "OpenAPI: documenter réponse text/event-stream + exemples"
+  criteria:
+    - "Given auth operator/owner, When connect, Then 200 + stream SSE"
+    - "Given no activity 15s, Then event ping émis"
+    - "Given new message, Then event:message < 500ms P95"
+    - "Given viewer, Then 403"
+    - "Given 100 clients parallèles, Then connexions stables >60s"
+  tests:
+    - type: integration
+      cases: ["auth ok","viewer 403","heartbeat 2 cycles","message broadcast <500ms"]
+    - type: load
+      cases: ["100 concurrent clients, pas de reset prématuré"]
+  labels: ["Status/ready-for-codex","Risk/perf","Risk/deps"]

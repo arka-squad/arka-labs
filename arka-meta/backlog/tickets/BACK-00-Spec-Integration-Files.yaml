@@ -1,0 +1,26 @@
+meta:
+  version: PMO-M2-BACK+UI v1.0
+  lot: M2
+  labels: ["Type/codex","Priority/P0","Gate/codex-ready","QA/blocker"]
+
+ticket_codex:
+  id: BACK-00-Spec-Integration-Files
+  title: "Ajouter les fichiers spec-integration.md (Backend API + UI) au format Norme commune"
+  description: >
+    Rendre M2 'Codex-ready' en fournissant, pour chaque module livré, un spec-integration.md conforme
+    à la norme commune Arka (v1.0). L’absence de ces squelettes déclenche un FAIL QA.
+  deliverables:
+    - path: arka-meta/backend/spec-integration.md        # gabarit 'Livrable API REST'
+    - path: apps/console/spec-integration.md             # gabarit 'Livrable UI / Frontend'
+    - path: apps/console/docs/usage.md                   # UI: doc d’usage
+    - path: apps/console/docs/props.json                 # UI: contrat de props par composant
+    - path: apps/console/examples/demo.tsx               # UI: exemple d’intégration
+  tasks:
+    - "Backend: remplir sections 1→4 (Contexte, Stack, Modélisation/Endpoints, Tests/CI/CD/Monitoring) et lier openapi.yaml + curl (déjà dans README_lot.md)."
+    - "UI: remplir sections 1→12 (Design system, Responsive, Accessibilité, Pages, Composants/propos/états, Tests) et référencer tokens + stories."
+    - "Gouvernance: dater (YYYY-MM-DD), ajouter au sommaire README_lot.md et aux tickets PMO."
+  criteria:
+    - "QA: présence des 2 fichiers spec-integration.md, versionnés et complets."
+    - "UI: props.json couvre Button, Card*, Dropzone, DocListItem, ChatMessage, PromptBlock, Obs*."
+    - "CI: lien vers openapi.yaml et examples curl valides depuis spec-integration.md (Backend)."
+    - "Gate: tag 'Gate/codex-ready' appliqué et QA passe sans exception."

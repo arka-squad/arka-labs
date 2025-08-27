@@ -1,0 +1,31 @@
+meta:
+  version: PMO-M2-BACK v1.1
+  lot: M2
+  labels: ["Type/codex","Lot/lot:M2","Priority/P1","Domain/observabilité","Service/api"]
+
+ticket_codex:
+  id: BACK-11-Agent-Events
+  title: "Agent Events — hooks + API de consultation"
+  description: >
+    Alimenter agent_events à chaque activité clef et exposer un endpoint de lecture filtrable.
+  deliverables:
+    - hooks:
+        - "à l’insertion d’un message assistant → event='message_generated', kpis{tokens}"
+        - "aux erreurs SSE → event='stream_error'"
+    - route-read: "GET /api/agents/events?agent=:name&from=&to=&limit=100"
+    - schema_out: "{id,agent,event,title?,summary?,labels?,links?,kpis?,decisions?,created_at}"
+    - index: "CREATE INDEX ON agent_events(agent, created_at DESC)"
+    - docs: ["../../contracts/openapi.yaml#/paths/~1api~1agents~1events", "README_lot.md#agent-events"]
+  tasks:
+    - "Écrire util server logEvent(agent, event, payload)"
+    - "Appeler logEvent depuis POST /messages (role=assistant)"
+    - "Appeler logEvent depuis SSE catch(error)"
+    - "Implémenter GET filtres agent/from/to/limit + RBAC lecture (viewer OK)"
+    - "OpenAPI + exemples"
+  criteria:
+    - "Given message assistant, Then event visible <1s"
+    - "Given filtre agent/time, Then liste correcte"
+  tests:
+    - unit: ["map message→event", "params validation"]
+    - integration: ["écriture/lecture", "RBAC viewer lecture seule"]
+  labels: ["Status/ready-for-codex"]

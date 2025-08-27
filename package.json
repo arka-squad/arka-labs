@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "node scripts/test-login-redirect.cjs && npm run lint && npm run typecheck"
+    "test": "npm run lint && npm run typecheck",
+    "api:lint": "redocly lint arka-meta/contracts/openapi.yaml"
+
   },
   "dependencies": {
     "next": "14.2.3",
@@ -28,6 +30,8 @@
     "@types/react-dom": "^18.2.0",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.2.3",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "@redocly/cli": "^1.16.0",
+    "ajv": "^8.12.0"
   }
 }

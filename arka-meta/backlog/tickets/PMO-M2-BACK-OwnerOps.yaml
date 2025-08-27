@@ -1,0 +1,27 @@
+meta:
+  version: PMO-M2-BACK-OwnerOps v1.1
+  lot: M2
+  labels: ["Type/owner","Lot/lot:M2"]
+
+owner_actions:
+  - id: OPS-ENV-01
+    title: "Secrets & Flags"
+    steps:
+      - "VERCEL → ajouter FEATURE_DOCS_S3=0 (par défaut)"
+      - "VERCEL → JWT_SECRET présent (déjà M2 UI)"
+      - "OPTIONNEL (S3): AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / S3_BUCKET"
+  - id: OPS-CI-01
+    title: "CI API Contracts"
+    steps:
+      - "Ajouter job 'api-contracts' → npm run api:lint"
+      - "Fail build si openapi/jsonschema invalides"
+  - id: OPS-LB-01
+    title: "SSE timeouts"
+    steps:
+      - "Vérifier proxy timeout ≥ 120s (NGINX/Vercel edge ok par défaut)"
+      - "Désactiver buffering sur route SSE si NGINX"
+  - id: OPS-OBS-01
+    title: "Drain logs"
+    steps:
+      - "Router console.info(JSON) server vers sink (Datadog/Elastic) si dispo"
+      - "Tagger service=api, env=preview|prod"

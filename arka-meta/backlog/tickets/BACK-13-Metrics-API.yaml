@@ -1,0 +1,34 @@
+meta:
+  version: PMO-M2-BACK v1.1
+  lot: M2
+  labels: ["Type/codex","Lot/lot:M2","Priority/P0","Domain/metrics","Service/api"]
+
+ticket_codex:
+  id: BACK-13-Metrics-API
+  title: "Metrics API — agrégats pour Observabilité"
+  description: >
+    Calculer TTFT/RTT/%Err et fournir les agrégats pour /console/observabilite.
+  deliverables:
+    - route: "GET /api/metrics?project=arka&lot=M1&sprint=S1"
+    - defs:
+        TTFT: "P95 (assistant first-token – user submit)"
+        RTT:  "P95 (assistant completed – user submit)"
+        ERR:  "ratio events 'stream_error' + HTTP>=500"
+    - sql:
+        strategy: "vues matérialisées (ou CTE + index) pour P95"
+    - schema_out: "{kpis:{ttft_ms, rtt_ms, err_pct}, breakdown?:{by_agent|by_day}}"
+    - docs: ["../../contracts/openapi.yaml#/paths/~1api~1metrics", "README_lot.md#metrics"]
+  tasks:
+    - "Marquer timestamps user_submit / first_token / completed (dans messages/meta)"
+    - "SQL pour p95 (percentile_cont(0.95)) + index par created_at"
+    - "Endpoint GET (params project, lot, sprint) avec validation"
+    - "Réponse < 300ms P95 sur dataset 50k"
+    - "OpenAPI + exemples"
+  criteria:
+    - "Then 200 + kpis cohérents sur seed de test"
+    - "Then p95 calculé côté DB (vues ou CTE)"
+    - "Then latency endpoint <300ms P95 (seed 50k)"
+  tests:
+    - unit: ["cohérence calculs p95"]
+    - integration: ["endpoint + filtres (lot/sprint/projet)"]
+  labels: ["Status/ready-for-codex","Risk/perf"]

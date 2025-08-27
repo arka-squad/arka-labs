@@ -1,0 +1,42 @@
+meta:
+  version: PMO-M2-BACK v1.1
+  lot: M2
+  labels: ["Type/codex","Lot/lot:M2","Priority/P0","Domain/documents","Service/api"]
+
+ticket_codex:
+  id: BACK-10-Documents-API
+  title: "Documents API — upload/list/delete + stockage"
+  description: >
+    Exposer un CRUD minimal pour la page /console/documents.
+    Stockage local par défaut, S3 activable via feature flag.
+  deliverables:
+    - db_table: "documents(id serial pk, project_id text, name text, mime text, size int, storage_key text, tags text[], created_at timestamptz default now())"
+    - routes:
+        - "GET  /api/documents?project=arka"
+        - "POST /api/documents  (multipart/form-data: file)"
+        - "DELETE /api/documents/:id"
+    - storage:
+        mode: "local|S3 (FEATURE_DOCS_S3=1)"
+        validations: ["max 20MB","mime allowlist: pdf,docx,md,txt,png,jpg"]
+    - rbac:
+        list: ["viewer","operator","owner"]
+        post_delete: ["operator","owner"]
+    - audit_log: "{cat:'api',event:'doc_upload|doc_delete',id?,name?,size?}"
+    - docs: ["../../contracts/openapi.yaml#/paths/~1api~1documents", "README_lot.md#documents"]
+  tasks:
+    - "Migration SQL table documents (+ index created_at desc)"
+    - "Implémenter POST (multipart) avec validation taille/mime"
+    - "Sauvegarde local (/uploads) OU S3 (SDK) via flag"
+    - "GET trié par created_at desc, filtré par project_id"
+    - "DELETE par id (RBAC operator/owner), 204"
+    - "Log server JSON cohérent avec uiLog (cat:'api')"
+    - "OpenAPI + exemples curl/postman"
+  criteria:
+    - "Given upload valide, Then 201 + {id,name,size,mime}"
+    - "Given GET, Then 200 + array trié desc"
+    - "Given viewer delete, Then 403 ; owner delete, Then 204"
+    - "Given 30MB file, Then 413"
+  tests:
+    - unit: ["validators mime/size", "path S3/local"]
+    - integration: ["upload/list/delete", "RBAC list/post/delete"]
+  labels: ["Status/ready-for-codex","Risk/security"]

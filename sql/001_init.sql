@@ -29,16 +29,28 @@ CREATE TABLE agent_runs (
 CREATE TABLE threads (
   id UUID PRIMARY KEY,
   project_id TEXT DEFAULT 'arka',
-  agent_id INTEGER REFERENCES agents(id),
+  title TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
 CREATE TABLE messages (
   id SERIAL PRIMARY KEY,
-  project_id TEXT DEFAULT 'arka',
   thread_id UUID REFERENCES threads(id),
   role TEXT,
   content TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  tokens INTEGER,
+  meta JSONB
+);
+
+CREATE TABLE documents (
+  id SERIAL PRIMARY KEY,
+  project_id TEXT DEFAULT 'arka',
+  name TEXT NOT NULL,
+  mime TEXT NOT NULL,
+  size INTEGER NOT NULL,
+  storage_key TEXT NOT NULL,
+  tags TEXT[],
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
