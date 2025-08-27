@@ -14,3 +14,10 @@ Ce correctif aligne la navigation principale de l'interface sur la cible **Landi
    - Toutes les redirections post‑login mènent désormais vers cette route.
 
 Les anciennes références vers `/projects` ont été supprimées afin d'éviter toute confusion.
+
+## Delta v2.3
+
+- Ajout d'un garde côté client : absence de `token` ⇒ redirection `/login` avec log `guard_redirect`.
+- `uiLog` enrichi d'un `session_id` (UUID v4) et du `role` courant.
+- Bouton **Déconnexion** dans le header console supprimant le `token` et loguant `logout`.
+- Micro‑correctifs a11y : `aria-label` sur CTA Chat/Docs/Logout et focus visible sur `NavItem`.

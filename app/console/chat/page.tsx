@@ -2,22 +2,24 @@
 import { useState, useEffect } from 'react';
 import { ChatMessage, ChatMessageProps } from '../../../src/ui/ChatMessage';
 import { uiLog } from '../../../lib/ui-log';
+import { useRole } from '../../../src/role-context';
 
 export default function ChatPage() {
+  const { role } = useRole();
   const [messages, setMessages] = useState<ChatMessageProps[]>([
     { role: 'system', content: 'Thread initialisé.' },
   ]);
   const [input, setInput] = useState('');
 
   useEffect(() => {
-    uiLog('mount');
-  }, []);
+    uiLog('mount', { role });
+  }, [role]);
 
   async function send() {
     if (!input.trim()) return;
     const userMsg: ChatMessageProps = { role: 'user', content: input };
     setMessages((m) => [...m, userMsg, { role: 'agent', content: '', streaming: true }]);
-    uiLog('send_message');
+    uiLog('send_message', { role });
     setInput('');
     setTimeout(() => {
       setMessages((m) => {

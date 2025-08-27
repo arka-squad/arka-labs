@@ -1,15 +1,17 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { uiLog } from '../../../lib/ui-log';
+import { useRole } from '../../../src/role-context';
 
 type Doc = { id: number; name: string; size: number; date: string; tags: string[] };
 
 export default function DocumentsPage() {
   const [drag, setDrag] = useState(false);
   const [docs, setDocs] = useState<Doc[]>([]);
+  const { role } = useRole();
   useEffect(() => {
-    uiLog('mount');
-  }, []);
+    uiLog('mount', { role });
+  }, [role]);
 
   function onDrop(e: React.DragEvent) {
     e.preventDefault();
@@ -23,7 +25,7 @@ export default function DocumentsPage() {
       tags: ['mock'],
     }));
     setDocs((d) => [...d, ...newDocs]);
-    uiLog('upload', { count: files.length });
+    uiLog('upload', { count: files.length, role });
   }
 
   return (

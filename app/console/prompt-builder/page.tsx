@@ -10,16 +10,16 @@ export default function PromptBuilderPage() {
   const { role } = useRole();
   const [blocks, setBlocks] = useState<Block[]>([]);
   useEffect(() => {
-    uiLog('mount');
-  }, []);
+    uiLog('mount', { role });
+  }, [role]);
 
   function add() {
     setBlocks((b) => [...b, { id: Date.now(), titre: 'Nouveau', valeur: '', declencheur: '' }]);
-    uiLog('prompt_add');
+    uiLog('prompt_add', { role });
   }
   function remove(id: number) {
     setBlocks((b) => b.filter((blk) => blk.id !== id));
-    uiLog('prompt_remove');
+    uiLog('prompt_remove', { role });
   }
 
   return (

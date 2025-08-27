@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { uiLog } from '../lib/ui-log';
+import { useRole } from '../src/role-context';
 
 const features = [
   { key: 'Rapide', text: 'Des performances optimisées.' },
@@ -12,9 +13,10 @@ const features = [
 
 export default function Page() {
   const router = useRouter();
+  const { role } = useRole();
   useEffect(() => {
-    uiLog('mount');
-  }, []);
+    uiLog('mount', { role });
+  }, [role]);
   return (
     <main className="mx-auto max-w-3xl p-6 text-white">
       <section className="text-center">
@@ -22,7 +24,7 @@ export default function Page() {
         <p className="mb-6 text-slate-300">Accélérez vos workflows IA.</p>
         <button
           onClick={() => {
-            uiLog('cta_click', { cta: 'open_console' });
+            uiLog('cta_click', { cta: 'open_console', role });
             router.push('/login');
           }}
           className="rounded-xl bg-gradient-to-r from-[#FAB652] via-[#F25636] to-[#E0026D] px-6 py-3 font-medium text-white"

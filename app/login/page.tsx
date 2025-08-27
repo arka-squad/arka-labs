@@ -2,6 +2,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { uiLog } from '../../lib/ui-log';
+import { useRole } from '../../src/role-context';
 
 export default function Page() {
   const router = useRouter();
@@ -9,12 +10,13 @@ export default function Page() {
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
+  const { role } = useRole();
 
   useEffect(() => {
-    uiLog('mount');
+    uiLog('mount', { role });
     const saved = localStorage.getItem('remember-email');
     if (saved) setEmail(saved);
-  }, []);
+  }, [role]);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,17 +28,17 @@ export default function Page() {
     });
     if (res.ok) {
       if (remember) localStorage.setItem('remember-email', email);
-      uiLog('login_success');
+      uiLog('login_success', { role });
       router.push('/console');
     } else {
-      uiLog('login_fail', { status: res.status });
+      uiLog('login_fail', { status: res.status, role });
       setError(res.status === 401 ? 'Identifiants invalides' : 'Requête incorrecte');
     }
   }
 
   async function sso() {
     const res = await fetch('/api/auth/sso/start');
-    uiLog('sso_click', { status: res.status });
+    uiLog('sso_click', { status: res.status, role });
     alert('501 Indisponible');
   }
 

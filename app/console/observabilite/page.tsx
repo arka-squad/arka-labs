@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { KpiMiniCard } from '../../../src/ui/KpiMiniCard';
 import { ObsTable, ObsRow } from '../../../src/ui/ObsTable';
 import { uiLog } from '../../../lib/ui-log';
+import { useRole } from '../../../src/role-context';
 
 const data: Record<string, ObsRow[]> = {
   M1: [
@@ -19,12 +20,13 @@ const data: Record<string, ObsRow[]> = {
 export default function ObservabilitePage() {
   const [lot, setLot] = useState<'M1' | 'M2'>('M1');
   const [sprint, setSprint] = useState('S1');
+  const { role } = useRole();
   useEffect(() => {
-    uiLog('mount');
-  }, []);
+    uiLog('mount', { role });
+  }, [role]);
   useEffect(() => {
-    uiLog('filter', { lot, sprint });
-  }, [lot, sprint]);
+    uiLog('filter', { lot, sprint, role });
+  }, [lot, sprint, role]);
   const kpis = [
     { label: 'TTFT', value: 680, unit: 'ms', background: 'linear-gradient(135deg,#FAB652 0%,#F25636 50%)' },
     { label: 'RTT', value: 1200, unit: 'ms', background: 'linear-gradient(135deg,#F25636 0%,#E0026D 100%)' },
