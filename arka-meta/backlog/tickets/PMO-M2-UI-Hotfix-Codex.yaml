@@ -1,0 +1,49 @@
+meta:
+  version: PMO-M2-UI-Hotfix-Codex v2.2
+  lot: M2
+  scope: "Hotfix UI M2 – ajout stub API SSO + nettoyage artefacts pages"
+  owner: "@pmo-arka"
+  labels: ["Type/codex","Lot/lot:M2","Priority/P0","Hotfix"]
+
+tickets:
+  - ticket_codex:
+      id: HOTFIX-M2-UI-01
+      description: "Ajouter stub API GET /api/auth/sso/start → 501"
+      tasks:
+        - "Créer fichier app/api/auth/sso/start/route.ts"
+        - "Retourner NextResponse.json({error:'not implemented'},{status:501})"
+      criteria:
+        - "Given GET /api/auth/sso/start, Then status=501 + JSON {error:'not implemented'}"
+      labels: ["Status/ready-for-codex","Priority/P0"]
+
+  - ticket_codex:
+      id: HOTFIX-M2-UI-02
+      description: "Nettoyer app/login/page.tsx (artefacts merge)"
+      tasks:
+        - "Supprimer doublons use client/imports/useState"
+        - "Garder logique remember-me, uiLog, redirection '/console'"
+      criteria:
+        - "Build Next OK"
+        - "Given login success, Then redirect '/console' (logs UI visibles)"
+      labels: ["Status/ready-for-codex","Priority/P0"]
+
+  - ticket_codex:
+      id: HOTFIX-M2-UI-03
+      description: "Nettoyer app/page.tsx (Landing)"
+      tasks:
+        - "Supprimer duplications d’export / JSX"
+        - "Conserver CTA → /login avec uiLog('cta_click')"
+        - "Vérifier lazy loading images"
+      criteria:
+        - "Given '/', When CTA click, Then route '/login' + log JSON cat:ui"
+      labels: ["Status/ready-for-codex","Priority/P1"]
+
+  - ticket_codex:
+      id: HOTFIX-M2-UI-04
+      description: "Aligner redirection post-login"
+      tasks:
+        - "Vérifier que toutes redirections mènent bien vers '/console'"
+        - "Mettre à jour README_lot.md + tests"
+      criteria:
+        - "Given login success, Then user route '/console' (pas '/projects')"
+      labels: ["Status/ready-for-codex","Priority/P1"]
