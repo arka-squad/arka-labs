@@ -1,0 +1,170 @@
+meta:
+  version: PMO-M2-BACK-Rebaseline v1.0
+  lot: M2
+  scope: "Rebaselining backend M2 — SSE, Documents, Agent Events, Export mémoire, Metrics"
+  owner: "@pmo-arka"
+  labels: ["Type/pmo","Lot/lot:M2","Priority/P0","Status/planning"]
+
+epic:
+  id: EPIC-M2-BACK-REBASELINE
+  goal: "Livrer les 5 capacités backend manquantes pour alimenter l’UI R1 (chat/observabilité/documents/export)."
+  due: "M2"
+  dependencies: ["M2-UI","RBAC","DB-init"]
+
+tickets:
+
+  - ticket:
+      id: BACK-09-SSE-Streaming
+      title: "GET /api/threads/:id/stream — SSE chat streaming"
+      labels: ["Priority/P0","Service/api","Domain/chat"]
+      description: >
+        Implémenter le streaming SSE des messages pour un thread.
+        Gestion heartbeat, reconnexion, RBAC (operator/owner), ratelimit.
+      deliverables:
+        - route: "GET /api/threads/[threadId]/stream"
+        - headers: ["Content-Type: text/event-stream","Cache-Control: no-cache","Connection: keep-alive"]
+        - events: ["message","error","ping"]
+        - heartbeat_ms: 15000
+        - rbac: ["operator","owner"]
+        - rate_limit: "100 req/10m/ip"
+        - schema_out: "MessageOutput = {id, role, content, created_at, tokens?, meta?}"
+        - docs: ["../../contracts/openapi.yaml#/paths/~1api~1threads~1{threadId}~1stream", "README usage (fetchEventSource / EventSource)"]
+      acceptance:
+        - "Given thread exists & token valide, When connect, Then 200 & flux SSE"
+        - "Given no activity, Then ping toutes 15s"
+        - "Given message inserted, Then event:message <500ms P95"
+        - "Given RBAC viewer, Then 403"
+        - "Lighthouse network: connexion persiste > 60s sans reset"
+      tests:
+        - type: "integration"
+          cases: ["auth ok/ko","viewer 403","heartbeat","message broadcast"]
+        - type: "load"
+          cases: ["100 connexions //, P95 < 1s sur propagation"]
+
+  - ticket:
+      id: BACK-10-Documents-API
+      title: "Documents API — upload/list/delete + stockage"
+      labels: ["Priority/P0","Service/api","Domain/documents"]
+      description: >
+        Exposer un CRUD minimal pour les documents de projet, utilisé par la page /console/documents.
+      deliverables:
+        - db:
+            table: documents(id serial pk, project_id text, name text, mime text, size int, storage_key text, tags text[], created_at timestamptz default now())
+        - routes:
+            - "GET  /api/documents?project=arka"
+            - "POST /api/documents  (multipart/form-data: file)"
+            - "DELETE /api/documents/:id"
+        - storage:
+            mode: "local|S3 (feature flag)"
+            validations: ["max 20MB","mime allowlist: pdf,docx,md,txt,png,jpg"]
+        - rbac:
+            list: ["viewer","operator","owner"]
+            post_delete: ["operator","owner"]
+        - audit_log: "uiLog-compatible (server) {cat:'api',event:'doc_upload|doc_delete'}"
+        - docs: ["../../contracts/openapi.yaml#/paths/~1api~1documents", "exemples curl/postman"]
+      acceptance:
+        - "Upload valide → 201 + JSON {id,name,size,mime}"
+        - "List → 200 + array trié par created_at desc"
+        - "Delete owner → 204 ; viewer → 403"
+        - "Rejet fichier 30MB → 413"
+      tests:
+        - "unit: validators (mime/size)"
+        - "integration: upload/list/delete + RBAC"
+
+  - ticket:
+      id: BACK-11-Agent-Events
+      title: "Agent Events — hooks + API de consultation"
+      labels: ["Priority/P1","Service/api","Domain/observability"]
+      description: >
+        La table agent_events existe ; ajouter hooks d’écriture et endpoint de lecture filtrable.
+      deliverables:
+        - hooks:
+            - "à l’insertion message assistant → event='message_generated', kpis{tokens}"
+            - "aux erreurs SSE → event='stream_error'"
+        - route-read:
+            - "GET /api/agents/events?agent=:name&from=&to=&limit=100"
+        - schema_out: "{id,agent,event,title?,summary?,labels?,links?,kpis?,decisions?,created_at}"
+        - index: "agent_events(agent, created_at desc)"
+        - docs: ["../../contracts/openapi.yaml#/paths/~1api~1agents~1events", "README agent-events"]
+      acceptance:
+        - "Events visibles <1s après action"
+        - "Filtre agent & plage temporelle OK"
+      tests:
+        - "unit: map message→event"
+        - "integration: écriture/lecture, limites RBAC (viewer lecture seule)"
+
+  - ticket:
+      id: BACK-12-Export-Memoire
+      title: "Export mémoire thread — JSONL & Markdown"
+      labels: ["Priority/P1","Service/api","Domain/export"]
+      description: >
+        Permettre l’export des messages d’un thread pour archivage/IA fine-tune.
+      deliverables:
+        - routes:
+            - "GET /api/threads/:id/export?format=jsonl|md&anonymize=0|1"
+        - formats:
+            jsonl: "une ligne/message → {role,content,tokens?,meta?,created_at}"
+            md:    "# Thread <id>\n- <date> <role>: <content>"
+        - streaming: "réponse en flux pour gros volumes"
+        - anonymisation: "masquage emails/numéros si anonymize=1"
+        - docs: ["../../contracts/openapi.yaml#/paths/~1api~1threads~1{threadId}~1export", "README export"]
+      acceptance:
+        - "Export JSONL et MD valides sur thread > 1000 messages"
+        - "Header Content-Disposition de téléchargement"
+      tests:
+        - "unit: anonymize()"
+        - "integration: 2 formats + headers + RBAC viewer ok"
+
+  - ticket:
+      id: BACK-13-Metrics-API
+      title: "Metrics API — agrégats pour Observabilité"
+      labels: ["Priority/P0","Service/api","Domain/metrics"]
+      description: >
+        Calculer TTFT/RTT/%Err et compteurs par lot/sprint/projet pour alimenter /console/observabilite.
+      deliverables:
+        - route: "GET /api/metrics?project=arka&lot=M1&sprint=S1"
+        - defs:
+            - "TTFT: P95 (assistant first-token – user submit)"
+            - "RTT : P95 (assistant completed – user submit)"
+            - "%Err: ratio events 'stream_error' ou HTTP>=500"
+        - sql:
+            - "vues materialisées/CTE avec index pour P95"
+        - schema_out: "{kpis:{ttft_ms, rtt_ms, err_pct}, breakdown?:{by_agent|by_day}}"
+        - docs: ["../../contracts/openapi.yaml#/paths/~1api~1metrics", "README metrics"]
+      acceptance:
+        - "Réponse < 300ms P95 sur 50k messages"
+        - "Valeurs cohérentes avec échantillons de test"
+      tests:
+        - "unit: calculs p95"
+        - "integration: endpoint + filtres (lot/sprint/projet)"
+
+  - ticket:
+      id: BACK-00-Contracts-And-Docs
+      title: "Contrats API + schémas JSON + OpenAPI"
+      labels: ["Priority/P0","Service/api","Domain/platform"]
+      description: >
+        Publier un contrat consolidé pour les 5 capacités et le valider en CI.
+      deliverables:
+        - "../../contracts/json-schema/MessageInput.schema.json (aligné au validator actuel)"
+        - "../../contracts/openapi.yaml: /threads/*, /documents/*, /metrics, /agents/events, /export"
+        - "scripts de validation (npm run api:lint)"
+      acceptance:
+        - "CI échoue si contrat cassé"
+        - "Docs liées depuis README_lot.md"
+
+milestones:
+  - name: "M2-BACK-P0"
+    includes: ["BACK-09-SSE-Streaming","BACK-10-Documents-API","BACK-13-Metrics-API","BACK-00-Contracts-And-Docs"]
+  - name: "M2-BACK-P1"
+    includes: ["BACK-11-Agent-Events","BACK-12-Export-Memoire"]
+
+risks:
+  - "Charge calcul P95/agrégats → prévoir vues matérialisées."
+  - "Stockage documents — arbitrer local vs S3 (flag)."
+  - "SSE derrière Vercel/NGINX — vérifier timeouts/keep-alive."
+
+definition_of_done:
+  - "✅ Routes disponibles, RBAC respecté"
+  - "✅ Tests unit + integration verts (npm test)"
+  - "✅ OpenAPI & README mis à jour"
+  - "✅ Logs server (cat:'api') cohérents avec uiLog"

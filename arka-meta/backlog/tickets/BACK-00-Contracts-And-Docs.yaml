@@ -1,0 +1,24 @@
+meta:
+  version: PMO-M2-BACK v1.1
+  lot: M2
+  labels: ["Type/codex","Lot/lot:M2","Priority/P0","Domain/platform","Service/api"]
+
+ticket_codex:
+  id: BACK-00-Contracts-And-Docs
+  title: "Contrats API + schémas JSON + OpenAPI (CI)"
+  description: >
+    Publier un contrat consolidé pour BACK-09→13 et le valider en CI.
+  deliverables:
+    - "contracts/json-schema/MessageInput.schema.json (aligné au validator existant)"
+    - "contracts/json-schema/Document.schema.json"
+    - "contracts/openapi.yaml: /threads/*, /documents/*, /metrics, /agents/events, /threads/:id/export"
+    - "scripts: npm run api:lint (openapi + jsonschema)"
+    - "CI: échec si contrat cassé"
+  tasks:
+    - "Générer/écrire contracts/openapi.yaml + exemples"
+    - "Ajouter step CI (lint OpenAPI + validate schemas)"
+    - "README_lot.md: endpoints & exemples"
+  criteria:
+    - "Given PR qui casse contrat, Then CI fail"
+    - "Docs à jour et liées depuis README_lot.md"
+  labels: ["Status/ready-for-codex"]

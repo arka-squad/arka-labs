@@ -1,0 +1,42 @@
+{
+  "Button": {
+    "props": [
+      { "name": "variant", "type": "string", "description": "Style du bouton" },
+      { "name": "onClick", "type": "() => void", "description": "Callback de clic" },
+      { "name": "disabled", "type": "boolean", "description": "Désactivation" }
+    ]
+  },
+  "Card": {
+    "props": [
+      { "name": "title", "type": "string", "description": "Titre de la carte" },
+      { "name": "children", "type": "ReactNode", "description": "Contenu" }
+    ]
+  },
+  "Dropzone": {
+    "props": [
+      { "name": "onFiles", "type": "(files: File[]) => void", "description": "Callback fichiers" }
+    ]
+  },
+  "DocListItem": {
+    "props": [
+      { "name": "name", "type": "string", "description": "Nom du document" },
+      { "name": "size", "type": "number", "description": "Taille en octets" }
+    ]
+  },
+  "ChatMessage": {
+    "props": [
+      { "name": "role", "type": "'user' | 'assistant'", "description": "Auteur" },
+      { "name": "content", "type": "string", "description": "Texte du message" }
+    ]
+  },
+  "PromptBlock": {
+    "props": [
+      { "name": "onSubmit", "type": "(text: string) => void", "description": "Envoi du prompt" }
+    ]
+  },
+  "ObsChart": {
+    "props": [
+      { "name": "data", "type": "number[]", "description": "Série de valeurs" }
+    ]
+  }
+}

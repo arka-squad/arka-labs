@@ -1,0 +1,313 @@
+openapi: 3.0.3
+info:
+  title: Arka R1 Backend API (M2)
+  version: 0.1.0
+  description: >
+    Contrats initiaux pour M2 (SSE chat, Documents, Agent Events, Export mémoire, Metrics).
+servers:
+  - url: https://api.arka.local
+security:
+  - bearerAuth: []
+
+paths:
+  /api/threads/{threadId}/messages:
+    post:
+      summary: Append a message to a thread
+      operationId: createMessage
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageInput'
+      responses:
+        '201':
+          description: Message created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageOutput'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /api/threads/{threadId}/stream:
+    get:
+      summary: Chat streaming (SSE)
+      operationId: streamThread
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Server-Sent Events stream
+          headers:
+            Cache-Control: { schema: { type: string }, description: no-cache }
+            Connection: { schema: { type: string }, description: keep-alive }
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: >
+                  Events: "message", "ping", "error".
+                  Data payloads are MessageOutput JSON.
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /api/documents:
+    get:
+      summary: List project documents
+      operationId: listDocuments
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: project
+          in: query
+          required: false
+          schema: { type: string, example: arka }
+      responses:
+        '200':
+          description: Documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Document' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      summary: Upload a document
+      operationId: uploadDocument
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                project:
+                  type: string
+                  example: arka
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Document' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /api/documents/{id}:
+    delete:
+      summary: Delete a document
+      operationId: deleteDocument
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/agents/events:
+    get:
+      summary: List agent events
+      operationId: listAgentEvents
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: agent
+          in: query
+          required: false
+          schema: { type: string }
+        - name: from
+          in: query
+          required: false
+          schema: { type: string, format: date-time }
+        - name: to
+          in: query
+          required: false
+          schema: { type: string, format: date-time }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, default: 100, minimum: 1, maximum: 500 }
+      responses:
+        '200':
+          description: Events
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AgentEvent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/threads/{threadId}/export:
+    get:
+      summary: Export thread memory
+      operationId: exportThread
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: format
+          in: query
+          schema: { type: string, enum: [jsonl, md], default: jsonl }
+        - name: anonymize
+          in: query
+          schema: { type: integer, enum: [0,1], default: 0 }
+      responses:
+        '200':
+          description: Streamed export
+          content:
+            application/x-ndjson:
+              schema: { type: string, description: JSONL stream }
+            text/markdown:
+              schema: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/metrics:
+    get:
+      summary: Observability metrics
+      operationId: getMetrics
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: project
+          in: query
+          schema: { type: string, example: arka }
+        - name: lot
+          in: query
+          schema: { type: string, example: M1 }
+        - name: sprint
+          in: query
+          schema: { type: string, example: S1 }
+      responses:
+        '200':
+          description: KPIs and breakdown
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MetricsResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+      required: [error]
+
+    MessageInput:
+      $ref: './json-schema/MessageInput.schema.json'
+
+    MessageOutput:
+      type: object
+      properties:
+        id: { type: integer }
+        thread_id: { type: string, format: uuid }
+        role: { type: string, enum: ['user','assistant'] }
+        content: { type: string }
+        created_at: { type: string, format: date-time }
+        tokens: { type: integer, minimum: 0 }
+        meta: { type: object, additionalProperties: true }
+      required: [id, thread_id, role, content, created_at]
+
+    Document:
+      type: object
+      properties:
+        id: { type: integer }
+        project_id: { type: string }
+        name: { type: string }
+        mime: { type: string }
+        size: { type: integer, minimum: 0 }
+        storage_key: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        created_at: { type: string, format: date-time }
+      required: [id, name, mime, size, created_at]
+
+    AgentEvent:
+      type: object
+      properties:
+        id: { type: integer }
+        agent: { type: string }
+        event: { type: string }
+        title: { type: string }
+        summary: { type: string }
+        labels:
+          type: array
+          items: { type: string }
+        links:
+          type: object
+          additionalProperties: true
+        kpis:
+          type: object
+          additionalProperties: true
+        decisions:
+          type: object
+          additionalProperties: true
+        created_at: { type: string, format: date-time }
+      required: [id, agent, event, created_at]
+
+    MetricsResponse:
+      type: object
+      properties:
+        kpis:
+          type: object
+          properties:
+            ttft_ms: { type: integer, minimum: 0 }
+            rtt_ms:  { type: integer, minimum: 0 }
+            err_pct: { type: number, minimum: 0 }
+          required: [ttft_ms, rtt_ms, err_pct]
+        breakdown:
+          type: object
+          additionalProperties: true
