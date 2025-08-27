@@ -1,6 +1,23 @@
-:root { color-scheme: light dark; }
+:root {
+  color-scheme: light dark;
+  --arka-bg: #0C1319;
+  --arka-card: #151F27;
+  --arka-border: #1F2A33;
+  --arka-grad-cta: linear-gradient(135deg, #FAB652 0%, #F25636 50%, #E0026D 100%);
+  --arka-grad-ttft: linear-gradient(135deg, #FAB652 0%, #F25636 50%);
+  --arka-grad-rtt: linear-gradient(135deg, #F25636 0%, #E0026D 100%);
+  --arka-grad-err: linear-gradient(135deg, #E0026D 0%, #E0026D 100%);
+}
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--arka-bg);
+  font-family: 'Poppins', ui-sans-serif, system-ui;
+}
 main { max-width: 960px; margin: 0 auto; }
 h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 0.5rem; }
 p { margin: 0.25rem 0; opacity: 0.85; }

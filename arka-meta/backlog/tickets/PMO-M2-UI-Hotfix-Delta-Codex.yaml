@@ -1,0 +1,45 @@
+meta:
+  version: PMO-M2-UI-Hotfix-Delta-Codex v2.3
+  lot: M2
+  scope: "Guard /console + logs enrichis + bouton Logout + petits correctifs a11y"
+  labels: ["Type/codex","Lot/lot:M2","Priority/P0","Hotfix"]
+
+tickets:
+  - ticket_codex:
+      id: HOTFIX-M2-UI-05
+      description: "Guard client /console si token absent"
+      tasks:
+        - "Dans app/console/layout.tsx: au mount, si !localStorage.token → router.replace('/login') + uiLog('guard_redirect',{to:'/login'})"
+      criteria:
+        - "Given non-auth, When ouvre '/console', Then redirigé '/login' et log guard émis"
+      labels: ["Priority/P0","Status/ready-for-codex"]
+
+  - ticket_codex:
+      id: HOTFIX-M2-UI-06
+      description: "Enrichir uiLog avec session_id (UUID v4) + role (RoleContext)"
+      tasks:
+        - "lib/ui-log.ts: générer/charger session_id dans sessionStorage"
+        - "Ajouter role courant (useRole) aux logs côté pages/layout"
+      criteria:
+        - "Console.info JSON contient {session_id, role} sur events mount/click/nav"
+      labels: ["Priority/P0","Status/ready-for-codex"]
+
+  - ticket_codex:
+      id: HOTFIX-M2-UI-07
+      description: "Bouton Logout (purge token) + log dédié"
+      tasks:
+        - "Header (layout): bouton 'Déconnexion' → localStorage.removeItem('token'); router.replace('/login'); uiLog('logout')"
+      criteria:
+        - "Given click Logout, Then token supprimé + redirect '/login' + log émis"
+      labels: ["Priority/P1","Status/ready-for-codex"]
+
+  - ticket_codex:
+      id: HOTFIX-M2-UI-08
+      description: "A11y/UX micro-correctifs"
+      tasks:
+        - "Ajouter aria-label sur CTA 'Ouvrir chat' / 'Docs' + sur bouton Logout"
+        - "NavItem: vérifier focus-visible; aria-current déjà OK"
+        - "Vérifier contraste AA sur gradients/CTA (tokens inchangés)"
+      criteria:
+        - "axe/CLI a11y passe sans erreurs majeures"
+      labels: ["Priority/P1","Status/ready-for-codex"]
