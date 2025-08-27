@@ -77,14 +77,17 @@ export default function Page() {
         {error && <p className="text-sm text-red-400">{error}</p>}
         <button
           type="submit"
-          className="rounded-xl bg-gradient-to-r from-[#FAB652] via-[#F25636] to-[#E0026D] px-4 py-2 font-medium text-white"
+          className="rounded-xl px-4 py-2 font-medium text-white focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+          style={{ background: 'var(--arka-grad-cta)' }}
+
         >
           Se connecter
         </button>
         <button
           type="button"
           onClick={sso}
-          className="rounded-xl bg-slate-700 px-4 py-2 text-sm font-medium text-white"
+          className="rounded-xl bg-slate-700 px-4 py-2 text-sm font-medium text-white focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+
         >
           SSO
         </button>

@@ -26,8 +26,9 @@ function LayoutShell({ children }: { children: ReactNode }) {
   }, [router, role]);
 
   return (
-    <div className="flex min-h-screen text-white" style={{ backgroundColor: '#0C1319' }}>
-      <aside className="w-48 bg-[#151F27] p-4 space-y-2">
+    <div className="flex min-h-screen text-white" style={{ backgroundColor: 'var(--arka-bg)' }}>
+      <aside className="w-48 p-4 space-y-2" style={{ backgroundColor: 'var(--arka-card)' }}>
+
         {nav.map((item) => (
           <NavItem
             key={item.href}
@@ -42,15 +43,20 @@ function LayoutShell({ children }: { children: ReactNode }) {
         ))}
       </aside>
       <div className="flex-1">
-        <header className="flex items-center justify-between border-b border-slate-700 p-4">
-          <span className="bg-gradient-to-r from-[#FAB652] via-[#F25636] to-[#E0026D] bg-clip-text text-xl font-bold text-transparent">
+        <header className="flex items-center justify-between border-b p-4" style={{ borderColor: 'var(--arka-border)' }}>
+          <span
+            className="bg-clip-text text-xl font-bold text-transparent"
+            style={{ background: 'var(--arka-grad-cta)' }}
+          >
+
             Arka Labs
           </span>
           <div className="flex items-center gap-4">
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as any)}
-              className="rounded-md bg-slate-800 px-2 py-1 text-sm"
+              className="rounded-md bg-slate-800 px-2 py-1 text-sm focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+
             >
               <option value="viewer">viewer</option>
               <option value="operator">operator</option>
@@ -63,7 +69,8 @@ function LayoutShell({ children }: { children: ReactNode }) {
                 uiLog('logout', { role });
                 router.replace('/login');
               }}
-              className="rounded-md bg-slate-700 px-2 py-1 text-sm"
+              className="rounded-md bg-slate-700 px-2 py-1 text-sm focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+
             >
               Logout
             </button>

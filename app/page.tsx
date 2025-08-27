@@ -27,7 +27,10 @@ export default function Page() {
             uiLog('cta_click', { cta: 'open_console', role });
             router.push('/login');
           }}
-          className="rounded-xl bg-gradient-to-r from-[#FAB652] via-[#F25636] to-[#E0026D] px-6 py-3 font-medium text-white"
+
+          className="rounded-xl px-6 py-3 font-medium text-white focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+          style={{ background: 'var(--arka-grad-cta)' }}
+
         >
           Ouvrir la console
         </button>

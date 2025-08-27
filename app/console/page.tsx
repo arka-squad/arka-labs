@@ -12,9 +12,11 @@ export default function ConsoleDashboard() {
     uiLog('mount', { role });
   }, [role]);
   const kpis = [
-    { label: 'TTFT', value: 680, unit: 'ms', background: 'linear-gradient(135deg,#FAB652 0%,#F25636 50%)' },
-    { label: 'RTT', value: 1200, unit: 'ms', background: 'linear-gradient(135deg,#F25636 0%,#E0026D 100%)' },
-    { label: '% Err', value: 5, unit: '%', background: 'linear-gradient(135deg,#E0026D 0%,#E0026D 100%)' },
+
+    { label: 'TTFT', value: 680, unit: 'ms', background: 'var(--arka-grad-ttft)' },
+    { label: 'RTT', value: 1200, unit: 'ms', background: 'var(--arka-grad-rtt)' },
+    { label: '% Err', value: 5, unit: '%', background: 'var(--arka-grad-err)' },
+
   ];
   return (
     <div className="space-y-6">
@@ -23,7 +25,12 @@ export default function ConsoleDashboard() {
           <KpiMiniCard key={k.label} {...k} />
         ))}
       </div>
-      <div className="rounded-xl border border-slate-700 p-4" style={{ backgroundColor: '#151F27' }}>
+
+      <div
+        className="rounded-xl border p-4"
+        style={{ backgroundColor: 'var(--arka-card)', borderColor: 'var(--arka-border)' }}
+      >
+
         <h2 className="mb-4 text-lg font-semibold">Projet Alpha</h2>
         <p className="mb-4 text-sm text-slate-300">Dernière activité: hier · 3 agents</p>
         <div className="flex gap-4">
@@ -33,7 +40,8 @@ export default function ConsoleDashboard() {
               uiLog('cta_card', { to: '/console/chat', role });
               router.push('/console/chat');
             }}
-            className="rounded-lg bg-slate-700 px-4 py-2 text-sm"
+            className="rounded-lg bg-slate-700 px-4 py-2 text-sm focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+
           >
             Ouvrir chat
           </button>
@@ -43,7 +51,8 @@ export default function ConsoleDashboard() {
               uiLog('cta_card', { to: '/console/documents', role });
               router.push('/console/documents');
             }}
-            className="rounded-lg bg-slate-700 px-4 py-2 text-sm"
+            className="rounded-lg bg-slate-700 px-4 py-2 text-sm focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+
           >
             Docs
           </button>
