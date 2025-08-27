@@ -28,31 +28,37 @@ export default function ObservabilitePage() {
     uiLog('filter', { lot, sprint, role });
   }, [lot, sprint, role]);
   const kpis = [
+
     { label: 'TTFT', value: 680, unit: 'ms', background: 'var(--arka-grad-ttft)' },
     { label: 'RTT', value: 1200, unit: 'ms', background: 'var(--arka-grad-rtt)' },
     { label: '% Err', value: 5, unit: '%', background: 'var(--arka-grad-err)' },
+
   ];
   return (
     <div className="space-y-6">
       <div className="flex gap-4">
         <label className="text-sm">
           Lot
+
           <select
             value={lot}
             onChange={(e) => setLot(e.target.value as any)}
             className="ml-2 rounded-md bg-slate-800 px-2 py-1 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
           >
+
             <option value="M1">M1</option>
             <option value="M2">M2</option>
           </select>
         </label>
         <label className="text-sm">
           Sprint
+
           <select
             value={sprint}
             onChange={(e) => setSprint(e.target.value)}
             className="ml-2 rounded-md bg-slate-800 px-2 py-1 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
           >
+
             <option>S1</option>
             <option>S2</option>
           </select>

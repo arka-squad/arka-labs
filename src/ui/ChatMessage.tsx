@@ -1,6 +1,7 @@
 import React from "react";
 
 const GRADIENT = 'var(--arka-grad-cta)';
+
 const ROLE_ICONS: Record<string, string> = { user: "👤", agent: "🤖", system: "⚙️" };
 
 export type ChatMessageProps = {
@@ -19,10 +20,12 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ role, content, streami
       </span>
     </div>
     <div className="flex-1">
+
       <div
         className="rounded-2xl border p-3 text-sm"
         style={{ borderColor: 'var(--arka-border)', backgroundColor: 'var(--arka-card)' }}
       >
+
         <p className="whitespace-pre-wrap leading-relaxed">
           {content}
           {streaming && <span className="ml-0.5 inline-block animate-pulse">▌</span>}

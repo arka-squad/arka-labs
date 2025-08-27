@@ -29,6 +29,7 @@ export default function PromptBuilderPage() {
         disabled={role === 'viewer'}
         aria-disabled={role === 'viewer'}
         className="rounded-lg bg-slate-700 px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+
       >
         Ajouter bloc
       </button>

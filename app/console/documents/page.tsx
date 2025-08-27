@@ -39,6 +39,7 @@ export default function DocumentsPage() {
         onDrop={onDrop}
         tabIndex={0}
         className={`flex h-32 items-center justify-center rounded-xl border-2 border-dashed ${drag ? 'border-white' : 'border-slate-600'} focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]`}
+
         aria-label="Zone de dépôt"
       >
         Glisser les fichiers ici
@@ -50,6 +51,7 @@ export default function DocumentsPage() {
             className="flex justify-between rounded-lg p-3 text-sm"
             style={{ backgroundColor: 'var(--arka-card)' }}
           >
+
             <span>{d.name}</span>
             <span>{(d.size / 1024).toFixed(1)} ko</span>
             <span>{d.date}</span>

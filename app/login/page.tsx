@@ -79,6 +79,7 @@ export default function Page() {
           type="submit"
           className="rounded-xl px-4 py-2 font-medium text-white focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
           style={{ background: 'var(--arka-grad-cta)' }}
+
         >
           Se connecter
         </button>
@@ -86,6 +87,7 @@ export default function Page() {
           type="button"
           onClick={sso}
           className="rounded-xl bg-slate-700 px-4 py-2 text-sm font-medium text-white focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+
         >
           SSO
         </button>

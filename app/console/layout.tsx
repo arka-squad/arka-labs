@@ -28,6 +28,7 @@ function LayoutShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen text-white" style={{ backgroundColor: 'var(--arka-bg)' }}>
       <aside className="w-48 p-4 space-y-2" style={{ backgroundColor: 'var(--arka-card)' }}>
+
         {nav.map((item) => (
           <NavItem
             key={item.href}
@@ -47,6 +48,7 @@ function LayoutShell({ children }: { children: ReactNode }) {
             className="bg-clip-text text-xl font-bold text-transparent"
             style={{ background: 'var(--arka-grad-cta)' }}
           >
+
             Arka Labs
           </span>
           <div className="flex items-center gap-4">
@@ -54,6 +56,7 @@ function LayoutShell({ children }: { children: ReactNode }) {
               value={role}
               onChange={(e) => setRole(e.target.value as any)}
               className="rounded-md bg-slate-800 px-2 py-1 text-sm focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+
             >
               <option value="viewer">viewer</option>
               <option value="operator">operator</option>
@@ -67,6 +70,7 @@ function LayoutShell({ children }: { children: ReactNode }) {
                 router.replace('/login');
               }}
               className="rounded-md bg-slate-700 px-2 py-1 text-sm focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+
             >
               Logout
             </button>
