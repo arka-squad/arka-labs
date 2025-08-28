@@ -80,7 +80,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
           >
             <div className="flex flex-col gap-2">
               <input
-                className="rounded-lg border px-3 py-2 text-sm outline-none ring-2 ring-transparent focus:ring-1"
+                className="rounded-xl border px-3 py-2 text-sm outline-none ring-2 ring-transparent focus:ring-1"
                 style={{
                   backgroundColor: 'var(--arka-bg)',
                   borderColor: 'var(--arka-border)',
@@ -105,8 +105,8 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
               <div className="text-right">
                 <button
                   onClick={() => removeBlock(block.id)}
-                  className="rounded-lg p-1 text-slate-300 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
-                  style={{ backgroundColor: 'var(--arka-border)' }}
+                  className="rounded-xl p-1 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
+                  style={{ backgroundColor: 'var(--arka-border)', color: 'var(--arka-text)' }}
                   aria-label="Supprimer bloc"
                 >
                   <span aria-hidden>×</span>
@@ -119,7 +119,7 @@ export const PromptBuilder: React.FC<PromptBuilderProps> = ({
       <div className="mt-4">
         <button
           onClick={addBlock}
-          className="rounded-lg px-3 py-2 text-sm text-white"
+          className="rounded-xl px-3 py-2 text-sm text-white"
           style={{ background: 'var(--arka-grad-cta)' }}
         >
           Ajouter un bloc
