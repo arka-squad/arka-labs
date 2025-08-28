@@ -1,40 +1,82 @@
 'use client';
-import { useEffect, useState } from 'react';
 
-export type AgentEvent = {
-  id?: string;
-  ts?: string;
-  agent: string;
-  event: 'message' | 'ping' | 'error' | string;
-  title?: string;
-  summary?: string;
-  labels?: string[];
+
+import { useEffect, useRef, useState } from 'react';
+
+export const MAX_ITEMS = 500;
+
+export type AgentEventStatus = 'connected' | 'reconnecting' | 'error';
+
+export type AgentEvent<T = unknown> = {
+  id: number;
+  data: T;
 };
 
-export function useAgentEvents(agentId: string) {
-  const [events, setEvents] = useState<AgentEvent[]>([]);
+export function useAgentEvents<T = unknown>(agentId: string) {
+  const [events, setEvents] = useState<AgentEvent<T>[]>([]);
+  const [status, setStatus] = useState<AgentEventStatus>('reconnecting');
+  const [error, setError] = useState<string | null>(null);
+  const [errorId, setErrorId] = useState(0);
+  const queueRef = useRef<AgentEvent<T>[]>([]);
+  const idRef = useRef(0);
 
   useEffect(() => {
-    if (!agentId) return;
-    const src = new EventSource(`/api/agents/events?agent=${encodeURIComponent(agentId)}`);
-
-    src.onmessage = (e) => {
-      try {
-        const data = JSON.parse(e.data) as AgentEvent;
-        setEvents((prev) => [data, ...prev]);
-      } catch (err) {
-        console.error('Invalid event payload', err);
+    const queue = queueRef.current;
+    const flush = () => {
+      if (queue.length) {
+        setEvents((prev) => {
+          const next = prev.concat(queue);
+          if (next.length > MAX_ITEMS) {
+            next.splice(0, next.length - MAX_ITEMS);
+          }
+          return next;
+        });
+        queue.length = 0;
       }
     };
 
-    src.onerror = (e) => {
-      console.error('EventSource error', e);
+    const interval = window.setInterval(() => {
+      requestAnimationFrame(flush);
+    }, 50);
+
+    const es = new EventSource(`/api/agents/events?agent=${agentId}`);
+
+    es.onopen = () => {
+      setStatus('connected');
+    };
+
+    es.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data) as T;
+        queue.push({ id: idRef.current++, data });
+      } catch {
+        setError('Event parse error');
+        setErrorId((id) => id + 1);
+      }
+    };
+
+    es.onerror = () => {
+      if (es.readyState === EventSource.CLOSED) {
+        setStatus('error');
+      } else {
+        setStatus('reconnecting');
+      }
+      setError('Connection error');
+      setErrorId((id) => id + 1);
     };
 
     return () => {
-      src.close();
+      es.close();
+      clearInterval(interval);
     };
   }, [agentId]);
 
-  return events;
+  const clear = () => {
+    setEvents([]);
+    queueRef.current = [];
+  };
+
+  return { events, status, error, errorId, clear };
 }
+
+
