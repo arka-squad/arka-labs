@@ -1,8 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { withAuth } from '../../../lib/rbac';
 import { sql } from '../../../lib/db';
-import fs from 'fs';
-import path from 'path';
+import { storage } from '../../../lib/storage';
 
 export const runtime = 'nodejs';
 
@@ -62,9 +61,7 @@ export const POST = withAuth(['operator', 'owner'], async (req: NextRequest) => 
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const storageKey = `${Date.now()}-${file.name}`;
-  const uploads = path.join(process.cwd(), 'uploads');
-  await fs.promises.mkdir(uploads, { recursive: true });
-  await fs.promises.writeFile(path.join(uploads, storageKey), buffer);
+  await storage.putObject(storageKey, buffer, file.type);
   const project = (form.get('project') as string) || 'arka';
   const labels = form.getAll('labels').map(String).filter(Boolean);
   const tags = labels.length
