@@ -1,0 +1,7 @@
+{
+  "agentId": {
+    "type": "string",
+    "required": true,
+    "description": "Identifiant de l'agent à écouter"
+  }
+}
