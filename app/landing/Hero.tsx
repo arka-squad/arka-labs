@@ -90,7 +90,7 @@ export default function HeroLanding() {
             <h1 className="mt-8 text-white">
               {/* ligne 1 : “la puissance … équipes,” → “puissance” en extra-bold */}
               <span className="block leading-tight sm:text-[32px] md:text-[34px] lg:text-[36px]">
-                la <span className="font-extrabold">puissance</span> des grandes équipes,
+                la <span className="font-extrabold">puissance</span> des grandes équipes,{" "}
               </span>
               {/* ligne 2 : “entre les mains des petites” → gradient texte + taille un cran en dessous de la maquette finale */}
               <span
