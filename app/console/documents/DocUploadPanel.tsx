@@ -3,7 +3,13 @@ import { useState } from 'react';
 import { Dropzone } from '../../../apps/console/src/ui/docs/Dropzone';
 import { DocListItem } from '../../../apps/console/src/ui/docs/DocListItem';
 
-export type Doc = { id: number; name: string; size: number; tags: string[] };
+export type Doc = {
+  id: number;
+  name: string;
+  type: string;
+  size: number;
+  tags: string[];
+};
 
 export function DocUploadPanel({
   docs,
@@ -39,6 +45,8 @@ export function DocUploadPanel({
           <DocListItem
             key={d.id}
             name={d.name}
+            type={d.type}
+            size={d.size}
             tags={d.tags}
             onDelete={() => onDelete(d.id)}
           />

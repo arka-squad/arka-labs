@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { COLOR } from "../tokens";
+import { COLOR, RAD } from "../tokens";
 import { Dropzone } from "./Dropzone";
 import { DocListItem } from "./DocListItem";
 
@@ -72,8 +72,8 @@ export const DocUploadPanel: React.FC<{
       )}
       {docs.length > 0 && (
         <ul
-          className="overflow-hidden rounded-2xl border"
-          style={{ borderColor: COLOR.border }}
+          className="overflow-hidden border"
+          style={{ borderColor: COLOR.border, borderRadius: RAD.xxl }}
         >
           {docs.map((d) => (
             <DocListItem

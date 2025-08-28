@@ -7,12 +7,20 @@ export type ObsKpiCardProps = {
   gradient: string;
 };
 
-export const ObsKpiCard: React.FC<ObsKpiCardProps> = ({ label, value, unit, gradient }) => (
-  <div className="rounded-xl p-3 text-center text-white" style={{ background: gradient }}>
-    <div className="text-[10px]">{label}</div>
+export const ObsKpiCard: React.FC<ObsKpiCardProps> = ({
+  label,
+  value,
+  unit,
+  gradient,
+}) => (
+  <div
+    className="rounded-xl p-3 text-center"
+    style={{ background: gradient, color: "var(--arka-text)" }}
+  >
+    <div className="text-xs">{label}</div>
     <div className="text-base font-bold">
       {value}
-      <span className="ml-1 text-[10px] font-normal">{unit}</span>
+      <span className="ml-1 text-xs font-normal">{unit}</span>
     </div>
   </div>
 );

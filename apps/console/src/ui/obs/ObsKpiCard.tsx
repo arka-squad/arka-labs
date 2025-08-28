@@ -1,5 +1,5 @@
 import React from "react";
-import { GRADIENT } from "../tokens";
+import { COLOR, GRADIENT, RAD } from "../tokens";
 
 export type ObsKpiCardProps = {
   label: string;
@@ -8,12 +8,21 @@ export type ObsKpiCardProps = {
   gradient?: string;
 };
 
-export const ObsKpiCard: React.FC<ObsKpiCardProps> = ({ label, value, unit, gradient = GRADIENT }) => (
-  <div className="rounded-2xl p-5 text-white" style={{ background: gradient }}>
-    <div className="text-xs/4 opacity-90">{label}</div>
+export const ObsKpiCard: React.FC<ObsKpiCardProps> = ({
+  label,
+  value,
+  unit,
+  gradient = GRADIENT,
+}) => (
+  <div
+    className="p-5"
+    style={{ background: gradient, color: COLOR.text, borderRadius: RAD.xxl }}
+  >
+    <div className="text-xs opacity-90">{label}</div>
     <div className="mt-1 text-3xl font-bold">
       {value}
       <span className="ml-1 text-sm font-normal">{unit}</span>
     </div>
   </div>
 );
+
