@@ -1,0 +1,259 @@
+﻿📝 Rétrospective Sprint 1 — Lot M1 (Console multi-clients + RBAC + Webhooks + Health)
+1. Déroulé du Sprint & Informations clés
+* Objectif du lot : Mise en place de la console multi-clients avec authentification JWT, RBAC, endpoints API sécurisés, webhook GitHub et health-check.
+
+* Livrable attendu : Code Next.js + API handlers conformes au YAML contractuel, UI minimale (login + projects view), middleware RBAC + rate-limit + logging structuré.
+
+* Contraintes : pas de modification DB, pas de changement GitHub/Vercel.
+
+* Déroulé observé :
+
+   * Phase initiale : livrable Codex généré → incomplet (écarts sur validation stricte, ratelimit, codes retour webhook, logs non uniformes).
+
+   * Itération QA : identification des écarts → production d’un YAML corrigé v1.1.
+
+   * Implémentation Codex → encore divergences sur webhook (codes retour), secret JWT non fail-fast.
+
+   * Hotfix Pack v1.1a livré → conformité complète obtenue.
+
+      * Résultat :
+
+         * ✅ Tous les endpoints conformes au contrat YAML v1.1.
+
+         * ✅ Logs JSON uniformisés.
+
+         * ✅ Ratelimits adaptés (200 avec {status:ratelimited} pour health, 202 pour webhook).
+
+         * ✅ JWT fail-fast activé.
+
+         * 🔒 Sécurité renforcée : validation stricte des bodies, HMAC webhook vérifié, roles respectés.
+
+2. Post-mortem (Amélioration continue)
+Ce qui a bien fonctionné
+            * Réactivité de QA/PMO pour détecter les écarts rapidement.
+
+            * Hotfix Pack efficace, documenté et prêt à coller.
+
+            * Processus clair : YAML → Codex → QA → Correctif.
+
+            * Conformité atteinte en moins de 3 itérations.
+
+Ce qui n’a pas fonctionné / Points de friction
+               * Première version Codex trop permissive (validation faible, codes retour hors contrat).
+
+               * Manque de clarté initial sur contrat strict des codes retour (200/202/400/403 uniquement pour webhook).
+
+               * Gestion des secrets JWT non fail-fast au départ → risque masqué.
+
+               * Logs initiaux incomplets, rendant le suivi difficile.
+
+Actions d’amélioration
+                  * Fournir dès le départ un YAML contractuel strict (avec codes retour exhaustifs, règles de ratelimit/logging explicites).
+
+                  * Intégrer un pack de tests unitaires auto-générés (contrats JSON Schema + tests RBAC).
+
+                  * Introduire une checklist QA pré-Codex → éviter les écarts prévisibles (JWT secret, logs obligatoires, ratelimit codes).
+
+                  * Mettre en place un rapport d’écarts automatisé pour mesurer la conformité Codex vs YAML.
+
+3. Analyse & Métriques pilotables
+Axe
+	KPI recommandé
+	Seuil/objectif
+	Conformité contractuelle
+	% d’endpoints conformes YAML au 1er jet
+	>80%
+	Cycles correctifs
+	Nombre d’itérations QA avant PASS
+	≤2
+	Performance
+	P95 login / projects / health
+	≤2s / ≤2s / ≤1.5s
+	Sécurité
+	% de routes avec validation stricte (JSON Schema + RBAC)
+	100%
+	Logs
+	% de routes logguées avec champs obligatoires
+	100%
+	Ratelimits
+	Respect codes (200/202 vs 429)
+	100%
+	4. Synthèse
+                     * Lot M1 livré en conformité complète après correctifs (v1.1a).
+
+                     * La chaîne YAML → Codex → QA a démontré son efficacité mais nécessite un cadrage plus strict en amont.
+
+                     * Les prochaines itérations (M2, M3) doivent intégrer tests contractuels automatisés, YAML verrouillé, et KPIs de pilotage.
+
+                     * Globalement, le sprint est un succès, avec une montée en maturité de l’équipe QA/PMO et une meilleure robustesse du livrable.
+
+➡️ Prochaine étape : passer au Lot 2, en appliquant ces leçons pour limiter les écarts et réduire le cycle correctif.
+
+
+
+
+📝 Rétrospective Postmortem — Arka M2
+(M1 → M2, avec Taskforce corrective)
+________________
+
+
+🎯 Objectif de M2
+                        * Atteindre une console Arka branchée et présentable : observabilité, gestion documentaire, UX clean.
+
+                        * Initier la Landing marketing (Hero + piliers) en vue de la démonstration.
+
+________________
+
+
+✅ Ce qui a été livré
+Backend / API
+                           * TCK-M2-API-01 — API documents (CRUD + sécurité + OpenAPI).
+→ Upload sécurisé (max 20MB, MIME check), SQL index sur tags + created_at. ✅
+
+Observabilité (SSE & UI)
+                              * TCK-M2-OBS-01 — EventSource streaming (console branchée). ✅
+
+                              * HF-M2-UI-EventSource-Polish — bornage, statut connexion, toasts erreurs. ✅
+
+Gestion documentaire (console)
+                                 * TCK-M2-UX-03 — DocUploadPanel (drag&drop, suppression, Storybook). ✅
+
+                                 * TCK-M2-UX-04 — Vue “Documents” branchée API (upload+delete réels, logs UI, toasts feedback). ✅
+
+                                 * Polish UI tokens — refonte design system (COLOR, GRADIENT, RAD). ✅
+
+Observabilité (console KPIs)
+                                    * TCK-M2-UX-06 — Observabilité UI (KPI cards + table mock). ✅
+
+Landing / Marketing
+                                       * TCK-M2-UX-07 — Landing Hero + piliers (Efficacité, Sécurité, Clarté).
+→ Tagline fixée. Structure validée. Statut : prêt à implémenter.
+
+Nouveaux ajouts “Market Polish”
+                                          * Hero finalisé + PillarCards intégrées en responsive grid.
+
+                                          * Storybook Hero + PillarCard. ✅
+
+________________
+
+
+📌 État global en fin de M2
+                                             * Backend : solide, API doc sécurisée et branchée.
+
+                                             * Console : Observabilité live, Gestion documentaire OK, KPI mock, tokens harmonisés.
+
+                                             * Landing : cadrée (Hero validé) mais intégration encore en attente UX/UI.
+
+🚦 Conclusion officielle (Taskforce) : M2 validé sur le périmètre console, reste landing à finaliser.
+________________
+
+
+⚠️ Écarts et problèmes identifiés
+1. Niveau de livrable mal compris
+                                                * Codex a livré des briques UI (Storybook, composants) mais pas les pages/routage applicatif (Landing, Login, Console).
+
+                                                * Résultat : tickets livrés à 30%, voire 0% en valeur réelle.
+
+                                                * Décalage backlog vs implémentation → perte de 40% de valeur.
+
+2. Absence de traçabilité / logs UI
+                                                   * L’exigence d’instrumentation UI (console.info JSON) n’a pas été respectée.
+
+                                                   * Impossible pour QA d’évaluer l’usage.
+
+                                                   * Gate QA = FAIL.
+
+3. Gouvernance & RBAC manquants
+                                                      * RBAC UI attendu (viewer/operator/owner) absent.
+
+                                                      * PromptBlock readOnly livré mais non relié au système de rôles.
+
+4. Dette d’intégration / hotfix forcé
+                                                         * Intervention Taskforce (hors squad dev) pour corriger :
+
+                                                            * Routage pages (Landing, Login, Console + sous-pages).
+
+                                                            * Stub SSO (501).
+
+                                                            * Guards + logs UI JSON.
+
+                                                            * Correction hygiène TS + accessibilité.
+
+                                                               * 13h de travail manuel → ajout du format Codex-ready.
+
+5. Qualité globale insatisfaisante
+                                                                  * 40% de retours/rework.
+
+                                                                  * UI pas intégrée dans le DOM (simple vitrine Storybook).
+
+                                                                  * Performances/A11y non mesurables.
+
+                                                                  * CI inexistante (aucun test automatisé).
+
+________________
+
+
+📊 Analyse racine
+                                                                     1. Mauvais cadrage initial : backlog ambigu, pas de spec-integration.md imposé.
+
+                                                                     2. Manque de communication inter-GPT : chaque agent a validé son périmètre, sans orchestration commune.
+
+                                                                     3. Dette technique héritée : pas de CI/CD, RBAC encore partiel.
+
+________________
+
+
+🚦 Résultat final
+                                                                        * Console : utilisable (observabilité mock + docs branchés).
+
+                                                                        * Backend : robuste (API doc, SSE) mais observabilité partielle.
+
+                                                                        * UI : corrigée par hotfix → maintenant PASS QA, mais dette structurelle.
+
+                                                                        * Landing : design validé, intégration reportée.
+
+________________
+
+
+🔧 Axes d’amélioration (M3 →)
+A. Processus & gouvernance
+                                                                           * Format unique : tous les tickets = spec-integration.md.
+
+                                                                           * Définition claire du “Done” = page complète (routage, logs, RBAC visibles).
+
+                                                                           * Codex-ready standard imposé dès le jour 1.
+
+B. Technique & QA
+                                                                              * CI/CD minimal : lint, typecheck, build, tests unitaires.
+
+                                                                              * Instrumentation UI obligatoire : logs JSON dès M3.
+
+                                                                              * RBAC explicite dans la navigation (Sidebar/Topbar adaptatives).
+
+                                                                              * Perf/A11y mesurés automatiquement via Lighthouse CI + axe-core.
+
+C. Organisation & coordination GPT
+                                                                                 * AGP doit orchestrer les livrables avant validation.
+
+                                                                                 * QA intégré plus tôt (shift-left).
+
+                                                                                 * Assets UI standardisés pour éviter copier-coller manuel.
+
+________________
+
+
+🧭 Vulgarisation (non-tech)
+                                                                                    * En M2, Codex a construit des briques Lego (boutons, cartes) mais pas les pièces complètes (pages).
+
+                                                                                    * Nous avons dû assembler la maison en urgence → hotfix.
+
+                                                                                    * En M3, Codex doit livrer directement la maison prête à l’emploi, avec preuves de solidité (tests, perf, accessibilité).
+
+________________
+
+
+🏁 Conclusion
+M2 a mis en lumière les failles de gouvernance et de cadrage.
+Le format Codex-ready, imposé en urgence, devient la norme.
+M3 doit capitaliser sur cette base pour éviter tout retour à un chaos semblable.
+👉 Règle clé : pas de spec-integration.md, pas de ticket validé.
