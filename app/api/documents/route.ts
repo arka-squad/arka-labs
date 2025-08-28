@@ -4,6 +4,8 @@ import { sql } from '../../../lib/db';
 import fs from 'fs';
 import path from 'path';
 
+export const runtime = 'nodejs';
+
 const MAX_SIZE = 20 * 1024 * 1024;
 const ALLOWED = [
   'application/pdf',
@@ -17,13 +19,37 @@ const ALLOWED = [
 export const GET = withAuth(['viewer', 'operator', 'owner'], async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   const project = searchParams.get('project');
+  const q = searchParams.get('q');
+  const label = searchParams.get('label');
+  const page = Math.max(1, Number(searchParams.get('page') || '1'));
+  const pageSize = Math.min(Math.max(Number(searchParams.get('pageSize') || '25'), 1), 100);
+
+  const conditions: any[] = [];
+  if (project) conditions.push(sql`project_id = ${project}`);
+  if (q) conditions.push(sql`name ILIKE ${'%' + q + '%'}`);
+  if (label) conditions.push(sql`${label} = ANY(tags)`);
+  const where = conditions.length ? sql`where ${sql.join(conditions, sql` and `)}` : sql``;
+  const offset = (page - 1) * pageSize;
+
   const { rows } = await sql`
     select id, project_id, name, mime, size, storage_key, tags, created_at
     from documents
-    ${project ? sql`where project_id = ${project}` : sql``}
+    ${where}
     order by created_at desc
+    limit ${pageSize} offset ${offset}
   `;
-  return NextResponse.json(rows);
+  const { rows: countRows } = await sql`
+    select count(*)::int as count
+    from documents
+    ${where}
+  `;
+
+  return NextResponse.json({
+    items: rows,
+    total: countRows[0].count,
+    page,
+    pageSize,
+  });
 });
 
 export const POST = withAuth(['operator', 'owner'], async (req: NextRequest) => {
@@ -40,9 +66,13 @@ export const POST = withAuth(['operator', 'owner'], async (req: NextRequest) => 
   await fs.promises.mkdir(uploads, { recursive: true });
   await fs.promises.writeFile(path.join(uploads, storageKey), buffer);
   const project = (form.get('project') as string) || 'arka';
+  const labels = form.getAll('labels').map(String).filter(Boolean);
+  const tags = labels.length
+    ? sql`ARRAY[${sql.join(labels.map((l) => sql`${l}`), sql`,`)}]`
+    : sql`ARRAY[]::text[]`;
   const { rows } = await sql`
-    insert into documents (project_id, name, mime, size, storage_key)
-    values (${project}, ${file.name}, ${file.type}, ${file.size}, ${storageKey})
+    insert into documents (project_id, name, mime, size, storage_key, tags)
+    values (${project}, ${file.name}, ${file.type}, ${file.size}, ${storageKey}, ${tags})
     returning id, project_id, name, mime, size, storage_key, tags, created_at
   `;
   return NextResponse.json(rows[0], { status: 201 });
