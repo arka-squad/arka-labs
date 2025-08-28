@@ -1,5 +1,6 @@
 # AgentEventsPanel
 
+
 Displays server-sent events for a given agent. Events are consumed from
 `/api/agents/events?agent=<id>` and appended in real time.
 

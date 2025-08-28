@@ -1,5 +1,6 @@
 'use client';
 
+
 import { useEffect, useRef, useState } from 'react';
 
 export const MAX_ITEMS = 500;
@@ -77,4 +78,5 @@ export function useAgentEvents<T = unknown>(agentId: string) {
 
   return { events, status, error, errorId, clear };
 }
+
 
