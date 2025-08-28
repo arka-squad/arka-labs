@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build:css": "tailwindcss -i ./app/globals.css -o ./.next/tailwind.css",
+    "build": "npm run build:css && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
@@ -34,6 +35,9 @@
     "eslint-config-next": "14.2.3",
     "prettier": "^3.0.0",
     "@redocly/cli": "^1.16.0",
-    "ajv": "^8.12.0"
+    "ajv": "^8.12.0",
+    "tailwindcss": "^3.4.4",
+    "postcss": "^8.4.31",
+    "autoprefixer": "^10.4.16"
   }
 }
