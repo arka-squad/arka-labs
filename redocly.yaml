@@ -1,0 +1,9 @@
+apis:
+  arka:
+    root: ./arka-meta/contracts/openapi.yaml
+lint:
+  extends:
+    - recommended
+resolve:
+  http:
+    disable: true

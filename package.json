@@ -9,7 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "npm run lint && npm run typecheck",
-    "api:lint": "redocly lint arka-meta/contracts/openapi.yaml"
+    "api:lint": "npx --no-install @redocly/cli lint --config redocly.yaml arka"
 
   },
   "dependencies": {

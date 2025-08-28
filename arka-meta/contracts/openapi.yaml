@@ -73,14 +73,37 @@ paths:
           in: query
           required: false
           schema: { type: string, example: arka }
+        - name: q
+          in: query
+          required: false
+          schema: { type: string }
+        - name: label
+          in: query
+          required: false
+          schema: { type: string }
+        - name: page
+          in: query
+          required: false
+          schema: { type: integer, default: 1 }
+        - name: pageSize
+          in: query
+          required: false
+          schema: { type: integer, default: 25 }
       responses:
         '200':
           description: Documents
           content:
             application/json:
               schema:
-                type: array
-                items: { $ref: '#/components/schemas/Document' }
+                type: object
+                required: [items,total,page,pageSize]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Document' }
+                  total: { type: integer }
+                  page: { type: integer }
+                  pageSize: { type: integer }
         '401': { $ref: '#/components/responses/Unauthorized' }
     post:
       summary: Upload a document
@@ -100,6 +123,9 @@ paths:
                 project:
                   type: string
                   example: arka
+                labels:
+                  type: array
+                  items: { type: string }
       responses:
         '201':
           description: Created
@@ -111,6 +137,33 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
 
   /api/documents/{id}:
+    get:
+      summary: Get a document
+      operationId: getDocument
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: File stream
+          headers:
+            Content-Type:
+              description: MIME type of the document
+              schema: { type: string }
+            Content-Disposition:
+              description: attachment; filename="<name>"
+              schema: { type: string }
+            Cache-Control:
+              description: no-store
+              schema: { type: string }
+          content:
+            application/octet-stream: {}
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
     delete:
       summary: Delete a document
       operationId: deleteDocument
@@ -264,7 +317,7 @@ components:
       type: object
       properties:
         id: { type: integer }
-        project_id: { type: string }
+        project_id: { type: string, example: arka }
         name: { type: string }
         mime: { type: string }
         size: { type: integer, minimum: 0 }
@@ -273,7 +326,7 @@ components:
           type: array
           items: { type: string }
         created_at: { type: string, format: date-time }
-      required: [id, name, mime, size, created_at]
+      required: [id, project_id, name, mime, size, storage_key, created_at]
 
     AgentEvent:
       type: object
