@@ -36,8 +36,8 @@ export default function ArkaR1Console(){
           <div className="grid gap-3">
             <Dropzone onFiles={()=>{}} />
             <ul className="rounded-xl border" style={{ borderColor: '#1F2A33' }}>
-              <DocListItem name="Plan Directeur — Arka R1.pdf" tags={["cadre","AGP"]} />
-              <DocListItem name="Spécifications Fonctionnelles — R1.docx" tags={["specs","PMO"]} />
+              <DocListItem name="Plan Directeur — Arka R1.pdf" type="application/pdf" size={120*1024} tags={["cadre","AGP"]} />
+              <DocListItem name="Spécifications Fonctionnelles — R1.docx" type="application/vnd.openxmlformats-officedocument.wordprocessingml.document" size={300*1024} tags={["specs","PMO"]} />
             </ul>
           </div>
 

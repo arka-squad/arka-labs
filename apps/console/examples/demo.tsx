@@ -9,7 +9,7 @@ export default function Demo() {
         <ChatMessage role="assistant" content="Bonjour" />
         <PromptBlock onSubmit={(text) => console.log(text)} />
         <Dropzone onFiles={(files) => console.log(files)} />
-        <DocListItem name="spec.pdf" size={1234} />
+        <DocListItem name="spec.pdf" type="application/pdf" size={1234} tags={["demo"]} />
         <ObsChart data={[1,2,3]} />
         <Button variant="primary" onClick={() => alert('ok')}>Envoyer</Button>
       </Card>
