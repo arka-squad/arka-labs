@@ -41,13 +41,13 @@ export default function ArkaR1Console(){
             </ul>
           </div>
 
-          {/* Observabilité */}
-          <div className="grid gap-4 sm:grid-cols-3">
-            <ObsKpiCard label="TTFT chat" value="680 ms" />
-            <ObsKpiCard label="RTT voix" value="1450 ms" gradient="linear-gradient(135deg,#F25636 0%,#E0026D 100%)" />
-            <ObsKpiCard label="% erreurs" value="1.2 %" gradient="linear-gradient(135deg,#E0026D 0%,#E0026D 100%)" />
-          </div>
-          <ObsTable rows={rows} />
+            {/* Observabilité */}
+            <div className="grid gap-4 sm:grid-cols-3">
+              <ObsKpiCard label="TTFT chat" value={680} unit="ms" />
+              <ObsKpiCard label="RTT voix" value={1450} unit="ms" gradient="linear-gradient(135deg,#F25636 0%,#E0026D 100%)" />
+              <ObsKpiCard label="% erreurs" value={1.2} unit="%" gradient="linear-gradient(135deg,#E0026D 0%,#E0026D 100%)" />
+            </div>
+            <ObsTable rows={rows} />
         </main>
       </div>
     </div>
