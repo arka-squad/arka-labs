@@ -1,0 +1,49 @@
+'use client';
+import { useState } from 'react';
+import { Dropzone } from '../../../apps/console/src/ui/docs/Dropzone';
+import { DocListItem } from '../../../apps/console/src/ui/docs/DocListItem';
+
+export type Doc = { id: number; name: string; size: number; tags: string[] };
+
+export function DocUploadPanel({
+  docs,
+  onUpload,
+  onDelete,
+  state,
+}: {
+  docs: Doc[];
+  onUpload: (files: File[], tags: string[]) => void;
+  onDelete: (id: number) => void;
+  state: 'idle' | 'drag' | 'error';
+}) {
+  const [tagInput, setTagInput] = useState('');
+  function handleFiles(files: FileList) {
+    const tags = tagInput
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean);
+    onUpload(Array.from(files), tags);
+    setTagInput('');
+  }
+  return (
+    <div className="space-y-4">
+      <Dropzone onFiles={handleFiles} state={state} />
+      <input
+        value={tagInput}
+        onChange={(e) => setTagInput(e.target.value)}
+        placeholder="Tags séparés par des virgules"
+        className="w-full rounded-lg border p-2 text-sm text-black"
+      />
+      <ul className="rounded-xl border" style={{ borderColor: '#1F2A33' }}>
+        {docs.map((d) => (
+          <DocListItem
+            key={d.id}
+            name={d.name}
+            tags={d.tags}
+            onDelete={() => onDelete(d.id)}
+          />
+        ))}
+      </ul>
+    </div>
+  );
+}

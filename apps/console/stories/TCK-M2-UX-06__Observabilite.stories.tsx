@@ -1,12 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { ObsKpiCard } from "../src/ui/obs/ObsKpiCard";
 import { ObsTable, type ObsRow } from "../src/ui/obs/ObsTable";
+
 
 export default { title: "Observabilité/MVP" } as Meta;
 
 export const KPISet: StoryObj = {
   render: () => (
     <div className="grid gap-4 sm:grid-cols-3">
+
       <ObsKpiCard label="TTFT chat" value={680} unit="ms" />
       <ObsKpiCard
         label="RTT voix"
@@ -20,6 +23,7 @@ export const KPISet: StoryObj = {
         unit="%"
         gradient="linear-gradient(135deg,#E0026D 0%,#E0026D 100%)"
       />
+
     </div>
   ),
 };
@@ -40,3 +44,4 @@ const rowsM2: ObsRow[] = [
 
 export const TableLotM1: StoryObj = { render: () => <ObsTable rows={rowsM1} /> };
 export const TableLotM2: StoryObj = { render: () => <ObsTable rows={rowsM2} /> };
+

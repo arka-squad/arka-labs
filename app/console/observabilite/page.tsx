@@ -16,6 +16,7 @@ const data: Record<'M1' | 'M2', Record<'S1' | 'S2', ObsRow[]>> = {
       { axe: 'Ratelimits', kpi: 'Respect codes 200/202 vs 429', objectif: '100%' },
     ],
     S2: [
+
       { axe: 'Refactoring', kpi: 'Dette résorbée', objectif: '80%' },
       { axe: 'Qualité', kpi: 'Couverture tests', objectif: '90%' },
     ],
@@ -25,6 +26,7 @@ const data: Record<'M1' | 'M2', Record<'S1' | 'S2', ObsRow[]>> = {
       { axe: 'Performance', kpi: 'P95 génération', objectif: '<1s' },
       { axe: 'Stabilité', kpi: 'Incidents majeurs', objectif: '0' },
     ],
+
     S2: [],
   },
 };
@@ -81,7 +83,9 @@ export default function ObservabilitePage() {
           <ObsKpiCard key={k.label} {...k} />
         ))}
       </div>
+
       <ObsTable rows={rows} />
+
     </div>
   );
 }
