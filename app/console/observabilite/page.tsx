@@ -5,21 +5,31 @@ import { ObsTable, ObsRow } from '../../../src/ui/ObsTable';
 import { uiLog } from '../../../lib/ui-log';
 import { useRole } from '../../../src/role-context';
 
-const data: Record<string, ObsRow[]> = {
-  M1: [
-    { axe: 'Conformité contractuelle', kpi: '% endpoints YAML 1er jet', objectif: '>80%' },
-    { axe: 'Cycles correctifs', kpi: 'Itérations QA avant PASS', objectif: '≤2' },
-    { axe: 'Performance', kpi: 'P95 login/projects/health', objectif: '≤2s / ≤2s / ≤1.5s' },
-    { axe: 'Sécurité', kpi: '% routes JSON Schema + RBAC', objectif: '100%' },
-    { axe: 'Logs', kpi: '% routes logguées', objectif: '100%' },
-    { axe: 'Ratelimits', kpi: 'Respect codes 200/202 vs 429', objectif: '100%' },
-  ],
-  M2: [],
+const data: Record<'M1' | 'M2', Record<'S1' | 'S2', ObsRow[]>> = {
+  M1: {
+    S1: [
+      { axe: 'Conformité contractuelle', kpi: '% endpoints YAML 1er jet', objectif: '>80%' },
+      { axe: 'Cycles correctifs', kpi: 'Itérations QA avant PASS', objectif: '≤2' },
+      { axe: 'Performance', kpi: 'P95 login/projects/health', objectif: '≤2s / ≤2s / ≤1.5s' },
+      { axe: 'Sécurité', kpi: '% routes JSON Schema + RBAC', objectif: '100%' },
+      { axe: 'Logs', kpi: '% routes logguées', objectif: '100%' },
+      { axe: 'Ratelimits', kpi: 'Respect codes 200/202 vs 429', objectif: '100%' },
+    ],
+    S2: [
+      { axe: 'Conformité contractuelle', kpi: '% endpoints YAML 1er jet', objectif: '>90%' },
+      { axe: 'Cycles correctifs', kpi: 'Itérations QA avant PASS', objectif: '≤2' },
+      { axe: 'Performance', kpi: 'P95 login/projects/health', objectif: '≤1.5s / ≤1.5s / ≤1s' },
+    ],
+  },
+  M2: {
+    S1: [],
+    S2: [],
+  },
 };
 
 export default function ObservabilitePage() {
   const [lot, setLot] = useState<'M1' | 'M2'>('M1');
-  const [sprint, setSprint] = useState('S1');
+  const [sprint, setSprint] = useState<'S1' | 'S2'>('S1');
   const { role } = useRole();
   useEffect(() => {
     uiLog('mount', { role });
@@ -42,7 +52,7 @@ export default function ObservabilitePage() {
 
           <select
             value={lot}
-            onChange={(e) => setLot(e.target.value as any)}
+            onChange={(e) => setLot(e.target.value as 'M1' | 'M2')}
             className="ml-2 rounded-md bg-slate-800 px-2 py-1 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
           >
 
@@ -55,7 +65,7 @@ export default function ObservabilitePage() {
 
           <select
             value={sprint}
-            onChange={(e) => setSprint(e.target.value)}
+            onChange={(e) => setSprint(e.target.value as 'S1' | 'S2')}
             className="ml-2 rounded-md bg-slate-800 px-2 py-1 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
           >
 
@@ -69,7 +79,7 @@ export default function ObservabilitePage() {
           <KpiMiniCard key={k.label} {...k} />
         ))}
       </div>
-      <ObsTable rows={data[lot]} />
+      <ObsTable rows={data[lot][sprint]} />
     </div>
   );
 }
