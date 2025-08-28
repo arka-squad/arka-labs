@@ -48,6 +48,7 @@ export function DocUploadPanel({
             type={d.type}
             size={d.size}
             tags={d.tags}
+            href={`/api/documents/${d.id}`}
             onDelete={() => onDelete(d.id)}
           />
         ))}

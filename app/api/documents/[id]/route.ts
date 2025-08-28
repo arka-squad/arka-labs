@@ -1,8 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { withAuth } from '../../../../lib/rbac';
 import { sql } from '../../../../lib/db';
-import fs from 'fs';
-import path from 'path';
+import { storage } from '../../../../lib/storage';
 
 export const runtime = 'nodejs';
 
@@ -14,18 +13,10 @@ export const GET = withAuth(
     if (rows.length === 0) {
       return NextResponse.json({ error: 'not found' }, { status: 404 });
     }
-    const { name, mime, storage_key } = rows[0];
-    const uploads = path.join(process.cwd(), 'uploads');
-    const filePath = path.join(uploads, storage_key);
+    const { storage_key } = rows[0];
     try {
-      const stream = fs.createReadStream(filePath);
-      return new NextResponse(stream as any, {
-        headers: {
-          'Content-Type': mime,
-          'Content-Disposition': `attachment; filename="${name}"`,
-          'Cache-Control': 'no-store',
-        },
-      });
+      const url = await storage.getObjectURL(storage_key);
+      return NextResponse.redirect(url);
     } catch {
       return NextResponse.json({ error: 'not found' }, { status: 404 });
     }
@@ -40,9 +31,8 @@ export const DELETE = withAuth(
     if (rows.length === 0) {
       return NextResponse.json({ error: 'not found' }, { status: 404 });
     }
-    const uploads = path.join(process.cwd(), 'uploads');
     try {
-      await fs.promises.unlink(path.join(uploads, rows[0].storage_key));
+      await storage.deleteObject(rows[0].storage_key);
     } catch {
       /* ignore */
     }
