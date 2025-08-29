@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "title": { "type": "string" },
+    "value": { "type": "string" },
+    "trigger": { "type": "string" }
+  },
+  "required": ["title", "value"],
+  "additionalProperties": false
+}

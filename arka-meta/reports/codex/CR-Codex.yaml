@@ -1,4 +1,5 @@
 Codex-Delivery-Report:
+
   ticket_id: TCK-006-01-FRONT,TCK-006-02-BACK
   lot: M3
   version: R1-M3 v1.1
@@ -14,6 +15,7 @@ Codex-Delivery-Report:
     - app/api/metrics/runs/route.ts
     - tests/metrics.test.ts
     - tsconfig.tests.json
+
 
   tests_local:
     passed: true
@@ -32,6 +34,7 @@ Codex-Delivery-Report:
     logs_trace_id: true
 
   evidence:
+
     - "lighthouse_console.pdf"
     - "screenshot_kpis.png"
     - "screenshot_runs_table_page1.png"
@@ -42,3 +45,4 @@ Codex-Delivery-Report:
 
   next_step: "QA vérifie preuves + relaye AGP"
   ts: 2025-08-29T07:48Z
+
