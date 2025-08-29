@@ -1,22 +1,25 @@
 Codex-Delivery-Report:
-  ticket_id: TCK-004-01-FRONT
+
+  ticket_id: TCK-004-02-BACK
   lot: M3
   version: R1-M3 v1.1
-  repo: arka-console
-  branch: feature/TCK-004-01-FRONT
-  commit: 62a5a319d967bccb9301c4b862ea240c955f6ff4
+  repo: arka-backend
+  branch: feature/TCK-004-02-BACK
+  commit: 4cccac19fe3c93358cbb5e007a9233d3eed79278
 
   delivered_components:
-    - "app/console/prompt-builder/page.tsx"
-    - "app/console/prompt-builder/BlockCard.tsx"
-    - "app/console/prompt-builder/BlockForm.tsx"
-    - "app/console/prompt-builder/BadgeVersioned.tsx"
-    - "app/console/prompt-builder/RBACGuard.tsx"
     - "app/api/prompt-blocks/route.ts"
-    - "tests/prompt-builder-rbac.test.ts"
-    - "tsconfig.app.json"
-    - "tsconfig.tests.json"
-    - "package.json"
+    - "app/api/prompt-blocks/[id]/route.ts"
+    - "app/api/prompt-blocks/schema.ts"
+    - "app/api/prompt-blocks/versioning.ts"
+    - "arka-meta/contracts/json-schema/PromptBlockInput.schema.json"
+    - "arka-meta/contracts/json-schema/MessageInput.schema.json"
+    - "arka-meta/contracts/openapi.yaml"
+    - "sql/003_prompt_blocks.sql"
+    - "tests/prompt-block-schema.test.js"
+    - "tests/prompt-block-versioning.test.js"
+    - "tests/prompt-blocks-rbac.e2e.test.js"
+
 
   tests_local:
     passed: true
@@ -35,12 +38,12 @@ Codex-Delivery-Report:
     logs_trace_id: true
 
   evidence:
-    - "screenshot_prompt_builder.png"
-    - "logs_rbac.json"
-    - "test_output.txt"
 
-  remarks:
-    - "Tests compiled to JS and executed without ts-node"
+    - "logs_prompt_blocks.json"
+    - "tests/prompt-blocks-rbac.e2e.log"
+
+  remarks: []
 
   next_step: "QA vérifie preuves + relaye AGP"
-  ts: 2025-08-29T08:25Z
+  ts: 2025-08-29T07:50Z
+

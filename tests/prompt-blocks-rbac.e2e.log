@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: PromptBlockInput schema accepts valid payload
+ok 1 - PromptBlockInput schema accepts valid payload
+  ---
+  duration_ms: 2.425448
+  ...
+# Subtest: PromptBlockInput schema rejects unknown field
+ok 2 - PromptBlockInput schema rejects unknown field
+  ---
+  duration_ms: 0.438014
+  ...
+# Subtest: viewer cannot write
+ok 3 - viewer cannot write
+  ---
+  duration_ms: 2.964659
+  ...
+# Subtest: operator keeps version
+ok 4 - operator keeps version
+  ---
+  duration_ms: 0.449947
+  ...
+# Subtest: owner increments version
+ok 5 - owner increments version
+  ---
+  duration_ms: 0.34164
+  ...
+# {"ts":"2025-08-29T08:25:39.388Z","level":"info","msg":"prompt_blocks_update","route":"/api/prompt-blocks/b1","status":200,"duration_ms":3,"trace_id":"059eba85-b877-4cda-ba7e-c3f0705ccda8"}
+# {"ts":"2025-08-29T08:25:39.392Z","level":"info","msg":"prompt_blocks_update","route":"/api/prompt-blocks/b1","status":200,"duration_ms":0,"trace_id":"trc_test"}
+# Subtest: viewer cannot POST
+ok 6 - viewer cannot POST
+  ---
+  duration_ms: 14.6223
+  ...
+# Subtest: operator PATCH does not increment version
+ok 7 - operator PATCH does not increment version
+  ---
+  duration_ms: 7.621795
+  ...
+# Subtest: owner PATCH increments version and saves snapshot
+ok 8 - owner PATCH increments version and saves snapshot
+  ---
+  duration_ms: 3.622567
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1161.599987

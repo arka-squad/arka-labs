@@ -1,0 +1,4 @@
+{"event":"api.prompt_blocks.post","role":"owner","action":"create","block_id":"b1","version_before":null,"version_after":1,"trace_id":"trc_test","ts":"2025-08-29T15:00:00Z"}
+{"event":"api.prompt_blocks.patch","role":"owner","action":"version++","block_id":"b1","version_before":1,"version_after":2,"trace_id":"trc_test","ts":"2025-08-29T15:01:00Z"}
+{"event":"api.prompt_blocks.patch","role":"operator","action":"update","block_id":"b1","version_before":2,"version_after":2,"trace_id":"trc_op","ts":"2025-08-29T15:02:00Z"}
+{"event":"api.prompt_blocks.post","role":"viewer","action":"forbidden","block_id":null,"status":403,"trace_id":"trc_view","ts":"2025-08-29T15:03:00Z"}
