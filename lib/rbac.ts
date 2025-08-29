@@ -9,11 +9,12 @@ export function withAuth(
     if (allowed.includes('public') || allowed.includes('github-webhook')) {
       return handler(req, null, context);
     }
-    const auth = req.headers.get('authorization');
-    if (!auth || !auth.startsWith('Bearer ')) {
+    const cookieTok = req.cookies.get('arka_auth')?.value || null;
+    const hdr = req.headers.get('authorization');
+    const token = hdr?.startsWith('Bearer ') ? hdr.slice(7) : cookieTok;
+    if (!token) {
       return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
     }
-    const token = auth.slice(7);
     const user = verifyToken(token);
     if (!user || !allowed.includes(user.role)) {
       return NextResponse.json({ error: 'forbidden' }, { status: 403 });
