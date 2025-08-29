@@ -27,7 +27,7 @@ function LayoutShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen text-white" style={{ backgroundColor: 'var(--arka-bg)' }}>
-      <aside className="w-48 p-4 space-y-2" style={{ backgroundColor: 'var(--arka-card)' }}>
+      <aside className="w-48 flex-shrink-0 overflow-y-auto p-4 space-y-2" style={{ backgroundColor: 'var(--arka-card)' }}>
 
         {nav.map((item) => (
           <NavItem
