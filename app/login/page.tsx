@@ -17,20 +17,34 @@ export default function Page() {
     uiLog('mount', { role });
     const saved = localStorage.getItem('remember-email');
     if (saved) setEmail(saved);
-  }, [role]);
+    const hasToken =
+      localStorage.getItem('token') || document.cookie.includes('arka_auth=');
+    if (hasToken) router.replace('/projects');
+  }, [role, router]);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
-    await new Promise((r) => setTimeout(r, 300));
-    const status = email && password ? (email === 'demo@arka' && password === 'demo' ? 200 : 401) : 400;
-    if (status === 200) {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        uiLog('login_fail', { status: res.status, role });
+        setError(res.status === 401 ? 'Identifiants invalides' : 'Requête incorrecte');
+        return;
+      }
+      const { token } = await res.json();
       if (remember) localStorage.setItem('remember-email', email);
+      localStorage.setItem('token', token);
       uiLog('login_success', { role });
-      router.push('/console');
-    } else {
-      uiLog('login_fail', { status, role });
-      setError(status === 401 ? 'Identifiants invalides' : 'Requête incorrecte');
+      router.push('/projects');
+    } catch {
+      uiLog('login_fail', { status: 500, role });
+      setError('Erreur réseau');
     }
   }
 

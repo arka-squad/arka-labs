@@ -60,7 +60,7 @@ export default function ArkaLanding() {
         </nav>
         <div className="flex items-center gap-2">
           <a
-            href="#login"
+            href="/login"
             className={`rounded-full px-4 py-2 text-sm text-slate-200 ring-1 ${TOKENS.ringSoft}`}
           >
             Se connecter
@@ -69,8 +69,7 @@ export default function ArkaLanding() {
             className="rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg"
             style={{ background: TOKENS.gradCTA }}
             onClick={() => {
-              const hasCookie = document.cookie.includes('arka_auth=');
-              router.push(hasCookie ? '/console' : '/login');
+              router.push('/projects');
             }}
           >
             Ouvrir la console

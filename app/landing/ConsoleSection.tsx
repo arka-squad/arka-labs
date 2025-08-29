@@ -33,7 +33,7 @@ export default function ConsoleSection() {
           </p>
           <button
             className={`mt-6 rounded-full px-5 py-3 text-sm text-slate-200 ring-1 ${TOKENS.ringSoft} hover:ring-slate-500`}
-            onClick={() => router.push("/console")}
+            onClick={() => router.push("/projects")}
           >
             Voir la console
           </button>
