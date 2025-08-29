@@ -1,0 +1,42 @@
+Codex-Delivery-Report:
+  ticket_id: TCK-005-01-BACK
+  lot: M3
+  version: R1-M3 v1.1
+  repo: arka-backend
+  branch: work
+  commit: 7ccba1bc922122b673e620a461fb2b4531276e0e
+
+  delivered_components:
+    - "app/api/webhook/github/route.ts"
+    - "lib/hmac.ts"
+    - "sql/003_webhook_deliveries.sql"
+    - "tests/webhook-hmac.test.ts"
+    - "tests/webhook-route.test.ts"
+    - "arka-meta/contracts/openapi.yaml"
+
+  tests_local:
+    passed: true
+    coverage:
+      lines: 0
+      branches: 0
+
+  perf_local:
+    chat_ttft_ms_p95: 0
+    voice_rtt_ms_p95: 0
+    api_latency_ms_p95: 0
+
+  security_local:
+    hmac: true
+    idempotence: true
+    logs_trace_id: true
+
+  evidence:
+    - "arka-meta/reports/logs_webhooks.json"
+    - "arka-meta/reports/test_output.txt"
+    - "arka-meta/reports/openapi_diff.txt"
+
+  remarks:
+    - ""
+
+  next_step: "QA vérifie preuves + relaye AGP"
+  ts: 2025-08-29T16:45Z

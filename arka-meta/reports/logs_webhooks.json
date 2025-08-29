@@ -1,0 +1,6 @@
+[
+  {"ts":"2025-08-29T07:50:00Z","delivery_id":"d-nohmac","event":"issues","code":403,"status":"missing_hmac","trace_id":"t-nohmac"},
+  {"ts":"2025-08-29T07:51:00Z","delivery_id":"d-async","event":"workflow_run","code":202,"status":"queued","trace_id":"t-async"},
+  {"ts":"2025-08-29T07:52:00Z","delivery_id":"dup1","event":"issues","code":202,"status":"duplicate","trace_id":"t-dup"},
+  {"ts":"2025-08-29T07:53:00Z","delivery_id":"d-sync","event":"issues","code":200,"status":"processed","trace_id":"t-sync"}
+]
