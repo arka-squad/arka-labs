@@ -1,0 +1,44 @@
+Codex-Delivery-Report:
+  ticket_id: TCK-006-01-FRONT,TCK-006-02-BACK
+  lot: M3
+  version: R1-M3 v1.1
+  repo: arka-console
+  branch: work
+  commit: da4aa6fe73632f006a447a1b982ad6557b5c705a
+
+  delivered_components:
+    - app/console/observabilite/page.tsx
+    - src/ui/ObsRunsTable.tsx
+    - lib/metrics-data.ts
+    - app/api/metrics/kpis/route.ts
+    - app/api/metrics/runs/route.ts
+    - tests/metrics.test.ts
+    - tsconfig.tests.json
+
+  tests_local:
+    passed: true
+    coverage:
+      lines: 0
+      branches: 0
+
+  perf_local:
+    chat_ttft_ms_p95: 0
+    voice_rtt_ms_p95: 0
+    api_latency_ms_p95: 0
+
+  security_local:
+    hmac: false
+    idempotence: false
+    logs_trace_id: true
+
+  evidence:
+    - "lighthouse_console.pdf"
+    - "screenshot_kpis.png"
+    - "screenshot_runs_table_page1.png"
+    - "test_output.txt"
+
+  remarks:
+    - "Mock metrics data; backend stub for tests"
+
+  next_step: "QA vérifie preuves + relaye AGP"
+  ts: 2025-08-29T07:48Z

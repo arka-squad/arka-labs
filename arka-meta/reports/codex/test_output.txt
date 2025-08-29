@@ -1,0 +1,47 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> arka-console@0.1.0 test
+> npm run test:pre && npm run test:node
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> arka-console@0.1.0 test:pre
+> tsc -p tsconfig.tests.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> arka-console@0.1.0 test:node
+> node --test dist-tests/tests/metrics.test.js
+
+TAP version 13
+# {"event":"api.metrics.kpis","trace_id":"c47e6fc9-632c-4f68-bfcd-5dea3c6a2c0a","lot":null,"sprint":null,"ts":"2025-08-29T08:29:08.637Z"}
+# {"event":"api.metrics.runs","trace_id":"e252c646-6afa-4745-9c2c-655166735f4d","lot":null,"sprint":null,"page":1,"limit":20,"ts":"2025-08-29T08:29:08.646Z"}
+# Subtest: p95 computes 95th percentile with 1 decimal rounding
+ok 1 - p95 computes 95th percentile with 1 decimal rounding
+  ---
+  duration_ms: 1.799507
+  ...
+# Subtest: avg computes mean with 1 decimal rounding
+ok 2 - avg computes mean with 1 decimal rounding
+  ---
+  duration_ms: 0.299595
+  ...
+# Subtest: GET /api/metrics/kpis returns 1 decimal values
+ok 3 - GET /api/metrics/kpis returns 1 decimal values
+  ---
+  duration_ms: 95.172402
+  ...
+# Subtest: GET /api/metrics/runs returns 20 results by default
+ok 4 - GET /api/metrics/runs returns 20 results by default
+  ---
+  duration_ms: 4.121133
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 235.265138
