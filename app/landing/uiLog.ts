@@ -1,3 +1,7 @@
+
+"use client";
+
+
 export type UiLogFields = Record<string, any>;
 
 export function uiLog(event: string, fields: UiLogFields = {}) {
