@@ -2,6 +2,7 @@
 'use client';
 
 import type { SVGProps } from 'react';
+import { useRouter } from 'next/navigation';
 
 function ArrowRight(props: SVGProps<SVGSVGElement>) {
   return (
@@ -37,6 +38,7 @@ const ASSETS = {
 };
 
 export default function ArkaLanding() {
+  const router = useRouter();
   return (
     <div
       className="min-h-screen text-white font-[Poppins]"
@@ -66,6 +68,10 @@ export default function ArkaLanding() {
           <button
             className="rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg"
             style={{ background: TOKENS.gradCTA }}
+            onClick={() => {
+              const hasCookie = document.cookie.includes('arka_auth=');
+              router.push(hasCookie ? '/console' : '/login');
+            }}
           >
             Ouvrir la console
           </button>
