@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { uiLog } from '../../../lib/ui-log';
 import { useRole } from '../../../src/role-context';
 import { DocUploadPanel, Doc } from './DocUploadPanel';
+import { generateTraceId, TRACE_HEADER } from '../../../lib/trace';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 const ALLOWED = [
@@ -31,19 +32,23 @@ export default function DocumentsPage() {
       const start = performance.now();
       try {
         setLoading(true);
-        const res = await fetch('/api/documents');
+        const trace_id = generateTraceId();
+        const res = await fetch('/api/documents', { headers: { [TRACE_HEADER]: trace_id } });
         const duration_ms = Math.round(performance.now() - start);
-        uiLog('docs_fetch', { status: res.status, duration_ms, role });
+        uiLog('docs_fetch', { status: res.status, duration_ms, role, trace_id });
         if (!res.ok) throw new Error('fail');
         const data = await res.json();
         setDocs(data.items || []);
-      } catch {
+      } catch (e) {
         setZoneState('error');
         notify('Erreur lors du chargement');
+        const duration_ms = Math.round(performance.now() - start);
+        const trace_id = (e as any)?.trace_id || generateTraceId();
         uiLog('docs_fetch', {
           status: 'error',
-          duration_ms: Math.round(performance.now() - start),
+          duration_ms,
           role,
+          trace_id,
         });
       } finally {
         setLoading(false);
@@ -65,12 +70,14 @@ export default function DocumentsPage() {
       const start = performance.now();
       try {
         setLoading(true);
+        const trace_id = generateTraceId();
         const res = await fetch('/api/documents', {
           method: 'POST',
           body: form,
+          headers: { [TRACE_HEADER]: trace_id },
         });
         const duration_ms = Math.round(performance.now() - start);
-        uiLog('doc_upload', { status: res.status, duration_ms, role });
+        uiLog('doc_upload', { status: res.status, duration_ms, role, trace_id });
         if (!res.ok) {
           setZoneState('error');
           notify('Upload échoué');
@@ -80,13 +87,16 @@ export default function DocumentsPage() {
         setDocs((d) => [doc, ...d]);
         notify('Upload réussi');
         setZoneState('idle');
-      } catch {
+      } catch (e) {
         setZoneState('error');
         notify('Upload échoué');
+        const duration_ms = Math.round(performance.now() - start);
+        const trace_id = (e as any)?.trace_id || generateTraceId();
         uiLog('doc_upload', {
           status: 'error',
-          duration_ms: Math.round(performance.now() - start),
+          duration_ms,
           role,
+          trace_id,
         });
       } finally {
         setLoading(false);
@@ -98,21 +108,25 @@ export default function DocumentsPage() {
     const start = performance.now();
     try {
       setLoading(true);
-      const res = await fetch(`/api/documents/${id}`, { method: 'DELETE' });
+      const trace_id = generateTraceId();
+      const res = await fetch(`/api/documents/${id}`, { method: 'DELETE', headers: { [TRACE_HEADER]: trace_id } });
       const duration_ms = Math.round(performance.now() - start);
-      uiLog('doc_delete', { status: res.status, duration_ms, role });
+      uiLog('doc_delete', { status: res.status, duration_ms, role, trace_id });
       if (!res.ok) {
         notify('Suppression échouée');
         return;
       }
       setDocs((d) => d.filter((doc) => doc.id !== id));
       notify('Document supprimé');
-    } catch {
+    } catch (e) {
       notify('Suppression échouée');
+      const duration_ms = Math.round(performance.now() - start);
+      const trace_id = (e as any)?.trace_id || generateTraceId();
       uiLog('doc_delete', {
         status: 'error',
-        duration_ms: Math.round(performance.now() - start),
+        duration_ms,
         role,
+        trace_id,
       });
     } finally {
       setLoading(false);

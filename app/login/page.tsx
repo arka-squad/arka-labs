@@ -3,6 +3,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { uiLog } from '../../lib/ui-log';
 import { useRole } from '../../src/role-context';
+import { generateTraceId, TRACE_HEADER } from '../../lib/trace';
 
 export default function Page() {
   const router = useRouter();
@@ -21,24 +22,26 @@ export default function Page() {
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
+    const trace_id = generateTraceId();
     const res = await fetch('/api/auth/login', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', [TRACE_HEADER]: trace_id },
       body: JSON.stringify({ email, password }),
     });
     if (res.ok) {
       if (remember) localStorage.setItem('remember-email', email);
-      uiLog('login_success', { role });
+      uiLog('login_success', { role, trace_id });
       router.push('/console');
     } else {
-      uiLog('login_fail', { status: res.status, role });
+      uiLog('login_fail', { status: res.status, role, trace_id });
       setError(res.status === 401 ? 'Identifiants invalides' : 'Requête incorrecte');
     }
   }
 
   async function sso() {
-    const res = await fetch('/api/auth/sso/start');
-    uiLog('sso_click', { status: res.status, role });
+    const trace_id = generateTraceId();
+    const res = await fetch('/api/auth/sso/start', { headers: { [TRACE_HEADER]: trace_id } });
+    uiLog('sso_click', { status: res.status, role, trace_id });
     alert('501 Indisponible');
   }
 

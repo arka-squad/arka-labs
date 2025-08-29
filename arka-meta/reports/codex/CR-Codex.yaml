@@ -1,0 +1,46 @@
+Codex-Delivery-Report:
+  ticket_id: TCK-000-OBS-CROSS
+  lot: M3
+  version: R1-M3 v1.1
+  repo: arka-console
+  branch: work
+  commit: 06506d984f420dc9a5c5393b75a59fe30d06658d
+
+  delivered_components:
+    - "app/login/page.tsx"
+    - "app/console/documents/page.tsx"
+    - "lib/rbac.ts"
+    - "lib/trace.ts"
+    - "sql/003_metrics_raw.sql"
+    - "tests/trace-e2e.test.ts"
+    - "dist-tests/trace-e2e.test.js"
+    - "package.json"
+    - "tsconfig.tests.json"
+    - "arka-meta/reports/codex/logs_trace.json"
+    - "arka-meta/reports/codex/test_output.txt"
+
+  tests_local:
+    passed: true
+    coverage:
+      lines: 0
+      branches: 0
+
+  perf_local:
+    chat_ttft_ms_p95: 0
+    voice_rtt_ms_p95: 0
+    api_latency_ms_p95: 0
+
+  security_local:
+    hmac: false
+    idempotence: false
+    logs_trace_id: true
+
+  evidence:
+    - "logs_trace.json"
+    - "test_output.txt"
+
+  remarks:
+    - "Trace ID propagation verified with JSONL evidence and offline node --test."
+
+  next_step: "QA vérifie preuves + relaye AGP"
+  ts: 2025-08-29T17:45Z
