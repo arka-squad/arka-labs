@@ -36,6 +36,7 @@
     "node_modules",
     "apps/**/stories",
     "apps/**/stories/**",
-    "**/*.stories.*"
+    "**/*.stories.*",
+    "tests"
   ]
 }
