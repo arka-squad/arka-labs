@@ -1,101 +1,21 @@
-'use client';
-import { ReactNode, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { RoleProvider, useRole } from '../../src/role-context';
-import { NavItem } from '../../src/ui/NavItem';
-import { uiLog } from '../../lib/ui-log';
-
-const nav = [
-  { label: 'Dashboard', href: '/console' },
-  { label: 'Chat', href: '/console/chat' },
-  { label: 'Documents', href: '/console/documents' },
-  { label: 'Prompt Builder', href: '/console/prompt-builder' },
-  { label: 'Observabilité', href: '/console/observabilite' },
-];
-
-function LayoutShell({ children }: { children: ReactNode }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { role, setRole } = useRole();
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const hasToken =
-        localStorage.getItem('token') || document.cookie.includes('arka_auth=');
-      if (!hasToken) {
-        uiLog('guard_redirect', { to: '/login', role });
-        router.replace('/login');
-      }
-    }
-  }, [router, role]);
-
-  return (
-    <div className="flex min-h-screen text-white" style={{ backgroundColor: 'var(--arka-bg)' }}>
-      <aside className="w-48 flex-shrink-0 overflow-y-auto p-4 space-y-2" style={{ backgroundColor: 'var(--arka-card)' }}>
-
-        {nav.map((item) => (
-          <NavItem
-            key={item.href}
-            label={item.label}
-            active={pathname === item.href}
-            aria-current={pathname === item.href ? 'page' : undefined}
-            onClick={() => {
-              uiLog('nav', { to: item.href, role });
-              router.push(item.href);
-            }}
-          />
-        ))}
-      </aside>
-      <div className="flex-1">
-        <header className="flex items-center justify-between border-b p-4" style={{ borderColor: 'var(--arka-border)' }}>
-          <span
-            className="bg-clip-text text-xl font-bold text-transparent"
-            style={{ background: 'var(--arka-grad-cta)' }}
-          >
-
-            Arka Labs
-          </span>
-          <div className="flex items-center gap-4">
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as any)}
-              className="rounded-md bg-slate-800 px-2 py-1 text-sm focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
-
-            >
-              <option value="viewer">viewer</option>
-              <option value="operator">operator</option>
-              <option value="owner">owner</option>
-            </select>
-            <button
-              aria-label="Déconnexion"
-              onClick={async () => {
-                localStorage.removeItem('token');
-                try {
-                  await fetch('/api/auth/logout', {
-                    method: 'POST',
-                    credentials: 'include',
-                  });
-                } catch {}
-                uiLog('logout', { role });
-                router.replace('/login');
-              }}
-              className="rounded-md bg-slate-700 px-2 py-1 text-sm focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
-
-            >
-              Logout
-            </button>
-          </div>
-        </header>
-        <main className="p-6">{children}</main>
-      </div>
-    </div>
-  );
-}
+import type { ReactNode } from 'react';
+import NavItem from '../../components/ui/NavItem';
 
 export default function ConsoleLayout({ children }: { children: ReactNode }) {
   return (
-    <RoleProvider>
-      <LayoutShell>{children}</LayoutShell>
-    </RoleProvider>
+    <div className="min-h-screen bg-[#0C1319] text-slate-100">
+      <div className="mx-auto grid max-w-7xl grid-cols-12 gap-6 px-4 py-6">
+        <aside className="col-span-12 sm:col-span-3 lg:col-span-2">
+          <nav className="sticky top-6 space-y-2">
+            <NavItem active label="Projects" />
+            <NavItem label="Chat" />
+            <NavItem label="Documents" />
+            <NavItem label="Observabilité" />
+            <NavItem label="Prompt Builder" />
+          </nav>
+        </aside>
+        <section className="col-span-12 sm:col-span-9 lg:col-span-10">{children}</section>
+      </div>
+    </div>
   );
 }
