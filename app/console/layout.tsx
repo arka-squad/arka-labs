@@ -19,9 +19,13 @@ function LayoutShell({ children }: { children: ReactNode }) {
   const { role, setRole } = useRole();
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !localStorage.getItem('token')) {
-      uiLog('guard_redirect', { to: '/login', role });
-      router.replace('/login');
+    if (typeof window !== 'undefined') {
+      const hasToken =
+        localStorage.getItem('token') || document.cookie.includes('arka_auth=');
+      if (!hasToken) {
+        uiLog('guard_redirect', { to: '/login', role });
+        router.replace('/login');
+      }
     }
   }, [router, role]);
 
@@ -64,8 +68,14 @@ function LayoutShell({ children }: { children: ReactNode }) {
             </select>
             <button
               aria-label="Déconnexion"
-              onClick={() => {
+              onClick={async () => {
                 localStorage.removeItem('token');
+                try {
+                  await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                  });
+                } catch {}
                 uiLog('logout', { role });
                 router.replace('/login');
               }}
