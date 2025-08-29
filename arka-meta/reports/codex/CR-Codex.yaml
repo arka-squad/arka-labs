@@ -1,0 +1,46 @@
+Codex-Delivery-Report:
+  ticket_id: TCK-004-01-FRONT
+  lot: M3
+  version: R1-M3 v1.1
+  repo: arka-console
+  branch: feature/TCK-004-01-FRONT
+  commit: 62a5a319d967bccb9301c4b862ea240c955f6ff4
+
+  delivered_components:
+    - "app/console/prompt-builder/page.tsx"
+    - "app/console/prompt-builder/BlockCard.tsx"
+    - "app/console/prompt-builder/BlockForm.tsx"
+    - "app/console/prompt-builder/BadgeVersioned.tsx"
+    - "app/console/prompt-builder/RBACGuard.tsx"
+    - "app/api/prompt-blocks/route.ts"
+    - "tests/prompt-builder-rbac.test.ts"
+    - "tsconfig.app.json"
+    - "tsconfig.tests.json"
+    - "package.json"
+
+  tests_local:
+    passed: true
+    coverage:
+      lines: 0
+      branches: 0
+
+  perf_local:
+    chat_ttft_ms_p95: 0
+    voice_rtt_ms_p95: 0
+    api_latency_ms_p95: 0
+
+  security_local:
+    hmac: false
+    idempotence: false
+    logs_trace_id: true
+
+  evidence:
+    - "screenshot_prompt_builder.png"
+    - "logs_rbac.json"
+    - "test_output.txt"
+
+  remarks:
+    - "Tests compiled to JS and executed without ts-node"
+
+  next_step: "QA vérifie preuves + relaye AGP"
+  ts: 2025-08-29T08:25Z
