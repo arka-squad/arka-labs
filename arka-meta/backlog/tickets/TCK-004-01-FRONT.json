@@ -1,0 +1,39 @@
+{
+  "ticket_codex": {
+    "id": "TCK-004-01-FRONT",
+    "version": "R1-M3 v1.1",
+    "epic": "EPIC-004",
+    "us": "US-004-01",
+    "spec": ["SPEC-004"],
+    "lot": "M3",
+    "title": "UI Prompt Builder: page.tsx + blocs + badges + RBAC (viewer/operator/owner)",
+    "description": "Implémenter l'UI du Prompt Builder : layout /console/prompt-builder, ajout/édition de blocs, badge 'versionné', RBAC complet (viewer=RO, operator=édition limitée, owner=édition complète). Front branché sur stubs REST.",
+    "repository": "arka-console",
+    "component": "app/console/prompt-builder/page.tsx",
+    "tasks": [
+      "Créer layout page.tsx (header, actions, liste de blocs)",
+      "Composants: BlockCard, BlockForm, BadgeVersioned, RBACGuard",
+      "RBAC UI: viewer=RO, operator=ajout/suppression sans versionning, owner=édition+versionning",
+      "Badge 'versionné' affiché pour blocs gérés par owner",
+      "Brancher sur stubs REST (GET/POST/PATCH /api/prompt-blocks)",
+      "Tests UI (RBAC roles, badge versionné)",
+      "Perf budget: TTI < 2s (p95)",
+      "Docs: README UI + mapping AC QA"
+    ],
+    "acceptance_criteria_gwt": [
+      "Given viewer, When ouverture page, Then lecture seule",
+      "Given operator, When ajout bloc, Then bloc sauvegardé mais pas versionné",
+      "Given owner, When ajout bloc, Then bloc versionné + badge 'versionné'"
+    ],
+    "dependencies": ["TCK-004-02-BACK"],
+    "labels": [
+      "Status/ready-for-codex",
+      "Lot/M3",
+      "Priority/P0",
+      "Type/ticket-codex",
+      "Risk/rbac",
+      "Risk/perf"
+    ],
+    "qa_references": ["screenshot_prompt_builder.png"]
+  }
+}

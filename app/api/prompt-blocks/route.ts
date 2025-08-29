@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { withAuth } from '../../../lib/rbac';
 import { sql } from '../../../lib/db';
 import { log } from '../../../lib/logger';
@@ -42,3 +43,4 @@ export const POST = withAuth(['operator', 'owner'], async (req: NextRequest, use
   log('info', 'prompt_blocks_create', { route, status: 201, duration_ms: Date.now() - start, trace_id: trace });
   return NextResponse.json(block, { status: 201 });
 });
+

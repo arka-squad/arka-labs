@@ -1,4 +1,5 @@
 Codex-Delivery-Report:
+
   ticket_id: TCK-004-02-BACK
   lot: M3
   version: R1-M3 v1.1
@@ -19,6 +20,7 @@ Codex-Delivery-Report:
     - "tests/prompt-block-versioning.test.js"
     - "tests/prompt-blocks-rbac.e2e.test.js"
 
+
   tests_local:
     passed: true
     coverage:
@@ -36,6 +38,7 @@ Codex-Delivery-Report:
     logs_trace_id: true
 
   evidence:
+
     - "logs_prompt_blocks.json"
     - "tests/prompt-blocks-rbac.e2e.log"
 
@@ -43,3 +46,4 @@ Codex-Delivery-Report:
 
   next_step: "QA vérifie preuves + relaye AGP"
   ts: 2025-08-29T07:50Z
+
