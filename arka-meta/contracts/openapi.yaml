@@ -4,6 +4,7 @@ info:
   version: 0.1.0
   description: >
     Contrats initiaux pour M2 (SSE chat, Documents, Agent Events, Export mémoire, Metrics).
+  license: { name: MIT, url: "https://opensource.org/licenses/MIT" }
 servers:
   - url: https://api.arka.local
 security:
@@ -262,6 +263,64 @@ paths:
               schema: { $ref: '#/components/schemas/MetricsResponse' }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
+  /api/prompt-blocks:
+    get:
+      summary: List prompt blocks
+      operationId: listPromptBlocks
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      summary: Create prompt block
+      operationId: createPromptBlock
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PromptBlockInput' }
+      responses:
+        '201': { description: Created }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /api/prompt-blocks/{id}:
+    patch:
+      summary: Update prompt block
+      operationId: updatePromptBlock
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PromptBlockInput' }
+      responses:
+        '200': { description: Updated }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      summary: Delete prompt block
+      operationId: deletePromptBlock
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
 components:
   securitySchemes:
     bearerAuth:
@@ -300,6 +359,9 @@ components:
 
     MessageInput:
       $ref: './json-schema/MessageInput.schema.json'
+
+    PromptBlockInput:
+      $ref: './json-schema/PromptBlockInput.schema.json'
 
     MessageOutput:
       type: object
