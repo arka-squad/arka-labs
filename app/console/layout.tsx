@@ -1,4 +1,6 @@
+
 import type { ReactNode } from 'react';
+
 import NavItem from '../../components/ui/NavItem';
 
 export default function ConsoleLayout({ children }: { children: ReactNode }) {
