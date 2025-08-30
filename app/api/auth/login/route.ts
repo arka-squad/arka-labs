@@ -46,5 +46,13 @@ export const POST = withAuth(['public'], async (req) => {
   const u: User = { id: String(user.id), email: user.email, role: user.role };
   const token = signToken(u);
   log('info', 'login', { route, status: 200, duration_ms: Date.now() - start });
-  return NextResponse.json({ token, user: u });
+  const res = NextResponse.json({ token, user: u });
+  res.cookies.set('arka_auth', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 3600,
+  });
+  return res;
 });

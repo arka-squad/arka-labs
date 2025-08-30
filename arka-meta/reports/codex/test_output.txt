@@ -1,0 +1,40 @@
+> npm run lint && npm run typecheck && npm run test:pre && npm run test:node
+
+> arka-console@0.1.0 lint
+> next lint
+
+
+./app/layout.tsx
+14:9  Warning: Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+
+> arka-console@0.1.0 typecheck
+> tsc --noEmit
+
+
+> arka-console@0.1.0 test:pre
+> tsc -p tsconfig.tests.json
+
+
+> arka-console@0.1.0 test:node
+> node --test dist-tests/tests/trace-e2e.test.js
+
+TAP version 13
+# {"ts":"2025-08-30T09:46:04.960Z","level":"info","msg":"api","route":"/api/metrics","status":200,"trace_id":"trc_e2e_001"}
+# Subtest: trace_id propagates UI→API→DB
+ok 1 - trace_id propagates UI→API→DB
+  ---
+  duration_ms: 11.671048
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 266.148057
+root@ffae727a5731:/workspace/arka-labs#
+

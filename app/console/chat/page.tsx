@@ -32,8 +32,8 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <ul className="flex flex-1 flex-col gap-4">
+    <div className="flex h-full flex-col gap-4">
+      <ul className="flex flex-1 flex-col gap-4 overflow-y-auto">
         {messages.map((m, i) => (
           <ChatMessage key={i} {...m} />
         ))}

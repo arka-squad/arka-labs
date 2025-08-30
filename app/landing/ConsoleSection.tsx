@@ -1,5 +1,9 @@
+
+"use client";
+
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
+import { useRouter } from "next/navigation";
 import { TOKENS } from "./tokens";
 
 const ASSETS = {
@@ -7,6 +11,7 @@ const ASSETS = {
 };
 
 export default function ConsoleSection() {
+  const router = useRouter();
   return (
     <section id="console" className="mx-auto mt-24 max-w-6xl px-6 text-slate-300">
       <div className="grid items-center gap-8 md:grid-cols-2">
@@ -28,6 +33,7 @@ export default function ConsoleSection() {
           </p>
           <button
             className={`mt-6 rounded-full px-5 py-3 text-sm text-slate-200 ring-1 ${TOKENS.ringSoft} hover:ring-slate-500`}
+            onClick={() => router.push("/projects")}
           >
             Voir la console
           </button>

@@ -4,6 +4,7 @@ info:
   version: 0.1.0
   description: >
     Contrats initiaux pour M2 (SSE chat, Documents, Agent Events, Export mémoire, Metrics).
+  license: { name: MIT, url: "https://opensource.org/licenses/MIT" }
 servers:
   - url: https://api.arka.local
 security:
@@ -262,14 +263,17 @@ paths:
               schema: { $ref: '#/components/schemas/MetricsResponse' }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
+
   /api/webhook/github:
     post:
       summary: GitHub webhook
       operationId: postGithubWebhook
+
       requestBody:
         required: true
         content:
           application/json:
+
             schema:
               type: object
       responses:
@@ -306,6 +310,7 @@ paths:
           content:
             text/plain:
               schema: { type: string, example: forbidden }
+
 
 components:
   securitySchemes:
@@ -345,6 +350,9 @@ components:
 
     MessageInput:
       $ref: './json-schema/MessageInput.schema.json'
+
+    PromptBlockInput:
+      $ref: './json-schema/PromptBlockInput.schema.json'
 
     MessageOutput:
       type: object

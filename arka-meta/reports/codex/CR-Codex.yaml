@@ -1,4 +1,5 @@
 Codex-Delivery-Report:
+
   ticket_id: TCK-005-01-BACK
   lot: M3
   version: R1-M3 v1.1
@@ -14,6 +15,7 @@ Codex-Delivery-Report:
     - "tests/webhook-route.test.ts"
     - "arka-meta/contracts/openapi.yaml"
 
+
   tests_local:
     passed: true
     coverage:
@@ -26,6 +28,7 @@ Codex-Delivery-Report:
     api_latency_ms_p95: 0
 
   security_local:
+
     hmac: true
     idempotence: true
     logs_trace_id: true
@@ -40,3 +43,4 @@ Codex-Delivery-Report:
 
   next_step: "QA vérifie preuves + relaye AGP"
   ts: 2025-08-29T16:45Z
+
