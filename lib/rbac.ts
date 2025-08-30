@@ -14,6 +14,7 @@ export function withAuth(
     let res: NextResponse;
 
     if (allowed.includes('public') || allowed.includes('github-webhook')) {
+
       res = await handler(req, null, context);
     } else {
       const auth = req.headers.get('authorization');
@@ -39,6 +40,7 @@ export function withAuth(
       if (Array.isArray(buf)) buf.push(traceId);
     } catch (e) {
       console.error('metrics_raw_insert_fail', e);
+
     }
     res.headers.set(TRACE_HEADER, traceId);
     return res;

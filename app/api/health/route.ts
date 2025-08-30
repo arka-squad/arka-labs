@@ -9,19 +9,52 @@ export const GET = withAuth(['viewer', 'operator', 'owner'], async (req) => {
   const route = '/api/health';
   const ip = req.headers.get('x-forwarded-for') || 'global';
   if (hit(`health:${ip}`, 300, 60_000)) {
-    log('info', 'health ratelimit', { route, status: 200, duration_ms: Date.now() - start });
-    return NextResponse.json({ status: 'ratelimited' });
+    log('info', 'health ratelimit', {
+      route,
+      status: 200,
+      duration_ms: Date.now() - start,
+    });
+    const commit = process.env.VERCEL_GIT_COMMIT_SHA;
+    const branch = process.env.VERCEL_GIT_COMMIT_REF;
+    const compat = {
+      db: 'ERROR',
+      uptime: process.uptime(),
+      version: commit || 'dev',
+      pr_bot_status: 'UNKNOWN' as 'UNKNOWN',
+    };
+    return NextResponse.json({
+      ...compat,
+      status: 'ratelimited',
+      env: { missing: [] },
+      app: { commit, branch },
+    });
   }
-  let db: 'OK' | 'ERROR' = 'ERROR';
+  let dbOk = false;
   try {
     await sql`select now()`;
-    db = 'OK';
+    dbOk = true;
   } catch {
-    db = 'ERROR';
+    dbOk = false;
   }
-  const uptime = process.uptime();
-  const version = process.env.VERCEL_GIT_COMMIT_SHA || 'dev';
-  const pr_bot_status: 'UNKNOWN' | 'OK' | 'ERROR' = 'UNKNOWN';
-  log('info', 'health', { route, status: 200, duration_ms: Date.now() - start });
-  return NextResponse.json({ db, uptime, version, pr_bot_status });
+  const commit = process.env.VERCEL_GIT_COMMIT_SHA;
+  const branch = process.env.VERCEL_GIT_COMMIT_REF;
+  const missing: string[] = [];
+  const status = dbOk && missing.length === 0 ? 'ok' : 'error';
+  const compat = {
+    db: dbOk ? 'OK' : 'ERROR',
+    uptime: process.uptime(),
+    version: commit || 'dev',
+    pr_bot_status: 'UNKNOWN' as 'UNKNOWN' | 'OK' | 'ERROR',
+  };
+  log('info', 'health', {
+    route,
+    status: 200,
+    duration_ms: Date.now() - start,
+  });
+  return NextResponse.json({
+    ...compat,
+    status,
+    env: { missing },
+    app: { commit, branch },
+  });
 });

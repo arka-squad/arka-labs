@@ -7,9 +7,9 @@ export interface User {
   role: Role;
 }
 
-const SECRET = process.env.JWT_SECRET;
+const SECRET = process.env.JWT_SECRET || process.env.AUTH_JWT_SECRET;
 if (!SECRET) {
-  throw new Error('JWT_SECRET missing');
+  throw new Error('JWT secret missing');
 }
 
 export function signToken(user: User) {
