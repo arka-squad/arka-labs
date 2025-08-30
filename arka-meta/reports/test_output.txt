@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: verifyHmac fuzz
+ok 1 - verifyHmac fuzz
+  ---
+  duration_ms: 4.737465
+  ...
+# {"ts":"2025-08-29T08:31:21.074Z","level":"warn","msg":"missing hmac","route":"/api/webhook/github","status":403,"duration_ms":0}
+# {"ts":"2025-08-29T08:31:21.081Z","level":"info","msg":"accepted","delivery_id":"d2","run_id":1,"route":"/api/webhook/github","status":202,"duration_ms":2}
+# {"ts":"2025-08-29T08:31:21.082Z","level":"info","msg":"handled","delivery_id":"d3","route":"/api/webhook/github","status":200,"duration_ms":0}
+# {"ts":"2025-08-29T08:31:21.084Z","level":"info","msg":"handled","delivery_id":"dup1","route":"/api/webhook/github","status":200,"duration_ms":0}
+# {"ts":"2025-08-29T08:31:21.085Z","level":"info","msg":"duplicate","delivery_id":"dup1","route":"/api/webhook/github","status":202,"duration_ms":0}
+# {"ts":"2025-08-29T08:31:21.087Z","level":"warn","msg":"bad payload","delivery_id":"d4","route":"/api/webhook/github","status":400,"duration_ms":0}
+# {"ts":"2025-08-29T08:31:21.088Z","level":"warn","msg":"repo not allowed","delivery_id":"d5","route":"/api/webhook/github","status":403,"duration_ms":0}
+# Subtest: missing hmac yields 403
+ok 2 - missing hmac yields 403
+  ---
+  duration_ms: 8.052623
+  ...
+# Subtest: async event returns 202
+ok 3 - async event returns 202
+  ---
+  duration_ms: 3.225968
+  ...
+# Subtest: sync event returns 200
+ok 4 - sync event returns 200
+  ---
+  duration_ms: 2.018246
+  ...
+# Subtest: duplicate delivery handled once
+ok 5 - duplicate delivery handled once
+  ---
+  duration_ms: 2.813047
+  ...
+# Subtest: invalid payload yields 400
+ok 6 - invalid payload yields 400
+  ---
+  duration_ms: 1.341054
+  ...
+# Subtest: repo not allowlisted yields 403
+ok 7 - repo not allowlisted yields 403
+  ---
+  duration_ms: 1.184805
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 313.971656

@@ -1,24 +1,19 @@
 Codex-Delivery-Report:
 
-  ticket_id: TCK-000-OBS-CROSS
+  ticket_id: TCK-005-01-BACK
   lot: M3
   version: R1-M3 v1.1
-  repo: arka-console
+  repo: arka-backend
   branch: work
-  commit: 06506d984f420dc9a5c5393b75a59fe30d06658d
+  commit: 7ccba1bc922122b673e620a461fb2b4531276e0e
 
   delivered_components:
-    - "app/login/page.tsx"
-    - "app/console/documents/page.tsx"
-    - "lib/rbac.ts"
-    - "lib/trace.ts"
-    - "sql/003_metrics_raw.sql"
-    - "tests/trace-e2e.test.ts"
-    - "dist-tests/trace-e2e.test.js"
-    - "package.json"
-    - "tsconfig.tests.json"
-    - "arka-meta/reports/codex/logs_trace.json"
-    - "arka-meta/reports/codex/test_output.txt"
+    - "app/api/webhook/github/route.ts"
+    - "lib/hmac.ts"
+    - "sql/003_webhook_deliveries.sql"
+    - "tests/webhook-hmac.test.ts"
+    - "tests/webhook-route.test.ts"
+    - "arka-meta/contracts/openapi.yaml"
 
 
   tests_local:
@@ -33,18 +28,19 @@ Codex-Delivery-Report:
     api_latency_ms_p95: 0
 
   security_local:
-    hmac: false
-    idempotence: false
+
+    hmac: true
+    idempotence: true
     logs_trace_id: true
 
   evidence:
-
-    - "logs_trace.json"
-    - "test_output.txt"
+    - "arka-meta/reports/logs_webhooks.json"
+    - "arka-meta/reports/test_output.txt"
+    - "arka-meta/reports/openapi_diff.txt"
 
   remarks:
-    - "Trace ID propagation verified with JSONL evidence and offline node --test."
+    - ""
 
   next_step: "QA vérifie preuves + relaye AGP"
-  ts: 2025-08-29T17:45Z
+  ts: 2025-08-29T16:45Z
 
