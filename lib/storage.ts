@@ -17,7 +17,7 @@ async function ensureToken(): Promise<string> {
 export const storage: Storage = {
   async putObject(key: string, data: Buffer, contentType: string) {
     const token = await ensureToken();
-    await put(key, data, { access: 'private', token, contentType });
+    await put(key, data as any, { access: 'private' as any, token, contentType });
   },
   async getObjectURL(key: string) {
     const token = await ensureToken();

@@ -263,64 +263,55 @@ paths:
               schema: { $ref: '#/components/schemas/MetricsResponse' }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
-  /api/prompt-blocks:
-    get:
-      summary: List prompt blocks
-      operationId: listPromptBlocks
-      security: [{ bearerAuth: [] }]
-      responses:
-        '200': { description: OK }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '403': { $ref: '#/components/responses/Forbidden' }
-    post:
-      summary: Create prompt block
-      operationId: createPromptBlock
-      security: [{ bearerAuth: [] }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/PromptBlockInput' }
-      responses:
-        '201': { description: Created }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '403': { $ref: '#/components/responses/Forbidden' }
 
-  /api/prompt-blocks/{id}:
-    patch:
-      summary: Update prompt block
-      operationId: updatePromptBlock
-      security: [{ bearerAuth: [] }]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: integer }
+  /api/webhook/github:
+    post:
+      summary: GitHub webhook
+      operationId: postGithubWebhook
+
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/PromptBlockInput' }
+
+            schema:
+              type: object
       responses:
-        '200': { description: Updated }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '403': { $ref: '#/components/responses/Forbidden' }
-        '404': { $ref: '#/components/responses/NotFound' }
-    delete:
-      summary: Delete prompt block
-      operationId: deletePromptBlock
-      security: [{ bearerAuth: [] }]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        '204': { description: Deleted }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '403': { $ref: '#/components/responses/Forbidden' }
+        '200':
+          description: Webhook processed synchronously
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+        '202':
+          description: Accepted (async or duplicate)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    examples:
+                      queued: { value: queued }
+                      duplicate: { value: duplicate }
+        '400':
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string, example: bad request }
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema: { type: string, example: forbidden }
+
+
 components:
   securitySchemes:
     bearerAuth:

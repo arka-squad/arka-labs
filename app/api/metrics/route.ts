@@ -8,13 +8,14 @@ export const GET = withAuth(['viewer', 'operator', 'owner'], async (req: NextReq
   const lot = searchParams.get('lot');
   const sprint = searchParams.get('sprint');
   // Basic aggregation using message meta fields if present
-  const { rows } = await sql`
+  const sqlAny: any = sql;
+  const { rows } = await sqlAny`
     select
       coalesce(percentile_cont(0.95) within group (order by (meta->>'ttft_ms')::int),0) as ttft_ms,
       coalesce(percentile_cont(0.95) within group (order by (meta->>'rtt_ms')::int),0) as rtt_ms,
       coalesce(avg((meta->>'error')::float),0) as err_pct
     from messages
-    ${project ? sql`where project_id = ${project}` : sql``}
+      ${project ? sqlAny`where project_id = ${project}` : sqlAny``}
   `;
   const kpis = {
     ttft_ms: Number(rows[0]?.ttft_ms) || 0,
