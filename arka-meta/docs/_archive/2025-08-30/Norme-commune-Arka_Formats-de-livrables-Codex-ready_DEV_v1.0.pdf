@@ -1,0 +1,350 @@
+📂 Norme commune Arka — Formats de livrables Codex-ready (v1.2)
+Objectif : garantir que tout livrable destiné à Codex soit accompagné d’un squelette standardisé adapté au contexte (UI, API, Mobile, CLI, Microservice). Ces fichiers doivent être placés dans le module correspondant (/spec-integration.md ou équivalent).
+Chaque squelette est conçu pour être copié-collé puis rempli par l’agent responsable (UX, PMO, QA, Dev).
+
+Bloc “Definition-of-Ready” à coller en tête de chaque ticket
+definition_of_ready:
+  contexte: "<pourquoi>"
+  objectif: "<mesurable>"
+  portee: "<ce qui est inclus / exclus>"
+
+  contrats:
+    api:
+      routes:
+        - method: POST
+          path: /api/agent/:id/run
+          request_schema: MessageInput.schema.json
+          response_schema: { job_id: string }
+          codes: [202,400,401,403,404,409]
+          headers: ["Authorization: Bearer <jwt>", "X-Idempotency-Key: <uuid>"]
+          idempotent: true
+    ui:
+      pages: ["/console/agents/:id", "/console/agents/:id/events"]
+      actions_api_map:
+        - action: "RunAgent"
+          calls: ["POST /api/agent/:id/run"]
+
+  donnees:
+    migrations: ["sql/004_add_agent_runs.sql"]
+    contraintes: ["runs.agent_id FK agents.id"]
+
+  securite:
+    rbac:
+      viewer: ["GET /..."]
+      operator: ["POST /agent/:id/run"]
+      owner: ["*"]
+    secrets: ["OPENAI_API_KEY"]
+    hmac: true
+    logs_trace_id: true
+
+  budgets:
+    api_latency_ms_p95: 500
+    lcp_home_ms_p75: 2500   # si UI concernée
+    tti_console_ms_p75: 2000 # si UI concernée
+    a11y_level: "AA"
+
+  tests_plan:
+    - "Given JWT owner, When POST /run, Then 202 + job_id"
+    - "Given viewer, When POST /run, Then 403"
+    - "Given missing idempotency, When POST /run, Then 400"
+    - "Given same X-Idempotency-Key, When POST twice, Then 202 once"
+
+  evidences_attendues:
+    - "logs_run_*.json (trace_id)"
+    - "screenshots_parcours.png"
+    - "report_tests_e2e.txt"
+    - "lighthouse_*.pdf (si UI)"
+
+  gate_DoR: true  # ⚠️ doit être true pour démarrer
+
+
+🎛️ Entête Codex (rappel à mettre juste sous la DoR)
+codex_header:
+  agent: Codex
+  regles: "arka-meta/codex_rules/codex_rules_current.md"
+
+
+🖼️ 1. Livrable UI / Frontend 
+### 2.1 UI / Frontend
+**Fichier obligatoire** : `spec-integration.md` (codex-ready)  à la racine du module UI.  
+But : passerelle standardisée entre maquettes/designs et Codex.
+
+#### 📦 Squelette `spec-integration.md`
+# 🧩 Projet : <Nom du projet ou de la fonctionnalité>
+
+## 1. Contexte & Objectifs
+- **Source de la maquette** : <Figma / Sketch / URL ou description détaillée>
+- **Objectifs principaux** : <Ex. page vitrine / espace utilisateur / module e-commerce>
+- **Public cible / contexte d’usage** : <B2B, B2C, mobile, desktop, etc.>
+- **Contraintes globales** : <délais, performances, SEO, accessibilité, etc.>
+
+---
+
+## 2. Technologies & Environnement
+- **Stack front-end** : <React, Next.js, Tailwind, etc.>
+- **Outils & Version** : <Webpack/Vite, Node.js version, etc.>
+- **Convention de nommage** : <BEM, tokens, etc.>
+- **Gestionnaire de paquets** : <npm, yarn, pnpm>
+- **Scripts utiles** :
+  - `npm run dev` : <lancer l’env. de dev>
+  - `npm run build` : <compiler la version prod>
+  - `npm test` : <tests unitaires>
+
+---
+
+## 3. Design System & Ressources
+- **Couleurs** : <palette complète>
+- **Typographies** : <hiérarchie H1-H4, body>
+- **Spacings** : <échelle px/rem>
+- **Radius/shadows** : <valeurs par défaut>
+- **Icônes/Images** : <liens>
+- **Tokens globaux** : <table CSS/JS>
+
+---
+
+## 4. Responsive & Breakpoints
+- **sm/md/lg/xl** : <valeurs>
+- **Comportements attendus** : <navbar burger, grille adaptative…>
+
+---
+
+## 5. Accessibilité & SEO
+- **ARIA roles** : <liste>
+- **Contrastes min.** : 4.5:1
+- **Navigation clavier** : OK
+- **SEO** : <title, meta, heading structure>
+
+---
+
+## 6. Liste des Pages / Vues
+1. **Page : Nom**
+   - **URL** : `/example`
+   - **Composants principaux** : <Navbar, Hero…>
+   - **Données nécessaires** : <liste>
+   - **Logique spécifique** : <filtres, redirect>
+*(répéter pour chaque page)*
+
+---
+
+## 7. Composants détaillés
+### 7.1 `<NomComposant>`
+- **Role/Usage** : <description>
+- **Props** :
+  - `title: string`
+  - `onClick: () => void`
+- **États** : <hover, focus, disabled>
+- **Structure HTML indicative** :
+```html
+<div class="…">…</div>
+Styles / Responsivité : <classes, breakpoints>
+
+Animations : <fade, slide…>
+
+Tests requis : unitaires + accessibilité
+
+(répéter pour chaque composant)
+
+8. Interactions Globales & Flux
+Navigation : <routes SPA / ancres>
+
+Authentification : <login/logout>
+
+États globaux : <Redux/Context>
+
+Services externes : <API REST, GraphQL>
+
+9. Scénarios / Historique
+US : “En tant que <utilisateur>, je peux <action> afin de <objectif>.”
+
+Cas limites : erreurs, edge-cases.
+
+10. Tests & Validation
+Unitaires : npm test
+
+E2E : <si présent>
+
+Manuels : responsive, navigateurs, devices.
+
+11. Tâches & Priorités
+Tâche	Priorité	Estimation	Responsable
+Intégrer Navbar	Haute	4h	<dev>
+Intégrer Footer	Moyenne	2h	<dev>
+
+12. Ressources / Annexes
+Liens : <Figma, API docs, captures>
+
+Fichiers joints : logo.svg, icons.zip, variables.css
+
+2.1.1 📌 TPL-UI-Integration — Arka (v1.2)
+But : contrat UI non-négociable pour caler l’implémentation sur la référence UX.
+Référence visuelle : /ui-examples/ArkaLanding.js (tolérance ±4px sm/md/lg).
+
+Tokens :
+
+vbnet
+Copier le code
+bgBody:#0C1319
+ringSoft:ring-slate-700/60
+gradCTA: linear-gradient(135deg,#FAB652 0%,#F25636 35%,#E0026D 100%)
+gradTextClass: bg-gradient-to-r from-amber-400 via-rose-500 to-fuchsia-600
+Assets : logo blanc, logo radiant, arkabox-board.png, console-demo.gif, schema-agents.png.
+
+Layout : grille Hero 12 cols, KPI grid 2/4, sections h-72, boutons gradient.
+
+Composants attendus : Header, Hero, KPIs, ConsoleSection, TeamSection, CTA finale, Footer.
+
+Responsive : sm pile verticale, md grille 12, lg alignement parfait (±4px).
+
+Interactions : hover/focus CTA, GIF animé obligatoire.
+
+Livrables : /app/page.tsx, captures avant/après vs référence.
+
+Footer obligatoire dans le ticket : bloc CR-Codex.yaml.
+
+---
+(Codex-ready).
+
+🌐 2. Livrable API REST
+# 🧩 Projet : <Nom du service API>
+
+## 1. Contexte & Objectifs
+- **Domaine métier** : <ex. e-commerce, CRM, analytics>
+- **Objectif principal** : <exposer des données, gérer un workflow>
+- **Contraintes** : <latence, sécurité, volumétrie>
+- **Public cible** : <services internes, applications externes>
+
+## 2. Stack & Environnement
+- **Langage / Framework** : <Node.js + Express, Python + FastAPI>
+- **Base de données** : <PostgreSQL, MongoDB>
+- **Architecture** : <monolithique, microservice>
+- **Outils** : <Docker, Swagger/OpenAPI, CI/CD>
+
+## 3. Modélisation & Endpoints
+- **Entités principales** : <User, Order>
+- **Endpoints** : `GET /users`, `POST /orders` (détails inputs/outputs)
+- **Auth & Sécurité** : JWT, OAuth2, scopes
+
+## 4. Tests & Déploiement
+- **Tests** : unitaires, intégration, couverture ≥ 80%
+- **CI/CD** : pipelines, environnements (dev/staging/prod)
+- **Monitoring** : logs, métriques, alertes
+
+
+📱 3. Livrable Application Mobile
+# 🧩 Projet : <Nom de l’application mobile>
+
+## 1. Contexte & Objectifs
+- **Plateforme** : iOS, Android, cross-platform
+- **But** : <suivi sportif, marketplace>
+- **Contraintes** : offline, perf, guidelines stores
+
+## 2. Stack & Outils
+- **Framework** : React Native, Flutter, SwiftUI
+- **Gestion état** : Redux, Provider, Bloc
+- **CI/CD** : Fastlane, GitHub Actions
+
+## 3. Design & Modules
+- **Design system** : couleurs, typographies
+- **Navigation** : stack, tabs, drawer
+- **Modules** : AuthService, ProductService
+
+## 4. Tests & Distribution
+- **Tests** : unitaires, UI, instrumentation
+- **Déploiement** : App Store / Play Store, TestFlight
+
+
+💻 4. Livrable CLI / Script
+# 🧩 Projet : <Nom du script CLI>
+
+## 1. Contexte & Objectifs
+- **But** : automatisation, déploiement
+- **Utilisateur cible** : dev, ops, end-user
+
+## 2. Stack & Structure
+- **Langage** : Python, Node.js, Go, Rust
+- **Structure** : /commands, /utils, etc.
+- **Packaging** : PyPI, npm, binaire standalone
+
+## 3. Commandes & Usage
+- `init` : crée un projet
+- `deploy` : déploie un service
+
+## 4. Tests & Distribution
+- **Tests** : unitaires + intégration
+- **CI** : GitHub Actions, GitLab CI
+- **Release** : SemVer, changelog
+
+
+🔄 5. Livrable Microservice + Worker
+# 🧩 Projet : <Nom du microservice>
+
+## 1. Contexte & Objectifs
+- **Rôle** : traitement de jobs async, emails, etc.
+- **Intégration** : via broker (RabbitMQ, Kafka)
+- **Contraintes** : idempotence, retries, volume élevé
+
+## 2. Stack & Architecture
+- **Langage/Framework** : Python + Celery, Node.js + Bull
+- **Broker** : RabbitMQ, Kafka, SQS
+- **Containerisation** : Docker, Kubernetes
+
+## 3. Flux & Messages
+- **Producer** : service en amont
+- **Worker** : consommation/traitement
+- **Types de messages** : payload JSON + validations
+
+## 4. Monitoring & Déploiement
+- **Retry policy** : backoff, DLQ
+- **Monitoring** : Prometheus, ELK
+- **CI/CD** : build image, push registry
+
+
+🔔 Règles de gouvernance
+Obligatoire : chaque agent choisit le squelette adapté au livrable produit.
+
+
+Format unique : fichier spec-integration.md (ou équivalent selon contexte).
+
+
+Validation QA : FAIL si le squelette n’est pas présent ou pas rempli.
+
+
+Versioning : les specs sont tracées comme du code (YYYY-MM-DD).
+
+
+
+6. Gouvernance
+Codex = exécuteur, non agent.
+
+
+Le Owner (ou Mainteneur Git) est seul responsable de l’injection dans le repo.
+
+
+Les fiches agents renvoient toutes à ce document (/arka-meta/docs/ARKA_CORE.md).
+
+
+
+📂 Chemin cible proposé :
+ /arka-meta/docs/ARKA_CORE.md
+
+
+
+
+❓ Faut-il d’autres squelettes ?
+Oui, à envisager à moyen terme pour :
+
+
+Projet Data / IA (pipelines ML, jeux de données, métriques)
+
+
+Projet Infra / DevOps (Terraform, Helm charts, monitoring)
+
+
+Projet Sécurité (politiques IAM, audits, tests de pénétration)
+
+
+👉 Proposition : démarrer avec ces 5 squelettes (UI, API REST, Mobile, CLI, Microservice). Étendre ensuite si besoin.
+
+⚡ En clair : chaque agent doit livrer son artefact + squelette rempli.
+ Cela crée un langage commun Codex-ready, quel que soit le type de projet (front, back, mobile, infra).
+

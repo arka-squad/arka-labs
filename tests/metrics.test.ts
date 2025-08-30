@@ -15,7 +15,7 @@ test('avg computes mean with 1 decimal rounding', () => {
 });
 
 test('GET /api/metrics/kpis returns 1 decimal values', async () => {
-  process.env.JWT_SECRET = 'testsecret';
+  process.env.AUTH_SECRET = 'testsecret';
   const { signToken } = await import('../lib/auth');
   const { GET } = await import('../app/api/metrics/kpis/route');
   const { NextRequest } = await import('next/server');
@@ -31,7 +31,7 @@ test('GET /api/metrics/kpis returns 1 decimal values', async () => {
 });
 
 test('GET /api/metrics/runs returns 20 results by default', async () => {
-  process.env.JWT_SECRET = 'testsecret';
+  process.env.AUTH_SECRET = 'testsecret';
   const { signToken } = await import('../lib/auth');
   const { GET } = await import('../app/api/metrics/runs/route');
   const { NextRequest } = await import('next/server');

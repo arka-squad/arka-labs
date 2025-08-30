@@ -48,12 +48,6 @@ export default function Page() {
     const res = await fetch('/api/auth/sso/start', { headers: { [TRACE_HEADER]: trace_id } });
     uiLog('sso_click', { status: res.status, role, trace_id });
     alert('501 Indisponible');
-
-  }
-
-  function sso() {
-    uiLog('sso_click', { status: 501, role });
-    notify('501 Indisponible');
   }
 
   return (

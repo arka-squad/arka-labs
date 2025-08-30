@@ -5,7 +5,7 @@ const path = require('node:path');
 const Module = require('module');
 const ts = require('typescript');
 
-process.env.JWT_SECRET = 'test-secret';
+process.env.AUTH_SECRET = 'test-secret';
 
 Module._extensions['.ts'] = function (module, filename) {
   const source = fs.readFileSync(filename, 'utf8');
