@@ -12,7 +12,7 @@
 
     "test": "npm run test:pre && npm run test:node",
     "test:pre": "tsc -p tsconfig.tests.json",
-    "test:node": "node --test dist-tests/tests/metrics.test.js",
+    "test:node": "node --test dist-tests/tests/metrics.test.js dist-tests/tests/openai-stream.test.js",
 
 
     "api:lint": "npx --no-install @redocly/cli lint --config redocly.yaml arka"
