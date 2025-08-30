@@ -10,11 +10,9 @@
     "resolveJsonModule": true,
     "skipLibCheck": true
   },
-  "include": [
-    "tests/metrics.test.ts",
-    "tests/agents-threads.e2e.test.ts",
-    "tests/agents-threads-rbac.test.ts"
-  ],
+
+  "include": ["tests/metrics.test.ts", "tests/orchestration.test.ts"],
+
   "exclude": ["lib/storage.ts"]
 
 
