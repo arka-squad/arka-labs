@@ -8,7 +8,7 @@ import * as postgres from '@vercel/postgres';
 // buffer to capture trace ids during simulated DB inserts
 (globalThis as any).__TRACE_BUFFER__ = [];
 
-process.env.JWT_SECRET = 'test';
+process.env.AUTH_SECRET = 'test';
 // load auth utils after secret set
 const { signToken } = require('../lib/auth');
 

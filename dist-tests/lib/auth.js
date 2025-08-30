@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.signToken = signToken;
 exports.verifyToken = verifyToken;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const SECRET = process.env.JWT_SECRET;
+const SECRET = process.env.AUTH_SECRET;
 if (!SECRET) {
-    throw new Error('JWT_SECRET missing');
+    throw new Error('AUTH_SECRET missing');
 }
 function signToken(user) {
     return jsonwebtoken_1.default.sign(user, SECRET, { expiresIn: '1h' });
