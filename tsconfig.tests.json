@@ -11,7 +11,7 @@
     "skipLibCheck": true
   },
 
-  "include": ["tests/metrics.test.ts", "tests/orchestration.test.ts"],
+  "include": ["tests/**/*.ts"],
 
   "exclude": ["lib/storage.ts"]
 

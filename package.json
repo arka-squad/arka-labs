@@ -13,7 +13,8 @@
     "test": "npm run test:pre && npm run test:node",
 
     "test:pre": "tsc -p tsconfig.tests.json",
-    "test:node": "node --test dist-tests/tests/metrics.test.js dist-tests/tests/orchestration.test.js",
+
+    "test:node": "node --test dist-tests/tests/metrics.test.js dist-tests/tests/openai-stream.test.js",
 
 
 
