@@ -1,40 +1,53 @@
-> npm run lint && npm run typecheck && npm run test:pre && npm run test:node
 
-> arka-console@0.1.0 lint
-> next lint
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
 
+> arka-console@0.1.0 test
+> npm run test:pre && npm run test:node
 
-./app/layout.tsx
-14:9  Warning: Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
-
-info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
-
-> arka-console@0.1.0 typecheck
-> tsc --noEmit
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
 
 
 > arka-console@0.1.0 test:pre
 > tsc -p tsconfig.tests.json
 
 
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
 > arka-console@0.1.0 test:node
-> node --test dist-tests/tests/trace-e2e.test.js
+> node --test dist-tests/tests/metrics.test.js
 
 TAP version 13
-# {"ts":"2025-08-30T09:46:04.960Z","level":"info","msg":"api","route":"/api/metrics","status":200,"trace_id":"trc_e2e_001"}
-# Subtest: trace_id propagates UI→API→DB
-ok 1 - trace_id propagates UI→API→DB
+# {"event":"api.metrics.kpis","trace_id":"c47e6fc9-632c-4f68-bfcd-5dea3c6a2c0a","lot":null,"sprint":null,"ts":"2025-08-29T08:29:08.637Z"}
+# {"event":"api.metrics.runs","trace_id":"e252c646-6afa-4745-9c2c-655166735f4d","lot":null,"sprint":null,"page":1,"limit":20,"ts":"2025-08-29T08:29:08.646Z"}
+# Subtest: p95 computes 95th percentile with 1 decimal rounding
+ok 1 - p95 computes 95th percentile with 1 decimal rounding
   ---
-  duration_ms: 11.671048
+  duration_ms: 1.799507
   ...
-1..1
-# tests 1
+# Subtest: avg computes mean with 1 decimal rounding
+ok 2 - avg computes mean with 1 decimal rounding
+  ---
+  duration_ms: 0.299595
+  ...
+# Subtest: GET /api/metrics/kpis returns 1 decimal values
+ok 3 - GET /api/metrics/kpis returns 1 decimal values
+  ---
+  duration_ms: 95.172402
+  ...
+# Subtest: GET /api/metrics/runs returns 20 results by default
+ok 4 - GET /api/metrics/runs returns 20 results by default
+  ---
+  duration_ms: 4.121133
+  ...
+1..4
+# tests 4
 # suites 0
-# pass 1
+# pass 4
+
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 266.148057
-root@ffae727a5731:/workspace/arka-labs#
+
+# duration_ms 235.265138
 

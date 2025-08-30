@@ -5,19 +5,15 @@
     "outDir": "dist-tests",
 
     "rootDir": ".",
-    "moduleResolution": "Node",
     "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
     "skipLibCheck": true
   },
-  "files": [
-    "tests/trace-e2e.test.ts",
-    "lib/rbac.ts",
-    "lib/trace.ts",
-    "lib/logger.ts",
-    "lib/auth.ts",
-    "lib/db.ts",
-    "app/api/metrics/route.ts"
-  ]
+  "include": ["tests/metrics.test.ts"],
+  "exclude": ["lib/storage.ts"]
+
+
 }
 
 

@@ -1,19 +1,21 @@
 Codex-Delivery-Report:
 
-  ticket_id: TCK-005-01-BACK
+  ticket_id: TCK-006-01-FRONT,TCK-006-02-BACK
   lot: M3
   version: R1-M3 v1.1
-  repo: arka-backend
+  repo: arka-console
   branch: work
-  commit: 7ccba1bc922122b673e620a461fb2b4531276e0e
+  commit: da4aa6fe73632f006a447a1b982ad6557b5c705a
 
   delivered_components:
-    - "app/api/webhook/github/route.ts"
-    - "lib/hmac.ts"
-    - "sql/003_webhook_deliveries.sql"
-    - "tests/webhook-hmac.test.ts"
-    - "tests/webhook-route.test.ts"
-    - "arka-meta/contracts/openapi.yaml"
+    - app/console/observabilite/page.tsx
+    - src/ui/ObsRunsTable.tsx
+    - lib/metrics-data.ts
+    - app/api/metrics/kpis/route.ts
+    - app/api/metrics/runs/route.ts
+    - tests/metrics.test.ts
+    - tsconfig.tests.json
+
 
 
   tests_local:
@@ -38,9 +40,16 @@ Codex-Delivery-Report:
     - "arka-meta/reports/test_output.txt"
     - "arka-meta/reports/openapi_diff.txt"
 
+
+    - "lighthouse_console.pdf"
+    - "screenshot_kpis.png"
+    - "screenshot_runs_table_page1.png"
+    - "test_output.txt"
+
   remarks:
-    - ""
+    - "Mock metrics data; backend stub for tests"
 
   next_step: "QA vérifie preuves + relaye AGP"
-  ts: 2025-08-29T16:45Z
+  ts: 2025-08-29T07:48Z
+
 
