@@ -1,0 +1,35 @@
+Codex-Delivery-Report:
+  ticket_id: TCK-M2-UI-LOGIN-REF
+  lot: M2
+  version: R1-M3 v1.2
+  repo: arka-console
+  branch: work
+  commit: d13f00d3362a729cee653a95f4c1183d7e05e04d
+
+  delivered_components:
+    - "app/login/page.tsx"
+    - "arka-meta/reports/ui/login_before_after_mock.png"
+
+  tests_local:
+    passed: true
+    coverage:
+      lines: 0
+      branches: 0
+
+  perf_local:
+    chat_ttft_ms_p95: 0
+    voice_rtt_ms_p95: 0
+    api_latency_ms_p95: 0
+
+  security_local:
+    hmac: false
+    idempotence: false
+    logs_trace_id: true
+
+  evidence:
+    - "arka-meta/reports/ui/login_before_after_mock.png"
+
+  remarks: []
+
+  next_step: "QA vérifie preuves + relaye AGP"
+  ts: 2025-08-29T21:19Z

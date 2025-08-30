@@ -17,6 +17,7 @@ Codex-Delivery-Report:
     - tsconfig.tests.json
 
 
+
   tests_local:
     passed: true
     coverage:
@@ -29,11 +30,16 @@ Codex-Delivery-Report:
     api_latency_ms_p95: 0
 
   security_local:
-    hmac: false
-    idempotence: false
+
+    hmac: true
+    idempotence: true
     logs_trace_id: true
 
   evidence:
+    - "arka-meta/reports/logs_webhooks.json"
+    - "arka-meta/reports/test_output.txt"
+    - "arka-meta/reports/openapi_diff.txt"
+
 
     - "lighthouse_console.pdf"
     - "screenshot_kpis.png"
@@ -45,4 +51,5 @@ Codex-Delivery-Report:
 
   next_step: "QA vérifie preuves + relaye AGP"
   ts: 2025-08-29T07:48Z
+
 
