@@ -44,7 +44,7 @@ const postgres = __importStar(require("@vercel/postgres"));
 // route handler will be loaded after env + mocks
 // buffer to capture trace ids during simulated DB inserts
 globalThis.__TRACE_BUFFER__ = [];
-process.env.JWT_SECRET = 'test';
+process.env.AUTH_SECRET = 'test';
 // load auth utils after secret set
 const { signToken } = require('../lib/auth');
 // mock sql to avoid real DB access and capture trace_id
