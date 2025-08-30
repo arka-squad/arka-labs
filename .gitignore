@@ -5,3 +5,5 @@ tsconfig.tsbuildinfo
 dist-tests
 
 .vercel
+!.env.example
+!.env.local.example

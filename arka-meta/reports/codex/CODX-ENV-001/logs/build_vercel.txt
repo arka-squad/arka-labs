@@ -1,0 +1,11 @@
+
+> arka-console@0.1.0 build
+> npm run build:css && next build
+
+
+> arka-console@0.1.0 build:css
+> tailwindcss -i ./app/globals.css -o ./.next/tailwind.css
+
+  ▲ Next.js 14.2.3
+
+   Creating an optimized production build ...
