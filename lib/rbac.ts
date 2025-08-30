@@ -12,6 +12,7 @@ export function withAuth(
     const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
     const start = Date.now();
     let res: NextResponse;
+    let user: User | null = null;
 
     if (allowed.includes('public') || allowed.includes('github-webhook')) {
 
@@ -22,7 +23,7 @@ export function withAuth(
         res = NextResponse.json({ error: 'unauthorized' }, { status: 401 });
       } else {
         const token = auth.slice(7);
-        const user = verifyToken(token);
+        user = verifyToken(token);
         if (!user || !allowed.includes(user.role)) {
           res = NextResponse.json({ error: 'forbidden' }, { status: 403 });
         } else {
@@ -33,7 +34,9 @@ export function withAuth(
 
     const duration_ms = Date.now() - start;
     const route = req.nextUrl.pathname;
-    log('info', 'api', { route, status: res.status, trace_id: traceId });
+    const actor = user?.id || 'anonymous';
+    const role = user?.role || 'public';
+    log('info', 'api', { route, status: res.status, trace_id: traceId, actor, role });
     try {
       await sql`insert into metrics_raw (trace_id, route, status, duration_ms) values (${traceId}, ${route}, ${res.status}, ${duration_ms})`;
       const buf = (globalThis as any).__TRACE_BUFFER__;
