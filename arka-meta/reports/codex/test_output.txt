@@ -1,9 +1,4 @@
-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
-
-> arka-console@0.1.0 test
-> npm run lint && npm run typecheck && npm run test:node
-
-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+> npm run lint && npm run typecheck && npm run test:pre && npm run test:node
 
 > arka-console@0.1.0 lint
 > next lint
@@ -13,22 +8,24 @@ npm warn Unknown env config "http-proxy". This will stop working in the next maj
 14:9  Warning: Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
 
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
 
 > arka-console@0.1.0 typecheck
 > tsc --noEmit
 
-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> arka-console@0.1.0 test:pre
+> tsc -p tsconfig.tests.json
+
 
 > arka-console@0.1.0 test:node
-> node --test dist-tests/trace-e2e.test.js
+> node --test dist-tests/tests/trace-e2e.test.js
 
 TAP version 13
-# {"ts":"2025-08-29T08:38:30.944Z","level":"info","msg":"api","route":"/api/metrics","status":200,"trace_id":"trc_e2e_001"}
+# {"ts":"2025-08-30T09:46:04.960Z","level":"info","msg":"api","route":"/api/metrics","status":200,"trace_id":"trc_e2e_001"}
 # Subtest: trace_id propagates UI→API→DB
 ok 1 - trace_id propagates UI→API→DB
   ---
-  duration_ms: 11.684431
+  duration_ms: 11.671048
   ...
 1..1
 # tests 1
@@ -38,4 +35,6 @@ ok 1 - trace_id propagates UI→API→DB
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 253.120529
+# duration_ms 266.148057
+root@ffae727a5731:/workspace/arka-labs#
+

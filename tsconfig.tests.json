@@ -8,5 +8,14 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["tests/**/*.ts", "lib/**/*.ts", "app/**/*.ts"]
+  "files": [
+    "tests/trace-e2e.test.ts",
+    "lib/rbac.ts",
+    "lib/trace.ts",
+    "lib/logger.ts",
+    "lib/auth.ts",
+    "lib/db.ts",
+    "app/api/metrics/route.ts"
+  ]
 }
+
