@@ -1,0 +1,12 @@
+cr_codex:
+  ticket: CODX-ENV-001
+  build_sha: a0e455519c08509fa270f7fb217e39863bcf4164
+  env: preview
+  status: FAIL
+  evidence:
+    - screenshots/vercel_env_AUTH_SECRET.png
+    - logs/build_vercel.txt
+    - logs/api_auth_sso_start.json
+    - env/.env.local.example
+    - lock/lockfile.diff
+  notes: "placeholder evidence"

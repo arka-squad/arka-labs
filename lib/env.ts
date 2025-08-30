@@ -6,7 +6,12 @@ const envSchema = z.object({
   BLOB_READ_WRITE_TOKEN: z.string().optional(),
 });
 
-export function getEnv() {
+export type Env = z.infer<typeof envSchema>;
+
+let cached: Env | null = null;
+
+export function getEnv(): Env {
+  if (cached) return cached;
   const parsed = envSchema.safeParse({
     AUTH_SECRET:
       process.env.AUTH_SECRET ??
@@ -15,8 +20,9 @@ export function getEnv() {
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
   });
   if (!parsed.success) {
-    const missing = parsed.error.issues.map(i => i.path.join(".")).join(",");
+    const missing = parsed.error.issues.map((i) => i.path.join(".")).join(",");
     throw new Error(`ENV_MISSING:${missing}`);
   }
-  return parsed.data;
+  cached = parsed.data;
+  return cached;
 }

@@ -1,5 +1,5 @@
 import { put, del, head } from '@vercel/blob';
-import { env } from './env';
+import { getEnv } from './env';
 
 export interface Storage {
   putObject: (key: string, data: Buffer, contentType: string) => Promise<void>;
@@ -8,10 +8,11 @@ export interface Storage {
 }
 
 async function ensureToken(): Promise<string> {
-  if (!env.BLOB_READ_WRITE_TOKEN) {
+  const { BLOB_READ_WRITE_TOKEN } = getEnv();
+  if (!BLOB_READ_WRITE_TOKEN) {
     throw new Error('BLOB_READ_WRITE_TOKEN not set');
   }
-  return env.BLOB_READ_WRITE_TOKEN;
+  return BLOB_READ_WRITE_TOKEN;
 }
 
 export const storage: Storage = {
