@@ -3,6 +3,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { uiLog } from '../../lib/ui-log';
 import { useRole } from '../../src/role-context';
+import { generateTraceId, TRACE_HEADER } from '../../lib/trace';
 
 export default function Page() {
   const router = useRouter();
@@ -25,32 +26,29 @@ export default function Page() {
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include',
-      });
-      if (!res.ok) {
-        uiLog('login_fail', { status: res.status, role });
-        setError(res.status === 401 ? 'Identifiants invalides' : 'Requête incorrecte');
-        return;
-      }
-      const { token } = await res.json();
+
+    const trace_id = generateTraceId();
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', [TRACE_HEADER]: trace_id },
+      body: JSON.stringify({ email, password }),
+    });
+    if (res.ok) {
       if (remember) localStorage.setItem('remember-email', email);
-      localStorage.setItem('token', token);
-      uiLog('login_success', { role });
-      router.push('/projects');
-    } catch {
-      uiLog('login_fail', { status: 500, role });
-      setError('Erreur réseau');
+      uiLog('login_success', { role, trace_id });
+      router.push('/console');
+    } else {
+      uiLog('login_fail', { status: res.status, role, trace_id });
+      setError(res.status === 401 ? 'Identifiants invalides' : 'Requête incorrecte');
     }
   }
 
-  function notify(msg: string) {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
+  async function sso() {
+    const trace_id = generateTraceId();
+    const res = await fetch('/api/auth/sso/start', { headers: { [TRACE_HEADER]: trace_id } });
+    uiLog('sso_click', { status: res.status, role, trace_id });
+    alert('501 Indisponible');
+
   }
 
   function sso() {

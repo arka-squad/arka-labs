@@ -1,24 +1,24 @@
 Codex-Delivery-Report:
 
-  ticket_id: TCK-004-02-BACK
+  ticket_id: TCK-000-OBS-CROSS
   lot: M3
   version: R1-M3 v1.1
-  repo: arka-backend
-  branch: feature/TCK-004-02-BACK
-  commit: 4cccac19fe3c93358cbb5e007a9233d3eed79278
+  repo: arka-console
+  branch: work
+  commit: 06506d984f420dc9a5c5393b75a59fe30d06658d
 
   delivered_components:
-    - "app/api/prompt-blocks/route.ts"
-    - "app/api/prompt-blocks/[id]/route.ts"
-    - "app/api/prompt-blocks/schema.ts"
-    - "app/api/prompt-blocks/versioning.ts"
-    - "arka-meta/contracts/json-schema/PromptBlockInput.schema.json"
-    - "arka-meta/contracts/json-schema/MessageInput.schema.json"
-    - "arka-meta/contracts/openapi.yaml"
-    - "sql/003_prompt_blocks.sql"
-    - "tests/prompt-block-schema.test.js"
-    - "tests/prompt-block-versioning.test.js"
-    - "tests/prompt-blocks-rbac.e2e.test.js"
+    - "app/login/page.tsx"
+    - "app/console/documents/page.tsx"
+    - "lib/rbac.ts"
+    - "lib/trace.ts"
+    - "sql/003_metrics_raw.sql"
+    - "tests/trace-e2e.test.ts"
+    - "dist-tests/trace-e2e.test.js"
+    - "package.json"
+    - "tsconfig.tests.json"
+    - "arka-meta/reports/codex/logs_trace.json"
+    - "arka-meta/reports/codex/test_output.txt"
 
 
   tests_local:
@@ -39,11 +39,12 @@ Codex-Delivery-Report:
 
   evidence:
 
-    - "logs_prompt_blocks.json"
-    - "tests/prompt-blocks-rbac.e2e.log"
+    - "logs_trace.json"
+    - "test_output.txt"
 
-  remarks: []
+  remarks:
+    - "Trace ID propagation verified with JSONL evidence and offline node --test."
 
   next_step: "QA vérifie preuves + relaye AGP"
-  ts: 2025-08-29T07:50Z
+  ts: 2025-08-29T17:45Z
 

@@ -1,0 +1,3 @@
+{"event":"ui.request","path":"/api/metrics","trace_id":"trc_demo_001","ts":"2025-08-29T17:35:00Z"}
+{"event":"api.request","route":"/api/metrics","trace_id":"trc_demo_001","ts":"2025-08-29T17:35:00Z"}
+{"event":"db.insert","table":"metrics_raw","trace_id":"trc_demo_001","ts":"2025-08-29T17:35:00Z"}

@@ -3,10 +3,21 @@
     "target": "ES2020",
     "module": "CommonJS",
     "outDir": "dist-tests",
+
+    "rootDir": ".",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
-    "allowJs": true,
-    "skipLibCheck": true,
-    "jsx": "react-jsx"
+    "skipLibCheck": true
   },
-  "include": ["tests/prompt-builder-rbac.test.ts"]
+  "files": [
+    "tests/trace-e2e.test.ts",
+    "lib/rbac.ts",
+    "lib/trace.ts",
+    "lib/logger.ts",
+    "lib/auth.ts",
+    "lib/db.ts",
+    "app/api/metrics/route.ts"
+  ]
 }
+
+
