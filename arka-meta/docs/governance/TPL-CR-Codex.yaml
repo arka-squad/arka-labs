@@ -1,0 +1,71 @@
+﻿## 3) `arka-meta/docs/governance/TPL-CR-Codex.yaml`
+
+
+# Template CR‑Codex — à dupliquer par ticket (blindé)
+CR-Codex:
+  ticket_id: "TCK-XXX"
+  lot: "M1|M2|M3"
+  owner: "@pmo-arka"
+  labels: ["Type/codex","Priority/P?","Lot/lot:MX"]
+
+  delivered_components:
+    - "app/.../page.tsx"
+    - "app/api/.../route.ts"
+    - "sql/00x_*.sql?"
+
+  contracts:
+    api:
+      endpoints:
+        - method: POST
+          path: "/api/agent/:id/run"
+          status_codes: [202,400,401,403,404,409]
+          headers_required: ["Authorization","X-Idempotency-Key"]
+        - method: POST
+          path: "/api/threads/:id/messages"
+          status_codes: [201,400,401,403,404]
+      idempotency: {enabled: true, key_header: "X-Idempotency-Key"}
+    ui:
+      budgets: {LCP_ms_max: 2500, TTI_ms_max: 2000, CLS_max: 0.1}
+      accessibility: {wcag: "AA"}
+      rbac_matrix:
+        viewer:  ["read"]
+        operator:["read","act:limited"]
+        owner:   ["read","write","admin"]
+
+  tests_local:
+    unit: ["..."]
+    integration: ["..."]
+    e2e:
+      - "smoke: / → /login → /console"
+      - "role matrix: route×role → 401/403/200"
+
+  perf_local:
+    ttft_chat_ms_p95: 0
+    rtt_voice_ms_p95: 0
+    lighthouse:
+      home_LCP_ms: 0
+      console_TTI_ms: 0
+      cls_max: 0.0
+
+  security_local:
+    secret_scan_ci: true
+    hmac_webhooks: true
+    idempotence_post: true
+    deps_vuln_high_max: 0
+
+  logs_schema_min:
+    json_example: |
+      {"ts":"2025-08-30T12:00:00Z","trace_id":"uuid","route":"/api/...",
+       "status":200,"latency_ms":123,"actor":"user","role":"owner","method":"POST"}
+
+  evidence:
+    - "logs_*.json"
+    - "screenshots_*.png"
+    - "lighthouse_report.pdf"
+    - "pr_export_memory.jsonl"
+
+  compliance_norme: "Norme-commune-Arka_Formats-de-livrables-Codex-ready_DEV_v1.2.pdf"
+  risk_labels: ["security","perf","deps","latency","scope"]
+  decision: "PASS|FAIL"
+  notes: ""
+  ts: "2025-08-30T12:00:00Z"
