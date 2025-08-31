@@ -1,26 +1,16 @@
-{
-  "kpis": {
-    "p95": {
-      "ttft_ms": 100,
-      "rtt_ms": 200
-    },
-    "error_rate_percent": 50
+[
+  {
+    "route": "/api/metrics/kpis",
+    "status": 200,
+    "duration_ms": 12,
+    "trace_id": "abc"
   },
-  "runs": {
-    "items": [
-      {
-        "ttft_ms": 100,
-        "rtt_ms": 200,
-        "status": "200"
-      },
-      {
-        "ttft_ms": 200,
-        "rtt_ms": 300,
-        "status": "500"
-      }
-    ],
-    "page": 1,
-    "page_size": 2,
-    "count": 2
-  }
-}
+  { "route": "/api/metrics/kpis", "status": 503, "duration_ms": 1 },
+  {
+    "route": "/api/metrics/runs",
+    "status": 200,
+    "duration_ms": 15,
+    "trace_id": "xyz"
+  },
+  { "route": "/api/metrics/runs", "status": 503, "duration_ms": 2 }
+]

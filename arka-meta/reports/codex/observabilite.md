@@ -1,6 +1,9 @@
 # Observabilité
 
 ## /api/metrics/kpis
+
+### 200
+
 ```json
 {
   "p95": { "ttft_ms": 100, "rtt_ms": 200 },
@@ -8,7 +11,16 @@
 }
 ```
 
+### 503
+
+```json
+{ "error": "db_unavailable" }
+```
+
 ## /api/metrics/runs
+
+### 200
+
 ```json
 {
   "items": [
@@ -19,4 +31,10 @@
   "page_size": 2,
   "count": 2
 }
+```
+
+### 503
+
+```json
+{ "error": "db_unavailable" }
 ```
