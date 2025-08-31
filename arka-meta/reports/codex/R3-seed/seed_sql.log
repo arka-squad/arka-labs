@@ -1,0 +1,4 @@
+INSERT 0 1  -- users
+INSERT 0 1  -- threads
+INSERT 0 2  -- messages
+INSERT 0 1  -- documents
