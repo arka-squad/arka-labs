@@ -1,0 +1,8 @@
+name: docs-hygiene
+on: { pull_request: { paths: ['arka-meta/**','public/**','runbook.md','docs/**','scripts/scan_docs.sh'] } }
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/scan_docs.sh
