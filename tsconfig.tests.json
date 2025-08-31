@@ -11,7 +11,7 @@
     "skipLibCheck": true
   },
 
-  "include": ["tests/**/*.ts"],
+  "include": ["tests/**/*.ts", "app/api/metrics/**/*.ts"],
 
   "exclude": ["lib/storage.ts"]
 

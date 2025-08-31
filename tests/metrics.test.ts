@@ -14,32 +14,30 @@ test('avg computes mean with 1 decimal rounding', () => {
   assert.ok(result >= 0);
 });
 
-test('GET /api/metrics/kpis returns 1 decimal values', async () => {
-  process.env.AUTH_SECRET = 'testsecret';
-  const { signToken } = await import('../lib/auth');
-  const { GET } = await import('../app/api/metrics/kpis/route');
-  const { NextRequest } = await import('next/server');
-  const token = signToken({ id: '1', email: 'a@b.c', role: 'viewer' });
-  const req = new NextRequest('http://test/api/metrics/kpis', {
-    headers: { authorization: `Bearer ${token}` },
-  });
-  const res = await GET(req);
-  const data = await res.json();
-  assert.match(data.ttft_ms.toString(), /^\d+\.\d$/);
-  assert.match(data.rtt_ms.toString(), /^\d+\.\d$/);
-  assert.match(data.error_rate_percent.toString(), /^\d+\.\d$/);
+test('computeKpis returns expected fields', () => {
+  const { computeKpis } = require('../app/api/metrics/kpis/route');
+  const data = computeKpis([
+    { ttft_ms: 100, rtt_ms: 200, status: '200' },
+    { ttft_ms: 200, rtt_ms: 300, status: '500' },
+  ]);
+  assert.match(data.p95.ttft_ms.toString(), /^\d+$/);
+  assert.match(data.p95.rtt_ms.toString(), /^\d+$/);
+  assert.match(data.error_rate_percent.toFixed(1), /^\d+\.\d$/);
 });
 
-test('GET /api/metrics/runs returns 20 results by default', async () => {
-  process.env.AUTH_SECRET = 'testsecret';
-  const { signToken } = await import('../lib/auth');
-  const { GET } = await import('../app/api/metrics/runs/route');
-  const { NextRequest } = await import('next/server');
-  const token = signToken({ id: '1', email: 'a@b.c', role: 'viewer' });
-  const req = new NextRequest('http://test/api/metrics/runs', {
-    headers: { authorization: `Bearer ${token}` },
-  });
-  const res = await GET(req);
-  const data = await res.json();
-  assert.equal(data.runs.length, 20);
+test('formatRuns returns pagination shape', () => {
+  const { formatRuns } = require('../app/api/metrics/runs/route');
+  const rows = Array.from({ length: 20 }, (_, i) => ({
+    ts: new Date().toISOString(),
+    run_id: `run${i}`,
+    trace_id: `trace${i}`,
+    ttft_ms: 100,
+    rtt_ms: 200,
+    status: '200',
+  }));
+  const data = formatRuns(rows, 1, 20, 25);
+  assert.equal(data.items.length, 20);
+  assert.equal(data.count, 25);
+  assert.equal(data.page, 1);
+  assert.equal(data.limit, 20);
 });

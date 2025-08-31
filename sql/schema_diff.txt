@@ -1,0 +1,9 @@
+--- /tmp/old_latest.sql	2025-08-31 07:05:01.251004012 +0000
++++ arka-meta/docs/db/schema/latest.sql	2025-08-31 07:06:03.234693386 +0000
+@@ -179,3 +179,6 @@
+ WHERE NOT EXISTS (SELECT 1 FROM public.projects);
+ COMMIT;
+ 
++CREATE OR REPLACE VIEW public.documents AS
++SELECT id, project_id, name, size, mime, storage_url, created_at
++FROM public.project_docs;
