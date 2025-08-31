@@ -18,7 +18,8 @@
 
 
 
-    "api:lint": "npx --no-install @redocly/cli lint --config redocly.yaml arka"
+      "api:lint": "npx --no-install @redocly/cli lint --config redocly.yaml arka",
+      "prepare": "ln -sf ../../scripts/pre-commit-secrets .git/hooks/pre-commit"
 
   },
   "dependencies": {
