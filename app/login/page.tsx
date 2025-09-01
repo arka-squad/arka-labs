@@ -19,7 +19,7 @@ export default function Page() {
     const saved = localStorage.getItem('remember-email');
     if (saved) setEmail(saved);
     const hasToken =
-      localStorage.getItem('token') || document.cookie.includes('arka_auth=');
+      localStorage.getItem('token') || /(arka_access_token|arka_auth)=/.test(document.cookie);
     if (hasToken) router.replace('/projects');
   }, [role, router]);
 

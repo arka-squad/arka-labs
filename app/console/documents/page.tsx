@@ -4,6 +4,7 @@ import { uiLog } from '../../../lib/ui-log';
 import { useRole } from '../../../src/role-context';
 import { DocUploadPanel, Doc } from './DocUploadPanel';
 import { generateTraceId, TRACE_HEADER } from '../../../lib/trace';
+import { apiFetch } from '../../../lib/http';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 const ALLOWED = [
@@ -33,7 +34,7 @@ export default function DocumentsPage() {
       try {
         setLoading(true);
         const trace_id = generateTraceId();
-        const res = await fetch('/api/documents', { headers: { [TRACE_HEADER]: trace_id } });
+        const res = await apiFetch('/api/documents', { headers: { [TRACE_HEADER]: trace_id } });
         const duration_ms = Math.round(performance.now() - start);
         uiLog('docs_fetch', { status: res.status, duration_ms, role, trace_id });
         if (!res.ok) throw new Error('fail');
@@ -71,7 +72,7 @@ export default function DocumentsPage() {
       try {
         setLoading(true);
         const trace_id = generateTraceId();
-        const res = await fetch('/api/documents', {
+        const res = await apiFetch('/api/documents', {
           method: 'POST',
           body: form,
           headers: { [TRACE_HEADER]: trace_id },
@@ -109,7 +110,7 @@ export default function DocumentsPage() {
     try {
       setLoading(true);
       const trace_id = generateTraceId();
-      const res = await fetch(`/api/documents/${id}`, { method: 'DELETE', headers: { [TRACE_HEADER]: trace_id } });
+      const res = await apiFetch(`/api/documents/${id}`, { method: 'DELETE', headers: { [TRACE_HEADER]: trace_id } });
       const duration_ms = Math.round(performance.now() - start);
       uiLog('doc_delete', { status: res.status, duration_ms, role, trace_id });
       if (!res.ok) {

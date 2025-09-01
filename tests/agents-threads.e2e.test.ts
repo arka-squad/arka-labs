@@ -4,6 +4,8 @@ import { randomUUID } from 'crypto';
 import { NextRequest } from 'next/server';
 
 process.env.JWT_SECRET = 'testsecret';
+process.env.JWT_ISSUER = 'arka';
+process.env.JWT_AUDIENCE = 'arka-squad';
 import { signToken } from '../lib/auth';
 import { POST as createAgent } from '../app/api/agents/route';
 import { POST as runAgent } from '../app/api/agent/[id]/run/route';
@@ -13,7 +15,7 @@ import { POST as pinMessage } from '../app/api/threads/[threadId]/pin/route';
 import { POST as unpinMessage } from '../app/api/threads/[threadId]/unpin/route';
 import { POST as abortThread } from '../app/api/threads/[threadId]/abort/route';
 
-const token = signToken({ id: 'u1', email: 'u1@example.com', role: 'owner' });
+const token = signToken({ sub: 'u1', role: 'admin' });
 
 function req(url: string, body?: any, headers: Record<string, string> = {}) {
   return new NextRequest(url, {

@@ -5,21 +5,23 @@ import { useRole } from '../../../src/role-context';
 import { Block } from './types';
 import { BlockCard } from './BlockCard';
 import { RBACGuard } from './RBACGuard';
+import { apiFetch } from '../../../lib/http';
 
 export default function PromptBuilderPage() {
   const { role } = useRole();
   const [blocks, setBlocks] = useState<Block[]>([]);
 
   useEffect(() => {
-    fetch('/api/prompt-blocks')
+    apiFetch('/api/prompt-blocks')
       .then((r) => r.json())
       .then(setBlocks);
     uiLog('mount', { role });
   }, [role]);
 
   async function add() {
-    const res = await fetch('/api/prompt-blocks', {
+    const res = await apiFetch('/api/prompt-blocks', {
       method: 'POST',
+      headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         titre: 'Nouveau',
         valeur: '',
@@ -33,8 +35,9 @@ export default function PromptBuilderPage() {
   }
 
   async function update(block: Block) {
-    await fetch('/api/prompt-blocks', {
+    await apiFetch('/api/prompt-blocks', {
       method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
       body: JSON.stringify(block),
     });
     setBlocks((prev) => prev.map((b) => (b.id === block.id ? block : b)));

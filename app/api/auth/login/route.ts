@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sql } from '../../../../lib/db';
 import bcrypt from 'bcryptjs';
-import { signToken, User } from '../../../../lib/auth';
+import { signToken, JwtUser } from '../../../../lib/auth';
 import { withAuth } from '../../../../lib/rbac';
 import { log } from '../../../../lib/logger';
 
@@ -43,11 +43,11 @@ export const POST = withAuth(['public'], async (req) => {
     log('info', 'invalid credentials', { route, status: 401, duration_ms: Date.now() - start });
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
-  const u: User = { id: String(user.id), email: user.email, role: user.role };
+  const u: JwtUser = { sub: String(user.id), role: user.role };
   const token = signToken(u);
   log('info', 'login', { route, status: 200, duration_ms: Date.now() - start });
-  const res = NextResponse.json({ token, user: u });
-  res.cookies.set('arka_auth', token, {
+  const res = NextResponse.json({ token, user: { id: u.sub, email: user.email, role: user.role } });
+  res.cookies.set('arka_access_token', token, {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',

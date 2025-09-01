@@ -30,6 +30,12 @@ npm run dev
 - Webhook ping test: send a `ping` event with the secret to `/api/webhook/github`.
 - Pushing to `main` deploys to Vercel. Cron for `/api/jobs/drain` is defined in `vercel.json`.
 
+### QA smokes `/api/agents`
+
+Scripts `scripts/smoke_agents.sh` et `scripts/smoke_agents.ps1` vérifient les statuts attendus (403,200,403,200).
+Variables requises : `HOST`, `TOKEN_VIEWER`, `TOKEN_EDITOR`, `TOKEN_ADMIN`.
+Des JWT de test sont fournis sous `arka-meta/reports/staging/tokens_staging.json`.
+
 ## Deployment
 
 Set the environment variables on Vercel and push to `main` to trigger deployment. test

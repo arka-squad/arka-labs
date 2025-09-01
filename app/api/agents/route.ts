@@ -3,7 +3,7 @@ import { withAuth } from '../../../lib/rbac';
 import { sql } from '../../../lib/db';
 import { memAgents, nextAgentId } from '../../../lib/mem-store';
 
-export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async () => {
+export const GET = withAuth(['editor', 'admin', 'owner'], async () => {
   return NextResponse.json({ agents: memAgents });
 });
 

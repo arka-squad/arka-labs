@@ -1,0 +1,8 @@
+{"ts":"2025-09-01T08:27:38.968Z","level":"debug","msg":"rbac","trace_id":"cb85ee79-163f-44e5-9778-c396063c566a","route":"/api/agents","method":"GET","role":"viewer","decision":"deny"}
+{"ts":"2025-09-01T08:27:38.970Z","level":"info","msg":"api","route":"/api/agents","status":403,"trace_id":"cb85ee79-163f-44e5-9778-c396063c566a","actor":"v","role":"viewer"}
+{"ts":"2025-09-01T08:27:38.978Z","level":"debug","msg":"rbac","trace_id":"6f9519d1-6974-4be9-b258-d47eae0a5581","route":"/api/agents","method":"GET","role":"editor","decision":"allow"}
+{"ts":"2025-09-01T08:27:38.978Z","level":"info","msg":"api","route":"/api/agents","status":200,"trace_id":"6f9519d1-6974-4be9-b258-d47eae0a5581","actor":"e","role":"editor"}
+{"ts":"2025-09-01T08:27:38.980Z","level":"debug","msg":"rbac","trace_id":"be5ba485-0435-4f01-871e-d15c328bc897","route":"/api/agents","method":"POST","role":"editor","decision":"deny"}
+{"ts":"2025-09-01T08:27:38.981Z","level":"info","msg":"api","route":"/api/agents","status":403,"trace_id":"be5ba485-0435-4f01-871e-d15c328bc897","actor":"e","role":"editor"}
+{"ts":"2025-09-01T08:27:38.986Z","level":"debug","msg":"rbac","trace_id":"afb065dc-449a-4a55-aebf-c8dcf370c878","route":"/api/agents","method":"POST","role":"admin","decision":"allow"}
+{"ts":"2025-09-01T08:27:38.986Z","level":"info","msg":"api","route":"/api/agents","status":201,"trace_id":"afb065dc-449a-4a55-aebf-c8dcf370c878","actor":"a","role":"admin"}
