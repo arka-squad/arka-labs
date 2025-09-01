@@ -1,6 +1,6 @@
 'use client';
 import { createContext, useContext, useState, ReactNode } from 'react';
-export type Role = 'viewer' | 'operator' | 'owner';
+export type Role = 'viewer' | 'editor' | 'admin' | 'owner';
 interface RoleCtx { role: Role; setRole: (r: Role) => void; }
 const RoleContext = createContext<RoleCtx>({ role: 'viewer', setRole: () => {} });
 export function RoleProvider({ children }: { children: ReactNode }) {

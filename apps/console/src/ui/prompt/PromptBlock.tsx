@@ -1,5 +1,5 @@
 import React from "react"; import { COLOR, GRADIENT } from "../tokens";
-export const PromptBlock: React.FC<{ titre:string; valeur:string; declencheur:string; role?:'viewer'|'operator'|'owner'; onRemove?:()=>void }>=({titre,valeur,declencheur,role='owner',onRemove})=> (
+export const PromptBlock: React.FC<{ titre:string; valeur:string; declencheur:string; role?:'viewer'|'editor'|'admin'|'owner'; onRemove?:()=>void }>=({titre,valeur,declencheur,role='owner',onRemove})=> (
   <li className="rounded-2xl border p-4" style={{ background: COLOR.block, borderColor: COLOR.border }}>
     <div className="mb-2 flex flex-wrap items-center gap-2">
       <span className="rounded-full px-3 py-1 text-xs" style={{ background: COLOR.block, border:`1px solid ${COLOR.border}`, color: COLOR.text }}>{titre}</span>

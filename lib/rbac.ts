@@ -1,8 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
+import React from 'react';
 import { verifyToken, User, Role } from './auth';
 import { log } from './logger';
 import { sql } from './db';
 import { TRACE_HEADER, generateTraceId } from './trace';
+
+type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+const RBAC_MATRIX: Record<string, Partial<Record<Method, Role[]>>> = {
+  '/api/projects': {
+    GET: ['viewer', 'editor', 'admin', 'owner'],
+    POST: ['editor', 'admin', 'owner'],
+  },
+  '/api/metrics': {
+    GET: ['admin', 'owner'],
+  },
+  '/api/prompt-blocks': {
+    GET: ['viewer', 'editor', 'admin', 'owner'],
+    POST: ['editor', 'admin', 'owner'],
+  },
+};
+
+export function canAccess(route: string, method: Method, role: Role): boolean {
+  const perms = RBAC_MATRIX[route];
+  if (!perms) return false;
+  const allowed = perms[method];
+  if (!allowed) return false;
+  return allowed.includes(role);
+}
+
+export function withRole<P>(Component: React.ComponentType<P>, roles: Role[]) {
+  return (props: P & { role: Role }) =>
+    roles.includes(props.role) ? React.createElement(Component, props) : null;
+}
+
+export function Guard({ role, roles, children }: { role: Role; roles: Role[]; children: React.ReactNode }) {
+  return roles.includes(role) ? React.createElement(React.Fragment, null, children) : null;
+}
 
 export function withAuth(
   allowed: (Role | 'public' | 'github-webhook')[],

@@ -6,7 +6,7 @@ import { storage } from '../../../../lib/storage';
 export const runtime = 'nodejs';
 
 export const GET = withAuth(
-  ['viewer', 'operator', 'owner'],
+  ['viewer', 'editor', 'admin', 'owner'],
   async (_req: NextRequest, _user: any, { params }: { params: { id: string } }) => {
     const id = Number(params.id);
     const { rows } = await sql`select name, mime, storage_key from documents where id = ${id}`;
@@ -24,7 +24,7 @@ export const GET = withAuth(
 );
 
 export const DELETE = withAuth(
-  ['owner'],
+  ['admin', 'owner'],
   async (_req: NextRequest, _user: any, { params }: { params: { id: string } }) => {
     const id = Number(params.id);
     const { rows } = await sql`delete from documents where id = ${id} returning storage_key`;

@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { withAuth } from '../../../lib/rbac';
 import { sql } from '../../../lib/db';
 
-export const GET = withAuth(['viewer', 'operator', 'owner'], async (req: NextRequest) => {
+export const GET = withAuth(['admin', 'owner'], async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   const project = searchParams.get('project');
   const lot = searchParams.get('lot');

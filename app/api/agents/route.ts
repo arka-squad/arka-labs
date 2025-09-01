@@ -3,11 +3,11 @@ import { withAuth } from '../../../lib/rbac';
 import { sql } from '../../../lib/db';
 import { memAgents, nextAgentId } from '../../../lib/mem-store';
 
-export const GET = withAuth(['viewer', 'operator', 'owner'], async () => {
+export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async () => {
   return NextResponse.json({ agents: memAgents });
 });
 
-export const POST = withAuth(['owner'], async (req: NextRequest) => {
+export const POST = withAuth(['admin', 'owner'], async (req: NextRequest) => {
   const body = await req.json().catch(() => null);
   if (!body || typeof body.name !== 'string') {
     return NextResponse.json({ error: 'invalid' }, { status: 400 });

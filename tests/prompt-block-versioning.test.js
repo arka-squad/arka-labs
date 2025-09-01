@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 function canWrite(role) {
-  return role === 'operator' || role === 'owner';
+  return role === 'editor' || role === 'admin' || role === 'owner';
 }
 
 function nextVersion(current, role) {
@@ -17,10 +17,10 @@ test('viewer cannot write', () => {
   assert.equal(canWrite('viewer'), false);
 });
 
-test('operator keeps version', () => {
-  assert.equal(canWrite('operator'), true);
-  assert.equal(nextVersion(1, 'operator'), 1);
-  assert.equal(shouldSaveSnapshot('operator'), false);
+test('editor keeps version', () => {
+  assert.equal(canWrite('editor'), true);
+  assert.equal(nextVersion(1, 'editor'), 1);
+  assert.equal(shouldSaveSnapshot('editor'), false);
 });
 
 test('owner increments version', () => {

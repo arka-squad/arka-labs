@@ -3,7 +3,7 @@ import { withAuth } from '../../../../../lib/rbac';
 import { sql } from '../../../../../lib/db';
 import { memThreads, memPins } from '../../../../../lib/mem-store';
 
-export const POST = withAuth(['operator', 'owner'], async (req: NextRequest, _user, { params }: { params: { threadId: string } }) => {
+export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextRequest, _user, { params }: { params: { threadId: string } }) => {
   await req.json().catch(() => null);
   if (!memThreads.has(params.threadId)) {
     return NextResponse.json({ error: 'not found' }, { status: 404 });

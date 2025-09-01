@@ -3,7 +3,7 @@ import { withAuth } from '../../../../../lib/rbac';
 import { sql } from '../../../../../lib/db';
 import { memRuns, nextRunId } from '../../../../../lib/mem-store';
 
-export const POST = withAuth(['operator', 'owner'], async (req: NextRequest, _user, { params }: { params: { id: string } }) => {
+export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextRequest, _user, { params }: { params: { id: string } }) => {
   const key = req.headers.get('x-idempotency-key');
   if (!key) {
     return NextResponse.json({ error: 'idempotency-key-required' }, { status: 400 });

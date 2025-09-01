@@ -27,7 +27,7 @@ const { GET } = require('../app/api/metrics/route');
 
 test('trace_id propagates UI→API→DB', async () => {
   const trace_id = 'trc_e2e_001';
-  const token = signToken({ id: 'u1', email: 'a@b.c', role: 'viewer' });
+  const token = signToken({ id: 'u1', email: 'a@b.c', role: 'admin' });
   const req = new NextRequest('http://test/api/metrics', {
     headers: { [TRACE_HEADER]: trace_id, authorization: `Bearer ${token}` },
   });
