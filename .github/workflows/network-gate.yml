@@ -8,7 +8,7 @@ jobs:
   gate:
     runs-on: ubuntu-latest
     env:
-      HOST_PRIMARY: https://www.arka-squad.app
+      HOST_PRIMARY: https://arka-squad.app
       HOST_FALLBACK: https://arka-liard.vercel.app
       HTTP_PROXY: ""
       HTTPS_PROXY: ""
