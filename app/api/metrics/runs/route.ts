@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 
 export const GET = async (req: Request) => {
   const start = Date.now();
-  const trace_id = req.headers.get('x-trace-id') || undefined;
+  const trace_id = req.headers.get('x-trace-id') ?? crypto.randomUUID();
   const { searchParams } = new URL(req.url);
   const { page, page_size } = parsePagination(searchParams);
   const offset = (page - 1) * page_size;
@@ -29,6 +29,7 @@ export const GET = async (req: Request) => {
       await sql`select count(*)::int as count from agent_events where event='metrics_run'`;
     const body = formatRuns(rows, page, page_size, c[0].count);
     const res = NextResponse.json(body);
+    res.headers.set('x-trace-id', trace_id);
     log('info', 'metrics_runs', {
       route: '/api/metrics/runs',
       status: res.status,
@@ -38,6 +39,7 @@ export const GET = async (req: Request) => {
     return res;
   } catch {
     const res = NextResponse.json({ error: 'db_unavailable' }, { status: 503 });
+    res.headers.set('x-trace-id', trace_id);
     log('info', 'metrics_runs', {
       route: '/api/metrics/runs',
       status: res.status,

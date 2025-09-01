@@ -22,6 +22,17 @@ export const computeKpis = (
   };
 };
 
+export const computeOverview = (
+  rows: { ttft_ms: number; rtt_ms: number; status: string }[] | any[],
+) => {
+  const { p95, error_rate_percent } = computeKpis(rows);
+  return {
+    count_24h: rows.length,
+    p95,
+    error_rate_percent,
+  };
+};
+
 export const parsePagination = (params: URLSearchParams) => {
   const page = Math.max(1, parseInt(params.get('page') ?? '1', 10));
   const ps = params.get('page_size') ?? params.get('limit') ?? '20';

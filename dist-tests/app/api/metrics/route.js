@@ -1,28 +1,47 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GET = void 0;
+exports.GET = exports.runtime = exports.dynamic = void 0;
 const server_1 = require("next/server");
-const rbac_1 = require("../../../lib/rbac");
 const db_1 = require("../../../lib/db");
-exports.GET = (0, rbac_1.withAuth)(['admin', 'owner'], async (req) => {
-    const { searchParams } = new URL(req.url);
-    const project = searchParams.get('project');
-    const lot = searchParams.get('lot');
-    const sprint = searchParams.get('sprint');
-    // Basic aggregation using message meta fields if present
-    const sqlAny = db_1.sql;
-    const { rows } = await sqlAny `
-    select
-      coalesce(percentile_cont(0.95) within group (order by (meta->>'ttft_ms')::int),0) as ttft_ms,
-      coalesce(percentile_cont(0.95) within group (order by (meta->>'rtt_ms')::int),0) as rtt_ms,
-      coalesce(avg((meta->>'error')::float),0) as err_pct
-    from messages
-      ${project ? sqlAny `where project_id = ${project}` : sqlAny ``}
-  `;
-    const kpis = {
-        ttft_ms: Number(rows[0]?.ttft_ms) || 0,
-        rtt_ms: Number(rows[0]?.rtt_ms) || 0,
-        err_pct: Number(rows[0]?.err_pct) || 0,
-    };
-    return server_1.NextResponse.json({ kpis });
-});
+
+const metrics_api_1 = require("../../../lib/metrics-api");
+const logger_1 = require("../../../lib/logger");
+exports.dynamic = 'force-dynamic';
+exports.runtime = 'nodejs';
+const GET = async (req) => {
+    const start = Date.now();
+    const trace_id = req.headers.get('x-trace-id') ?? crypto.randomUUID();
+    try {
+        const { rows } = await (0, db_1.sql) `
+      select (payload_json->>'ttft_ms')::int as ttft_ms,
+             (payload_json->>'rtt_ms')::int as rtt_ms,
+             (payload_json->>'status') as status
+      from agent_events
+      where event='metrics_run' and ts > now() - interval '24 hours'
+      order by ts desc
+    `;
+        const body = (0, metrics_api_1.computeOverview)(rows);
+        const res = server_1.NextResponse.json(body);
+        res.headers.set('x-trace-id', trace_id);
+        (0, logger_1.log)('info', 'metrics_overview', {
+            route: '/api/metrics',
+            status: res.status,
+            duration_ms: Date.now() - start,
+            trace_id,
+        });
+        return res;
+    }
+    catch {
+        const res = server_1.NextResponse.json({ error: 'db_unavailable' }, { status: 503 });
+        res.headers.set('x-trace-id', trace_id);
+        (0, logger_1.log)('info', 'metrics_overview', {
+            route: '/api/metrics',
+            status: res.status,
+            duration_ms: Date.now() - start,
+            trace_id,
+        });
+        return res;
+    }
+};
+exports.GET = GET;
+
