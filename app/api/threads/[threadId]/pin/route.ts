@@ -3,7 +3,7 @@ import { withAuth } from '../../../../../lib/rbac';
 import { sql } from '../../../../../lib/db';
 import { memThreads, memMessages, memPins } from '../../../../../lib/mem-store';
 
-export const POST = withAuth(['operator', 'owner'], async (req: NextRequest, _user, { params }: { params: { threadId: string } }) => {
+export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextRequest, _user, { params }: { params: { threadId: string } }) => {
   const body = await req.json().catch(() => null);
   const msgId = body?.message_id;
   if (typeof msgId !== 'number') {

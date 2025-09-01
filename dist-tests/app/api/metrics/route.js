@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GET = exports.runtime = exports.dynamic = void 0;
 const server_1 = require("next/server");
 const db_1 = require("../../../lib/db");
+
 const metrics_api_1 = require("../../../lib/metrics-api");
 const logger_1 = require("../../../lib/logger");
 exports.dynamic = 'force-dynamic';
@@ -43,3 +44,4 @@ const GET = async (req) => {
     }
 };
 exports.GET = GET;
+

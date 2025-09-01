@@ -49,7 +49,7 @@ export default function PromptBuilderPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Prompt Builder</h1>
-        <RBACGuard roles={['operator', 'owner']}>
+        <RBACGuard roles={['editor', 'admin', 'owner']}>
           <button
             onClick={add}
             className="rounded-lg bg-slate-700 px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"

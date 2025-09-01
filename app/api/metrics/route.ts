@@ -40,3 +40,4 @@ export const GET = async (req: NextRequest) => {
     return res;
   }
 };
+
