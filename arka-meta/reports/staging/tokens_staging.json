@@ -1,5 +1,5 @@
 {
-  "viewer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyLXZpZXdlciIsInJvbGUiOiJ2aWV3ZXIiLCJpYXQiOjE3NTY3MTUyMjksImV4cCI6MTc1NzkyNDgyOSwiYXVkIjoiYXJrYS1zcXVhZCIsImlzcyI6ImFya2EifQ.b0vXOO8qFVtaCi4t83WKAyisfi9Res6TgsOFTOVgG20",
-  "editor": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyLWVkaXRvciIsInJvbGUiOiJlZGl0b3IiLCJpYXQiOjE3NTY3MTUyMjksImV4cCI6MTc1NzkyNDgyOSwiYXVkIjoiYXJrYS1zcXVhZCIsImlzcyI6ImFya2EifQ.L0neNfoJ_4wPKsGY-7dUbEUi3c44amEMD-4BB-DR7vs",
-  "admin": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyLWFkbWluIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NzE1MjI5LCJleHAiOjE3NTc5MjQ4MjksImF1ZCI6ImFya2Etc3F1YWQiLCJpc3MiOiJhcmthIn0.lboM7p0acr95LmqdTPZGV6U_-dIhghuSR4KHWwhgi4M"
+  "viewer": "<viewer-token>",
+  "editor": "<editor-token>",
+  "admin": "<admin-token>"
 }

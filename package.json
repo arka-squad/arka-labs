@@ -13,6 +13,7 @@
     "test:pre": "tsc -p tsconfig.tests.json",
 
     "test:node": "node --test dist-tests/tests/metrics.test.js dist-tests/tests/metrics.observability.test.js dist-tests/tests/openai-stream.test.js dist-tests/tests/webhook.test.js",
+    "ci:net:selfcheck": "node scripts/net_self_check.mjs",
 
     "api:lint": "npx --no-install @redocly/cli lint --config redocly.yaml arka",
     "prepare": "ln -sf ../../scripts/pre-commit-secrets .git/hooks/pre-commit",
