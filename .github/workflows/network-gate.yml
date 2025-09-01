@@ -8,13 +8,12 @@ jobs:
   gate:
     runs-on: ubuntu-latest
     env:
-      HOST_PRIMARY: https://www.arka-team.app
+      HOST_PRIMARY: https://www.arka-squad.app
       HOST_FALLBACK: https://arka-liard.vercel.app
-      # neutralise tout proxy forcé
       HTTP_PROXY: ""
       HTTPS_PROXY: ""
       ALL_PROXY: ""
-      NO_PROXY: "localhost,127.0.0.1,.vercel.app,.vercel.dev,vercel.com,arka-team.app,arka-liard.vercel.app"
+      NO_PROXY: "localhost,127.0.0.1,.vercel.app,.vercel.dev,vercel.com,arka-squad.app,www.arka-squad.app,arka-liard.vercel.app"
     steps:
       - uses: actions/checkout@v4
 
