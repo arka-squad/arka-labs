@@ -34,7 +34,16 @@ npm run dev
 
 Scripts `scripts/smoke_agents.sh` et `scripts/smoke_agents.ps1` vérifient les statuts attendus (403,200,403,200).
 Variables requises : `HOST`, `TOKEN_VIEWER`, `TOKEN_EDITOR`, `TOKEN_ADMIN`.
+Variables optionnelles : `HTTPS_PROXY`, `HTTP_PROXY`, `ALL_PROXY`, `NO_PROXY` (définir `NO_PROXY=*` pour désactiver les proxies).
+Chaque appel est réalisé en mode verbeux avec `--connect-timeout 5` et `--max-time 10`.
+Les résultats sont journalisés en NDJSON dans `arka-meta/reports/codex/rbac_qa_logs.ndjson` avec `code=000` en cas d'échec.
 Des JWT de test sont fournis sous `arka-meta/reports/staging/tokens_staging.json`.
+
+### Wrapper `apiFetch`
+
+Toutes les requêtes vers `/api` doivent utiliser `apiFetch` (`lib/http.ts`).
+Cette fonction ajoute automatiquement l'en-tête `Authorization` si un token est disponible et redirige vers `/login` en cas de `401`.
+Une règle ESLint (`no-restricted-syntax`) bloque tout `fetch('/api…')` direct.
 
 ## Deployment
 

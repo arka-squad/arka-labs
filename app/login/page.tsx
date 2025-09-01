@@ -2,6 +2,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { uiLog } from '../../lib/ui-log';
+import { apiFetch } from '../../lib/http';
 import { useRole } from '../../src/role-context';
 import { generateTraceId, TRACE_HEADER } from '../../lib/trace';
 
@@ -28,7 +29,7 @@ export default function Page() {
     setError('');
 
     const trace_id = generateTraceId();
-    const res = await fetch('/api/auth/login', {
+    const res = await apiFetch('/api/auth/login', {
       method: 'POST',
       headers: { 'content-type': 'application/json', [TRACE_HEADER]: trace_id },
       body: JSON.stringify({ email, password }),
@@ -45,7 +46,7 @@ export default function Page() {
 
   async function sso() {
     const trace_id = generateTraceId();
-    const res = await fetch('/api/auth/sso/start', { headers: { [TRACE_HEADER]: trace_id } });
+    const res = await apiFetch('/api/auth/sso/start', { headers: { [TRACE_HEADER]: trace_id } });
     uiLog('sso_click', { status: res.status, role, trace_id });
     alert('501 Indisponible');
   }
