@@ -17,17 +17,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: debug-proxy
+      - name: net-dbg
         run: |
-          echo "== ENV proxy =="; env | grep -iE 'http_proxy|https_proxy|all_proxy|no_proxy' || true
-          echo "== /etc/environment =="; (cat /etc/environment || true) | grep -i proxy || true
+          echo "== proxy env =="; env | grep -iE 'http_proxy|https_proxy|all_proxy|no_proxy' || true
+          echo "== resolv =="; cat /etc/resolv.conf || true
+          echo "== DNS =="
+          getent hosts arka-squad.app || true
+          getent hosts arka-liard.vercel.app || true
+          echo "== route test =="
+          which ip && ip route get 1.1.1.1 || true
 
-      - name: curl primary (arka-team)
+      - name: curl primary (arka-squad)
         run: |
-          set -x
-          curl -sv --noproxy '*' "$HOST_PRIMARY/api/health" -o /dev/null || true
+          set -euxo pipefail
+          t0=$(date -Ins)
+          code=$(curl -4sS -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)
+          echo "PRIMARY $t0 -> $code"
 
       - name: curl fallback (vercel)
         run: |
-          set -x
-          curl -sv --noproxy '*' "$HOST_FALLBACK/api/health" -o /dev/null || true
+          set -euxo pipefail
+          t0=$(date -Ins)
+          code=$(curl -4sS -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_FALLBACK/api/health" || echo 000)
+          echo "FALLBACK $t0 -> $code"
