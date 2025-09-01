@@ -1,0 +1,24 @@
+name: network-gate
+on: { pull_request: { paths: ['**/*'] } }
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    env:
+      HOST: https://www.arka-team.app
+    steps:
+      - uses: actions/checkout@v4
+      - name: selfcheck
+        run: node scripts/net/selfcheck.js
+      - name: smoke
+        run: scripts/net/smoke.sh "$HOST"
+      - name: checksums
+        run: sha256sum rapport_offline.md logs/ui_network.json rapport_oracles.json > sha256sums.txt
+      - name: artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: network-gate
+          path: |
+            rapport_offline.md
+            logs/ui_network.json
+            rapport_oracles.json
+            sha256sums.txt
