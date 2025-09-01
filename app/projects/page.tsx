@@ -1,16 +1,13 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { apiFetch } from '../../lib/http';
 
 export default function ProjectsPage() {
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    fetch('/api/health', {
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      credentials: 'include',
-    })
+    apiFetch('/api/health', { credentials: 'include' })
       .then(async (res) => {
         if (!res.ok) throw new Error(String(res.status));
         const data = await res.json();

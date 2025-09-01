@@ -2,7 +2,9 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  AUTH_SECRET: z.string().min(32, "Required AUTH_SECRET (>=32)"),
+  JWT_SECRET: z.string().min(32, "Required JWT_SECRET (>=32)"),
+  JWT_ISSUER: z.string().min(1, "Required JWT_ISSUER"),
+  JWT_AUDIENCE: z.string().min(1, "Required JWT_AUDIENCE"),
   BLOB_READ_WRITE_TOKEN: z.string().optional(),
 });
 
@@ -13,10 +15,12 @@ let cached: Env | null = null;
 export function getEnv(): Env {
   if (cached) return cached;
   const parsed = envSchema.safeParse({
-    AUTH_SECRET:
+    JWT_SECRET:
+      process.env.JWT_SECRET ??
       process.env.AUTH_SECRET ??
-      process.env.NEXTAUTH_SECRET ?? // fallback si ancien naming
-      process.env.JWT_SECRET,
+      process.env.NEXTAUTH_SECRET,
+    JWT_ISSUER: process.env.JWT_ISSUER,
+    JWT_AUDIENCE: process.env.JWT_AUDIENCE,
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
   });
   if (!parsed.success) {

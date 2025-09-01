@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import React from 'react';
-import { verifyToken, User, Role } from './auth';
+import { verifyToken, JwtUser as User, Role } from './auth';
 import { log } from './logger';
 import { sql } from './db';
 import { TRACE_HEADER, generateTraceId } from './trace';
@@ -61,6 +61,7 @@ export function withAuth(
         if (!user || !allowed.includes(user.role)) {
           res = NextResponse.json({ error: 'forbidden' }, { status: 403 });
         } else {
+          (req as any).user = user;
           res = await handler(req, user, context);
         }
       }
@@ -68,8 +69,11 @@ export function withAuth(
 
     const duration_ms = Date.now() - start;
     const route = req.nextUrl.pathname;
-    const actor = user?.id || 'anonymous';
+    const method = req.method as Method;
+    const actor = user?.sub || 'anonymous';
     const role = user?.role || 'public';
+    const decision = res.status < 400 ? 'allow' : 'deny';
+    log('debug', 'rbac', { route, status: res.status, trace_id: traceId, method, role, decision });
     log('info', 'api', { route, status: res.status, trace_id: traceId, actor, role });
     try {
       await sql`insert into metrics_raw (trace_id, route, status, duration_ms) values (${traceId}, ${route}, ${res.status}, ${duration_ms})`;

@@ -8,7 +8,9 @@ import * as postgres from '@vercel/postgres';
 // buffer to capture trace ids during simulated DB inserts
 (globalThis as any).__TRACE_BUFFER__ = [];
 
-process.env.AUTH_SECRET = 'test';
+process.env.JWT_SECRET = 'test';
+process.env.JWT_ISSUER = 'arka';
+process.env.JWT_AUDIENCE = 'arka-squad';
 // load auth utils after secret set
 const { signToken } = require('../lib/auth');
 
@@ -27,7 +29,7 @@ const { GET } = require('../app/api/metrics/route');
 
 test('trace_id propagates UI→API→DB', async () => {
   const trace_id = 'trc_e2e_001';
-  const token = signToken({ id: 'u1', email: 'a@b.c', role: 'admin' });
+  const token = signToken({ sub: 'u1', role: 'admin' });
   const req = new NextRequest('http://test/api/metrics', {
     headers: { [TRACE_HEADER]: trace_id, authorization: `Bearer ${token}` },
   });

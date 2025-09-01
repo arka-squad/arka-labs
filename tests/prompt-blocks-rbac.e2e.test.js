@@ -5,7 +5,9 @@ const path = require('node:path');
 const Module = require('module');
 const ts = require('typescript');
 
-process.env.AUTH_SECRET = 'test-secret';
+process.env.JWT_SECRET = 'test-secret';
+process.env.JWT_ISSUER = 'arka';
+process.env.JWT_AUDIENCE = 'arka-squad';
 
 Module._extensions['.ts'] = function (module, filename) {
   const source = fs.readFileSync(filename, 'utf8');
@@ -93,7 +95,7 @@ function makeReq(method, url, token, body, trace) {
 }
 
 test('viewer cannot POST', async () => {
-  const viewer = signToken({ id: 'u1', email: 'v@e.com', role: 'viewer' });
+  const viewer = signToken({ sub: 'u1', role: 'viewer' });
   const before = promptBlocks.length;
   const res = await POST(makeReq('POST', 'http://x/api/prompt-blocks', viewer, { title: 'x', value: 'y' }));
   assert.equal(res.status, 403);
@@ -101,7 +103,7 @@ test('viewer cannot POST', async () => {
 });
 
 test('editor PATCH does not increment version', async () => {
-  const editor = signToken({ id: 'u2', email: 'e@e.com', role: 'editor' });
+  const editor = signToken({ sub: 'u2', role: 'editor' });
   const res = await PATCH(
     makeReq('PATCH', 'http://x/api/prompt-blocks/b1', editor, { title: 't2', value: 'v2' }),
     { params: { id: 'b1' } },
@@ -113,7 +115,7 @@ test('editor PATCH does not increment version', async () => {
 });
 
 test('owner PATCH increments version and saves snapshot', async () => {
-  const owner = signToken({ id: 'u3', email: 'o@e.com', role: 'owner' });
+  const owner = signToken({ sub: 'u3', role: 'owner' });
   const res = await PATCH(
     makeReq('PATCH', 'http://x/api/prompt-blocks/b1', owner, { title: 't3', value: 'v3' }, 'trc_test'),
     { params: { id: 'b1' } },

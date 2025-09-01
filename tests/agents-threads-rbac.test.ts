@@ -4,6 +4,8 @@ import { randomUUID } from 'crypto';
 import { NextRequest } from 'next/server';
 
 process.env.JWT_SECRET = 'testsecret';
+process.env.JWT_ISSUER = 'arka';
+process.env.JWT_AUDIENCE = 'arka-squad';
 import { signToken } from '../lib/auth';
 import { POST as createAgent } from '../app/api/agents/route';
 import { POST as runAgent } from '../app/api/agent/[id]/run/route';
@@ -14,10 +16,10 @@ import { POST as unpin } from '../app/api/threads/[threadId]/unpin/route';
 import { POST as abort } from '../app/api/threads/[threadId]/abort/route';
 
 const tokens = {
-  viewer: signToken({ id: 'v', email: 'v@e.com', role: 'viewer' }),
-  editor: signToken({ id: 'e', email: 'e@e.com', role: 'editor' }),
-  admin: signToken({ id: 'a', email: 'a@e.com', role: 'admin' }),
-  owner: signToken({ id: 'w', email: 'w@e.com', role: 'owner' }),
+  viewer: signToken({ sub: 'v', role: 'viewer' }),
+  editor: signToken({ sub: 'e', role: 'editor' }),
+  admin: signToken({ sub: 'a', role: 'admin' }),
+  owner: signToken({ sub: 'w', role: 'owner' }),
 };
 
 const roles = [

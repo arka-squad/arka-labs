@@ -1,24 +1,37 @@
 import jwt from 'jsonwebtoken';
+import { getEnv } from './env';
 
 export type Role = 'viewer' | 'editor' | 'admin' | 'owner';
-export interface User {
-  id: string;
-  email: string;
+
+export interface JwtUser {
+  sub: string;
   role: Role;
 }
 
-const SECRET = process.env.AUTH_SECRET;
-if (!SECRET) {
-  throw new Error('AUTH_SECRET missing');
+const { JWT_SECRET, JWT_ISSUER, JWT_AUDIENCE } = getEnv();
+
+export function signToken(user: JwtUser) {
+  return jwt.sign(
+    { sub: user.sub, role: user.role },
+    JWT_SECRET,
+    {
+      algorithm: 'HS256',
+      expiresIn: '1h',
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
+    }
+  );
 }
 
-export function signToken(user: User) {
-  return jwt.sign(user, SECRET, { expiresIn: '1h' });
-}
-
-export function verifyToken(token: string): User | null {
+export function verifyToken(token: string): JwtUser | null {
   try {
-    return jwt.verify(token, SECRET) as User;
+    const decoded = jwt.verify(token, JWT_SECRET, {
+      algorithms: ['HS256'],
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
+    }) as jwt.JwtPayload;
+    if (typeof decoded.sub !== 'string' || typeof decoded.role !== 'string') return null;
+    return { sub: decoded.sub, role: decoded.role as Role };
   } catch {
     return null;
   }

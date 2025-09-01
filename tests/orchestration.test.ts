@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { NextRequest } from 'next/server';
 
 process.env.JWT_SECRET = 'testsecret';
+process.env.JWT_ISSUER = 'arka';
+process.env.JWT_AUDIENCE = 'arka-squad';
 
 const { runLot, getEventLog } = require('../lib/orchestration');
 const { signToken } = require('../lib/auth');
@@ -18,7 +20,7 @@ test('runLot logs full traversal', async () => {
 });
 
 test('POST /api/jobs/drain requires owner', async () => {
-  const token = signToken({ id: 'o1', email: 'o@e.com', role: 'owner' });
+  const token = signToken({ sub: 'o1', role: 'owner' });
   const req = new NextRequest('http://test/api/jobs/drain', {
     method: 'POST',
     headers: { authorization: `Bearer ${token}` },
