@@ -49,3 +49,6 @@ for k in "${!COUNTS[@]}"; do
   role=${k%%|*}; code=${k##*|}
   echo "$role $code ${COUNTS[$k]}" >&2
 done
+
+# Network oracles (run after smoke)
+"$(dirname "$0")/net/oracles.sh"
