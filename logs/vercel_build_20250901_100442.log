@@ -1,10 +1,21 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
 
 > arka-console@0.1.0 build
 > npm run build:css && next build
 
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
 
 > arka-console@0.1.0 build:css
 > tailwindcss -i ./app/globals.css -o ./.next/tailwind.css
+
+
+Rebuilding...
+
+Done in 367ms.
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
 
   ▲ Next.js 14.2.3
 
