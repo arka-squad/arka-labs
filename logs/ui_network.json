@@ -1,0 +1,5 @@
+{"ts":"2025-09-01T14:55:54.091Z","host":"www.arka-team.app","step":"dns.resolve4","duration_ms":51,"error":"ENOTFOUND"}
+{"ts":"2025-09-01T14:55:54.249Z","host":"www.arka-team.app","step":"tls.connect","duration_ms":157,"error":"ENOTFOUND"}
+{"ts":"2025-09-01T14:55:54.268Z","host":"arka-liard.vercel.app","step":"dns.resolve4","duration_ms":19,"addrs":["64.29.17.3","216.198.79.3"]}
+{"ts":"2025-09-01T14:55:54.318Z","host":"arka-liard.vercel.app","step":"tls.connect","duration_ms":50,"error":"ENETUNREACH"}
+{"ts":"2025-09-01T14:55:54Z","host":"https://www.arka-team.app","step":"curl","http_code":000,"connect_403":false}
