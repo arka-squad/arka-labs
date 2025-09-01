@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { apiFetch } from '../lib/http';
+import { apiFetch } from '../../lib/http';
 
 type Project = { id: string; name: string; description: string; last_activity: string };
 function since(ts: string) { const d=Math.max(0,Date.now()-new Date(ts).getTime()); const m=Math.floor(d/60000),h=Math.floor(m/60),dd=Math.floor(h/24); if(dd)return`il y a ${dd} j`; if(h)return`il y a ${h} h`; if(m)return`il y a ${m} min`; return 'à l’instant'; }

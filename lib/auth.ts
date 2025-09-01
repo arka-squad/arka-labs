@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { getEnv } from './env';
 
 export type Role = 'viewer' | 'editor' | 'admin' | 'owner';
@@ -29,7 +29,7 @@ export function verifyToken(token: string): JwtUser | null {
       algorithms: ['HS256'],
       issuer: JWT_ISSUER,
       audience: JWT_AUDIENCE,
-    }) as jwt.JwtPayload;
+    }) as any;
     if (typeof decoded.sub !== 'string' || typeof decoded.role !== 'string') return null;
     return { sub: decoded.sub, role: decoded.role as Role };
   } catch {
