@@ -1,19 +1,22 @@
 name: network-gate
+
 on:
   workflow_dispatch:
   pull_request:
     paths: ['**/*']
-    
+
 jobs:
   gate:
     runs-on: ubuntu-latest
     env:
       HOST_PRIMARY: https://arka-squad.app
       HOST_FALLBACK: https://arka-liard.vercel.app
+      # neutralise tout proxy forcé
       HTTP_PROXY: ""
       HTTPS_PROXY: ""
       ALL_PROXY: ""
       NO_PROXY: "localhost,127.0.0.1,.vercel.app,.vercel.dev,vercel.com,arka-squad.app,www.arka-squad.app,arka-liard.vercel.app"
+
     steps:
       - uses: actions/checkout@v4
 
@@ -21,22 +24,44 @@ jobs:
         run: |
           echo "== proxy env =="; env | grep -iE 'http_proxy|https_proxy|all_proxy|no_proxy' || true
           echo "== resolv =="; cat /etc/resolv.conf || true
-          echo "== DNS =="
-          getent hosts arka-squad.app || true
-          getent hosts arka-liard.vercel.app || true
-          echo "== route test =="
-          which ip && ip route get 1.1.1.1 || true
+          echo "== DNS =="; getent hosts arka-squad.app || true; getent hosts arka-liard.vercel.app || true
+          echo "== route test =="; which ip && ip route get 1.1.1.1 || true
 
-      - name: curl primary (arka-squad)
+      - name: curl primary (apex)
+        id: primary
         run: |
-          set -euxo pipefail
+          set -e
           t0=$(date -Ins)
           code=$(curl -4sS -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)
           echo "PRIMARY $t0 -> $code"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          [[ "$code" = "200" ]] && echo "ok=true" >> "$GITHUB_OUTPUT" || echo "ok=false" >> "$GITHUB_OUTPUT"
 
       - name: curl fallback (vercel)
+        id: fallback
         run: |
-          set -euxo pipefail
+          set -e
           t0=$(date -Ins)
           code=$(curl -4sS -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_FALLBACK/api/health" || echo 000)
           echo "FALLBACK $t0 -> $code"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          [[ "$code" =~ ^[23][0-9]{2}$ ]] && echo "ok=true" >> "$GITHUB_OUTPUT" || echo "ok=false" >> "$GITHUB_OUTPUT"
+
+      - name: choose host
+        id: choose
+        run: |
+          if [[ "${{ steps.primary.outputs.ok }}" == "true" ]]; then
+            echo "host=$HOST_PRIMARY" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ steps.fallback.outputs.ok }}" == "true" ]]; then
+            echo "host=$HOST_FALLBACK" >> "$GITHUB_OUTPUT"
+          else
+            echo "host=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: run RBAC smokes
+        if: steps.choose.outputs.host != ''
+        env:
+          HOST: ${{ steps.choose.outputs.host }}
+        run: |
+          echo "Running smokes on $HOST"
+          bash scripts/smoke_agents.sh
