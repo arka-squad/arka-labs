@@ -15,14 +15,16 @@ import { POST as abort } from '../app/api/threads/[threadId]/abort/route';
 
 const tokens = {
   viewer: signToken({ id: 'v', email: 'v@e.com', role: 'viewer' }),
-  operator: signToken({ id: 'o', email: 'o@e.com', role: 'operator' }),
+  editor: signToken({ id: 'e', email: 'e@e.com', role: 'editor' }),
+  admin: signToken({ id: 'a', email: 'a@e.com', role: 'admin' }),
   owner: signToken({ id: 'w', email: 'w@e.com', role: 'owner' }),
 };
 
 const roles = [
   { name: 'noauth', token: null },
   { name: 'viewer', token: tokens.viewer },
-  { name: 'operator', token: tokens.operator },
+  { name: 'editor', token: tokens.editor },
+  { name: 'admin', token: tokens.admin },
   { name: 'owner', token: tokens.owner },
 ];
 
@@ -39,7 +41,7 @@ test('rbac route matrix', async () => {
       handler: createAgent,
       make: (tok: string | null) => [request('http://test/api/agents', tok, { name: 'a' }), undefined],
       success: 201,
-      allowed: ['owner'],
+      allowed: ['admin', 'owner'],
     },
     {
       name: 'run agent',
@@ -54,7 +56,7 @@ test('rbac route matrix', async () => {
         { params: { id: ctx.agentId } },
       ],
       success: 202,
-      allowed: ['operator', 'owner'],
+      allowed: ['editor', 'admin', 'owner'],
     },
     {
       name: 'post message',
@@ -71,7 +73,7 @@ test('rbac route matrix', async () => {
         { params: { threadId: ctx.threadId } },
       ],
       success: 201,
-      allowed: ['operator', 'owner'],
+      allowed: ['editor', 'admin', 'owner'],
     },
     {
       name: 'pin message',
@@ -93,7 +95,7 @@ test('rbac route matrix', async () => {
         { params: { threadId: ctx.threadId } },
       ],
       success: 200,
-      allowed: ['operator', 'owner'],
+      allowed: ['editor', 'admin', 'owner'],
     },
     {
       name: 'unpin message',
@@ -118,7 +120,7 @@ test('rbac route matrix', async () => {
         { params: { threadId: ctx.threadId } },
       ],
       success: 200,
-      allowed: ['operator', 'owner'],
+      allowed: ['editor', 'admin', 'owner'],
     },
     {
       name: 'abort thread',
@@ -135,7 +137,7 @@ test('rbac route matrix', async () => {
         { params: { threadId: ctx.threadId } },
       ],
       success: 202,
-      allowed: ['operator', 'owner'],
+      allowed: ['editor', 'admin', 'owner'],
     },
   ];
 

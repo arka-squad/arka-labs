@@ -5,7 +5,7 @@ import { log } from '../../../../../lib/logger';
 import { generateTraceId, TRACE_HEADER } from '../../../../../lib/trace';
 
 export const POST = withAuth(
-  ['operator', 'owner'],
+  ['editor', 'admin', 'owner'],
   async (
     req: NextRequest,
     _user: any,

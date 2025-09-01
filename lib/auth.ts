@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-export type Role = 'viewer' | 'operator' | 'owner';
+export type Role = 'viewer' | 'editor' | 'admin' | 'owner';
 export interface User {
   id: string;
   email: string;

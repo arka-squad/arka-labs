@@ -4,7 +4,7 @@ import { withAuth } from '../../../../../lib/rbac';
 import { validateMessage, MessageInput } from './schema';
 import { memThreads, memMessages, nextMessageId } from '../../../../../lib/mem-store';
 
-export const POST = withAuth(['operator', 'owner'], async (req: NextRequest, _user, { params }: { params: { threadId: string } }) => {
+export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextRequest, _user, { params }: { params: { threadId: string } }) => {
   const body = await req.json().catch(() => null);
   if (!validateMessage(body)) {
     return NextResponse.json({ error: 'invalid' }, { status: 400 });

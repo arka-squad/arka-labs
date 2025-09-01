@@ -4,7 +4,7 @@ exports.GET = void 0;
 const server_1 = require("next/server");
 const rbac_1 = require("../../../lib/rbac");
 const db_1 = require("../../../lib/db");
-exports.GET = (0, rbac_1.withAuth)(['viewer', 'operator', 'owner'], async (req) => {
+exports.GET = (0, rbac_1.withAuth)(['admin', 'owner'], async (req) => {
     const { searchParams } = new URL(req.url);
     const project = searchParams.get('project');
     const lot = searchParams.get('lot');

@@ -4,7 +4,7 @@ import { sql } from '../../../../../lib/db';
 import { memThreads } from '../../../../../lib/mem-store';
 import { randomUUID } from 'crypto';
 
-export const POST = withAuth(['operator', 'owner'], async (req: NextRequest, _user, { params }: { params: { id: string } }) => {
+export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextRequest, _user, { params }: { params: { id: string } }) => {
   await req.json().catch(() => null);
   const threadId = randomUUID();
   try {

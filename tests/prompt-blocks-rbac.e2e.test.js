@@ -100,10 +100,10 @@ test('viewer cannot POST', async () => {
   assert.equal(promptBlocks.length, before);
 });
 
-test('operator PATCH does not increment version', async () => {
-  const operator = signToken({ id: 'u2', email: 'o@e.com', role: 'operator' });
+test('editor PATCH does not increment version', async () => {
+  const editor = signToken({ id: 'u2', email: 'e@e.com', role: 'editor' });
   const res = await PATCH(
-    makeReq('PATCH', 'http://x/api/prompt-blocks/b1', operator, { title: 't2', value: 'v2' }),
+    makeReq('PATCH', 'http://x/api/prompt-blocks/b1', editor, { title: 't2', value: 'v2' }),
     { params: { id: 'b1' } },
   );
   const body = await res.json();

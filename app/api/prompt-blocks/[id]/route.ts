@@ -8,7 +8,7 @@ import { randomUUID } from 'crypto';
 
 export const runtime = 'nodejs';
 
-export const PATCH = withAuth(['operator', 'owner'], async (req: NextRequest, user, { params }) => {
+export const PATCH = withAuth(['editor', 'admin', 'owner'], async (req: NextRequest, user, { params }) => {
   const start = Date.now();
   const route = `/api/prompt-blocks/${params.id}`;
   const trace = req.headers.get('x-trace-id') || randomUUID();
@@ -39,7 +39,7 @@ export const PATCH = withAuth(['operator', 'owner'], async (req: NextRequest, us
   return NextResponse.json(updated[0]);
 });
 
-export const DELETE = withAuth(['operator', 'owner'], async (req: NextRequest, user, { params }) => {
+export const DELETE = withAuth(['editor', 'admin', 'owner'], async (req: NextRequest, user, { params }) => {
   const start = Date.now();
   const route = `/api/prompt-blocks/${params.id}`;
   const trace = req.headers.get('x-trace-id') || randomUUID();

@@ -9,7 +9,7 @@ import { randomUUID } from 'crypto';
 
 export const runtime = 'nodejs';
 
-export const GET = withAuth(['viewer', 'operator', 'owner'], async (req: NextRequest) => {
+export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req: NextRequest) => {
   const start = Date.now();
   const route = '/api/prompt-blocks';
   const trace = req.headers.get('x-trace-id') || randomUUID();
@@ -18,7 +18,7 @@ export const GET = withAuth(['viewer', 'operator', 'owner'], async (req: NextReq
   return NextResponse.json(rows);
 });
 
-export const POST = withAuth(['operator', 'owner'], async (req: NextRequest, user) => {
+export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextRequest, user) => {
   const start = Date.now();
   const route = '/api/prompt-blocks';
   const trace = req.headers.get('x-trace-id') || randomUUID();
