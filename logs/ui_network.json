@@ -1,0 +1,4 @@
+{"ts":"2025-09-01T14:57:47+00:00","level":"warn","msg":"SKIPPED(host_unreachable)","route":"/api/documents?page=1&page_size=20","status":"000","trace_id":null}
+{"ts":"2025-09-01T14:57:47+00:00","level":"warn","msg":"SKIPPED(host_unreachable)","route":"/api/documents/1/preview","status":"000","trace_id":null}
+{"ts":"2025-09-01T14:57:47+00:00","level":"warn","msg":"SKIPPED(host_unreachable)","route":"/api/chat/threads","status":"000","trace_id":null}
+{"ts":"2025-09-01T14:57:47+00:00","level":"warn","msg":"SKIPPED(host_unreachable)","route":"/api/metrics/kpis","status":"000","trace_id":null}
