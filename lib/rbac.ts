@@ -30,8 +30,10 @@ export function canAccess(route: string, method: Method, role: Role): boolean {
 }
 
 export function withRole<P>(Component: React.ComponentType<P>, roles: Role[]) {
-  return (props: P & { role: Role }) =>
-    roles.includes(props.role) ? React.createElement(Component, props) : null;
+  const WithRole = (props: P & { role: Role }) =>
+    roles.includes(props.role) ? React.createElement(Component as any, props) : null;
+  WithRole.displayName = `withRole(${(Component as any).displayName || Component.name || 'Component'})`;
+  return WithRole;
 }
 
 export function Guard({ role, roles, children }: { role: Role; roles: Role[]; children: React.ReactNode }) {

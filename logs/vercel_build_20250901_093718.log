@@ -12,11 +12,11 @@
  ✓ Compiled successfully
    Linting and checking validity of types ...
    Collecting page data ...
-   Generating static pages (0/19) ...
-   Generating static pages (4/19) 
-   Generating static pages (9/19) 
-   Generating static pages (14/19) 
- ✓ Generating static pages (19/19)
+   Generating static pages (0/18) ...
+   Generating static pages (4/18) 
+   Generating static pages (8/18) 
+   Generating static pages (13/18) 
+ ✓ Generating static pages (18/18)
    Finalizing page optimization ...
    Collecting build traces ...
 
@@ -49,14 +49,14 @@ Route (app)                              Size     First Load JS
 ├ ƒ /api/threads/[threadId]/stream       0 B                0 B
 ├ ƒ /api/threads/[threadId]/unpin        0 B                0 B
 ├ ƒ /api/webhook/github                  0 B                0 B
-├ ○ /console                             1.23 kB        88.2 kB
+├ ○ /console                             1.67 kB        88.7 kB
 ├ ƒ /console/agents/[id]/events          1.35 kB        88.3 kB
 ├ ○ /console/chat                        1.35 kB        88.3 kB
-├ ○ /console/documents                   2.48 kB        89.5 kB
+├ ○ /console/documents                   2.82 kB        89.8 kB
 ├ ○ /console/observabilite               1.67 kB        88.7 kB
-├ ○ /console/prompt-builder              1.66 kB        88.6 kB
-├ ○ /login                               1.73 kB        88.7 kB
-└ ○ /projects                            566 B          87.6 kB
+├ ○ /console/prompt-builder              2.09 kB        89.1 kB
+├ ○ /login                               1.74 kB        88.7 kB
+└ ○ /projects                            966 B            88 kB
 + First Load JS shared by all            87 kB
   ├ chunks/23-f7a65c63512a7be4.js        31.5 kB
   ├ chunks/fd9d1056-b65947d3417b8eff.js  53.6 kB

@@ -6,6 +6,7 @@ const envSchema = z.object({
   JWT_ISSUER: z.string().min(1, "Required JWT_ISSUER"),
   JWT_AUDIENCE: z.string().min(1, "Required JWT_AUDIENCE"),
   BLOB_READ_WRITE_TOKEN: z.string().optional(),
+  AUTH_SECRET: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -22,6 +23,7 @@ export function getEnv(): Env {
     JWT_ISSUER: process.env.JWT_ISSUER,
     JWT_AUDIENCE: process.env.JWT_AUDIENCE,
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
+    AUTH_SECRET: process.env.AUTH_SECRET,
   });
   if (!parsed.success) {
     const missing = parsed.error.issues.map((i) => i.path.join(".")).join(",");
