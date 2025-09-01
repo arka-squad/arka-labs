@@ -1,5 +1,30 @@
 # Observabilité
 
+Toutes les routes `/api/metrics*` exigent le header `x-trace-id`.
+S'il est absent, le serveur en génère un et le renvoie dans la réponse.
+
+## /api/metrics
+
+### 200
+
+```json
+{
+  "count_24h": 123,
+  "p95": { "ttft_ms": 100, "rtt_ms": 200 },
+  "error_rate_percent": 0
+}
+```
+
+### 503
+
+```json
+{ "error": "db_unavailable" }
+```
+
+```sh
+curl -sH "x-trace-id: demo" "$HOST/api/metrics"
+```
+
 ## /api/metrics/kpis
 
 ### 200

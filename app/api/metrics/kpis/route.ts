@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 
 export const GET = async (req: Request) => {
   const start = Date.now();
-  const trace_id = req.headers.get('x-trace-id') || undefined;
+  const trace_id = req.headers.get('x-trace-id') ?? crypto.randomUUID();
   try {
     const { rows } = await sql`
       select (payload_json->>'ttft_ms')::int as ttft_ms,
@@ -21,6 +21,7 @@ export const GET = async (req: Request) => {
     `;
     const body = computeKpis(rows);
     const res = NextResponse.json(body);
+    res.headers.set('x-trace-id', trace_id);
     log('info', 'metrics_kpis', {
       route: '/api/metrics/kpis',
       status: res.status,
@@ -30,6 +31,7 @@ export const GET = async (req: Request) => {
     return res;
   } catch {
     const res = NextResponse.json({ error: 'db_unavailable' }, { status: 503 });
+    res.headers.set('x-trace-id', trace_id);
     log('info', 'metrics_kpis', {
       route: '/api/metrics/kpis',
       status: res.status,

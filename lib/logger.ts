@@ -1,6 +1,8 @@
 type LogFields = {
   route: string;
   status: number;
+  duration_ms?: number;
+  trace_id?: string;
   [key: string]: any;
 };
 

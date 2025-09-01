@@ -1,5 +1,17 @@
 [
   {
+    "route": "/api/metrics",
+    "status": 200,
+    "duration_ms": 10,
+    "trace_id": "demo-1"
+  },
+  {
+    "route": "/api/metrics",
+    "status": 503,
+    "duration_ms": 2,
+    "trace_id": "demo-2"
+  },
+  {
     "route": "/api/metrics/kpis",
     "status": 200,
     "duration_ms": 12,
