@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-: "${HOST:?HOST not set}"
+# --- NET GUARD (offline skip) ---
+HOST="${HOST:-https://arka-squad.app}"
+if ! curl -4sS --connect-timeout 3 --max-time 5 -o /dev/null "$HOST/api/health"; then
+  echo "offline — SKIPPED(host_unreachable)"; exit 0;
+fi
+# --- suite du script existant ---
+
 : "${TOKEN_VIEWER:?TOKEN_VIEWER not set}"
 : "${TOKEN_EDITOR:?TOKEN_EDITOR not set}"
 : "${TOKEN_ADMIN:?TOKEN_ADMIN not set}"

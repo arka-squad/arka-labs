@@ -2,7 +2,6 @@
 [![rbac-smokes](https://github.com/arka-squad/arka-labs/actions/workflows/rbac-smokes.yml/badge.svg?branch=main)](https://github.com/arka-squad/arka-labs/actions/workflows/rbac-smokes.yml)
 [![secret-scan](https://github.com/arka-squad/arka-labs/actions/workflows/secret-scan.yml/badge.svg?branch=main)](https://github.com/arka-squad/arka-labs/actions/workflows/secret-scan.yml)
 
-
 # Arka Console
 
 Mini console for orchestrating agents and tracking memory via GitHub pull requests.
@@ -17,16 +16,16 @@ npm run dev
 
 ## Environment variables
 
-| Variable | Description |
-| --- | --- |
-| `POSTGRES_URL` | PostgreSQL connection string |
-| `MODE` | `shadow` (default) or `active` |
-| `ALLOWLIST_REPOS` | Comma separated repo full names allowed for webhooks |
-| `GITHUB_APP_ID` | GitHub App identifier |
-| `GITHUB_PRIVATE_KEY` | Private key for the GitHub App |
-| `GITHUB_WEBHOOK_SECRET` | Secret used to validate webhook signatures |
-| `MEMORY_PR` | `true` to append memory comments on pull requests |
-| `OPENAI_API_KEY` | Optional – used by agents |
+| Variable                | Description                                          |
+| ----------------------- | ---------------------------------------------------- |
+| `POSTGRES_URL`          | PostgreSQL connection string                         |
+| `MODE`                  | `shadow` (default) or `active`                       |
+| `ALLOWLIST_REPOS`       | Comma separated repo full names allowed for webhooks |
+| `GITHUB_APP_ID`         | GitHub App identifier                                |
+| `GITHUB_PRIVATE_KEY`    | Private key for the GitHub App                       |
+| `GITHUB_WEBHOOK_SECRET` | Secret used to validate webhook signatures           |
+| `MEMORY_PR`             | `true` to append memory comments on pull requests    |
+| `OPENAI_API_KEY`        | Optional – used by agents                            |
 
 ## Usage
 
@@ -44,6 +43,12 @@ Chaque appel est réalisé en mode verbeux avec `--connect-timeout 5` et `--max-
 Les résultats sont journalisés en NDJSON dans `arka-meta/reports/codex/rbac_qa_logs.ndjson` avec `code=000` en cas d'échec.
 Des JWT de test sont fournis sous `arka-meta/reports/staging/tokens_staging.json`.
 
+### Net guard (CI & local)
+
+- HOST défaut : `https://arka-squad.app` (fallback géré côté `network-gate`).
+- En **offline** (pas de `/api/health` en 5s) : les smokes **sautent** et loggent `SKIPPED(host_unreachable)`.
+- Le guard est appliqué dans `scripts/smoke_agents.sh`, `scripts/smokes_matrix_guard.mjs` et le workflow `rbac-smokes.yml`.
+
 ### Wrapper `apiFetch`
 
 Toutes les requêtes vers `/api` doivent utiliser `apiFetch` (`lib/http.ts`).
@@ -53,4 +58,3 @@ Une règle ESLint (`no-restricted-syntax`) bloque tout `fetch('/api…')` direct
 ## Deployment
 
 Set the environment variables on Vercel and push to `main` to trigger deployment.
-
