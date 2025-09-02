@@ -3,7 +3,7 @@ name: network-gate
 on:
   workflow_dispatch:
   pull_request:
-    paths: ['**/*']
+    paths: ["**/*"]
 
 concurrency:
   group: network-gate-${{ github.ref }}
@@ -16,8 +16,8 @@ jobs:
   gate:
     runs-on: ubuntu-latest
     env:
-      HOST_PRIMARY:  https://arka-squad.app
-      HOST_FALLBACK: https://arka-liard.vercel.app
+      HOST_PRIMARY:  "https://arka-squad.app"
+      HOST_FALLBACK: "https://arka-liard.vercel.app"
       HTTP_PROXY: ""
       HTTPS_PROXY: ""
       ALL_PROXY: ""
@@ -27,6 +27,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: net-dbg
+        shell: bash
         run: |
           echo "== proxy env =="; env | grep -iE 'http_proxy|https_proxy|all_proxy|no_proxy' || true
           echo "== resolv =="; cat /etc/resolv.conf || true
@@ -34,27 +35,30 @@ jobs:
           getent hosts arka-squad.app || true
           getent hosts www.arka-squad.app || true
           getent hosts arka-liard.vercel.app || true
-          echo "== route test =="; which ip && ip route get 1.1.1.1 || true
+          echo "== route =="; which ip && ip route get 1.1.1.1 || true
 
-      - name: curl primary (arka-squad)
+      - name: curl-primary
+        shell: bash
         run: |
           set -euxo pipefail
           t0=$(date -Ins)
-          code=$(curl -4sS --noproxy '*' -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)
+          code=$(curl -4sS --noproxy '*' -o /dev/null -w '%{http_code}' --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)
           echo "PRIMARY $t0 -> $code"
 
-      - name: curl fallback (vercel)
+      - name: curl-fallback
+        shell: bash
         run: |
           set -euxo pipefail
           t0=$(date -Ins)
-          code=$(curl -4sS --noproxy '*' -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_FALLBACK/api/health" || echo 000)
+          code=$(curl -4sS --noproxy '*' -o /dev/null -w '%{http_code}' --connect-timeout 5 --max-time 15 "$HOST_FALLBACK/api/health" || echo 000)
           echo "FALLBACK $t0 -> $code"
 
-      - name: choisir l'hôte
+      - name: choose-host
         id: pick
+        shell: bash
         run: |
           set -euo pipefail
-          code=$(curl -4sS --noproxy '*' -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)
+          code=$(curl -4sS --noproxy '*' -o /dev/null -w '%{http_code}' --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)
           if [ "$code" = "200" ]; then
             echo "HOST=$HOST_PRIMARY"   >> "$GITHUB_ENV"
             echo "picked=primary"       >> "$GITHUB_OUTPUT"
@@ -63,10 +67,10 @@ jobs:
             echo "picked=fallback"      >> "$GITHUB_OUTPUT"
           fi
 
-      - name: log choix
+      - name: log-choice
         run: echo "Picked host: ${{ steps.pick.outputs.picked }} (${{ env.HOST }})"
 
-      - name: exécuter RBAC fume
+      - name: rbac-smokes
         if: ${{ secrets.RBAC_TOKEN_VIEWER != '' && secrets.RBAC_TOKEN_EDITOR != '' && secrets.RBAC_TOKEN_ADMIN != '' }}
         env:
           HOST:         ${{ env.HOST }}
