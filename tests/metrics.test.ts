@@ -46,6 +46,18 @@ test('parsePagination accepts limit alias', () => {
   assert.equal(page_size, 20);
 });
 
+test('parsePagination defaults page on NaN', () => {
+  const params = new URL('http://test?page=foo').searchParams;
+  const { page } = parsePagination(params);
+  assert.equal(page, 1);
+});
+
+test('parsePagination clamps negative page_size', () => {
+  const params = new URL('http://test?page_size=-1').searchParams;
+  const { page_size } = parsePagination(params);
+  assert.equal(page_size, 1);
+});
+
 // formatRuns test
 
 test('formatRuns returns pagination shape', () => {
