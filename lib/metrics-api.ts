@@ -34,9 +34,15 @@ export const computeOverview = (
 };
 
 export const parsePagination = (params: URLSearchParams) => {
-  const page = Math.max(1, parseInt(params.get('page') ?? '1', 10));
+
+  const rawPage = parseInt(params.get('page') ?? '1', 10);
+  const page = Number.isNaN(rawPage) ? 1 : Math.max(1, rawPage);
+
   const ps = params.get('page_size') ?? params.get('limit') ?? '20';
-  const page_size = Math.min(100, Math.max(1, parseInt(ps, 10)));
+  const rawPageSize = parseInt(ps, 10);
+  const page_size = Number.isNaN(rawPageSize)
+    ? 20
+    : Math.min(100, Math.max(1, rawPageSize));
   return { page, page_size };
 };
 
@@ -45,4 +51,10 @@ export const formatRuns = (
   page: number,
   page_size: number,
   count: number,
-) => ({ items: rows, page, page_size, count });
+) => ({
+  // `rows` are expected to be pre-sorted by `ts DESC, id ASC`.
+  items: rows,
+  page,
+  page_size,
+  count,
+});
