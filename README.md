@@ -3,6 +3,11 @@
 [![secret-scan](https://github.com/arka-squad/arka-labs/actions/workflows/secret-scan.yml/badge.svg?branch=main)](https://github.com/arka-squad/arka-labs/actions/workflows/secret-scan.yml)
 
 
+# CI
+
+Les pull requests doivent passer **network-gate**, **rbac-smokes** (mode `fail`) et **secret-scan** avant fusion. Les journaux NDJSON des smokes RBAC sont conservés uniquement comme artefacts Actions. Une approbation de revue est requise et les branches doivent être à jour. En cas d'échec transitoire, relancez les jobs via "Re-run jobs" dans l'onglet Actions.
+
+
 # Arka Console
 
 Mini console for orchestrating agents and tracking memory via GitHub pull requests.

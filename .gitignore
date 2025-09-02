@@ -7,3 +7,9 @@ dist-tests
 .vercel
 !.env.example
 !.env.local.example
+
+# ignore logs and ndjson
+logs/
+*.ndjson
+logs_*.json
+logs_*.txt
