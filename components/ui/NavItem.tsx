@@ -1,6 +1,16 @@
-export default function NavItem({ label, active = false }: { label: string; active?: boolean }) {
+export default function NavItem({
+  label,
+  active = false,
+  onClick,
+}: {
+  label: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
   return (
     <button
+      type="button"
+      onClick={onClick}
       className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-medium outline-none ring-2 ring-transparent transition ${
         active ? 'text-white shadow' : 'hover:opacity-90'
       }`}

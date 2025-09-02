@@ -9,11 +9,29 @@ export default function ProjectsPage() {
   const [err, setErr] = useState('');
 
   useEffect(() => {
-    apiFetch('/api/projects', { credentials: 'include' })
-      .then(async (r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-      .then((d) => setProjects(d.projects || []))
-
-      .catch(() => { setErr('Erreur de récupération'); setProjects([]); });
+    let active = true;
+    const load = async () => {
+      try {
+        const res = await apiFetch('/api/projects', { credentials: 'include' });
+        const data = await (res.ok ? res.json() : Promise.reject(new Error(String(res.status))));
+        const delay =
+          parseInt(
+            getComputedStyle(document.documentElement).getPropertyValue('--motion-skeleton-duration')
+          ) || 200;
+        setTimeout(() => {
+          if (active) setProjects(data.projects || []);
+        }, delay);
+      } catch {
+        if (active) {
+          setErr('Erreur de récupération');
+          setProjects([]);
+        }
+      }
+    };
+    load();
+    return () => {
+      active = false;
+    };
   }, []);
 
   const content = useMemo(() => {
@@ -47,14 +65,16 @@ export default function ProjectsPage() {
     }
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.map((p) => (
-
-          <div key={p.id} className="rounded-2xl border border-slate-700/40 bg-slate-800/30 p-4">
+        {projects.map((p, i) => (
+          <div
+            key={p.id}
+            style={{ animationDelay: `calc(var(--motion-stagger) * ${i})` }}
+            className="animate-fade-in-up opacity-0 rounded-2xl border border-slate-700/40 bg-slate-800/30 p-4"
+          >
             <div className="mb-1 text-base font-semibold">{p.name}</div>
             <div className="mb-3 text-sm text-slate-300">{p.description || '—'}</div>
             <div className="text-xs text-slate-400">Dernière activité • {since(p.last_activity)}</div>
           </div>
-
         ))}
       </div>
     );
