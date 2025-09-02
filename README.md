@@ -47,5 +47,5 @@ Une règle ESLint (`no-restricted-syntax`) bloque tout `fetch('/api…')` direct
 
 ## Deployment
 
-Set the environment variables on Vercel and push to `main` to trigger deployment. test
+Set the environment variables on Vercel and push to `main` to trigger deployment.
 
