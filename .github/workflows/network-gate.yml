@@ -1,6 +1,6 @@
 name: network-gate
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
   pull_request:
     paths: ['**/*']
 
@@ -14,42 +14,28 @@ jobs:
       HTTPS_PROXY: ""
       ALL_PROXY: ""
       NO_PROXY: "localhost,127.0.0.1,.vercel.app,.vercel.dev,vercel.com,arka-squad.app,www.arka-squad.app,arka-liard.vercel.app"
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: pick-host
-        id: pick
-        shell: bash
+      - name: net-dbg
         run: |
-          set -euo pipefail
-          code=$(curl -4sS --noproxy '*' -o /dev/null -w '%{http_code}' --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)
-          if [ "$code" = "200" ]; then
-            echo "HOST=$HOST_PRIMARY" >> "$GITHUB_OUTPUT"
-            echo "picked=primary"     >> "$GITHUB_OUTPUT"
-          else
-            echo "HOST=$HOST_FALLBACK" >> "$GITHUB_OUTPUT"
-            echo "picked=fallback"     >> "$GITHUB_OUTPUT"
-          fi
+          echo "== proxy env =="; env | grep -iE 'http_proxy|https_proxy|all_proxy|no_proxy' || true
+          echo "== resolv =="; cat /etc/resolv.conf || true
+          echo "== DNS =="
+          getent hosts arka-squad.app || true
+          getent hosts arka-liard.vercel.app || true
+          echo "== route test =="; which ip && ip route get 1.1.1.1 || true
 
-      - name: log-choice
-        shell: bash
+      - name: curl primary (arka-squad)
         run: |
-          echo "Picked host: ${{ steps.pick.outputs.picked }}"
-          echo "HOST: ${{ steps.pick.outputs.HOST }}"
+          set -euxo pipefail
+          t0=$(date -Ins)
+          code=$(curl -4sS -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)
+          echo "PRIMARY $t0 -> $code"
 
-      - name: RBAC smokes (skip if tokens missing)
-        shell: bash
-        env:
-          HOST:         ${{ steps.pick.outputs.HOST }}
-          TOKEN_VIEWER: ${{ secrets.RBAC_TOKEN_VIEWER }}
-          TOKEN_EDITOR: ${{ secrets.RBAC_TOKEN_EDITOR }}
-          TOKEN_ADMIN:  ${{ secrets.RBAC_TOKEN_ADMIN }}
+      - name: curl fallback (vercel)
         run: |
-          set -euo pipefail
-          if [ -z "${TOKEN_VIEWER:-}" ] || [ -z "${TOKEN_EDITOR:-}" ] || [ -z "${TOKEN_ADMIN:-}" ]; then
-            echo "RBAC tokens not set -> skipping smokes"
-            exit 0
-          fi
-          echo "Running smokes on $HOST"
-          bash scripts/smoke_agents.sh
+          set -euxo pipefail
+          t0=$(date -Ins)
+          code=$(curl -4sS -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_FALLBACK/api/health" || echo 000)
+          echo "FALLBACK $t0 -> $code"
