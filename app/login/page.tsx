@@ -67,6 +67,7 @@ export default function Page() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              data-codex-id="login_email"
             />
           </label>
           <label className="grid gap-1">
@@ -77,6 +78,7 @@ export default function Page() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              data-codex-id="login_password"
             />
           </label>
           <label className="flex items-center gap-2 text-sm">
@@ -87,14 +89,26 @@ export default function Page() {
             />
             Se souvenir de moi
           </label>
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && (
+            <p className="text-sm text-red-400" data-codex-id="login_error">
+              {error}
+            </p>
+          )}
           <button
             type="submit"
             className="rounded-xl px-4 py-2 font-medium text-white focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
             style={{ background: 'var(--arka-grad-cta)' }}
+            data-codex-id="login_submit"
           >
             Se connecter
           </button>
+          <a
+            href="/reset"
+            className="text-center text-sm text-slate-300 hover:text-white"
+            data-codex-id="link_reset"
+          >
+            Mot de passe oublié ?
+          </a>
           <button
             type="button"
             onClick={sso}
