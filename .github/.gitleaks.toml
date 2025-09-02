@@ -1,0 +1,21 @@
+title = "arka-labs gitleaks config"
+
+[allowlist]
+description = "Ignore faux positifs (sha256, fixtures RBAC, logs)"
+paths = [
+  # empreintes & artefacts codex
+  "arka-meta/reports/codex/",
+  # fixtures RBAC de staging
+  "arka-meta/reports/staging/tokens_staging.json",
+  # artefacts CI éventuels
+  "logs/"
+]
+
+regexes = [
+  # placeholders utilisés dans le repo
+  "<viewer-token>",
+  "<editor-token>",
+  "<admin-token>",
+  # tokens masqués par --redact
+  "Bearer\\s+REDACTED"
+]
