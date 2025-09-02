@@ -161,7 +161,7 @@ Animations : ombre douce sur le visuel ; pas d’animations obligatoires.
 
 
 ## 8. Interactions Globales & Flux
-Navigation : liens topbar vers ancre/sections ; CTA vers route console/démo.
+Navigation : liens topbar vers pages dédiées ; CTA vers route console/bêta.
 
 
 Auth : bouton “Se connecter” (hook à brancher plus tard).
@@ -175,7 +175,7 @@ Services externes : aucun (assets statiques).
 
 
 ## 9. Scénarios / Historique
-US : “En tant que visiteur, je comprends le produit d’un coup d’œil et j’accède à la démo.”
+US : “En tant que visiteur, je comprends le produit d’un coup d’œil et j’accède à la bêta.”
 
 
 Edge cases : pas d’assets → alt lisibles ; petit viewport → stack propre.
