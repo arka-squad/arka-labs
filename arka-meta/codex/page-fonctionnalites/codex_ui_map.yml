@@ -1,0 +1,20 @@
+version: R2.5
+pages:
+  fonctionnalites:
+    id: pg_features
+    route: "/fonctionnalites"
+    layout: { use: "layout_topbar" }
+    hero:
+      title: "Arka — Nos services & fonctionnalités"
+      ctas:
+        - { id: cta_beta, href: "/beta", text: "Inscription à la bêta" }
+        - { id: cta_contact, href: "#contact", text: "Contactez‑nous" }
+    sections:
+      - { id: sec_obtenez, title: "Ce que vous obtenez" }
+      - { id: sec_squads, title: "Squads disponibles" }
+      - { id: sec_how, title: "Comment ça marche" }
+      - { id: sec_why, title: "Pourquoi Arka" }
+      - { id: sec_pricing, title: "Tarification (à venir)" }
+      - { id: sec_security, title: "Sécurité & conformité (aperçu)" }
+      - { id: sec_faq, title: "Foire aux questions" }
+      - { id: sec_cta, title: "CTA final" }

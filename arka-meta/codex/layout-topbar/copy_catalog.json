@@ -1,0 +1,16 @@
+{
+  "locale": "fr-FR",
+  "topbar": {
+    "title_console": "Console",
+    "project_selector_empty": "Aucun projet — créez-en un",
+    "theme": "Thème",
+    "settings": "Configuration",
+    "logout": "Se déconnecter"
+  },
+  "links": {
+    "fonctionnalites": "Fonctionnalités",
+    "beta": "Inscription à la bêta",
+    "tarification": "Tarification"
+  },
+  "cta": { "open_console": "Ouvrir la console" }
+}

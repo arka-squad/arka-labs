@@ -1,0 +1,31 @@
+{
+  "locale": "fr-FR",
+  "page": {
+    "features": {
+      "title": "Arka — Nos services & fonctionnalités",
+      "hero": {
+        "lead": "Votre première organisation numérique universelle. Des squads augmentées (humain·e + IA) orchestrées par Arka, avec gouvernance codifiée, mémoire auditable et résultats mesurables.",
+        "cta_beta": "Inscription à la bêta",
+        "cta_contact": "Contactez‑nous"
+      },
+      "sections": {
+        "pricing": {
+          "title": "Tarification (à venir)",
+          "starter_cta": "Bientôt disponible",
+          "pro_cta": "Bientôt disponible",
+          "enterprise_cta": "Obtenir un devis"
+        },
+        "why": {
+          "items": [
+            "Organisation, pas un bot",
+            "Auditabilité radicale",
+            "Souveraineté",
+            "Expérience unifiée",
+            "ADR & gouvernance",
+            "Performance observable"
+          ]
+        }
+      }
+    }
+  }
+}

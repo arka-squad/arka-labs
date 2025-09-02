@@ -1,0 +1,17 @@
+{
+  "selectors": {
+    "topbar_logo": "[data-codex-id='topbar_logo']",
+    "link_fonctionnalites": "[data-codex-id='link_fonctionnalites']",
+    "link_beta": "[data-codex-id='link_beta']",
+    "link_tarification": "[data-codex-id='link_tarification']",
+    "cta_open_console": "[data-codex-id='cta_open_console']",
+
+    "cta_beta": "[data-codex-id='cta_beta']",
+    "cta_contact": "[data-codex-id='cta_contact']",
+
+    "pricing_starter_cta": "[data-codex-id='pricing_starter_cta']",
+    "pricing_pro_cta": "[data-codex-id='pricing_pro_cta']",
+    "pricing_enterprise_cta": "[data-codex-id='pricing_enterprise_cta']"
+  },
+  "deprecated_ids": []
+}
