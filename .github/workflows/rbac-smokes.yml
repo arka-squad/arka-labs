@@ -1,0 +1,78 @@
+name: rbac-smokes
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ['**/*']
+
+jobs:
+  smokes:
+    runs-on: ubuntu-latest
+    env:
+      HOST_PRIMARY: https://arka-squad.app
+      HOST_FALLBACK: https://arka-liard.vercel.app
+      RBAC_SMOKES_MODE: fail
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      ALL_PROXY: ""
+      NO_PROXY: "localhost,127.0.0.1,.vercel.app,.vercel.dev,vercel.com,arka-squad.app,www.arka-squad.app,arka-liard.vercel.app"
+    steps:
+      - uses: actions/checkout@v4
+
+      # Choix de l'hôte (primary si /api/health -> 200, sinon fallback)
+      - name: pick-host
+        id: pick
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(curl -4sS -o /dev/null -w '%{http_code}' --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)" = "200" ]; then
+            echo "HOST=$HOST_PRIMARY" >> "$GITHUB_ENV"
+            echo "Picked host: primary"
+          else
+            echo "HOST=$HOST_FALLBACK" >> "$GITHUB_ENV"
+            echo "Picked host: fallback"
+          fi
+          echo "HOST: ${HOST:-unset}"
+
+      # Si le runner contient le runner matrice, on l'utilise ; sinon on fait un smoke minimal
+      - name: run matrix smokes (if present)
+        if: ${{ hashFiles('scripts/smokes_matrix_guard.mjs') != '' }}
+        shell: bash
+        env:
+          RBAC_TOKEN_VIEWER: ${{ secrets.RBAC_TOKEN_VIEWER }}
+          RBAC_TOKEN_EDITOR: ${{ secrets.RBAC_TOKEN_EDITOR }}
+          RBAC_TOKEN_ADMIN:  ${{ secrets.RBAC_TOKEN_ADMIN }}
+        run: |
+          set -euo pipefail
+          node --version
+          # Exécution basée matrice
+          node scripts/smokes_matrix_guard.mjs --host "$HOST" --mode "$RBAC_SMOKES_MODE" | tee logs/rbac_smokes.ndjson
+
+      - name: run minimal smokes (fallback)
+        if: ${{ hashFiles('scripts/smokes_matrix_guard.mjs') == '' }}
+        shell: bash
+        env:
+          RBAC_TOKEN_VIEWER: ${{ secrets.RBAC_TOKEN_VIEWER }}
+          RBAC_TOKEN_EDITOR: ${{ secrets.RBAC_TOKEN_EDITOR }}
+          RBAC_TOKEN_ADMIN:  ${{ secrets.RBAC_TOKEN_ADMIN }}
+        run: |
+          set -euo pipefail
+          mkdir -p logs
+          echo "Running smokes on $HOST"
+          summary=""
+          for role in viewer editor admin; do
+            tok_var="RBAC_TOKEN_${role^^}"
+            token="${!tok_var:-}"
+            code=$(curl -4sS -o /dev/null -w '%{http_code}' \
+              --connect-timeout 5 --max-time 15 \
+              -H "Authorization: Bearer $token" "$HOST/api/agents" || echo 000)
+            echo "{\"ts\":\"$(date -Ins)\",\"role\":\"$role\",\"route\":\"/api/agents\",\"code\":$code}" | tee -a logs/rbac_smokes.ndjson
+            summary="$summary\n$role $code 1"
+          done
+          echo -e "Summary:$summary"
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rbac-smokes
+          path: |
+            logs/rbac_smokes.ndjson
