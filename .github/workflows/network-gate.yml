@@ -38,14 +38,18 @@ jobs:
           echo "Picked host: ${{ steps.pick.outputs.picked }}"
           echo "HOST: ${{ steps.pick.outputs.HOST }}"
 
-      - name: rbac-smokes
-        if: ${{ secrets.RBAC_TOKEN_VIEWER != '' && secrets.RBAC_TOKEN_EDITOR != '' && secrets.RBAC_TOKEN_ADMIN != '' }}
+      - name: RBAC smokes (skip if tokens missing)
+        shell: bash
         env:
-          HOST: ${{ steps.pick.outputs.HOST }}
+          HOST:         ${{ steps.pick.outputs.HOST }}
           TOKEN_VIEWER: ${{ secrets.RBAC_TOKEN_VIEWER }}
           TOKEN_EDITOR: ${{ secrets.RBAC_TOKEN_EDITOR }}
           TOKEN_ADMIN:  ${{ secrets.RBAC_TOKEN_ADMIN }}
-        shell: bash
         run: |
+          set -euo pipefail
+          if [ -z "${TOKEN_VIEWER:-}" ] || [ -z "${TOKEN_EDITOR:-}" ] || [ -z "${TOKEN_ADMIN:-}" ]; then
+            echo "RBAC tokens not set -> skipping smokes"
+            exit 0
+          fi
           echo "Running smokes on $HOST"
           bash scripts/smoke_agents.sh
