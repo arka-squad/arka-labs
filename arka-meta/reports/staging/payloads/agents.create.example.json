@@ -1,0 +1,9 @@
+{
+  "name": "smoke-agent",
+  "type": "service",
+  "scopes": ["chat", "documents"],
+  "metadata": {
+    "source": "ci-smoke",
+    "note": "exemple à ajuster selon le schéma de l’API"
+  }
+}

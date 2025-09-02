@@ -1,0 +1,25 @@
+{
+  "jwt": {
+    "aud": "arka-squad",
+    "iss": "arka",
+    "roles": ["viewer", "editor", "admin"],
+    "clock_skew_s": 60
+  },
+  "endpoints": [
+    {
+      "path": "/api/health",
+      "method": "GET",
+      "expect": { "viewer": [200], "editor": [200], "admin": [200] }
+    },
+    {
+      "path": "/api/agents",
+      "method": "GET",
+      "expect": { "viewer": [200, 403], "editor": [200], "admin": [200] }
+    },
+    {
+      "path": "/api/agents",
+      "method": "POST",
+      "expect": { "viewer": [403], "editor": [403, 200, 201], "admin": [200, 201, 400, 409] }
+    }
+  ]
+}
