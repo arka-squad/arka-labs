@@ -8,13 +8,13 @@ export default function ArkaLandingPublic(){
           <span className="text-sm font-bold text-white">Arka</span>
         </div>
         <nav className="hidden gap-4 text-sm text-slate-300 sm:flex">
-          <a className="hover:text-white" href="#features">Fonctionnalités</a>
-          <a className="hover:text-white" href="#security">Sécurité</a>
-          <a className="hover:text-white" href="#pricing">Tarification</a>
+          <a className="hover:text-white" href="/fonctionnalites">Fonctionnalités</a>
+          <a className="hover:text-white" href="/beta">Bêta</a>
+          <a className="hover:text-white" href="/tarification">Tarification</a>
         </nav>
         <div className="flex items-center gap-2">
           <a href="/login" className="rounded-xl border px-3 py-2 text-sm font-medium text-white" style={{ backgroundColor: COLOR.block, borderColor: COLOR.border }}>Se connecter</a>
-          <ButtonPrimary>Ouvrir la console</ButtonPrimary>
+          <a href="/console"><ButtonPrimary>Ouvrir la console</ButtonPrimary></a>
         </div>
       </header>
     </div>
