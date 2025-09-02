@@ -46,13 +46,27 @@ export default function ArkaLanding() {
       <header className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <img src={ASSETS.LOGO_WHITE} alt="Arka logo" className="h-8 w-auto" />
         <nav className="hidden gap-4 text-sm text-slate-300 sm:flex">
-          <a href="/fonctionnalites" className="hover:text-white">
+
+          <a
+            href="#features"
+            className="hover:text-white"
+            data-codex-id="link_fonctionnalites"
+          >
             Fonctionnalités
           </a>
-          <a href="/beta" className="hover:text-white">
+          <a
+            href="/beta"
+            className="hover:text-white"
+            data-codex-id="link_beta"
+          >
             Bêta
           </a>
-          <a href="/tarification" className="hover:text-white">
+          <a
+            href="#pricing"
+            className="hover:text-white"
+            data-codex-id="link_tarification"
+          >
+
             Tarification
           </a>
         </nav>
@@ -67,6 +81,12 @@ export default function ArkaLanding() {
             href="/console"
             className="rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg"
             style={{ background: TOKENS.gradCTA }}
+
+            onClick={() => {
+              router.push('/projects');
+            }}
+            data-codex-id="cta_open_console"
+
           >
             Ouvrir la console
           </a>
