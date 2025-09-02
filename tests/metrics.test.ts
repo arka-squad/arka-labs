@@ -135,7 +135,11 @@ test('GET /api/metrics/runs sorts rows with same ts deterministically', async ()
   } as any;
   delete require.cache[require.resolve('../app/api/metrics/runs/route')];
   const { GET } = require('../app/api/metrics/runs/route');
-  const res = await GET(new Request('http://test/api/metrics/runs'));
+  const res = await GET(
+    new NextRequest('http://test/api/metrics/runs', {
+      headers: { authorization: `Bearer ${tokens.admin}` },
+    }),
+  );
   const body = await res.json();
   assert.equal(body.items[0].run_id, 'run1');
   assert.equal(body.items[1].run_id, 'run2');
