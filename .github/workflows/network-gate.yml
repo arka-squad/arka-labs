@@ -1,8 +1,16 @@
 name: network-gate
+
 on:
   workflow_dispatch:
   pull_request:
     paths: ['**/*']
+
+concurrency:
+  group: network-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   gate:
@@ -10,73 +18,59 @@ jobs:
     env:
       HOST_PRIMARY:  https://arka-squad.app
       HOST_FALLBACK: https://arka-liard.vercel.app
-      # neutralise tout proxy forcé dans le runner
+      # neutralise tout proxy forcé
       HTTP_PROXY: ""
       HTTPS_PROXY: ""
       ALL_PROXY: ""
       NO_PROXY: "localhost,127.0.0.1,.vercel.app,.vercel.dev,vercel.com,arka-squad.app,www.arka-squad.app,arka-liard.vercel.app"
-
     steps:
       - uses: actions/checkout@v4
 
       - name: net-dbg
         run: |
           echo "== proxy env =="; env | grep -iE 'http_proxy|https_proxy|all_proxy|no_proxy' || true
-          echo "== resolv conf =="; cat /etc/resolv.conf || true
-          echo "== DNS =="
+          echo "== resolv =="; cat /etc/resolv.conf || true
+          echo "== dns =="
           getent hosts arka-squad.app || true
+          getent hosts www.arka-squad.app || true
           getent hosts arka-liard.vercel.app || true
-          echo "== route test =="; (which ip && ip route get 1.1.1.1) || true
+          echo "== route test =="; which ip && ip route get 1.1.1.1 || true
 
-      - name: choisir l'hôte
-        id: choose
+      - name: curl primary (arka-squad)
         run: |
           set -euxo pipefail
-          p_code=$(curl -4sS -o /dev/null -w '%{http_code}' --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health"  || echo 000)
-          f_code=$(curl -4sS -o /dev/null -w '%{http_code}' --connect-timeout 5 --max-time 15 "$HOST_FALLBACK/api/health" || echo 000)
-          echo "primary_code=$p_code"  >> "$GITHUB_OUTPUT"
-          echo "fallback_code=$f_code" >> "$GITHUB_OUTPUT"
+          t0=$(date -Ins)
+          code=$(curl -4sS --noproxy '*' -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)
+          echo "PRIMARY $t0 -> $code"
 
-          host=""
-          if [ "$p_code" = "200" ]; then
-            host="$HOST_PRIMARY"
-          elif [ "$f_code" = "200" ] || [ "$f_code" = "301" ] || [ "$f_code" = "308" ]; then
-            host="$HOST_FALLBACK"
-          fi
-          echo "host=$host" >> "$GITHUB_OUTPUT"
-          test -n "$host" || { echo "::warning::Aucun hôte joignable (primary=$p_code, fallback=$f_code)"; exit 0; }
-
-      - name: charger tokens RBAC
-        id: tokens
+      - name: curl fallback (vercel)
         run: |
-          set -e
-          FILE="arka-meta/reports/staging/tokens_staging.json"
-          if [ -f "$FILE" ]; then
-            echo "TOKEN_VIEWER=$(jq -r '.viewer' "$FILE")" >> "$GITHUB_ENV"
-            echo "TOKEN_EDITOR=$(jq -r '.editor' "$FILE")" >> "$GITHUB_ENV"
-            echo "TOKEN_ADMIN=$(jq -r  '.admin'  "$FILE")" >> "$GITHUB_ENV"
-            echo "loaded=true"  >> "$GITHUB_OUTPUT"
-          elif [ -n "${{ secrets.RBAC_TOKEN_VIEWER }}" ]; then
-            echo "TOKEN_VIEWER=${{ secrets.RBAC_TOKEN_VIEWER }}" >> "$GITHUB_ENV"
-            echo "TOKEN_EDITOR=${{ secrets.RBAC_TOKEN_EDITOR }}" >> "$GITHUB_ENV"
-            echo "TOKEN_ADMIN=${{ secrets.RBAC_TOKEN_ADMIN }}"   >> "$GITHUB_ENV"
-            echo "loaded=true"  >> "$GITHUB_OUTPUT"
+          set -euxo pipefail
+          t0=$(date -Ins)
+          code=$(curl -4sS --noproxy '*' -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_FALLBACK/api/health" || echo 000)
+          echo "FALLBACK $t0 -> $code"
+
+      - name: choisir l'hôte
+        id: pick
+        run: |
+          set -euo pipefail
+          code=$(curl -4sS --noproxy '*' -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)
+          if [ "$code" = "200" ]; then
+            echo "HOST=$HOST_PRIMARY" >> "$GITHUB_ENV"
+            echo "picked=primary"     >> "$GITHUB_OUTPUT"
           else
-            echo "::notice::Aucun token RBAC trouvé (fichier ou secrets). Les smokes seront ignorés."
-            echo "loaded=false" >> "$GITHUB_OUTPUT"
+            echo "HOST=$HOST_FALLBACK" >> "$GITHUB_ENV"
+            echo "picked=fallback"     >> "$GITHUB_OUTPUT"
           fi
+          echo "Picked: ${{ steps.pick.outputs.picked }}"
 
       - name: exécuter RBAC fume
-        if: steps.choose.outputs.host != '' && steps.tokens.outputs.loaded == 'true'
+        if: ${{ secrets.RBAC_TOKEN_VIEWER != '' && secrets.RBAC_TOKEN_EDITOR != '' && secrets.RBAC_TOKEN_ADMIN != '' }}
         env:
-          HOST: ${{ steps.choose.outputs.host }}
+          HOST:          ${{ env.HOST }}
+          TOKEN_VIEWER:  ${{ secrets.RBAC_TOKEN_VIEWER }}
+          TOKEN_EDITOR:  ${{ secrets.RBAC_TOKEN_EDITOR }}
+          TOKEN_ADMIN:   ${{ secrets.RBAC_TOKEN_ADMIN }}
         run: |
           echo "Running smokes on $HOST"
           bash scripts/smoke_agents.sh
-
-      - name: fin (info)
-        if: steps.choose.outputs.host == '' || steps.tokens.outputs.loaded != 'true'
-        run: |
-          echo "Skip smokes:"
-          echo "- host=${{ steps.choose.outputs.host || 'none' }}"
-          echo "- tokens_loaded=${{ steps.tokens.outputs.loaded || 'false' }}"
