@@ -67,22 +67,24 @@ export default function HeroLanding() {
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <button
+            <a
+              href="/console"
               className="rounded-full px-5 py-3 text-sm font-medium text-white shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
               style={{ background: TOKENS.gradCTA }}
-              aria-label="Essayer la démo"
-              onClick={() => uiLog("cta_click", { id: "try_demo" })}
+              aria-label="Essayer la bêta"
+              onClick={() => uiLog("cta_click", { id: "try_beta" })}
             >
-              Essayer la démo
-            </button>
+              Essayer la bêta
+            </a>
 
-            <button
+            <a
+              href="/fonctionnalites"
               className={`flex items-center gap-2 rounded-full px-5 py-3 text-sm text-slate-200 ring-1 ${TOKENS.ringSoft} hover:ring-slate-500 focus-visible:outline-none focus-visible:ring-2`}
               aria-label="Voir les fonctionnalités"
               onClick={() => uiLog("cta_click", { id: "see_features" })}
             >
               Voir les features <ArrowRight className="h-4 w-4" />
-            </button>
+            </a>
           </div>
         </div>
 

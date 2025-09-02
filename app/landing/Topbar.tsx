@@ -31,42 +31,44 @@ export default function Topbar() {
       <nav className="hidden items-center gap-6 md:flex" role="navigation" aria-label="Navigation principale">
         <a
           className="text-sm text-slate-300 hover:text-white"
-          href="#features"
-          onClick={() => uiLog("nav_click", { target: "#features" })}
+          href="/fonctionnalites"
+          onClick={() => uiLog("nav_click", { target: "/fonctionnalites" })}
         >
           Fonctionnalités
         </a>
         <a
           className="text-sm text-slate-300 hover:text-white"
-          href="#security"
-          onClick={() => uiLog("nav_click", { target: "#security" })}
+          href="/beta"
+          onClick={() => uiLog("nav_click", { target: "/beta" })}
         >
-          Sécurité
+          Bêta
         </a>
         <a
           className="text-sm text-slate-300 hover:text-white"
-          href="#pricing"
-          onClick={() => uiLog("nav_click", { target: "#pricing" })}
+          href="/tarification"
+          onClick={() => uiLog("nav_click", { target: "/tarification" })}
         >
           Tarification
         </a>
 
-        <button
+        <a
+          href="/login"
           className={`rounded-full px-4 py-2 text-sm text-slate-200 ring-1 ${TOKENS.ringSoft} hover:ring-slate-500`}
           aria-label="Se connecter"
           onClick={() => uiLog("cta_click", { id: "signin" })}
         >
           Se connecter
-        </button>
+        </a>
 
-        <button
+        <a
+          href="/console"
           className="rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg"
           style={{ background: TOKENS.gradCTA }}
           aria-label="Ouvrir la console"
           onClick={() => uiLog("cta_click", { id: "open_console" })}
         >
           Ouvrir la console
-        </button>
+        </a>
       </nav>
 
       {/* Burger mobile */}
@@ -93,28 +95,36 @@ export default function Topbar() {
           aria-label="Menu mobile"
         >
           <div className="grid gap-3">
-            <a href="#features" onClick={() => uiLog("nav_click", { target: "#features", via: "mobile" })}>
+            <a
+              href="/fonctionnalites"
+              onClick={() => uiLog("nav_click", { target: "/fonctionnalites", via: "mobile" })}
+            >
               Fonctionnalités
             </a>
-            <a href="#security" onClick={() => uiLog("nav_click", { target: "#security", via: "mobile" })}>
-              Sécurité
+            <a href="/beta" onClick={() => uiLog("nav_click", { target: "/beta", via: "mobile" })}>
+              Bêta
             </a>
-            <a href="#pricing" onClick={() => uiLog("nav_click", { target: "#pricing", via: "mobile" })}>
+            <a
+              href="/tarification"
+              onClick={() => uiLog("nav_click", { target: "/tarification", via: "mobile" })}
+            >
               Tarification
             </a>
-            <button
+            <a
+              href="/login"
               className={`mt-2 rounded-full px-4 py-2 text-sm text-slate-200 ring-1 ${TOKENS.ringSoft} hover:ring-slate-500`}
               onClick={() => uiLog("cta_click", { id: "signin", via: "mobile" })}
             >
               Se connecter
-            </button>
-            <button
+            </a>
+            <a
+              href="/console"
               className="rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg"
               style={{ background: TOKENS.gradCTA }}
               onClick={() => uiLog("cta_click", { id: "open_console", via: "mobile" })}
             >
               Ouvrir la console
-            </button>
+            </a>
           </div>
         </div>
       )}
