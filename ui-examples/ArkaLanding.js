@@ -41,13 +41,13 @@ export default function ArkaLanding() {
       <header className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <img src={ASSETS.LOGO_WHITE} alt="Arka logo" className="h-8 w-auto" />
         <nav className="hidden gap-4 text-sm text-slate-300 sm:flex">
-          <a href="#features" className="hover:text-white">Fonctionnalités</a>
-          <a href="#security" className="hover:text-white">Sécurité</a>
-          <a href="#pricing" className="hover:text-white">Tarification</a>
+          <a href="/fonctionnalites" className="hover:text-white">Fonctionnalités</a>
+          <a href="/beta" className="hover:text-white">Bêta</a>
+          <a href="/tarification" className="hover:text-white">Tarification</a>
         </nav>
         <div className="flex items-center gap-2">
-          <a href="#login" className={`rounded-full px-4 py-2 text-sm text-slate-200 ring-1 ${TOKENS.ringSoft}`}>Se connecter</a>
-          <button className="rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg" style={{ background: TOKENS.gradCTA }}>Ouvrir la console</button>
+          <a href="/login" className={`rounded-full px-4 py-2 text-sm text-slate-200 ring-1 ${TOKENS.ringSoft}`}>Se connecter</a>
+          <a href="/console" className="rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg" style={{ background: TOKENS.gradCTA }}>Ouvrir la console</a>
         </div>
       </header>
 
@@ -67,10 +67,10 @@ export default function ArkaLanding() {
             Console multi-agents, prompt builder et observabilité — pensée pour les équipes de 2 à 30 personnes.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <button className="rounded-full px-5 py-3 text-sm font-medium text-white shadow-lg" style={{ background: TOKENS.gradCTA }}>Inscrivez‑vous à la démo</button>
-            <button className={`flex items-center gap-2 rounded-full px-5 py-3 text-sm text-slate-200 ring-1 ${TOKENS.ringSoft}`}>
+            <a href="/console" className="rounded-full px-5 py-3 text-sm font-medium text-white shadow-lg" style={{ background: TOKENS.gradCTA }}>Inscrivez‑vous à la bêta</a>
+            <a href="/fonctionnalites" className={`flex items-center gap-2 rounded-full px-5 py-3 text-sm text-slate-200 ring-1 ${TOKENS.ringSoft}`}>
               Voir les features <ArrowRight className="h-4 w-4" />
-            </button>
+            </a>
           </div>
         </div>
         <div className="relative md:col-span-6 lg:col-span-5 flex justify-center">
@@ -102,7 +102,7 @@ export default function ArkaLanding() {
         <div>
           <h2 className="text-2xl font-bold mb-4">Une console conçue pour vos agents</h2>
           <p className="text-slate-400 mb-6">Arka R1 réunit en une seule interface trois briques essentielles : <b>Prompt Builder</b>, <b>gestion documentaire</b> et <b>observabilité en temps réel</b>. Cette intégration unique fait d’Arka une console multi‑agents prête à l’emploi. Idéal pour des petites équipes qui veulent livrer plus vite, avec plus de rigueur et un niveau de qualité supérieur.</p>
-          <button className="rounded-xl px-5 py-2 text-sm font-semibold text-white" style={{ background: TOKENS.gradCTA }}>Inscrivez‑vous à la démo</button>
+          <a href="/console" className="rounded-xl px-5 py-2 text-sm font-semibold text-white" style={{ background: TOKENS.gradCTA }}>Inscrivez‑vous à la bêta</a>
         </div>
         <div className="bg-[#151F27] h-72 rounded-xl flex items-center justify-center border border-[#1F2A33]">
           <img src={ASSETS.SCREENSHOT_CONSOLE} alt="Screenshot animé console" className="h-full object-contain rounded-lg" />
@@ -128,10 +128,10 @@ export default function ArkaLanding() {
       {/* CTA finale */}
       <section className="max-w-7xl mx-auto px-6 py-20 text-center">
         <h2 className="text-2xl font-bold mb-4">Rejoignez les premières équipes qui utilisent Arka R1</h2>
-        <p className="text-slate-400 mb-6 max-w-2xl mx-auto">Arka est déjà adopté par des PME, agences et startups ambitieuses qui veulent transformer leur delivery. Avec une architecture <b>multi‑agents</b> encadrée et des outils intégrés (<b>chat SSE</b>, <b>prompt builder</b>, <b>observabilité</b>), la console met la puissance des grandes équipes entre les mains des petites. Inscrivez‑vous à la démo gratuite et rejoignez‑les.</p>
+        <p className="text-slate-400 mb-6 max-w-2xl mx-auto">Arka est déjà adopté par des PME, agences et startups ambitieuses qui veulent transformer leur delivery. Avec une architecture <b>multi‑agents</b> encadrée et des outils intégrés (<b>chat SSE</b>, <b>prompt builder</b>, <b>observabilité</b>), la console met la puissance des grandes équipes entre les mains des petites. Inscrivez‑vous à la bêta gratuite et rejoignez‑les.</p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button className="rounded-xl px-5 py-2 text-sm font-semibold text-white" style={{ background: TOKENS.gradCTA }}>Inscrivez‑vous à la démo</button>
-          <button className="border border-[#1F2A33] px-5 py-2 rounded-xl text-sm font-semibold hover:bg-[#1F2A33]">Voir les features</button>
+          <a href="/console" className="rounded-xl px-5 py-2 text-sm font-semibold text-white" style={{ background: TOKENS.gradCTA }}>Inscrivez‑vous à la bêta</a>
+          <a href="/fonctionnalites" className="border border-[#1F2A33] px-5 py-2 rounded-xl text-sm font-semibold hover:bg-[#1F2A33]">Voir les features</a>
         </div>
         {/* Preuve sociale */}
         <div className="mt-8 text-slate-400 text-sm">
