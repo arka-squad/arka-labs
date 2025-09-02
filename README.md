@@ -1,3 +1,8 @@
+[![network-gate](https://github.com/arka-squad/arka-labs/actions/workflows/network-gate.yml/badge.svg?branch=main)](https://github.com/arka-squad/arka-labs/actions/workflows/network-gate.yml)
+[![rbac-smokes](https://github.com/arka-squad/arka-labs/actions/workflows/rbac-smokes.yml/badge.svg?branch=main)](https://github.com/arka-squad/arka-labs/actions/workflows/rbac-smokes.yml)
+[![secret-scan](https://github.com/arka-squad/arka-labs/actions/workflows/secret-scan.yml/badge.svg?branch=main)](https://github.com/arka-squad/arka-labs/actions/workflows/secret-scan.yml)
+
+
 # Arka Console
 
 Mini console for orchestrating agents and tracking memory via GitHub pull requests.
