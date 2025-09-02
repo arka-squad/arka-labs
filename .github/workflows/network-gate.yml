@@ -18,11 +18,11 @@ jobs:
     env:
       HOST_PRIMARY:  https://arka-squad.app
       HOST_FALLBACK: https://arka-liard.vercel.app
-      # neutralise tout proxy forcé
       HTTP_PROXY: ""
       HTTPS_PROXY: ""
       ALL_PROXY: ""
       NO_PROXY: "localhost,127.0.0.1,.vercel.app,.vercel.dev,vercel.com,arka-squad.app,www.arka-squad.app,arka-liard.vercel.app"
+
     steps:
       - uses: actions/checkout@v4
 
@@ -56,21 +56,23 @@ jobs:
           set -euo pipefail
           code=$(curl -4sS --noproxy '*' -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 15 "$HOST_PRIMARY/api/health" || echo 000)
           if [ "$code" = "200" ]; then
-            echo "HOST=$HOST_PRIMARY" >> "$GITHUB_ENV"
-            echo "picked=primary"     >> "$GITHUB_OUTPUT"
+            echo "HOST=$HOST_PRIMARY"   >> "$GITHUB_ENV"
+            echo "picked=primary"       >> "$GITHUB_OUTPUT"
           else
-            echo "HOST=$HOST_FALLBACK" >> "$GITHUB_ENV"
-            echo "picked=fallback"     >> "$GITHUB_OUTPUT"
+            echo "HOST=$HOST_FALLBACK"  >> "$GITHUB_ENV"
+            echo "picked=fallback"      >> "$GITHUB_OUTPUT"
           fi
-          echo "Picked: ${{ steps.pick.outputs.picked }}"
+
+      - name: log choix
+        run: echo "Picked host: ${{ steps.pick.outputs.picked }} (${{ env.HOST }})"
 
       - name: exécuter RBAC fume
         if: ${{ secrets.RBAC_TOKEN_VIEWER != '' && secrets.RBAC_TOKEN_EDITOR != '' && secrets.RBAC_TOKEN_ADMIN != '' }}
         env:
-          HOST:          ${{ env.HOST }}
-          TOKEN_VIEWER:  ${{ secrets.RBAC_TOKEN_VIEWER }}
-          TOKEN_EDITOR:  ${{ secrets.RBAC_TOKEN_EDITOR }}
-          TOKEN_ADMIN:   ${{ secrets.RBAC_TOKEN_ADMIN }}
+          HOST:         ${{ env.HOST }}
+          TOKEN_VIEWER: ${{ secrets.RBAC_TOKEN_VIEWER }}
+          TOKEN_EDITOR: ${{ secrets.RBAC_TOKEN_EDITOR }}
+          TOKEN_ADMIN:  ${{ secrets.RBAC_TOKEN_ADMIN }}
         run: |
           echo "Running smokes on $HOST"
           bash scripts/smoke_agents.sh
