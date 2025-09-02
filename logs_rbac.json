@@ -1,4 +1,0 @@
-[
-  {"rbac":"viewer","write":false},
-  {"rbac":"owner","action":"add_block","versioned":true,"trace_id":"trace-123"}
-]
