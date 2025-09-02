@@ -1,31 +1,20 @@
 
-import Link from 'next/link';
-
-export type NavItemProps = {
-  id?: string;
-  href: string;
-  label: string;
-  active?: boolean;
-  ['data-codex-id']?: string;
-};
-
 export default function NavItem({
-  id,
-  href,
   label,
   active = false,
-  'data-codex-id': dataCodexId,
-}: NavItemProps) {
-
+  onClick,
+}: {
+  label: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
   return (
-    <Link
-      id={id}
-      href={href}
-      data-codex-id={dataCodexId}
-      className={`w-full rounded-2xl px-4 py-3 text-sm font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C1319] ${
-        active
-          ? 'text-white shadow'
-          : 'text-slate-100 hover:bg-slate-800 focus:bg-slate-800 hover:text-white focus:text-white'
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-medium outline-none ring-2 ring-transparent transition ${
+        active ? 'text-white shadow' : 'hover:opacity-90'
+
       }`}
 
       aria-current={active ? 'page' : undefined}

@@ -1,9 +1,28 @@
-
 'use client';
 
-import type { ReactNode } from 'react';
-import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+
 import NavItem from '../../components/ui/NavItem';
+import ProjectsPage from './page';
+import ChatPage from './chat/page';
+import DocumentsPage from './documents/page';
+import ObservabilitePage from './observabilite/page';
+import PromptBuilderPage from './prompt-builder/page';
+
+const tabs = {
+  projects: ProjectsPage,
+  chat: ChatPage,
+  documents: DocumentsPage,
+  observabilite: ObservabilitePage,
+  'prompt-builder': PromptBuilderPage,
+} as const;
+
+type TabKey = keyof typeof tabs;
+
+export default function ConsoleLayout() {
+  const [tab, setTab] = useState<TabKey>('projects');
+  const Current = tabs[tab];
+
 
 const NAV_ITEMS = [
   { id: 'console-dashboard', label: 'Dashboard', href: '/console/dashboard' },
@@ -13,8 +32,7 @@ const NAV_ITEMS = [
   { id: 'console-observabilite', label: 'Observabilité', href: '/console/observabilite' },
 ];
 
-export default function ConsoleLayout({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
+
   return (
     <div className="min-h-screen bg-[#0C1319] text-slate-100">
       <header className="border-b border-slate-700/40">
@@ -57,20 +75,19 @@ export default function ConsoleLayout({ children }: { children: ReactNode }) {
         <aside className="col-span-12 sm:col-span-3 lg:col-span-2">
           <nav className="sticky top-6 space-y-2">
 
-            {NAV_ITEMS.map((item) => (
-              <NavItem
-                key={item.id}
-                id={item.id}
-                href={item.href}
-                label={item.label}
-                data-codex-id={item.id}
-                active={pathname === item.href}
-              />
-            ))}
+            <NavItem active={tab === 'projects'} label="Projects" onClick={() => setTab('projects')} />
+            <NavItem active={tab === 'chat'} label="Chat" onClick={() => setTab('chat')} />
+            <NavItem active={tab === 'documents'} label="Documents" onClick={() => setTab('documents')} />
+            <NavItem active={tab === 'observabilite'} label="Observabilité" onClick={() => setTab('observabilite')} />
+            <NavItem active={tab === 'prompt-builder'} label="Prompt Builder" onClick={() => setTab('prompt-builder')} />
 
           </nav>
         </aside>
-        <section className="col-span-12 sm:col-span-9 lg:col-span-10">{children}</section>
+        <section className="col-span-12 sm:col-span-9 lg:col-span-10">
+          <div key={tab} className="animate-fade-in-up">
+            <Current />
+          </div>
+        </section>
       </div>
     </div>
   );
