@@ -1,7 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { NextRequest } from 'next/server';
 import { p95, avg, mockRuns } from '../lib/metrics-data';
 import { computeKpis, parsePagination, formatRuns } from '../lib/metrics-api';
+import { signToken } from '../lib/auth';
+
+process.env.JWT_SECRET = '12345678901234567890123456789012';
+process.env.JWT_ISSUER = 'arka';
+process.env.JWT_AUDIENCE = 'arka-squad';
+
+const tokens = {
+  viewer: signToken({ sub: 'v', role: 'viewer' }),
+  admin: signToken({ sub: 'a', role: 'admin' }),
+};
 
 // existing tests
 
@@ -148,7 +159,11 @@ test('GET /api/metrics/kpis returns 503 on db error', async () => {
   } as any;
   delete require.cache[require.resolve('../app/api/metrics/kpis/route')];
   const { GET } = require('../app/api/metrics/kpis/route');
-  const res = await GET(new Request('http://test/api/metrics/kpis'));
+  const res = await GET(
+    new NextRequest('http://test/api/metrics/kpis', {
+      headers: { authorization: `Bearer ${tokens.admin}` },
+    }),
+  );
   assert.equal(res.status, 503);
   require.cache[dbPath] = originalCache;
 });
@@ -168,7 +183,31 @@ test('GET /api/metrics/runs returns 503 on db error', async () => {
   } as any;
   delete require.cache[require.resolve('../app/api/metrics/runs/route')];
   const { GET } = require('../app/api/metrics/runs/route');
-  const res = await GET(new Request('http://test/api/metrics/runs'));
+  const res = await GET(
+    new NextRequest('http://test/api/metrics/runs', {
+      headers: { authorization: `Bearer ${tokens.admin}` },
+    }),
+  );
   assert.equal(res.status, 503);
   require.cache[dbPath] = originalCache;
+});
+
+test('GET /api/metrics/kpis forbids viewer role', async () => {
+  const { GET } = require('../app/api/metrics/kpis/route');
+  const res = await GET(
+    new NextRequest('http://test/api/metrics/kpis', {
+      headers: { authorization: `Bearer ${tokens.viewer}` },
+    }),
+  );
+  assert.equal(res.status, 403);
+});
+
+test('GET /api/metrics/runs forbids viewer role', async () => {
+  const { GET } = require('../app/api/metrics/runs/route');
+  const res = await GET(
+    new NextRequest('http://test/api/metrics/runs', {
+      headers: { authorization: `Bearer ${tokens.viewer}` },
+    }),
+  );
+  assert.equal(res.status, 403);
 });

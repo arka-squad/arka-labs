@@ -1,12 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { sql } from '../../../../lib/db';
 import { parsePagination, formatRuns } from '../../../../lib/metrics-api';
 import { log } from '../../../../lib/logger';
+import { withAuth } from '../../../../lib/rbac';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export const GET = async (req: Request) => {
+export const GET = withAuth(['admin', 'owner'], async (req: NextRequest) => {
   const start = Date.now();
   const trace_id = req.headers.get('x-trace-id') ?? crypto.randomUUID();
   const { searchParams } = new URL(req.url);
@@ -48,4 +49,4 @@ export const GET = async (req: Request) => {
     });
     return res;
   }
-};
+});
