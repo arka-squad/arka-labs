@@ -22,7 +22,7 @@ export const GET = async (req: Request) => {
              (payload_json->>'status') as status
       from agent_events
       where event='metrics_run'
-      order by ts desc
+      order by ts desc, id asc
       limit ${page_size} offset ${offset}
     `;
     const { rows: c } =

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { sql } from '../../../lib/db';
+
 import { parsePagination } from '../../../lib/metrics-api';
 
 export const GET = async (req: Request) => {
@@ -14,4 +15,5 @@ export const GET = async (req: Request) => {
   `;
   const { rows: c } = await sql`select count(*)::int as count from documents`;
   return NextResponse.json({ items: rows, page, page_size, count: c[0].count });
+
 };
