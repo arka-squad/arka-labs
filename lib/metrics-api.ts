@@ -34,6 +34,8 @@ export const computeOverview = (
 };
 
 export const parsePagination = (params: URLSearchParams) => {
+  // Note: paginated queries must apply a deterministic order
+  // such as `ts DESC, id ASC` to ensure stable paging.
   const page = Math.max(1, parseInt(params.get('page') ?? '1', 10));
   const ps = params.get('page_size') ?? params.get('limit') ?? '20';
   const page_size = Math.min(100, Math.max(1, parseInt(ps, 10)));
@@ -45,4 +47,10 @@ export const formatRuns = (
   page: number,
   page_size: number,
   count: number,
-) => ({ items: rows, page, page_size, count });
+) => ({
+  // `rows` are expected to be pre-sorted by `ts DESC, id ASC`.
+  items: rows,
+  page,
+  page_size,
+  count,
+});
