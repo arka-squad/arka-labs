@@ -80,3 +80,4 @@ jobs:
         run: |
           echo "Running smokes on $HOST"
           bash scripts/smoke_agents.sh
+
