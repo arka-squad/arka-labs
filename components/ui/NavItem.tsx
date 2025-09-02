@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 
 export type NavItemProps = {
@@ -15,6 +16,7 @@ export default function NavItem({
   active = false,
   'data-codex-id': dataCodexId,
 }: NavItemProps) {
+
   return (
     <Link
       id={id}
@@ -25,7 +27,9 @@ export default function NavItem({
           ? 'text-white shadow'
           : 'text-slate-100 hover:bg-slate-800 focus:bg-slate-800 hover:text-white focus:text-white'
       }`}
+
       aria-current={active ? 'page' : undefined}
+
       style={
         active
           ? { background: 'linear-gradient(135deg,#FAB652 0%,#F25636 35%,#E0026D 100%)' }

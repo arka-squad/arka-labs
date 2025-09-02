@@ -21,7 +21,7 @@
 * **Livrables UX**
 
   * **tokens.json**: couleurs/typo/rayons/gradients/spacing/shadow/motion (durations, easings)
-  * **copy\_catalog.json**: libellés FR exacts (CTA, erreurs login, nav, tooltips) — inclut *« bêta »* (pas *« démo »*)
+  * **copy\_catalog.json**: libellés FR exacts (CTA, erreurs login, nav, tooltips) — inclut exclusivement *« bêta »*
   * **motion\_spec.md**: transitions onglets **200–300ms**, **stagger 60ms**, easing standard; switch projet
   * **a11y\_notes.md**: focus-visible, aria-current, aria-live toasts, cibles **40×40**, contrastes **AA**
   * **codex\_ui\_map.yml**: plan des pages/onglets/redirects/guards (voir *Template*)
@@ -50,7 +50,7 @@
   * *Given repo*, *When* CI lit `arka-meta/codex/`, *Then* les **6 fichiers** existent (size>0) et sont valides (jq/yq).
   * *Given* `ui_map.yml`, *When* contrôle, *Then* pages {landing, console, login}, redirects {/securite→/beta}, guard {/console→/login} sont présents.
   * *Given* `selectors.json`, *When* contrôle, *Then* le set minimal est présent: `[topbar_logo, topbar_logout, project_selector, nav_dashboard, nav_chat, nav_documents, nav_prompt_builder, nav_observabilite, btn_theme, btn_settings, login_email, login_password, login_submit, login_error, link_reset, cta_open_console, link_fonctionnalites, link_beta, link_tarification]`.
-  * *Given preview*, *When* smokes UI, *Then* `200` sur `/fonctionnalites,/beta,/tarification`; `/securite→301/308 /beta`; non‑auth `/console→/login`; landing texte *« bêta »* présent et *« démo »* absent.
+  * *Given preview*, *When* smokes UI, *Then* `200` sur `/fonctionnalites,/beta,/tarification`; `/securite→301/308 /beta`; non‑auth `/console→/login`; landing texte *« bêta »* présent sans mention de l’ancienne terminologie.
   * *Given intégration*, *When* inspection, *Then* tous éléments interactifs ont **data-codex-id** stables (`selectors.json`).
 
 * **Évidences**
