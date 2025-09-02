@@ -12,17 +12,13 @@ export const GET = async (req: Request) => {
     const { rows } = await sql`
       select t.id,
              t.title,
-             max(m.created_at) as last_msg_at,
-             t.created_at
+             coalesce(max(m.created_at), t.created_at) as last_msg_at
       from threads t
       left join messages m on m.thread_id = t.id
-      group by t.id, t.title, t.created_at
-      order by last_msg_at desc nulls last, t.created_at desc
+      group by t.id, t.title
+      order by last_msg_at desc, t.id asc
     `;
-    const items = rows.map((r: any) => {
-      const { created_at, ...rest } = r;
-      return rest;
-    });
+    const items = rows.map((r: any) => r);
     const res = NextResponse.json({ items });
     log('info', 'chat_threads', {
       route: '/api/chat/threads',
