@@ -5,6 +5,7 @@ import { uiLog } from '../../lib/ui-log';
 import { apiFetch } from '../../lib/http';
 import { useRole } from '../../src/role-context';
 import { generateTraceId, TRACE_HEADER } from '../../lib/trace';
+import { loginCopy, resolveLoginError } from './messages';
 
 export default function Page() {
   const router = useRouter();
@@ -29,18 +30,27 @@ export default function Page() {
     setError('');
 
     const trace_id = generateTraceId();
-    const res = await apiFetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', [TRACE_HEADER]: trace_id },
-      body: JSON.stringify({ email, password }),
-    });
-    if (res.ok) {
-      if (remember) localStorage.setItem('remember-email', email);
-      uiLog('login_success', { role, trace_id });
-      router.push('/console');
-    } else {
-      uiLog('login_fail', { status: res.status, role, trace_id });
-      setError(res.status === 401 ? 'Identifiants invalides' : 'Requête incorrecte');
+    try {
+      const res = await apiFetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', [TRACE_HEADER]: trace_id },
+        body: JSON.stringify({ email, password }),
+      });
+      if (res.ok) {
+        if (remember) localStorage.setItem('remember-email', email);
+        uiLog('login_success', { role, trace_id });
+        router.push('/console');
+      } else {
+        uiLog('login_fail', { status: res.status, role, trace_id });
+        let code: string | undefined;
+        if (res.headers.get('content-type')?.includes('application/json')) {
+          const data = await res.json().catch(() => null);
+          code = data?.code;
+        }
+        setError(resolveLoginError(code));
+      }
+    } catch {
+      setError(resolveLoginError(undefined, true));
     }
   }
 
@@ -60,23 +70,25 @@ export default function Page() {
         <h1 className="mb-6 text-center text-2xl font-bold">Connexion</h1>
         <form onSubmit={submit} className="grid gap-4">
           <label className="grid gap-1">
-            <span className="text-sm">Email</span>
+            <span className="text-sm">{loginCopy.email}</span>
             <input
               className="rounded-md px-3 py-2 text-black focus-visible:ring-2 focus-visible:ring-slate-700/60"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              data-codex-id="login_email"
             />
           </label>
           <label className="grid gap-1">
-            <span className="text-sm">Mot de passe</span>
+            <span className="text-sm">{loginCopy.password}</span>
             <input
               className="rounded-md px-3 py-2 text-black focus-visible:ring-2 focus-visible:ring-slate-700/60"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              data-codex-id="login_password"
             />
           </label>
           <label className="flex items-center gap-2 text-sm">
@@ -87,14 +99,29 @@ export default function Page() {
             />
             Se souvenir de moi
           </label>
+
           {error && <p className="text-sm text-red-400">{error}</p>}
+          {!error && (
+            <a href="/reset" data-codex-id="link_reset" className="text-sm underline">
+              {loginCopy.forgot}
+            </a>
+
+          )}
           <button
             type="submit"
             className="rounded-xl px-4 py-2 font-medium text-white focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
             style={{ background: 'var(--arka-grad-cta)' }}
+            data-codex-id="login_submit"
           >
-            Se connecter
+            {loginCopy.submit}
           </button>
+          <a
+            href="/reset"
+            className="text-center text-sm text-slate-300 hover:text-white"
+            data-codex-id="link_reset"
+          >
+            Mot de passe oublié ?
+          </a>
           <button
             type="button"
             onClick={sso}

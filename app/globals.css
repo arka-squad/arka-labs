@@ -13,6 +13,10 @@
   --arka-grad-ttft: linear-gradient(135deg, #FAB652 0%, #F25636 50%);
   --arka-grad-rtt: linear-gradient(135deg, #F25636 0%, #E0026D 100%);
   --arka-grad-err: linear-gradient(135deg, #E0026D 0%, #E0026D 100%);
+  --motion-tab-duration: 240ms;
+  --motion-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-skeleton-duration: 200ms;
+  --motion-stagger: 60ms;
 }
 * { box-sizing: border-box; }
 html, body {
@@ -27,3 +31,18 @@ body {
 main { max-width: 960px; margin: 0 auto; }
 h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 0.5rem; }
 p { margin: 0.25rem 0; opacity: 0.85; }
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up var(--motion-tab-duration) var(--motion-ease-standard) both;
+}
