@@ -1,0 +1,72 @@
+version: R2.5
+layout:
+  topbar:
+    logo: { id: topbar_logo, href: "/" }
+    links:
+      - { id: link_fonctionnalites, href: "/fonctionnalites", text: "Fonctionnalités" }
+      - { id: link_beta,            href: "/beta",             text: "Inscription à la bêta" }
+      - { id: link_tarification,    href: "/tarification",     text: "Tarification" }
+    cta: { id: cta_open_console, href: "/console", text: "Ouvrir la console" }
+    banner: { id: banner_limited, text: "Ouverture limitée — 5 équipes sélectionnées." }
+
+pages:
+  beta:
+    id: pg_beta
+    hero:
+      title:    { id: hero_title }
+      subtitle: { id: hero_subtitle }
+      bullets:
+        - { id: hero_b1 }
+        - { id: hero_b2 }
+        - { id: hero_b3 }
+      micro: { id: hero_micro }
+      cta:   { id: cta_apply_beta, href: "#form", text: "👉 Candidater à la bêta" }
+    sticky_cta:
+      id: cta_apply_sticky
+      threshold_px: 400
+    sections:
+      - why
+      - get
+      - eligibility
+      - timeline
+      - usecases
+      - faq
+    form:
+      submit: { id: submit_apply, text: "👉 Envoyer ma candidature" }
+      states:
+        sending: { id: state_sending, text: "Envoi en cours…" }
+        sent:    { id: state_sent,    text: "Candidature envoyée ✅" }
+      errors:
+        required: { id: err_required,  text: "Champ requis" }
+        email:    { id: err_email,     text: "Format d’email invalide" }
+        checks:   { id: err_checkbox,  text: "Merci de cocher les engagements nécessaires" }
+      fields:
+        - { id: field_first_name }
+        - { id: field_last_name }
+        - { id: field_email }
+        - { id: field_org }
+        - { id: field_role }
+        - { id: field_timezone }
+        - { id: field_problem }
+        - { id: field_deliverable }
+        - { id: field_stack }
+        - { id: field_data_type }
+        - { id: field_team_size }
+        - { id: field_urgency }
+        - { id: field_referent_ok }
+        - { id: field_kpi_ok }
+        - { id: field_privacy_ok }
+
+  beta_thanks:
+    id: pg_beta_thanks
+    nodes:
+      - { id: thanks_title }
+      - { id: thanks_text }
+      - { id: thanks_c1 }
+      - { id: thanks_c2 }
+      - { id: thanks_c3 }
+      - { id: thanks_cta, href: "/vision", text: "Découvrir la vision Arka" }
+
+redirects: []
+auth:
+  guards: []

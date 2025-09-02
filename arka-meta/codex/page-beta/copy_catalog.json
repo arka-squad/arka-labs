@@ -1,0 +1,67 @@
+{
+  "$schema": "https://arka.dev/schemas/copy_catalog.json",
+  "version": "R2.5",
+  "locale": "fr-FR",
+  "brand": { "name": "Arka" },
+  "layout_topbar": {
+    "links": { "fonctionnalites": "Fonctionnalités", "beta": "Inscription à la bêta", "tarification": "Tarification" },
+    "cta_open_console": "Ouvrir la console",
+    "banner_limited": "Ouverture limitée — 5 équipes sélectionnées."
+  },
+  "beta": {
+    "hero_title": "Bêta privée Arka — 5 équipes seulement",
+    "hero_subtitle": "1 → 5 → 1 : une seule console qui se divise en 5 rôles et reforme une équipe (AGP, PMO, QA/ARC, UX/UI, Codex) pour accélérer vos projets réels.",
+    "bullets": [
+      "Orchestration d’agents, pas un bot isolé.",
+      "Un résultat par sprint : cadrage, prototype ou mise en prod légère.",
+      "Accompagnement humain pendant la bêta."
+    ],
+    "cta_apply": "👉 Candidater à la bêta",
+    "micro": "Réponse sous 72 h • Pas de spam • Vos données restent chez vous",
+    "form": {
+      "groups": ["Coordonnées", "Projet", "Engagement"],
+      "labels": {
+        "first_name": "Prénom*",
+        "last_name": "Nom*",
+        "email": "Email pro*",
+        "org": "Organisation / Projet*",
+        "role": "Rôle (PO/PM/CTO/Founder/Autre)*",
+        "timezone": "Pays & fuseau horaire*",
+        "problem": "Quel problème souhaitez‑vous résoudre ?*",
+        "deliverable": "Livrable visé en 4 semaines*",
+        "stack": "Stack / outils actuels (libre)",
+        "data_type": "Données utilisées*",
+        "team_size": "Équipe impliquée (1–5 personnes)*",
+        "urgency": "Urgence (à livrer sous…)*",
+        "referent_ok": "Je peux être référent ~4 h/sem",
+        "kpi_ok": "J’accepte la collecte de KPIs d’usage pendant la bêta",
+        "privacy_ok": "J’accepte la charte de confidentialité Arka"
+      },
+      "submit": "👉 Envoyer ma candidature",
+      "states": { "sending": "Envoi en cours…", "sent": "Candidature envoyée ✅" },
+      "errors": {
+        "REQUIRED": "Champ requis",
+        "EMAIL": "Format d’email invalide",
+        "CHECKS": "Merci de cocher les engagements nécessaires"
+      }
+    },
+    "faq": [
+      { "q": "La bêta est-elle payante ?", "a": "Non pour l’accès logiciel et l’accompagnement standard. Des coûts matériels peuvent s’appliquer si vous demandez l’ArkaBox physique (optionnelle)." },
+      { "q": "Où vont mes données ?", "a": "Nous privilégions des données anonymisées ou des jeux de test. Par défaut, vos données ne sont pas stockées par Arka au-delà de la session, sauf si vous l’autorisez (journalisation de test). Un accord de NDA est possible sur demande." },
+      { "q": "Faut-il des développeurs ?", "a": "Pas obligatoire. L’équipe ‘Codex’ peut proposer des pseudo-PR et exemples de scripts ; vous validez/intégrez côté code si nécessaire." },
+      { "q": "Hardware requis ?", "a": "Un navigateur récent, un micro pour les tests vocaux. L’ArkaBox est optionnelle." },
+      { "q": "Combien de temps avant une réponse ?", "a": "Sous 72 h après envoi du formulaire." },
+      { "q": "Que se passe-t-il après la bêta ?", "a": "Vous gardez vos playbooks et productions. Un programme early adopters (tarif préférentiel) sera proposé aux équipes souhaitant continuer." }
+    ]
+  },
+  "thanks": {
+    "title": "Merci — votre candidature est bien envoyée ✅",
+    "text": "Nous revenons vers vous sous 72 h.",
+    "bullets": [
+      "préparez un exemple de données (anonymisé)",
+      "listez 1 à 3 résultats concrets visés en 4 semaines",
+      "identifiez votre référent (4 h/sem)"
+    ],
+    "cta": "Découvrir la vision Arka"
+  }
+}
