@@ -1,0 +1,26 @@
+{
+  "selectors": {
+    "topbar_logo": "[data-codex-id='topbar_logo']",
+    "topbar_logout": "[data-codex-id='topbar_logout']",
+    "project_selector": "[data-codex-id='project_selector']",
+    "btn_theme": "[data-codex-id='btn_theme']",
+    "btn_settings": "[data-codex-id='btn_settings']",
+
+    "nav_dashboard": "[data-codex-id='nav_dashboard']",
+    "nav_chat": "[data-codex-id='nav_chat']",
+    "nav_documents": "[data-codex-id='nav_documents']",
+    "nav_prompt_builder": "[data-codex-id='nav_prompt_builder']",
+    "nav_observabilite": "[data-codex-id='nav_observabilite']",
+
+    "login_email": "[data-codex-id='login_email']",
+    "login_password": "[data-codex-id='login_password']",
+    "login_submit": "[data-codex-id='login_submit']",
+    "login_error": "[data-codex-id='login_error']",
+    "link_reset": "[data-codex-id='link_reset']",
+
+    "cta_open_console": "[data-codex-id='cta_open_console']",
+    "link_fonctionnalites": "[data-codex-id='link_fonctionnalites']",
+    "link_beta": "[data-codex-id='link_beta']",
+    "link_tarification": "[data-codex-id='link_tarification']"
+  }
+}

@@ -1,0 +1,41 @@
+pages:
+  landing:
+    id: pg_landing
+    topbar_links:
+      - { id: link_fonctionnalites, href: "/fonctionnalites", text: "Fonctionnalités" }
+      - { id: link_beta,            href: "/beta",             text: "Inscription à la bêta" }
+      - { id: link_tarification,    href: "/tarification",     text: "Tarification" }
+    cta_primary: { id: cta_open_console, href: "/console", text: "Ouvrir la console" }
+  console:
+    id: pg_console
+    auth_required: true
+    topbar:
+      title: "Console"
+      logo:   { id: topbar_logo, href: "/" }
+      logout: { id: topbar_logout }
+      project_selector: { id: project_selector, empty_placeholder: "Aucun projet — créez-en un" }
+      feature_toggles:
+        - { id: btn_theme, action: "overlay_pending" }
+        - { id: btn_settings, action: "overlay_pending" }
+    nav_tabs:
+      - { id: nav_dashboard,      text: "Dashboard" }
+      - { id: nav_chat,           text: "Chat" }
+      - { id: nav_documents,      text: "Documents" }
+      - { id: nav_prompt_builder, text: "Prompt Builder" }
+      - { id: nav_observabilite,  text: "Observabilité" }
+    transitions:
+      tab_change: { duration_ms: 240, easing: "standard" }
+      project_change: { stagger_ms: 60 }
+  login:
+    id: pg_login
+    widgets:
+      email:    { id: login_email }
+      password: { id: login_password }
+      submit:   { id: login_submit, text: "Se connecter" }
+      error:    { id: login_error }
+      reset:    { id: link_reset, href: "/reset" }
+redirects:
+  - { from: "/securite", to: "/beta", type: "permanent" }
+auth:
+  guards:
+    - { protected: "/console", unauth_redirect: "/login" }

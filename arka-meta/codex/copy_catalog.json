@@ -1,0 +1,55 @@
+{
+  "locale": "fr-FR",
+  "brand": { "name": "Arka" },
+  "nav": {
+    "dashboard": "Dashboard",
+    "chat": "Chat",
+    "documents": "Documents",
+    "prompt": "Prompt Builder",
+    "observabilite": "Observabilité"
+  },
+  "topbar": {
+    "title_console": "Console",
+    "project_selector_empty": "Aucun projet — créez-en un",
+    "theme": "Thème",
+    "settings": "Configuration",
+    "logout": "Se déconnecter"
+  },
+  "landing": {
+    "links": {
+      "fonctionnalites": "Fonctionnalités",
+      "beta": "Inscription à la bêta",
+      "tarification": "Tarification"
+    },
+    "cta_open_console": "Ouvrir la console",
+    "cta_primary": "Inscrivez-vous à la bêta"
+  },
+  "login": {
+    "email": "Email",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "forgot": "Mot de passe oublié ?",
+    "errors": {
+      "INVALID_CREDENTIALS": "Identifiants inconnus. Vérifiez votre email.",
+      "INVALID_PASSWORD": "Mot de passe invalide.",
+      "NETWORK": "Erreur réseau. Réessayez dans un instant."
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "drop_hint": "Glisser-déposer vos fichiers ici ou",
+    "choose_files": "Choisir des fichiers"
+  },
+  "prompt": {
+    "title": "Prompt Builder — PMO Wake-up",
+    "generate": "Générer le prompt",
+    "save": "Enregistrer"
+  },
+  "obs": { "title": "Observabilité — Squad Digital" },
+  "kpis": {
+    "lead_time": "Lead Time (p90)",
+    "deploy_freq": "Deployment Freq.",
+    "cfr": "Change Failure Rate",
+    "mttr_p1": "MTTR P1"
+  }
+}
