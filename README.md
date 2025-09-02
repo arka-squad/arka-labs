@@ -43,7 +43,7 @@ Des JWT de test sont fournis sous `arka-meta/reports/staging/tokens_staging.json
 
 Toutes les requêtes vers `/api` doivent utiliser `apiFetch` (`lib/http.ts`).
 Cette fonction ajoute automatiquement l'en-tête `Authorization` si un token est disponible et redirige vers `/login` en cas de `401`.
-Une règle ESLint (`no-restricted-syntax`) bloque tout `fetch('/api…')` direct.
+Une règle ESLint (`no-restricted-syntax`) bloque tout `fetch('/api…')` direct. 
 
 ## Deployment
 
