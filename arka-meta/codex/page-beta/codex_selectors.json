@@ -1,0 +1,53 @@
+{
+  "$schema": "https://arka.dev/schemas/codex_selectors.schema.json",
+  "version": "R2.5",
+  "selectors": {
+    "topbar_logo": "[data-codex-id='topbar_logo']",
+    "link_fonctionnalites": "[data-codex-id='link_fonctionnalites']",
+    "link_beta": "[data-codex-id='link_beta']",
+    "link_tarification": "[data-codex-id='link_tarification']",
+    "cta_open_console": "[data-codex-id='cta_open_console']",
+    "banner_limited": "[data-codex-id='banner_limited']",
+
+    "hero_title": "[data-codex-id='hero_title']",
+    "hero_subtitle": "[data-codex-id='hero_subtitle']",
+    "hero_b1": "[data-codex-id='hero_b1']",
+    "hero_b2": "[data-codex-id='hero_b2']",
+    "hero_b3": "[data-codex-id='hero_b3']",
+    "hero_micro": "[data-codex-id='hero_micro']",
+    "cta_apply_beta": "[data-codex-id='cta_apply_beta']",
+    "cta_apply_sticky": "[data-codex-id='cta_apply_sticky']",
+
+    "field_first_name": "[data-codex-id='field_first_name'], #field_first_name",
+    "field_last_name": "[data-codex-id='field_last_name'], #field_last_name",
+    "field_email": "[data-codex-id='field_email'], #field_email",
+    "field_org": "[data-codex-id='field_org'], #field_org",
+    "field_role": "[data-codex-id='field_role'], #field_role",
+    "field_timezone": "[data-codex-id='field_timezone'], #field_timezone",
+    "field_problem": "[data-codex-id='field_problem'], #field_problem",
+    "field_deliverable": "[data-codex-id='field_deliverable'], #field_deliverable",
+    "field_stack": "[data-codex-id='field_stack'], #field_stack",
+    "field_data_type": "[data-codex-id='field_data_type'], #field_data_type",
+    "field_team_size": "[data-codex-id='field_team_size'], #field_team_size",
+    "field_urgency": "[data-codex-id='field_urgency'], #field_urgency",
+    "field_referent_ok": "[data-codex-id='field_referent_ok'], #field_referent_ok",
+    "field_kpi_ok": "[data-codex-id='field_kpi_ok'], #field_kpi_ok",
+    "field_privacy_ok": "[data-codex-id='field_privacy_ok'], #field_privacy_ok",
+
+    "submit_apply": "[data-codex-id='submit_apply']",
+    "state_sending": "[data-codex-id='state_sending']",
+    "state_sent": "[data-codex-id='state_sent']",
+
+    "err_required": "[data-codex-id='err_required']",
+    "err_email": "[data-codex-id='err_email']",
+    "err_checkbox": "[data-codex-id='err_checkbox']",
+
+    "thanks_title": "[data-codex-id='thanks_title']",
+    "thanks_text": "[data-codex-id='thanks_text']",
+    "thanks_c1": "[data-codex-id='thanks_c1']",
+    "thanks_c2": "[data-codex-id='thanks_c2']",
+    "thanks_c3": "[data-codex-id='thanks_c3']",
+    "thanks_cta": "[data-codex-id='thanks_cta']"
+  },
+  "deprecated_ids": []
+}
