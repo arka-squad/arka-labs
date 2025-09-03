@@ -1,0 +1,55 @@
+name: OPS R3 - B1 Smokes
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 */6 * * *"
+
+jobs:
+  smokes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        envname: [production, preview]
+    environment: ${{ matrix.envname }}
+    env:
+      HOST: ${{ vars.PROD_HOST || vars.PREVIEW_HOST }}
+    steps:
+      - name: Resolve HOST from environment
+        id: host
+        run: |
+          if [ "${{ matrix.envname }}" = "production" ]; then
+            echo "host=${{ vars.PROD_HOST }}" >> $GITHUB_OUTPUT
+          else
+            echo "host=${{ vars.PREVIEW_HOST }}" >> $GITHUB_OUTPUT
+          fi
+          test -n "$(cat $GITHUB_OUTPUT | cut -d= -f2)" || { echo "HOST not set"; exit 1; }
+
+      - name: Generate Trace ID
+        id: trace
+        run: echo "id=ops-$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: Curl 4 endpoints
+        run: |
+          set -e
+          BASE="${{ steps.host.outputs.host }}"
+          TID="${{ steps.trace.outputs.id }}"
+          echo "Trace: $TID | Host: $BASE"
+          for PATH in /api/health /api/metrics/kpis "/api/metrics/runs?page=1&limit=20" /api/ai/stream; do
+            CODE=$(curl -sS -o /dev/null -w "%{http_code}" -H "X-Trace-Id: $TID" "$BASE$PATH")
+            echo "$PATH -> $CODE"
+            test "$CODE" = "200"
+          done
+          echo "trace_id=$TID" >> $GITHUB_ENV
+
+      - name: KPIs compare J-1 vs J-0
+        run: |
+          # Placeholder simple check — attend JSON clé/valeurs
+          curl -sS "${{ steps.host.outputs.host }}/api/metrics/kpis" -H "X-Trace-Id: $trace_id" | jq '. | {p95_ttft_ms, p95_rtt_ms, error_rate_percent}'
+          echo "OK (comparaison visuelle rapide)."
+
+      - name: Summary
+        run: |
+          echo "### ${{
+            matrix.envname
+          }}: 4x200 | Trace $trace_id" >> $GITHUB_STEP_SUMMARY

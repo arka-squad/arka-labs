@@ -18,6 +18,20 @@
 
 ---
 
+## Politique Réseau des Agents
+- Par défaut, **Internet = OFF** pour les agents Codex après configuration.
+- Les tâches nécessitant du réseau s’exécutent via **GitHub Actions**.
+- Exceptions : requièrent un ticket "Override Net" avec allowlist d’hôtes et durée limitée.
+- B1 (R3) : **aucune exception** — smokes & KPIs via GH Actions ; RBAC & gitleaks sans Internet côté agent.
+
+### Secrets & gitleaks (offline/CI)
+- **CI** : gitleaks **obligatoire** ; version doit matcher `vX.Y.Z` (pas de stub). Échec sinon.
+- **Local offline** : si gitleaks absent, le hook **skip** et journalise l’état ; le contrôle est fait par l’action CI.
+- **Interdit** de committer un stub ou un binaire dans le repo. Tout stub doit rester éphémère (ex: `/tmp/gitleaks`).
+- Tout contournement (`--no-verify`) est proscrit et doit être justifié par ticket.
+
+---
+
 ## 1) Critères d’acceptation — tronc commun (AC‑OPS)
 
 1. **Traçabilité** : chaque requête UI émet **`X-Trace-Id`** ; **logs NDJSON** disponibles en dev/preview (`logs/ui_network.json`).
@@ -38,6 +52,7 @@
 * **Aucun binaire** en PR : `.png .jpg .jpeg .gif .mp4 .pdf .webp .psd` etc. (hook/CI **binary‑detector** obligatoire).
 * **Mocks/fixtures** importés dans `app/api/**` pour des endpoints déclarés *branchés* (anti‑mocks CI).
 * `test.skip` n’importe où (anti‑skip CI).
+* Utilisation de `--no-verify` lors des commits (contourne les hooks).
 * **Secrets** en clair/commit (fail‑fast au démarrage si secret manquant ; rotation si doute).
 * **Edge/Cron** activés pour R3 (non requis) ; **runtime Node** attendu.
 * Écritures persistantes **non prévues** (B10 en squelette uniquement).
