@@ -74,6 +74,14 @@ jobs:
             HDR+=( -H "x-vercel-protection-bypass: ${VERCEL_BYPASS}" )
           fi
 
+          # Enable cookie-based bypass in preview (follow redirect to capture Set-Cookie)
+          COOKIE_JAR="$RUNNER_TEMP/vercel_cookies.txt"
+          CURL_BASE_OPTS=( -sS )
+          if [[ "${{ matrix.envname }}" == "preview" && -n "${VERCEL_BYPASS:-}" ]]; then
+            HDR+=( -H "x-vercel-set-bypass-cookie: true" )
+            CURL_BASE_OPTS+=( -L -c "$COOKIE_JAR" -b "$COOKIE_JAR" )
+          fi
+
           endpoints=( "/api/health" "/api/metrics/kpis" "/api/metrics/runs?page=1&limit=20" )
           if [[ "${AI_STREAM_REQUIRED:-0}" == "1" ]]; then
             endpoints+=( "/api/ai/stream" )
@@ -81,7 +89,7 @@ jobs:
 
           fail=0
           for ENDPOINT in "${endpoints[@]}"; do
-            CODE=$(curl -sS -o /dev/null -w "%{http_code}" "${HDR[@]}" "$BASE$ENDPOINT")
+            CODE=$(curl "${CURL_BASE_OPTS[@]}" -o /dev/null -w "%{http_code}" "${HDR[@]}" "$BASE$ENDPOINT")
             echo "$ENDPOINT -> $CODE"
             if [[ "$CODE" != "200" ]]; then
               if [[ "$ENDPOINT" == "/api/ai/stream" && "${AI_STREAM_REQUIRED:-0}" != "1" && ( "$CODE" == "404" || "$CODE" == "405" ) ]]; then
@@ -115,10 +123,18 @@ jobs:
           if [[ "${{ matrix.envname }}" == "preview" && -n "${VERCEL_BYPASS:-}" ]]; then
             HDR+=( -H "x-vercel-protection-bypass: ${VERCEL_BYPASS}" )
           fi
-          curl -sS "${{ steps.host.outputs.host }}/api/metrics/kpis" "${HDR[@]}" \
+          # Reuse cookie approach for KPIs call
+          COOKIE_JAR="$RUNNER_TEMP/vercel_cookies.txt"
+          CURL_BASE_OPTS=( -sS )
+          if [[ "${{ matrix.envname }}" == "preview" && -n "${VERCEL_BYPASS:-}" ]]; then
+            HDR+=( -H "x-vercel-set-bypass-cookie: true" )
+            CURL_BASE_OPTS+=( -L -c "$COOKIE_JAR" -b "$COOKIE_JAR" )
+          fi
+          curl "${CURL_BASE_OPTS[@]}" "${{ steps.host.outputs.host }}/api/metrics/kpis" "${HDR[@]}" \
             | jq '. | {p95_ttft_ms, p95_rtt_ms, error_rate_percent}'
 
       - name: Summary
         if: always()
         run: |
           echo "### ${{ matrix.envname }}: 4x200 | Trace $trace_id" >> "$GITHUB_STEP_SUMMARY"
+
