@@ -26,6 +26,6 @@ export default function NavItem({
       }
     >
       {label}
-    </Link>
+    </button>
   );
 }

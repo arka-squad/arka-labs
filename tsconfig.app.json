@@ -1,11 +1,13 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
+    "noEmit": false,
     "outDir": "dist-app",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
+    "module": "CommonJS",
     "jsx": "react-jsx"
   },
-  "include": ["app/console/prompt-builder/**/*", "src/role-context.tsx"]
+  "include": [
+    "app/console/prompt-builder/**/*",
+    "src/role-context.tsx"
+  ]
 }
