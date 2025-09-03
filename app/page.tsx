@@ -83,10 +83,12 @@ export default function ArkaLanding() {
             href="/console"
             className="rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg"
             style={{ background: TOKENS.gradCTA }}
+
             onClick={() => {
               router.push('/projects');
             }}
             data-codex-id="cta_open_console"
+
           >
             Ouvrir la console
           </a>
