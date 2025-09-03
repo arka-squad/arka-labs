@@ -1,0 +1,55 @@
+name: OPS R3 - B1 Smokes
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 */6 * * *"
+
+jobs:
+  smokes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        envname: [production, preview]
+    environment: ${{ matrix.envname }}
+    steps:
+      - name: Resolve HOST from environment
+        id: host
+        run: |
+          if [ "${{ matrix.envname }}" = "production" ]; then
+            HOST="${{ vars.PROD_HOST }}"
+          else
+            HOST="${{ vars.PREVIEW_HOST }}"
+          fi
+          if [ -z "$HOST" ]; then
+            echo "ERROR: Missing PROD_HOST/PREVIEW_HOST in GitHub → Settings → Environments → ${{ matrix.envname }} → Variables." >&2
+            exit 1
+          fi
+          echo "host=$HOST" >> "$GITHUB_OUTPUT"
+
+      - name: Generate Trace ID
+        id: trace
+        run: echo "id=ops-$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Curl 4 endpoints (expect 200)
+        run: |
+          set -e
+          BASE="${{ steps.host.outputs.host }}"
+          TID="${{ steps.trace.outputs.id }}"
+          echo "Trace: $TID | Host: $BASE"
+          for PATH in /api/health /api/metrics/kpis "/api/metrics/runs?page=1&limit=20" /api/ai/stream; do
+            CODE=$(curl -sS -o /dev/null -w "%{http_code}" -H "X-Trace-Id: $TID" "$BASE$PATH")
+            echo "$PATH -> $CODE"
+            test "$CODE" = "200"
+          done
+          echo "trace_id=$TID" >> "$GITHUB_ENV"
+
+      - name: KPIs minimal (visibility)
+        run: |
+          curl -sS "${{ steps.host.outputs.host }}/api/metrics/kpis" -H "X-Trace-Id: $trace_id" \
+            | jq '. | {p95_ttft_ms, p95_rtt_ms, error_rate_percent}'
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### ${{ matrix.envname }}: 4x200 | Trace $trace_id" >> "$GITHUB_STEP_SUMMARY"
