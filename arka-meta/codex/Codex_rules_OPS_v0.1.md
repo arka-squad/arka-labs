@@ -87,6 +87,11 @@ arka-meta/reports/codex/<EPIC>/sha256sums.txt (MAJ)
 * **curl‑oracles** : `health`, `kpis`, `runs`, `ai/stream` retournent 200 (si B9 actif).
 * **axe‑a11y** (light) : passe AA sur pages clés (`/`, `/login`, `/console/observabilite`).
 
+### Secrets & gitleaks — politique CI
+- En **CI**, le scan secrets est **assuré par `gitleaks/gitleaks-action@v2`** (token requis) ; **aucune installation APT** n’est nécessaire.
+- Le **pre-commit hook** est **non-bloquant en CI** (skip) ; il reste actif en local si le binaire est présent.
+- Variable d’urgence `ENFORCE_CI_GITLEAKS=1` pour rendre le hook bloquant en CI si besoin.
+
 ---
 
 ## 6) Pièces jointes (références utiles, 1‑ligne)
