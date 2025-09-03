@@ -32,11 +32,14 @@ jobs:
         run: echo "id=ops-$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Ensure curl and jq are available
+        shell: bash
         run: |
-          set -e
+          set -euo pipefail
+          echo "Pre-check: curl=$(command -v curl || echo 'N/A'), jq=$(command -v jq || echo 'N/A')"
           if ! command -v curl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
-            sudo apt-get update -y
-            sudo apt-get install -y curl jq
+            echo "Installing curl + jq..."
+            sudo apt-get update -yqq
+            sudo apt-get install -yqq curl jq
           fi
           curl --version
           jq --version
