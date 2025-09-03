@@ -13,3 +13,6 @@ logs/
 *.ndjson
 logs_*.json
 logs_*.txt
+ 
+# local workspace (untracked)
+local/

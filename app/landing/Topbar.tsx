@@ -5,10 +5,6 @@ import React from 'react';
 import { TOKENS } from './tokens';
 import { uiLog } from './uiLog';
 
-const ASSETS = {
-  LOGO_WHITE: 'https://arka-liard.vercel.app/assets/logo/arka-logo-blanc.svg',
-};
-
 export default function Topbar() {
   const [open, setOpen] = React.useState(false);
 
@@ -18,15 +14,7 @@ export default function Topbar() {
       role="banner"
       aria-label="En-tête de la page"
     >
-      <a href="/" data-codex-id="topbar_logo">
-        <img
-          src={ASSETS.LOGO_WHITE}
-          alt="Arka logo"
-          className="h-8 w-auto"
-          loading="eager"
-          decoding="async"
-        />
-      </a>
+      <a href="/" data-codex-id="topbar_logo" className="text-2xl font-extrabold lowercase tracking-tight text-white">arka</a>
 
       {/* Nav desktop */}
       <nav
