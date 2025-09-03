@@ -31,6 +31,16 @@ jobs:
         id: trace
         run: echo "id=ops-$(date +%s)" >> "$GITHUB_OUTPUT"
 
+      - name: Ensure curl and jq are available
+        run: |
+          set -e
+          if ! command -v curl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+            sudo apt-get update -y
+            sudo apt-get install -y curl jq
+          fi
+          curl --version
+          jq --version
+
       - name: Curl 4 endpoints (expect 200)
         run: |
           set -e
