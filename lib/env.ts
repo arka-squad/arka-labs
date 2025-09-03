@@ -1,34 +1,33 @@
-// lib/env.ts
-import { z } from "zod";
+// lib/env.ts — minimal runtime env checker (no external deps)
 
-const envSchema = z.object({
-  JWT_SECRET: z.string().min(32, "Required JWT_SECRET (>=32)"),
-  JWT_ISSUER: z.string().min(1, "Required JWT_ISSUER"),
-  JWT_AUDIENCE: z.string().min(1, "Required JWT_AUDIENCE"),
-  BLOB_READ_WRITE_TOKEN: z.string().optional(),
-  AUTH_SECRET: z.string().optional(),
-});
-
-export type Env = z.infer<typeof envSchema>;
+export type Env = {
+  JWT_SECRET: string;
+  JWT_ISSUER: string;
+  JWT_AUDIENCE: string;
+  BLOB_READ_WRITE_TOKEN?: string;
+  AUTH_SECRET?: string;
+};
 
 let cached: Env | null = null;
 
+function requireString(name: string, value: string | undefined | null, minLen = 1): string {
+  const v = (value ?? '').trim();
+  if (v.length < minLen) {
+    throw new Error(`ENV_MISSING:${name}`);
+  }
+  return v;
+}
+
 export function getEnv(): Env {
   if (cached) return cached;
-  const parsed = envSchema.safeParse({
-    JWT_SECRET:
-      process.env.JWT_SECRET ??
-      process.env.AUTH_SECRET ??
-      process.env.NEXTAUTH_SECRET,
-    JWT_ISSUER: process.env.JWT_ISSUER,
-    JWT_AUDIENCE: process.env.JWT_AUDIENCE,
-    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
-    AUTH_SECRET: process.env.AUTH_SECRET,
-  });
-  if (!parsed.success) {
-    const missing = parsed.error.issues.map((i) => i.path.join(".")).join(",");
-    throw new Error(`ENV_MISSING:${missing}`);
-  }
-  cached = parsed.data;
-  return cached;
+  const JWT_SECRET = (process.env.JWT_SECRET ?? process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET) || '';
+  const env: Env = {
+    JWT_SECRET: requireString('JWT_SECRET', JWT_SECRET, 32),
+    JWT_ISSUER: requireString('JWT_ISSUER', process.env.JWT_ISSUER),
+    JWT_AUDIENCE: requireString('JWT_AUDIENCE', process.env.JWT_AUDIENCE),
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN || undefined,
+    AUTH_SECRET: process.env.AUTH_SECRET || undefined,
+  };
+  cached = env;
+  return env;
 }
