@@ -24,6 +24,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: forbid next/document in app router
+        run: |
+          set -eux
+          pattern="next/document"
+          pattern_html='<'"Html"
+          ! git grep -n "from '$pattern'" || exit 1
+          ! git grep -n "$pattern_html" || exit 1
+
       # Choix de l'hôte (primary si /api/health -> 200, sinon fallback)
       - name: pick-host
         id: pick
