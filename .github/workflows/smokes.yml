@@ -45,14 +45,15 @@ jobs:
           jq --version
 
       - name: Curl 4 endpoints (expect 200)
+        shell: bash
         run: |
-          set -e
+          set -euo pipefail
           BASE="${{ steps.host.outputs.host }}"
           TID="${{ steps.trace.outputs.id }}"
           echo "Trace: $TID | Host: $BASE"
-          for PATH in /api/health /api/metrics/kpis "/api/metrics/runs?page=1&limit=20" /api/ai/stream; do
-            CODE=$(curl -sS -o /dev/null -w "%{http_code}" -H "X-Trace-Id: $TID" "$BASE$PATH")
-            echo "$PATH -> $CODE"
+          for ENDPOINT in /api/health /api/metrics/kpis "/api/metrics/runs?page=1&limit=20" /api/ai/stream; do
+            CODE=$(curl -sS -o /dev/null -w "%{http_code}" -H "X-Trace-Id: $TID" "$BASE$ENDPOINT")
+            echo "$ENDPOINT -> $CODE"
             test "$CODE" = "200"
           done
           echo "trace_id=$TID" >> "$GITHUB_ENV"
