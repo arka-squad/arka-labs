@@ -3,6 +3,7 @@
 import React from "react";
 import { TOKENS } from "./tokens";
 import { uiLog } from "./uiLog";
+import { assetUrl } from "../../lib/urls";
 
 // minimal ArrowRight icon (Lucide path) to avoid external dependency
 function ArrowRight(props: React.SVGProps<SVGSVGElement>) {
@@ -25,8 +26,8 @@ function ArrowRight(props: React.SVGProps<SVGSVGElement>) {
 
 // === ASSETS (liens absolus, car dépôt privé) ===
 const ASSETS = {
-  LOGO_GRAD: "https://arka-liard.vercel.app/assets/logo/arka-logo-blanc-radient.svg",
-  HERO_VISUAL: "https://arka-liard.vercel.app/assets/hero/arkabox-board.png",
+  LOGO_GRAD: assetUrl('/assets/logo/arka-logo-blanc-radient.svg'),
+  HERO_VISUAL: assetUrl('/assets/hero/arkabox-board.png'),
 };
 
 // ---------------- Hero ----------------

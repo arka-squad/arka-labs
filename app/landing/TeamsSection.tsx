@@ -3,9 +3,10 @@
 
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
+import { assetUrl } from "../../lib/urls";
 
 const ASSETS = {
-  SCHEMA: "https://arka-liard.vercel.app/assets/hero/schema-agents.png",
+  SCHEMA: assetUrl('/assets/hero/schema-agents.png'),
 };
 
 export default function TeamsSection() {

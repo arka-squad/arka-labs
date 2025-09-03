@@ -28,7 +28,7 @@ export default function Topbar() {
   return (
     <header className="flex items-center justify-between border-b border-slate-700/50 px-4 py-3" style={{backgroundColor: 'var(--arka-bg)'}}>
       <div className="flex items-center gap-4">
-        <a href="/" data-codex-id="topbar_logo" className="text-lg font-bold">Arka</a>
+        <a href="/" data-codex-id="topbar_logo" className="text-xl font-extrabold lowercase tracking-tight text-white">arka</a>
         <span className="text-lg font-semibold">Console</span>
         <select
           data-codex-id="project_selector"
@@ -60,4 +60,3 @@ export default function Topbar() {
     </header>
   );
 }
-

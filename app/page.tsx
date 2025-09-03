@@ -29,14 +29,14 @@ const TOKENS = {
   gradTextClass: 'bg-gradient-to-r from-amber-400 via-rose-500 to-fuchsia-600',
 };
 
+import { assetUrl } from '../lib/urls';
+
 const ASSETS = {
-  LOGO_WHITE: 'https://arka-liard.vercel.app/assets/logo/arka-logo-blanc.svg',
-  LOGO_GRAD:
-    'https://arka-liard.vercel.app/assets/logo/arka-logo-blanc-radient.svg',
-  HERO_VISUAL: 'https://arka-liard.vercel.app/assets/hero/arkabox-board.png',
-  SCREENSHOT_CONSOLE:
-    'https://arka-liard.vercel.app/assets/hero/console-demo.gif',
-  SCHEMA_AGENTS: 'https://arka-liard.vercel.app/assets/hero/schema-agents.png',
+  LOGO_WHITE: assetUrl('/assets/logo/arka-logo-blanc.svg'),
+  LOGO_GRAD: assetUrl('/assets/logo/arka-logo-blanc-radient.svg'),
+  HERO_VISUAL: assetUrl('/assets/hero/arkabox-board.png'),
+  SCREENSHOT_CONSOLE: assetUrl('/assets/hero/console-demo.gif'),
+  SCHEMA_AGENTS: assetUrl('/assets/hero/schema-agents.png'),
 };
 
 export default function ArkaLanding() {
