@@ -46,21 +46,36 @@ jobs:
 
       - name: Curl 4 endpoints (expect 200)
         shell: bash
+        env:
+          VERCEL_BYPASS: ${{ secrets.VERCEL_BYPASS }}
         run: |
           set -euo pipefail
           BASE="${{ steps.host.outputs.host }}"
           TID="${{ steps.trace.outputs.id }}"
           echo "Trace: $TID | Host: $BASE"
+          # Optional Vercel protection bypass header (preview only)
+          HEADERS=("-H" "X-Trace-Id: $TID")
+          if [ "${{ matrix.envname }}" = "preview" ] && [ -n "${VERCEL_BYPASS:-}" ]; then
+            HEADERS+=("-H" "x-vercel-protection-bypass: ${VERCEL_BYPASS}")
+          fi
           for ENDPOINT in /api/health /api/metrics/kpis "/api/metrics/runs?page=1&limit=20" /api/ai/stream; do
-            CODE=$(curl -sS -o /dev/null -w "%{http_code}" -H "X-Trace-Id: $TID" "$BASE$ENDPOINT")
+            CODE=$(curl -sS -o /dev/null -w "%{http_code}" "${HEADERS[@]}" "$BASE$ENDPOINT")
             echo "$ENDPOINT -> $CODE"
             test "$CODE" = "200"
           done
           echo "trace_id=$TID" >> "$GITHUB_ENV"
 
       - name: KPIs minimal (visibility)
+        shell: bash
+        env:
+          VERCEL_BYPASS: ${{ secrets.VERCEL_BYPASS }}
         run: |
-          curl -sS "${{ steps.host.outputs.host }}/api/metrics/kpis" -H "X-Trace-Id: $trace_id" \
+          set -euo pipefail
+          HEADERS=("-H" "X-Trace-Id: $trace_id")
+          if [ "${{ matrix.envname }}" = "preview" ] && [ -n "${VERCEL_BYPASS:-}" ]; then
+            HEADERS+=("-H" "x-vercel-protection-bypass: ${VERCEL_BYPASS}")
+          fi
+          curl -sS "${{ steps.host.outputs.host }}/api/metrics/kpis" "${HEADERS[@]}" \
             | jq '. | {p95_ttft_ms, p95_rtt_ms, error_rate_percent}'
 
       - name: Summary
