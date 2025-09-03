@@ -37,7 +37,7 @@
     * Footer: garder *« Rejoignez… »* ; **supprimer** 2 phrases bannies; CTA *« bêta »* partout
   * **Console**
 
-    * Topbar: logo (`/`), titre *« Console »*, project selector (placeholder si 0), toggles thème/paramètres → **overlay pending**, Logout si auth
+    * Topbar: logo (`/`), titre *« Console »*, project selectoAr (placeholder si 0), toggles thème/paramètres → **overlay pending**, Logout si auth
     * Nav: Dashboard, Chat, Documents, Prompt Builder, Observabilité (+ hover/focus **AA**)
     * Animations: changement d’onglet (**240ms**), switch projet (stagger/skeleton)
   * **Login**
