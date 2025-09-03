@@ -49,6 +49,7 @@ jobs:
         env:
           SMOKES_AUTH: ${{ secrets.SMOKES_AUTH }}
           VERCEL_BYPASS: ${{ secrets.VERCEL_BYPASS }}
+          RBAC_TOKEN_ADMIN:  ${{ secrets.RBAC_TOKEN_ADMIN }}
           RBAC_TOKEN_EDITOR: ${{ secrets.RBAC_TOKEN_EDITOR }}
         run: |
           set -euo pipefail
@@ -61,7 +62,10 @@ jobs:
           # 1) Priority to SMOKES_AUTH if provided (full 'name: value' line)
           if [[ -n "${SMOKES_AUTH:-}" ]]; then
             HDR+=( -H "${SMOKES_AUTH}" )
-          # 2) Else, bearer from RBAC editor token
+          # 2) Else, bearer from RBAC admin token
+          elif [[ -n "${RBAC_TOKEN_ADMIN:-}" ]]; then
+            HDR+=( -H "Authorization: Bearer ${RBAC_TOKEN_ADMIN}" )
+          # 3) Else, bearer from RBAC editor token
           elif [[ -n "${RBAC_TOKEN_EDITOR:-}" ]]; then
             HDR+=( -H "Authorization: Bearer ${RBAC_TOKEN_EDITOR}" )
           fi
@@ -96,12 +100,15 @@ jobs:
         env:
           SMOKES_AUTH: ${{ secrets.SMOKES_AUTH }}
           VERCEL_BYPASS: ${{ secrets.VERCEL_BYPASS }}
+          RBAC_TOKEN_ADMIN:  ${{ secrets.RBAC_TOKEN_ADMIN }}
           RBAC_TOKEN_EDITOR: ${{ secrets.RBAC_TOKEN_EDITOR }}
         run: |
           set -euo pipefail
           HDR=( -H "X-Trace-Id: $trace_id" )
           if [[ -n "${SMOKES_AUTH:-}" ]]; then
             HDR+=( -H "${SMOKES_AUTH}" )
+          elif [[ -n "${RBAC_TOKEN_ADMIN:-}" ]]; then
+            HDR+=( -H "Authorization: Bearer ${RBAC_TOKEN_ADMIN}" )
           elif [[ -n "${RBAC_TOKEN_EDITOR:-}" ]]; then
             HDR+=( -H "Authorization: Bearer ${RBAC_TOKEN_EDITOR}" )
           fi
