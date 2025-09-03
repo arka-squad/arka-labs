@@ -5,9 +5,10 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { TOKENS } from "./tokens";
+import { assetUrl } from "../../lib/urls";
 
 const ASSETS = {
-  CONSOLE: "https://arka-liard.vercel.app/assets/hero/console-demo.gif",
+  CONSOLE: assetUrl('/assets/hero/console-demo.gif'),
 };
 
 export default function ConsoleSection() {
