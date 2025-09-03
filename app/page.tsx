@@ -2,6 +2,7 @@
 'use client';
 
 import type { SVGProps } from 'react';
+import { useRouter } from 'next/navigation';
 
 function ArrowRight(props: SVGProps<SVGSVGElement>) {
   return (
@@ -30,13 +31,16 @@ const TOKENS = {
 
 const ASSETS = {
   LOGO_WHITE: 'https://arka-liard.vercel.app/assets/logo/arka-logo-blanc.svg',
-  LOGO_GRAD: 'https://arka-liard.vercel.app/assets/logo/arka-logo-blanc-radient.svg',
+  LOGO_GRAD:
+    'https://arka-liard.vercel.app/assets/logo/arka-logo-blanc-radient.svg',
   HERO_VISUAL: 'https://arka-liard.vercel.app/assets/hero/arkabox-board.png',
-  SCREENSHOT_CONSOLE: 'https://arka-liard.vercel.app/assets/hero/console-demo.gif',
+  SCREENSHOT_CONSOLE:
+    'https://arka-liard.vercel.app/assets/hero/console-demo.gif',
   SCHEMA_AGENTS: 'https://arka-liard.vercel.app/assets/hero/schema-agents.png',
 };
 
 export default function ArkaLanding() {
+  const router = useRouter();
   return (
     <div
       className="min-h-screen text-white font-[Poppins]"
@@ -46,7 +50,6 @@ export default function ArkaLanding() {
       <header className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <img src={ASSETS.LOGO_WHITE} alt="Arka logo" className="h-8 w-auto" />
         <nav className="hidden gap-4 text-sm text-slate-300 sm:flex">
-
           <a
             href="#features"
             className="hover:text-white"
@@ -66,7 +69,6 @@ export default function ArkaLanding() {
             className="hover:text-white"
             data-codex-id="link_tarification"
           >
-
             Tarification
           </a>
         </nav>
@@ -82,6 +84,11 @@ export default function ArkaLanding() {
             className="rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg"
             style={{ background: TOKENS.gradCTA }}
 
+            onClick={() => {
+              router.push('/projects');
+            }}
+            data-codex-id="cta_open_console"
+
           >
             Ouvrir la console
           </a>
@@ -94,7 +101,8 @@ export default function ArkaLanding() {
           <img src={ASSETS.LOGO_GRAD} alt="Arka" className="h-auto w-[133px]" />
           <h1 className="mt-8 text-white">
             <span className="block leading-tight sm:text-[32px] md:text-[34px] lg:text-[36px]">
-              la <span className="font-extrabold">puissance</span> des grandes équipes,
+              la <span className="font-extrabold">puissance</span> des grandes
+              équipes,
             </span>
             <span
               className={`${TOKENS.gradTextClass} bg-clip-text font-semibold leading-tight text-transparent block sm:text-[32px] md:text-[34px] lg:text-[34px]`}
@@ -103,7 +111,8 @@ export default function ArkaLanding() {
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-slate-300">
-            Console multi-agents, prompt builder et observabilité — pensée pour les équipes de 2 à 30 personnes.
+            Console multi-agents, prompt builder et observabilité — pensée pour
+            les équipes de 2 à 30 personnes.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a
@@ -187,7 +196,12 @@ export default function ArkaLanding() {
             Une console conçue pour vos agents
           </h2>
           <p className="text-slate-400 mb-6">
-            Arka R1 réunit en une seule interface trois briques essentielles : <b>Prompt Builder</b>, <b>gestion documentaire</b> et <b>observabilité en temps réel</b>. Cette intégration unique fait d’Arka une console multi‑agents prête à l’emploi. Idéal pour des petites équipes qui veulent livrer plus vite, avec plus de rigueur et un niveau de qualité supérieur.
+            Arka R1 réunit en une seule interface trois briques essentielles :{' '}
+            <b>Prompt Builder</b>, <b>gestion documentaire</b> et{' '}
+            <b>observabilité en temps réel</b>. Cette intégration unique fait
+            d’Arka une console multi‑agents prête à l’emploi. Idéal pour des
+            petites équipes qui veulent livrer plus vite, avec plus de rigueur
+            et un niveau de qualité supérieur.
           </p>
           <a
             href="/console"
@@ -216,7 +230,10 @@ export default function ArkaLanding() {
             Arka, pensée pour les petites équipes
           </h2>
           <p className="text-slate-400 mb-6">
-            Arka n’a pas vocation à remplacer des ERP lourds. Elle est volontairement <b>légère</b>, rapide à mettre en place et orientée <b>valeur immédiate</b>. Cible idéale : équipes de 2 à 30 personnes, qui veulent renforcer leurs capacités sans recruter massivement.
+            Arka n’a pas vocation à remplacer des ERP lourds. Elle est
+            volontairement <b>légère</b>, rapide à mettre en place et orientée{' '}
+            <b>valeur immédiate</b>. Cible idéale : équipes de 2 à 30 personnes,
+            qui veulent renforcer leurs capacités sans recruter massivement.
           </p>
           <ul className="list-disc list-inside text-slate-400 text-sm space-y-1">
             <li>Optimisation des flux de production</li>
@@ -239,7 +256,12 @@ export default function ArkaLanding() {
           Rejoignez les premières équipes qui utilisent Arka R1
         </h2>
         <p className="text-slate-400 mb-6 max-w-2xl mx-auto">
-          Arka est déjà adopté par des PME, agences et startups ambitieuses qui veulent transformer leur delivery. Avec une architecture <b>multi‑agents</b> encadrée et des outils intégrés (<b>chat SSE</b>, <b>prompt builder</b>, <b>observabilité</b>), la console met la puissance des grandes équipes entre les mains des petites. Inscrivez‑vous à la bêta gratuite et rejoignez‑les.
+          Arka est déjà adopté par des PME, agences et startups ambitieuses qui
+          veulent transformer leur delivery. Avec une architecture{' '}
+          <b>multi‑agents</b> encadrée et des outils intégrés (<b>chat SSE</b>,{' '}
+          <b>prompt builder</b>, <b>observabilité</b>), la console met la
+          puissance des grandes équipes entre les mains des petites.
+          Inscrivez‑vous à la bêta gratuite et rejoignez‑les.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <a
@@ -267,9 +289,9 @@ export default function ArkaLanding() {
         className="border-t py-6 text-center text-xs text-slate-500"
         style={{ borderColor: '#1F2A33' }}
       >
-        © {new Date().getFullYear()} Arka — R1 · Local‑first · Confidentialité · Sobriété
+        © {new Date().getFullYear()} Arka — R1 · Local‑first · Confidentialité
+        · Sobriété
       </footer>
     </div>
   );
 }
-
