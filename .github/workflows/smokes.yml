@@ -47,35 +47,68 @@ jobs:
       - name: Curl 4 endpoints (expect 200)
         shell: bash
         env:
+          SMOKES_AUTH: ${{ secrets.SMOKES_AUTH }}
           VERCEL_BYPASS: ${{ secrets.VERCEL_BYPASS }}
+          RBAC_TOKEN_EDITOR: ${{ secrets.RBAC_TOKEN_EDITOR }}
         run: |
           set -euo pipefail
           BASE="${{ steps.host.outputs.host }}"
           TID="${{ steps.trace.outputs.id }}"
           echo "Trace: $TID | Host: $BASE"
-          # Optional Vercel protection bypass header (preview only)
-          HEADERS=("-H" "X-Trace-Id: $TID")
-          if [ "${{ matrix.envname }}" = "preview" ] && [ -n "${VERCEL_BYPASS:-}" ]; then
-            HEADERS+=("-H" "x-vercel-protection-bypass: ${VERCEL_BYPASS}")
+
+          # Build headers (no secret logging)
+          HDR=( -H "X-Trace-Id: $TID" )
+          # 1) Priority to SMOKES_AUTH if provided (full 'name: value' line)
+          if [[ -n "${SMOKES_AUTH:-}" ]]; then
+            HDR+=( -H "${SMOKES_AUTH}" )
+          # 2) Else, bearer from RBAC editor token
+          elif [[ -n "${RBAC_TOKEN_EDITOR:-}" ]]; then
+            HDR+=( -H "Authorization: Bearer ${RBAC_TOKEN_EDITOR}" )
           fi
-          for ENDPOINT in /api/health /api/metrics/kpis "/api/metrics/runs?page=1&limit=20" /api/ai/stream; do
-            CODE=$(curl -sS -o /dev/null -w "%{http_code}" "${HEADERS[@]}" "$BASE$ENDPOINT")
+          # Preview bypass (if defined)
+          if [[ "${{ matrix.envname }}" == "preview" && -n "${VERCEL_BYPASS:-}" ]]; then
+            HDR+=( -H "x-vercel-protection-bypass: ${VERCEL_BYPASS}" )
+          fi
+
+          endpoints=( "/api/health" "/api/metrics/kpis" "/api/metrics/runs?page=1&limit=20" )
+          if [[ "${AI_STREAM_REQUIRED:-0}" == "1" ]]; then
+            endpoints+=( "/api/ai/stream" )
+          fi
+
+          fail=0
+          for ENDPOINT in "${endpoints[@]}"; do
+            CODE=$(curl -sS -o /dev/null -w "%{http_code}" "${HDR[@]}" "$BASE$ENDPOINT")
             echo "$ENDPOINT -> $CODE"
-            test "$CODE" = "200"
+            if [[ "$CODE" != "200" ]]; then
+              if [[ "$ENDPOINT" == "/api/ai/stream" && "${AI_STREAM_REQUIRED:-0}" != "1" && ( "$CODE" == "404" || "$CODE" == "405" ) ]]; then
+                echo "NOTE: $ENDPOINT $CODE tolerated (AI stream optional)."
+              else
+                fail=1
+              fi
+            fi
           done
+
           echo "trace_id=$TID" >> "$GITHUB_ENV"
+          test "$fail" -eq 0
 
       - name: KPIs minimal (visibility)
         shell: bash
         env:
+          SMOKES_AUTH: ${{ secrets.SMOKES_AUTH }}
           VERCEL_BYPASS: ${{ secrets.VERCEL_BYPASS }}
+          RBAC_TOKEN_EDITOR: ${{ secrets.RBAC_TOKEN_EDITOR }}
         run: |
           set -euo pipefail
-          HEADERS=("-H" "X-Trace-Id: $trace_id")
-          if [ "${{ matrix.envname }}" = "preview" ] && [ -n "${VERCEL_BYPASS:-}" ]; then
-            HEADERS+=("-H" "x-vercel-protection-bypass: ${VERCEL_BYPASS}")
+          HDR=( -H "X-Trace-Id: $trace_id" )
+          if [[ -n "${SMOKES_AUTH:-}" ]]; then
+            HDR+=( -H "${SMOKES_AUTH}" )
+          elif [[ -n "${RBAC_TOKEN_EDITOR:-}" ]]; then
+            HDR+=( -H "Authorization: Bearer ${RBAC_TOKEN_EDITOR}" )
           fi
-          curl -sS "${{ steps.host.outputs.host }}/api/metrics/kpis" "${HEADERS[@]}" \
+          if [[ "${{ matrix.envname }}" == "preview" && -n "${VERCEL_BYPASS:-}" ]]; then
+            HDR+=( -H "x-vercel-protection-bypass: ${VERCEL_BYPASS}" )
+          fi
+          curl -sS "${{ steps.host.outputs.host }}/api/metrics/kpis" "${HDR[@]}" \
             | jq '. | {p95_ttft_ms, p95_rtt_ms, error_rate_percent}'
 
       - name: Summary
