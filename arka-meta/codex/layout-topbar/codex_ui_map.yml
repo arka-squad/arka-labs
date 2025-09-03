@@ -3,9 +3,14 @@ layout:
   layout_topbar:
     id: layout_topbar
     topbar:
-      logo:   { id: topbar_logo, href: "/" }
+      logo: { id: topbar_logo, href: '/' }
       links:
-        - { id: link_fonctionnalites, href: "/fonctionnalites", text: "Fonctionnalités" }
-        - { id: link_beta,            href: "/beta",             text: "Inscription à la bêta" }
-        - { id: link_tarification,    href: "/tarification",     text: "Tarification" }
-      cta_primary: { id: cta_open_console, href: "/console", text: "Ouvrir la console" }
+        - {
+            id: link_fonctionnalites,
+            href: '/fonctionnalites',
+            text: 'Fonctionnalités',
+          }
+        - { id: link_beta, href: '/beta', text: 'Inscription à la bêta' }
+        - { id: link_tarification, href: '/tarification', text: 'Tarification' }
+      cta_primary:
+        { id: cta_open_console, href: '/console', text: 'Ouvrir la console' }
