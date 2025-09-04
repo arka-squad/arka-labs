@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 type Role = 'viewer' | 'editor' | 'admin' | 'owner' | 'operator';
 
+
 function b64urlToString(b64url: string): string {
   const pad = '='.repeat((4 - (b64url.length % 4)) % 4);
   const b64 = (b64url + pad).replace(/-/g, '+').replace(/_/g, '/');
@@ -37,6 +38,7 @@ function decodeRoleFromJWT(token: string | null): Role | null {
     const r: string | undefined = json.role || json.rbac || json.claims?.role;
     if (!r) return null;
     const v = String(r).toLowerCase();
+
     if (['viewer', 'editor', 'admin', 'owner', 'operator'].includes(v)) return v as Role;
     return null;
   } catch {
@@ -49,6 +51,7 @@ export default function RoleBadge() {
 
   useEffect(() => {
     try {
+
       let tok: string | null = null;
       if (typeof document !== 'undefined') {
         const m = document.cookie.match(/\b(arka_auth|arka_access_token)=([^;]+)/);
@@ -57,6 +60,7 @@ export default function RoleBadge() {
       if (!tok && typeof localStorage !== 'undefined') {
         tok = localStorage.getItem('RBAC_TOKEN') || localStorage.getItem('access_token');
       }
+
       const decoded = decodeRoleFromJWT(tok);
       if (decoded) setRole(decoded);
     } catch {
