@@ -34,6 +34,10 @@ export default function Topbar() {
         <a href="/" data-codex-id="topbar_logo" className="text-xl font-extrabold lowercase tracking-tight text-white">arka</a>
         <span className="text-lg font-semibold">Console</span>
         <RoleBadge />
+        <span className={`rounded-full px-2 py-0.5 text-xs ${authed ? 'bg-emerald-600' : 'bg-slate-600'}`}
+          aria-label="Statut session">
+          {authed ? 'Connecté' : 'Anonyme'}
+        </span>
         <select
           data-codex-id="project_selector"
           defaultValue=""
@@ -64,4 +68,3 @@ export default function Topbar() {
     </header>
   );
 }
-
