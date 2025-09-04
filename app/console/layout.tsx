@@ -52,11 +52,13 @@ export default function ConsoleLayout({ children }: { children: ReactNode }) {
               label="Observabilité"
               onClick={() => setTab('observabilite')}
             />
-            <NavItem
-              active={tab === 'prompt-builder'}
-              label="Prompt Builder"
-              onClick={() => setTab('prompt-builder')}
-            />
+            {false && (
+              <NavItem
+                active={tab === 'prompt-builder'}
+                label="Prompt Builder"
+                onClick={() => setTab('prompt-builder')}
+              />
+            )}
           </nav>
         </aside>
         <section className="col-span-12 sm:col-span-9 lg:col-span-10">{children}</section>
