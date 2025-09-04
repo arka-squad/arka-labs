@@ -26,6 +26,30 @@
       ],
       "@app/*": [
         "app/*"
+      ],
+      "@apps/*": [
+        "apps/*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@api/*": [
+        "services/api/*"
+      ],
+      "@packages/*": [
+        "packages/*"
+      ],
+      "@ui/*": [
+        "packages/ui/*"
+      ],
+      "@utils/*": [
+        "packages/utils/*"
+      ],
+      "@types/*": [
+        "packages/types/*"
+      ],
+      "@infra/*": [
+        "infra/*"
       ]
     },
     "plugins": [
