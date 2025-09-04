@@ -1,8 +1,8 @@
 ﻿'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { apiFetch } from '../../../lib/http';
-import { generateTraceId, TRACE_HEADER } from '../../../lib/trace';
+import { apiFetch } from '../../lib/http';
+import { generateTraceId, TRACE_HEADER } from '../../lib/trace';
 
 export default function DashboardPage() {
   const [health, setHealth] = useState<'ok' | 'ko' | 'loading'>('loading');
@@ -221,5 +221,7 @@ function RunsTable({ rows }: { rows: Array<{ run_id: string; status: 'PASS' | 'F
     </div>
   );
 }
+
+
 
 

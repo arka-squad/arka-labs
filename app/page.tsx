@@ -80,7 +80,7 @@ export default function ArkaLanding() {
             Se connecter
           </a>
           <a
-            href="/console"
+            href="/cockpit"
             className="rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg"
             style={{ background: TOKENS.gradCTA }}
 
@@ -116,7 +116,7 @@ export default function ArkaLanding() {
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a
-              href="/console"
+              href="/cockpit"
               className="rounded-full px-5 py-3 text-sm font-medium text-white shadow-lg"
               style={{ background: TOKENS.gradCTA }}
             >
@@ -204,7 +204,7 @@ export default function ArkaLanding() {
             et un niveau de qualitÃ© supÃ©rieur.
           </p>
           <a
-            href="/console"
+            href="/cockpit"
             className="rounded-xl px-5 py-2 text-sm font-semibold text-white"
             style={{ background: TOKENS.gradCTA }}
           >
@@ -265,7 +265,7 @@ export default function ArkaLanding() {
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <a
-            href="/console"
+            href="/cockpit"
             className="rounded-xl px-5 py-2 text-sm font-semibold text-white"
             style={{ background: TOKENS.gradCTA }}
           >
@@ -295,5 +295,4 @@ export default function ArkaLanding() {
     </div>
   );
 }
-
 
