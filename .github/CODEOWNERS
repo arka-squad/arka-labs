@@ -1,0 +1,5 @@
+# CODEOWNERS minimal (R3)
+
+# Workflows CI doivent être revus par l'Owner (Merlin en option via équipe si disponible)
+.github/workflows/** @JeremyGrim
+

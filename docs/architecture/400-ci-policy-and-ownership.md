@@ -52,3 +52,13 @@ docs/**              @AGP
 | docs/ |  |  | X |  |  |
 | .github/workflows/** | X | X |  |  |  |
 
+
+---
+
+### Mise à jour (2025-09-04) — CODEOWNERS minimal présent
+
+```text
+.github/workflows/** @JeremyGrim
+```
+
+Étendre progressivement aux autres zones (apps/services/packages/infra/tests) quand les équipes GitHub sont définies.
