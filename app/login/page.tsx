@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { uiLog } from '../../lib/ui-log';
@@ -123,7 +123,7 @@ export default function Page() {
             className="text-center text-sm text-slate-300 hover:text-white"
             data-codex-id="link_reset"
           >
-            Mot de passe oublié ?
+            Mot de passe oubliÃ© ?
           </a>
           <button
             type="button"
@@ -164,3 +164,7 @@ export default function Page() {
     </main>
   );
 }
+
+
+
+
