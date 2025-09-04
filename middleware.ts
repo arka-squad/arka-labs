@@ -20,6 +20,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, isProd ? 308 : 302);
   }
 
+
   // Enforce canonical host in production for the rest of the app.
   if (isProd) {
     if (!host || host === CANONICAL_HOST) {
@@ -29,6 +30,7 @@ export function middleware(request: NextRequest) {
     url.protocol = 'https:';
     url.host = CANONICAL_HOST;
     return NextResponse.redirect(url, 301);
+
   }
 
   return NextResponse.next();
