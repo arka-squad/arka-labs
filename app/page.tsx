@@ -92,7 +92,7 @@ export default function ArkaLanding() {
           <h2 className="text-2xl font-bold mb-4">Un cockpit con&ccedil;u pour vos agents</h2>
           <p className="text-slate-400 mb-6">
             Arka R1 r&eacute;unit en une seule interface trois briques essentielles : <b>Prompt Builder</b>, <b>gestion documentaire</b> et <b>observabilit&eacute; en temps r&eacute;el</b>.
-            Cette int&eacute;gration unique fait d'Arka un cockpit multi-agents pr&ecirc;t &agrave; l'emploi. Id&eacute;ale pour des petites &eacute;quipes qui veulent livrer plus vite,
+            Cette int&eacute;gration unique fait d&rsquo;Arka un cockpit multi-agents pr&ecirc;t &agrave; l&rsquo;emploi. Id&eacute;ale pour des petites &eacute;quipes qui veulent livrer plus vite,
             avec plus de rigueur et un niveau de qualit&eacute; sup&eacute;rieur.
           </p>
           <a href="/cockpit" className="rounded-xl px-5 py-2 text-sm font-semibold text-white" style={{ background: TOKENS.gradCTA }}>
@@ -106,4 +106,3 @@ export default function ArkaLanding() {
     </div>
   );
 }
-
