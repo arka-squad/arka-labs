@@ -25,7 +25,11 @@ export default function Page() {
       localStorage.getItem('RBAC_TOKEN') ||
       localStorage.getItem('token') ||
       /(arka_access_token|arka_auth)=/.test(document.cookie);
-    if (hasToken) router.replace('/projects');
+<<<<<<< HEAD
+    if (hasToken) router.replace('/cockpit');
+=======
+    if (hasToken) router.replace('/cockpit');
+>>>>>>> feat/b13-ui-cockpit-dashboard
   }, [role, router]);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
@@ -42,7 +46,11 @@ export default function Page() {
       if (res.ok) {
         if (remember) localStorage.setItem('remember-email', email);
         uiLog('login_success', { role, trace_id });
-        router.push('/console');
+<<<<<<< HEAD
+        router.push('/cockpit');
+=======
+        router.push('/cockpit');
+>>>>>>> feat/b13-ui-cockpit-dashboard
       } else {
         uiLog('login_fail', { status: res.status, role, trace_id });
         let code: string | undefined;
@@ -151,7 +159,11 @@ export default function Page() {
                   // compat: ancien wrapper
                   localStorage.setItem('access_token', tokenPaste.trim());
                   uiLog('login_token_paste');
-                  router.push('/console');
+<<<<<<< HEAD
+                  router.push('/cockpit');
+=======
+                  router.push('/cockpit');
+>>>>>>> feat/b13-ui-cockpit-dashboard
                 }
               } catch {}
             }}
