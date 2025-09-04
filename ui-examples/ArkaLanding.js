@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
+// Utiliser le helper commun pour URLs d'assets absolues
+import { assetUrl } from "../lib/urls";
 
 function ArrowRight(props) {
   return (
@@ -27,11 +29,11 @@ const TOKENS = {
 };
 
 const ASSETS = {
-  LOGO_WHITE: "https://arka-liard.vercel.app/assets/logo/arka-logo-blanc.svg",
-  LOGO_GRAD: "https://arka-liard.vercel.app/assets/logo/arka-logo-blanc-radient.svg",
-  HERO_VISUAL: "https://arka-liard.vercel.app/assets/hero/arkabox-board.png",
-  SCREENSHOT_CONSOLE: "https://arka-liard.vercel.app/assets/hero/console-demo.gif",
-  SCHEMA_AGENTS: "https://arka-liard.vercel.app/assets/hero/schema-agents.png"
+  LOGO_WHITE: assetUrl('/assets/logo/arka-logo-blanc.svg'),
+  LOGO_GRAD: assetUrl('/assets/logo/arka-logo-blanc-radient.svg'),
+  HERO_VISUAL: assetUrl('/assets/hero/arkabox-board.png'),
+  SCREENSHOT_CONSOLE: assetUrl('/assets/hero/arkabox.png'),
+  SCHEMA_AGENTS: assetUrl('/assets/hero/schema-agents.png')
 };
 
 export default function ArkaLanding() {

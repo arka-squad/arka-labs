@@ -1,9 +1,12 @@
+import { TRACE_HEADER, generateTraceId } from './trace';
+
 export async function apiFetch(input: RequestInfo, init: RequestInit = {}) {
   const url = typeof input === 'string' ? input : input.toString();
   const headers = new Headers(init.headers || {});
   if (url.startsWith('/api/')) {
     const token = getToken();
     if (token) headers.set('Authorization', `Bearer ${token}`);
+    if (!headers.has(TRACE_HEADER)) headers.set(TRACE_HEADER, generateTraceId());
   }
   const res = await fetch(input, { ...init, headers });
   if (url.startsWith('/api/') && res.status === 401 && typeof window !== 'undefined') {
@@ -19,7 +22,12 @@ function getToken(): string | null {
     if (m) return decodeURIComponent(m[2]);
   }
   try {
-    return localStorage.getItem('access_token');
+    return (
+      localStorage.getItem('RBAC_TOKEN') ||
+      localStorage.getItem('access_token') ||
+      localStorage.getItem('token') ||
+      null
+    );
   } catch {
     return null;
   }
@@ -33,3 +41,4 @@ function showToast(msg: string) {
   document.body.appendChild(div);
   setTimeout(() => div.remove(), 3000);
 }
+
