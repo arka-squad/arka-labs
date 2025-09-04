@@ -17,9 +17,13 @@ const ALLOWED = [
 ];
 
 export default function DocumentsPage() {
+  // B5: lecture seule (RO) et pagination 20/l
+  const readOnly = true;
   const { role } = useRole();
-  const readOnly = role === 'viewer';
   const [docs, setDocs] = useState<Doc[]>([]);
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+  const [count, setCount] = useState(0);
   const [zoneState, setZoneState] = useState<'idle' | 'drag' | 'error'>('idle');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -35,12 +39,13 @@ export default function DocumentsPage() {
       try {
         setLoading(true);
         const trace_id = generateTraceId();
-        const res = await apiFetch('/api/documents', { headers: { [TRACE_HEADER]: trace_id } });
+        const res = await apiFetch(`/api/documents?page=${page}&page_size=${pageSize}`, { headers: { [TRACE_HEADER]: trace_id } });
         const duration_ms = Math.round(performance.now() - start);
-        uiLog('docs_fetch', { status: res.status, duration_ms, role, trace_id });
+        uiLog('docs_fetch', { status: res.status, duration_ms, role, trace_id, page, page_size: pageSize });
         if (!res.ok) throw new Error('fail');
         const data = await res.json();
         setDocs(data.items || []);
+        setCount(data.count || 0);
       } catch (e) {
         setZoneState('error');
         notify('Erreur lors du chargement');
@@ -50,6 +55,8 @@ export default function DocumentsPage() {
           status: 'error',
           duration_ms,
           role,
+          page,
+          page_size: pageSize,
           trace_id,
         });
       } finally {
@@ -57,7 +64,7 @@ export default function DocumentsPage() {
       }
     };
     fetchDocs();
-  }, [role, notify]);
+  }, [role, notify, page]);
 
   async function handleUpload(files: File[], tags: string[]) {
     if (readOnly) return;
@@ -149,6 +156,12 @@ export default function DocumentsPage() {
           {toast}
         </div>
       )}
+      {/* Empty/Error states + liste (RO) */}
+      {docs.length === 0 && zoneState !== 'error' ? (
+        <div className="rounded-xl border border-slate-700/50 bg-slate-800/40 p-6 text-center text-sm text-slate-300">
+          Aucun document disponible.
+        </div>
+      ) : null}
       <DocUploadPanel
         docs={docs}
         onUpload={handleUpload}
@@ -156,6 +169,28 @@ export default function DocumentsPage() {
         state={zoneState}
         readOnly={readOnly}
       />
+      {/* Pagination 20/l */}
+      <div className="flex items-center justify-between text-sm text-slate-300">
+        <button
+          className="rounded-md border px-3 py-1 disabled:opacity-50"
+          style={{ background: '#151F27', borderColor: '#1F2A33' }}
+          disabled={page <= 1}
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+        >
+          Précédent
+        </button>
+        <span>
+          Page {page} · {Math.ceil((count || 0) / pageSize)} — {count} documents
+        </span>
+        <button
+          className="rounded-md border px-3 py-1 disabled:opacity-50"
+          style={{ background: '#151F27', borderColor: '#1F2A33' }}
+          disabled={page >= Math.ceil((count || 0) / pageSize)}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Suivant
+        </button>
+      </div>
     </div>
   );
 }
