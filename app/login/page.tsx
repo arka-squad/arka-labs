@@ -15,13 +15,16 @@ export default function Page() {
   const [error, setError] = useState('');
   const [toast, setToast] = useState<string | null>(null);
   const { role } = useRole();
+  const [tokenPaste, setTokenPaste] = useState('');
 
   useEffect(() => {
     uiLog('mount', { role });
     const saved = localStorage.getItem('remember-email');
     if (saved) setEmail(saved);
     const hasToken =
-      localStorage.getItem('token') || /(arka_access_token|arka_auth)=/.test(document.cookie);
+      localStorage.getItem('RBAC_TOKEN') ||
+      localStorage.getItem('token') ||
+      /(arka_access_token|arka_auth)=/.test(document.cookie);
     if (hasToken) router.replace('/projects');
   }, [role, router]);
 
@@ -130,6 +133,32 @@ export default function Page() {
             SSO
           </button>
         </form>
+        <div className="mt-6 border-t border-slate-700/50 pt-4">
+          <h2 className="mb-2 text-sm font-semibold">Coller un token (RBAC JWT)</h2>
+          <textarea
+            className="mb-2 h-20 w-full rounded-md px-3 py-2 text-black"
+            placeholder="RBAC_TOKEN..."
+            value={tokenPaste}
+            onChange={(e) => setTokenPaste(e.target.value)}
+          />
+          <button
+            type="button"
+            className="rounded-xl bg-slate-700 px-4 py-2 text-sm font-medium text-white"
+            onClick={() => {
+              try {
+                if (tokenPaste.trim()) {
+                  localStorage.setItem('RBAC_TOKEN', tokenPaste.trim());
+                  // compat: ancien wrapper
+                  localStorage.setItem('access_token', tokenPaste.trim());
+                  uiLog('login_token_paste');
+                  router.push('/console');
+                }
+              } catch {}
+            }}
+          >
+            Se connecter avec un token
+          </button>
+        </div>
       </div>
       {toast && <div className="fixed bottom-4 right-4 rounded bg-black px-4 py-2 text-sm">{toast}</div>}
     </main>
