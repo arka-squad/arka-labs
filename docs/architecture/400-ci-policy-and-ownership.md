@@ -7,11 +7,12 @@
 | `secret-scan.yml` | required |
 | `rbac-smokes.yml` | required |
 | `network-gate.yml` | required |
-| `ops-r3-b1-smokes.yml` | required (à créer) |
+| `smokes.yml` | required |
+| `binary-detector.yml` | required |
 
 ## Protection de branche
 
-- Checks requis sur `main` : `secret-scan`, `rbac-smokes`, `network-gate`, `ops-r3-b1-smokes`.
+- Checks requis sur `main` : `secret-scan`, `rbac-smokes`, `network-gate`, `smokes`, `binary-detector`.
 - Interdiction des pushes directs sur `main`.
 - Merge via PR avec revue obligatoire.
 
@@ -52,7 +53,6 @@ docs/**              @AGP
 | docs/ |  |  | X |  |  |
 | .github/workflows/** | X | X |  |  |  |
 
-
 ---
 
 ### Mise à jour (2025-09-04) — CODEOWNERS minimal présent
@@ -62,3 +62,4 @@ docs/**              @AGP
 ```
 
 Étendre progressivement aux autres zones (apps/services/packages/infra/tests) quand les équipes GitHub sont définies.
+
