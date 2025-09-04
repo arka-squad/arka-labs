@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { uiLog } from '../lib/ui-log';
 import { apiFetch } from '../lib/http';
+import RoleBadge from './RoleBadge';
 
 export default function Topbar() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function Topbar() {
   useEffect(() => {
     const hasToken =
       typeof window !== 'undefined' &&
-      (localStorage.getItem('token') || /(arka_access_token|arka_auth)=/.test(document.cookie));
+      (localStorage.getItem('RBAC_TOKEN') || localStorage.getItem('token') || /(arka_access_token|arka_auth)=/.test(document.cookie));
     setAuthed(Boolean(hasToken));
   }, []);
 
@@ -20,6 +21,8 @@ export default function Topbar() {
     await apiFetch('/api/auth/logout', { method: 'POST' });
     try {
       localStorage.removeItem('token');
+      localStorage.removeItem('RBAC_TOKEN');
+      localStorage.removeItem('access_token');
     } catch {}
     uiLog('logout');
     router.replace('/login');
@@ -30,13 +33,18 @@ export default function Topbar() {
       <div className="flex items-center gap-4">
         <a href="/" data-codex-id="topbar_logo" className="text-xl font-extrabold lowercase tracking-tight text-white">arka</a>
         <span className="text-lg font-semibold">Console</span>
+        <RoleBadge />
+        <span className={`rounded-full px-2 py-0.5 text-xs ${authed ? 'bg-emerald-600' : 'bg-slate-600'}`}
+          aria-label="Statut session">
+          {authed ? 'Connecté' : 'Anonyme'}
+        </span>
         <select
           data-codex-id="project_selector"
           defaultValue=""
           className="rounded-md bg-slate-800 px-2 py-1 text-sm"
         >
           <option value="" disabled>
-            Aucun projet — créez-en un
+            Aucun projet - créez-en un
           </option>
         </select>
       </div>

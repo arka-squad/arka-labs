@@ -1,0 +1,58 @@
+name: binary-detector
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect binary files in PR diff
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_BRANCH="${{ github.base_ref }}"
+          if [[ -z "$BASE_BRANCH" ]]; then BASE_BRANCH="main"; fi
+          echo "Base branch: $BASE_BRANCH"
+          git fetch origin "$BASE_BRANCH" --depth=1
+          git diff --name-only --diff-filter=AM "origin/$BASE_BRANCH"... > changed_files.txt
+          echo "Changed files:"; cat changed_files.txt || true
+
+          # Extensions considérées binaires (texte-only policy en PR)
+          PATTERN='\.(png|jpe?g|gif|mp4|mov|avi|webm|pdf|webp|psd|ico|zip|rar|7z|exe|dll|dmg|apk|iso|svgz|woff2?|otf|ttf|bmp|tiff)$'
+          BIN=$(grep -iE "$PATTERN" changed_files.txt || true)
+
+          echo "BIN_MATCHES<<EOF" >> $GITHUB_ENV
+          echo "$BIN" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          if [[ -n "$BIN" ]]; then
+            {
+              echo "### Binary files detected (blocked)";
+              echo "\n\n";
+              echo '\n```';
+              echo "$BIN";
+              echo '```\n';
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "Binary files detected:" >&2
+            echo "$BIN" >&2
+            exit 1
+          else
+            echo "No binary files in diff."
+            echo "### Binary detector: PASS (no binaries)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+

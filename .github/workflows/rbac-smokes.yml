@@ -47,9 +47,23 @@ jobs:
           fi
           echo "HOST: ${HOST:-unset}"
 
+      # Détermine le chemin des scripts (préférez infra/ci/scripts, fallback scripts/)
+      - name: pick-scripts-path
+        id: pick_scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${{ hashFiles('infra/ci/scripts/smokes_matrix_guard.mjs') }}" ]; then
+            echo "path=infra/ci/scripts" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ hashFiles('scripts/smokes_matrix_guard.mjs') }}" ]; then
+            echo "path=scripts" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=missing" >> "$GITHUB_OUTPUT"
+          fi
+
       # Si le runner contient le runner matrice, on l'utilise ; sinon on fait un smoke minimal
       - name: run matrix smokes (if present)
-        if: ${{ hashFiles('scripts/smokes_matrix_guard.mjs') != '' }}
+        if: ${{ steps.pick_scripts.outputs.path != 'missing' }}
         shell: bash
         env:
           RBAC_TOKEN_VIEWER: ${{ secrets.RBAC_TOKEN_VIEWER }}
@@ -58,11 +72,12 @@ jobs:
         run: |
           set -euo pipefail
           node --version
-          # Exécution basée matrice
-          node scripts/smokes_matrix_guard.mjs --host "$HOST" --mode "$RBAC_SMOKES_MODE" | tee logs/rbac_smokes.ndjson
+          # Exécution basée matrice, chemin détecté
+          PATH_ROOT="${{ steps.pick_scripts.outputs.path }}"
+          node "$PATH_ROOT/smokes_matrix_guard.mjs" --host "$HOST" --mode "$RBAC_SMOKES_MODE" | tee logs/rbac_smokes.ndjson
 
       - name: run minimal smokes (fallback)
-        if: ${{ hashFiles('scripts/smokes_matrix_guard.mjs') == '' }}
+        if: ${{ steps.pick_scripts.outputs.path == 'missing' }}
         shell: bash
         env:
           RBAC_TOKEN_VIEWER: ${{ secrets.RBAC_TOKEN_VIEWER }}

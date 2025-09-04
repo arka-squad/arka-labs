@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 
 import NavItem from '../../components/ui/NavItem';
 
@@ -8,6 +9,21 @@ import Topbar from '../../components/Topbar';
 
 export default function ConsoleLayout({ children }: { children: ReactNode }) {
   const [tab, setTab] = useState('projects');
+  const router = useRouter();
+
+  // Guard minimal: redirige vers /login si aucun token présent
+  useEffect(() => {
+    try {
+      const has =
+        (typeof window !== 'undefined' &&
+          (localStorage.getItem('RBAC_TOKEN') || localStorage.getItem('token'))) ||
+        (typeof document !== 'undefined' && /(arka_access_token|arka_auth)=/.test(document.cookie));
+      if (!has) router.replace('/login');
+    } catch {
+      router.replace('/login');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0C1319] text-slate-100">
