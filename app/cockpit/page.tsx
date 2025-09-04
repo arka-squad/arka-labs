@@ -49,7 +49,7 @@ export default function DashboardPage() {
       const err = pass ? 0.8 : 2.1;
       const sprint = `S-${14 + (i % 3)}`;
       const trace = Math.random().toString(36).slice(2, 7);
-      return { run_id: `#R-${id}`, status: (pass ? 'PASS' : 'FAIL') as RunRow['status'], p95_ms: p95, error_pct: err, sprint, trace_id: trace };
+      return { run_id: `#R-${id}`, status: (pass ? 'PASS' : 'FAIL') as 'PASS' | 'FAIL', p95_ms: p95, error_pct: err, sprint, trace_id: trace };
     });
 
     return (
@@ -221,6 +221,7 @@ function RunsTable({ rows }: { rows: Array<{ run_id: string; status: 'PASS' | 'F
     </div>
   );
 }
+
 
 
 
