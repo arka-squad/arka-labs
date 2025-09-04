@@ -42,14 +42,15 @@ export default function DashboardPage() {
       { id: 'PMO', role: 'P', name: 'PMO – Console', pct: 55, tags: ['EPIC-31', 'PROC-7'] },
       { id: 'UX', role: 'U', name: 'UX/UI – v12', pct: 40, tags: ['EPIC-55', 'EPIC-68', 'perf', 'ADR-9'] },
     ];
-    const fakeRuns = Array.from({ length: 12 }).map((_, i) => {
+    type RunRow = { run_id: string; status: 'PASS' | 'FAIL'; p95_ms: number; error_pct: number; sprint: string; trace_id: string };
+    const fakeRuns: RunRow[] = Array.from({ length: 12 }).map((_, i) => {
       const id = 1833 - i;
       const pass = i % 5 !== 0;
       const p95 = pass ? 1500 + (i % 7) * 40 : 3100;
       const err = pass ? 0.8 : 2.1;
       const sprint = `S-${14 + (i % 3)}`;
       const trace = Math.random().toString(36).slice(2, 7);
-      return { run_id: `#R-${id}`, status: pass ? 'PASS' : 'FAIL', p95_ms: p95, error_pct: err, sprint, trace_id: trace };
+      return { run_id: `#R-${id}`, status: (pass ? 'PASS' : 'FAIL') as RunRow['status'], p95_ms: p95, error_pct: err, sprint, trace_id: trace };
     });
 
     return (
@@ -221,4 +222,3 @@ function RunsTable({ rows }: { rows: Array<{ run_id: string; status: 'PASS' | 'F
     </div>
   );
 }
-
