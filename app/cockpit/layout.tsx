@@ -4,7 +4,7 @@ import '../globals.css';
 
 export const metadata: Metadata = {
   title: 'Arka Cockpit',
-  description: 'Application de gestion Arka – Cockpit (mode sombre)',
+  description: 'Application de gestion Arka - Cockpit (mode sombre)',
 };
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });

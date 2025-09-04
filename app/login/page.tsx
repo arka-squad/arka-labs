@@ -25,7 +25,7 @@ export default function Page() {
       localStorage.getItem('RBAC_TOKEN') ||
       localStorage.getItem('token') ||
       /(arka_access_token|arka_auth)=/.test(document.cookie);
-    if (hasToken) router.replace('/projects');
+    if (hasToken) router.replace('/cockpit');
   }, [role, router]);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
@@ -42,7 +42,7 @@ export default function Page() {
       if (res.ok) {
         if (remember) localStorage.setItem('remember-email', email);
         uiLog('login_success', { role, trace_id });
-        router.push('/console');
+        router.push('/cockpit');
       } else {
         uiLog('login_fail', { status: res.status, role, trace_id });
         let code: string | undefined;
@@ -151,7 +151,7 @@ export default function Page() {
                   // compat: ancien wrapper
                   localStorage.setItem('access_token', tokenPaste.trim());
                   uiLog('login_token_paste');
-                  router.push('/console');
+                  router.push('/cockpit');
                 }
               } catch {}
             }}

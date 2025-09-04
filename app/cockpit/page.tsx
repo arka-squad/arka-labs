@@ -30,14 +30,14 @@ export default function DashboardPage() {
     };
     const fakeRoadmap = [
       { id: 'R1-1', label: 'Console core', from: 1, to: 3, color: '#6EE7B7' },
-      { id: 'OBS-2', label: 'ObservabilitÃ©', from: 2, to: 4, color: '#93C5FD' },
+      { id: 'OBS-2', label: 'Observabilité', from: 2, to: 4, color: '#93C5FD' },
       { id: 'EPIC-7', label: 'Builder v1', from: 4, to: 6, color: '#FDE68A' },
       { id: 'POL-12', label: 'Policies', from: 5, to: 7, color: '#FCA5A5' },
       { id: 'ADR-9', label: 'ADR set', from: 6, to: 8, color: '#F0ABFC' },
       { id: 'PRC-7', label: 'Process lib', from: 7, to: 9, color: '#FDBA74' },
     ];
     const fakeRoster = [
-      { id: 'AGP', role: 'A', name: 'AGP â€“ Arka v2.5', pct: 65, tags: ['EPIC-42', 'EPIC-7', 'perf', 'POL-12'] },
+      { id: 'AGP', role: 'A', name: 'AGP - Arka v2.5', pct: 65, tags: ['EPIC-42', 'EPIC-7', 'perf', 'POL-12'] },
       { id: 'QA-ARC', role: 'Q', name: 'QA-ARC â€“ R2.5', pct: 80, tags: ['EPIC-13'] },
       { id: 'PMO', role: 'P', name: 'PMO â€“ Console', pct: 55, tags: ['EPIC-31', 'PROC-7'] },
       { id: 'UX', role: 'U', name: 'UX/UI â€“ v12', pct: 40, tags: ['EPIC-55', 'EPIC-68', 'perf', 'ADR-9'] },
@@ -74,7 +74,7 @@ export default function DashboardPage() {
             <Timeline items={fakeRoadmap} />
           </div>
           <div className="col-span-12 lg:col-span-4 rounded-2xl border border-slate-700/40 bg-slate-800/30 p-4">
-            <div className="mb-3 text-sm font-semibold text-slate-200">Roster â€” Ã  risque</div>
+            <div className="mb-3 text-sm font-semibold text-slate-200">Roster à risque</div>
             <RosterList items={fakeRoster} />
           </div>
         </section>
