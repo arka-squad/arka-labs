@@ -1,4 +1,4 @@
-import type { NextRequest } from 'next/server';
+﻿import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 const CANONICAL_HOST = 'arka-squad.app';
@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
 
   const host = request.headers.get('host') || request.nextUrl.host;
 
-  // Already on canonical host or host missing → proceed.
+  // Already on canonical host or host missing — proceed.
   if (!host || host === CANONICAL_HOST) {
     return NextResponse.next();
   }
@@ -31,4 +31,3 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|assets).*)',
   ],
 };
-

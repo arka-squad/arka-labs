@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+﻿/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import type { SVGProps } from 'react';
@@ -55,14 +55,14 @@ export default function ArkaLanding() {
             className="hover:text-white"
             data-codex-id="link_fonctionnalites"
           >
-            Fonctionnalités
+            FonctionnalitÃ©s
           </a>
           <a
             href="/beta"
             className="hover:text-white"
             data-codex-id="link_beta"
           >
-            Bêta
+            BÃªta
           </a>
           <a
             href="#pricing"
@@ -102,7 +102,7 @@ export default function ArkaLanding() {
           <h1 className="mt-8 text-white">
             <span className="block leading-tight sm:text-[32px] md:text-[34px] lg:text-[36px]">
               la <span className="font-extrabold">puissance</span> des grandes
-              équipes,
+              Ã©quipes,
             </span>
             <span
               className={`${TOKENS.gradTextClass} bg-clip-text font-semibold leading-tight text-transparent block sm:text-[32px] md:text-[34px] lg:text-[34px]`}
@@ -111,8 +111,8 @@ export default function ArkaLanding() {
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-slate-300">
-            Console multi-agents, prompt builder et observabilité — pensée pour
-            les équipes de 2 à 30 personnes.
+            Console multi-agents, prompt builder et observabilitÃ© â€” pensÃ©e pour
+            les Ã©quipes de 2 Ã  30 personnes.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a
@@ -120,7 +120,7 @@ export default function ArkaLanding() {
               className="rounded-full px-5 py-3 text-sm font-medium text-white shadow-lg"
               style={{ background: TOKENS.gradCTA }}
             >
-              Inscrivez‑vous à la bêta
+              Inscrivezâ€‘vous Ã  la bÃªta
             </a>
             <a
               href="/fonctionnalites"
@@ -143,28 +143,28 @@ export default function ArkaLanding() {
       <div className="mx-auto mt-16 grid max-w-7xl grid-cols-2 gap-6 md:grid-cols-4 px-6">
         {[
           {
-            icon: '⚡',
+            icon: 'âš¡',
             k: 'Chat SSE',
             v: 'TTFT 680ms',
-            d: 'Streaming fluide, agents disponibles instantanément.',
+            d: 'Streaming fluide, agents disponibles instantanÃ©ment.',
           },
           {
-            icon: '📝',
+            icon: 'ðŸ“',
             k: 'Prompt Builder',
-            v: '+30% rapidité',
-            d: 'Composer, tester et réutiliser vos prompts facilement.',
+            v: '+30% rapiditÃ©',
+            d: 'Composer, tester et rÃ©utiliser vos prompts facilement.',
           },
           {
-            icon: '📊',
-            k: 'Observabilité',
-            v: '100% flux tracés',
+            icon: 'ðŸ“Š',
+            k: 'ObservabilitÃ©',
+            v: '100% flux tracÃ©s',
             d: 'KPIs clairs : TTFT, RTT, erreurs, objectifs sprint.',
           },
           {
-            icon: '🚀',
-            k: 'Vélocité',
+            icon: 'ðŸš€',
+            k: 'VÃ©locitÃ©',
             v: '+30%',
-            d: 'Des performances accrues pour vos équipes, sans lourdeur.',
+            d: 'Des performances accrues pour vos Ã©quipes, sans lourdeur.',
           },
         ].map((i) => (
           <div
@@ -193,28 +193,28 @@ export default function ArkaLanding() {
       >
         <div>
           <h2 className="text-2xl font-bold mb-4">
-            Une console conçue pour vos agents
+            Une console conÃ§ue pour vos agents
           </h2>
           <p className="text-slate-400 mb-6">
-            Arka R1 réunit en une seule interface trois briques essentielles :{' '}
+            Arka R1 rÃ©unit en une seule interface trois briques essentielles :{' '}
             <b>Prompt Builder</b>, <b>gestion documentaire</b> et{' '}
-            <b>observabilité en temps réel</b>. Cette intégration unique fait
-            d’Arka une console multi‑agents prête à l’emploi. Idéal pour des
-            petites équipes qui veulent livrer plus vite, avec plus de rigueur
-            et un niveau de qualité supérieur.
+            <b>observabilitÃ© en temps rÃ©el</b>. Cette intÃ©gration unique fait
+            dâ€™Arka une console multiâ€‘agents prÃªte Ã  lâ€™emploi. IdÃ©al pour des
+            petites Ã©quipes qui veulent livrer plus vite, avec plus de rigueur
+            et un niveau de qualitÃ© supÃ©rieur.
           </p>
           <a
             href="/console"
             className="rounded-xl px-5 py-2 text-sm font-semibold text-white"
             style={{ background: TOKENS.gradCTA }}
           >
-            Inscrivez‑vous à la bêta
+            Inscrivezâ€‘vous Ã  la bÃªta
           </a>
         </div>
         <div className="bg-[#151F27] h-72 rounded-xl flex items-center justify-center border border-[#1F2A33]">
           <img
             src={ASSETS.SCREENSHOT_CONSOLE}
-            alt="Screenshot animé console"
+            alt="Screenshot animÃ© console"
             className="h-full object-contain rounded-lg"
           />
         </div>
@@ -227,24 +227,24 @@ export default function ArkaLanding() {
       >
         <div>
           <h2 className="text-2xl font-bold mb-4">
-            Arka, pensée pour les petites équipes
+            Arka, pensÃ©e pour les petites Ã©quipes
           </h2>
           <p className="text-slate-400 mb-6">
-            Arka n’a pas vocation à remplacer des ERP lourds. Elle est
-            volontairement <b>légère</b>, rapide à mettre en place et orientée{' '}
-            <b>valeur immédiate</b>. Cible idéale : équipes de 2 à 30 personnes,
-            qui veulent renforcer leurs capacités sans recruter massivement.
+            Arka nâ€™a pas vocation Ã  remplacer des ERP lourds. Elle est
+            volontairement <b>lÃ©gÃ¨re</b>, rapide Ã  mettre en place et orientÃ©e{' '}
+            <b>valeur immÃ©diate</b>. Cible idÃ©ale : Ã©quipes de 2 Ã  30 personnes,
+            qui veulent renforcer leurs capacitÃ©s sans recruter massivement.
           </p>
           <ul className="list-disc list-inside text-slate-400 text-sm space-y-1">
             <li>Optimisation des flux de production</li>
-            <li>Amélioration des marges</li>
-            <li>Hausse du niveau de qualité</li>
+            <li>AmÃ©lioration des marges</li>
+            <li>Hausse du niveau de qualitÃ©</li>
           </ul>
         </div>
         <div className="bg-[#151F27] h-72 rounded-xl flex items-center justify-center border border-[#1F2A33]">
           <img
             src={ASSETS.SCHEMA_AGENTS}
-            alt="Schéma agent central relié à documents, prompts et observabilité"
+            alt="SchÃ©ma agent central reliÃ© Ã  documents, prompts et observabilitÃ©"
             className="h-full object-contain rounded-lg"
           />
         </div>
@@ -253,15 +253,15 @@ export default function ArkaLanding() {
       {/* CTA finale */}
       <section className="max-w-7xl mx-auto px-6 py-20 text-center">
         <h2 className="text-2xl font-bold mb-4">
-          Rejoignez les premières équipes qui utilisent Arka R1
+          Rejoignez les premiÃ¨res Ã©quipes qui utilisent Arka R1
         </h2>
         <p className="text-slate-400 mb-6 max-w-2xl mx-auto">
-          Arka est déjà adopté par des PME, agences et startups ambitieuses qui
+          Arka est dÃ©jÃ  adoptÃ© par des PME, agences et startups ambitieuses qui
           veulent transformer leur delivery. Avec une architecture{' '}
-          <b>multi‑agents</b> encadrée et des outils intégrés (<b>chat SSE</b>,{' '}
-          <b>prompt builder</b>, <b>observabilité</b>), la console met la
-          puissance des grandes équipes entre les mains des petites.
-          Inscrivez‑vous à la bêta gratuite et rejoignez‑les.
+          <b>multiâ€‘agents</b> encadrÃ©e et des outils intÃ©grÃ©s (<b>chat SSE</b>,{' '}
+          <b>prompt builder</b>, <b>observabilitÃ©</b>), la console met la
+          puissance des grandes Ã©quipes entre les mains des petites.
+          Inscrivezâ€‘vous Ã  la bÃªta gratuite et rejoignezâ€‘les.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <a
@@ -269,7 +269,7 @@ export default function ArkaLanding() {
             className="rounded-xl px-5 py-2 text-sm font-semibold text-white"
             style={{ background: TOKENS.gradCTA }}
           >
-            Inscrivez‑vous à la bêta
+            Inscrivezâ€‘vous Ã  la bÃªta
           </a>
           <a
             href="/fonctionnalites"
@@ -280,7 +280,7 @@ export default function ArkaLanding() {
         </div>
         {/* Preuve sociale */}
         <div className="mt-8 text-slate-400 text-sm">
-          Déjà utilisé par <b>15+ équipes</b> dans des startups, agences et PME.
+          DÃ©jÃ  utilisÃ© par <b>15+ Ã©quipes</b> dans des startups, agences et PME.
         </div>
       </section>
 
@@ -289,9 +289,11 @@ export default function ArkaLanding() {
         className="border-t py-6 text-center text-xs text-slate-500"
         style={{ borderColor: '#1F2A33' }}
       >
-        © {new Date().getFullYear()} Arka — R1 · Local‑first · Confidentialité
-        · Sobriété
+        Â© {new Date().getFullYear()} Arka â€” R1 Â· Localâ€‘first Â· ConfidentialitÃ©
+        Â· SobriÃ©tÃ©
       </footer>
     </div>
   );
 }
+
+

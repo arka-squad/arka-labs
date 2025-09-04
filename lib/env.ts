@@ -31,3 +31,9 @@ export function getEnv(): Env {
   cached = env;
   return env;
 }
+
+// App flags (exported as plain constants for convenience)
+export const AI_ENABLED = process.env.NEXT_PUBLIC_AI_ENABLED === 'true';
+export const MEM_WRITE_ENABLED = process.env.MEM_WRITE_ENABLED === 'true';
+export const CHAT_RATE_LIMIT = Number(process.env.CHAT_RATE_LIMIT ?? 60);
+export const BYOK_EXCHANGE_TTL_SEC = Number(process.env.BYOK_EXCHANGE_TTL_SEC ?? 3600);

@@ -84,7 +84,7 @@ jobs:
 
           endpoints=( "/api/health" "/api/metrics/kpis" "/api/metrics/runs?page=1&limit=20" )
           if [[ "${AI_STREAM_REQUIRED:-0}" == "1" ]]; then
-            endpoints+=( "/api/ai/stream" )
+            endpoints+=( "/api/chat/stream?format=txt" )
           fi
 
           fail=0
@@ -92,7 +92,7 @@ jobs:
             CODE=$(curl "${CURL_BASE_OPTS[@]}" -o /dev/null -w "%{http_code}" "${HDR[@]}" "$BASE$ENDPOINT")
             echo "$ENDPOINT -> $CODE"
             if [[ "$CODE" != "200" ]]; then
-              if [[ "$ENDPOINT" == "/api/ai/stream" && "${AI_STREAM_REQUIRED:-0}" != "1" && ( "$CODE" == "404" || "$CODE" == "405" ) ]]; then
+              if [[ "$ENDPOINT" == "/api/chat/stream?format=txt" && "${AI_STREAM_REQUIRED:-0}" != "1" && ( "$CODE" == "404" || "$CODE" == "405" ) ]]; then
                 echo "NOTE: $ENDPOINT $CODE tolerated (AI stream optional)."
               else
                 fail=1
@@ -138,11 +138,16 @@ jobs:
         shell: bash
         env:
           RBAC_TOKEN_VIEWER: ${{ secrets.RBAC_TOKEN_VIEWER }}
+          CI_PROVIDER_KEY: ${{ secrets.CI_PROVIDER_KEY }}
         run: |
           set -euo pipefail
           BASE="${{ steps.host.outputs.host }}"
           echo "AI stream smoke on $BASE"
-          curl -sS -N -m 20 -H "Authorization: Bearer ${RBAC_TOKEN_VIEWER:-}" "$BASE/api/ai/stream?format=txt" | head -n 1 | sed -E 's/.{0,120}$/.../'
+          HDRS=( -H "Authorization: Bearer ${RBAC_TOKEN_VIEWER:-}" -H "Accept: text/event-stream" -H "X-Provider: openai" -H "X-Model: gpt-4.1-mini" )
+          if [[ -n "${CI_PROVIDER_KEY:-}" ]]; then
+            HDRS+=( -H "X-Provider-Key: ${CI_PROVIDER_KEY}" )
+          fi
+          curl -sS -N -m 20 "${HDRS[@]}" "$BASE/api/chat/stream?agent=AGP&role=viewer" | awk 'NR<=5{print};/"t":"done"/{exit 0}'
 
       - name: Summary
         if: always()
