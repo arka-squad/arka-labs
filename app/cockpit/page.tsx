@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import { apiFetch } from '../../lib/http';
@@ -30,7 +30,7 @@ export default function DashboardPage() {
     };
     const fakeRoadmap = [
       { id: 'R1-1', label: 'Console core', from: 1, to: 3, color: '#6EE7B7' },
-      { id: 'OBS-2', label: 'Observabilité', from: 2, to: 4, color: '#93C5FD' },
+      { id: 'OBS-2', label: 'ObservabilitÃ©', from: 2, to: 4, color: '#93C5FD' },
       { id: 'EPIC-7', label: 'Builder v1', from: 4, to: 6, color: '#FDE68A' },
       { id: 'POL-12', label: 'Policies', from: 5, to: 7, color: '#FCA5A5' },
       { id: 'ADR-9', label: 'ADR set', from: 6, to: 8, color: '#F0ABFC' },
@@ -74,7 +74,7 @@ export default function DashboardPage() {
             <Timeline items={fakeRoadmap} />
           </div>
           <div className="col-span-12 lg:col-span-4 rounded-2xl border border-slate-700/40 bg-slate-800/30 p-4">
-            <div className="mb-3 text-sm font-semibold text-slate-200">Roster à risque</div>
+            <div className="mb-3 text-sm font-semibold text-slate-200">Roster Ã  risque</div>
             <RosterList items={fakeRoster} />
           </div>
         </section>
@@ -94,7 +94,7 @@ export default function DashboardPage() {
   return (
     <main className="mx-auto max-w-6xl px-6 py-8 text-slate-200">
       <header className="mb-6 flex items-center justify-between">
-        <h1 className="bg-gradient-to-r from-amber-400 via-rose-500 to-fuchsia-600 bg-clip-text text-2xl font-bold text-transparent">Dashboard</h1>
+        <h1 className="bg-gradient-to-r from-amber-400 via-rose-500 to-fuchsia-600 bg-clip-text text-2xl font-bold text-transparent">Cockpit</h1>
         <HealthChip state={health} />
       </header>
       {err && <div className="mb-4 rounded-xl border border-rose-700/40 bg-rose-900/30 px-4 py-2 text-sm text-rose-200">{err}</div>}
@@ -221,4 +221,5 @@ function RunsTable({ rows }: { rows: Array<{ run_id: string; status: 'PASS' | 'F
     </div>
   );
 }
+
 
