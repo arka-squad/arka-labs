@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import NavItem from '../../components/ui/NavItem';
 
 import Topbar from '../../components/Topbar';
+import OfflineBanner from '../../components/system/OfflineBanner';
+import Watermark from '../../components/system/Watermark';
 
 export default function ConsoleLayout({ children }: { children: ReactNode }) {
   const [tab, setTab] = useState('projects');
@@ -27,7 +29,9 @@ export default function ConsoleLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[#0C1319] text-slate-100">
+      <OfflineBanner />
       <Topbar />
+      <Watermark />
       <div className="mx-auto grid max-w-7xl grid-cols-12 gap-6 px-4 py-6">
         {/* SideNav (serveur) & contenu */}
         <aside className="col-span-12 sm:col-span-3 lg:col-span-2">
