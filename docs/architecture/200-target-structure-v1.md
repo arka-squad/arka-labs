@@ -47,3 +47,17 @@ Les contrats HTTP et schémas JSON sont validés (zod/AJV), les logs sont au for
 - `arka-meta/` : **AGP/PMO**
 - `.github/workflows/**` : **Owner + Merlin** (revue obligatoire)
 
+## Aliases TS/JS
+
+Les alias suivants sont définis dans `tsconfig.json` (avec `baseUrl: "."`) pour simplifier les imports:
+
+- `@app/*` -> `app/*`
+- `@apps/*` -> `apps/*`
+- `@services/*` -> `services/*`
+- `@api/*` -> `services/api/*`
+- `@packages/*` -> `packages/*`
+- `@ui/*` -> `packages/ui/*`
+- `@utils/*` -> `packages/utils/*`
+- `@types/*` -> `packages/types/*`
+- `@components/*` -> `components/*`
+- `@console/*` -> `app/console/_components/*`
