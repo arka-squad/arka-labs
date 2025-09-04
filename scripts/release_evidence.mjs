@@ -5,7 +5,8 @@
     HOST (required) e.g. https://arka-squad.app
     RBAC_TOKEN (optional) Bearer token for protected endpoints
 */
-import { mkdirSync, writeFileSync, createHash } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 
 const HOST = process.env.HOST || process.env.PROD_HOST;
@@ -63,4 +64,3 @@ main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-
