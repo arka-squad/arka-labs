@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { ChatMessage, ChatMessageProps } from '../../../src/ui/ChatMessage';
 import { uiLog } from '../../../lib/ui-log';
@@ -10,12 +11,14 @@ export default function ChatPage() {
     { role: 'system', content: 'Thread initialisé.' },
   ]);
   const [input, setInput] = useState('');
+  const readOnly = role === 'viewer';
 
   useEffect(() => {
     uiLog('mount', { role });
   }, [role]);
 
   async function send() {
+    if (readOnly) return;
     if (!input.trim()) return;
     const userMsg: ChatMessageProps = { role: 'user', content: input };
     setMessages((m) => [...m, userMsg, { role: 'agent', content: '', streaming: true }]);
@@ -24,8 +27,8 @@ export default function ChatPage() {
     setTimeout(() => {
       setMessages((m) => {
         const copy = [...m];
-        const agentIndex = copy.findIndex((msg) => msg.streaming);
-        if (agentIndex !== -1) copy[agentIndex] = { role: 'agent', content: 'Réponse de l’agent.' };
+        const agentIndex = copy.findIndex((msg) => (msg as any).streaming);
+        if (agentIndex !== -1) copy[agentIndex] = { role: 'agent', content: "Réponse de l'agent." } as ChatMessageProps;
         return copy;
       });
     }, 1000);
@@ -38,15 +41,22 @@ export default function ChatPage() {
           <ChatMessage key={i} {...m} />
         ))}
       </ul>
-      <input
-        className="rounded-md px-3 py-2 text-black"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') send();
-        }}
-        placeholder="Votre message..."
-      />
+      {readOnly ? (
+        <div className="rounded-md border px-3 py-2 text-sm" style={{ background: '#151F27', borderColor: '#1F2A33' }}>
+          Mode lecture seule (viewer)
+        </div>
+      ) : (
+        <input
+          className="rounded-md px-3 py-2 text-black"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') send();
+          }}
+          placeholder="Votre message..."
+        />
+      )}
     </div>
   );
 }
+
