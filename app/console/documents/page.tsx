@@ -18,6 +18,7 @@ const ALLOWED = [
 
 export default function DocumentsPage() {
   const { role } = useRole();
+  const readOnly = role === 'viewer';
   const [docs, setDocs] = useState<Doc[]>([]);
   const [zoneState, setZoneState] = useState<'idle' | 'drag' | 'error'>('idle');
   const [loading, setLoading] = useState(false);
@@ -59,6 +60,7 @@ export default function DocumentsPage() {
   }, [role, notify]);
 
   async function handleUpload(files: File[], tags: string[]) {
+    if (readOnly) return;
     for (const file of files) {
       if (file.size > MAX_SIZE || !ALLOWED.includes(file.type)) {
         notify('Fichier invalide');
@@ -106,6 +108,7 @@ export default function DocumentsPage() {
   }
 
   async function handleDelete(id: number) {
+    if (readOnly) return;
     const start = performance.now();
     try {
       setLoading(true);
@@ -151,6 +154,7 @@ export default function DocumentsPage() {
         onUpload={handleUpload}
         onDelete={handleDelete}
         state={zoneState}
+        readOnly={readOnly}
       />
     </div>
   );
