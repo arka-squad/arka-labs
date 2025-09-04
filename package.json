@@ -20,7 +20,8 @@
     "ci:pr:base": "node -e \"process.stdout.write(require('child_process').spawnSync('git',['rev-parse','--verify','origin/main'],{stdio:'pipe'}).status===0?'origin/main':'HEAD~1')\"",
     "ci:pr:scan": "BASE=$(npm run -s ci:pr:base); git diff --name-only \"$BASE\"...HEAD | grep -E '^(node_modules/|\\.next/|package-lock\\.json)$' && exit 1 || true; git diff --name-only \"$BASE\"...HEAD | grep -Ei '\\.(png|jpe?g|gif|pdf|zip|wasm)$' && exit 1 || true",
     "ci:pr:check": "test -s logs/vercel_build_*.log && grep -i 'Compiled successfully' logs/vercel_build_*.log && test -s arka-meta/reports/codex/observabilite.md && grep -q '\"error_rate_percent\"' arka-meta/reports/codex/observabilite.md && grep -q '\"page_size\"' arka-meta/reports/codex/observabilite.md && test -s arka-meta/reports/codex/logs_api_metrics.json",
-    "ci:pr:sums": "sha256sum logs/vercel_build_*.log arka-meta/reports/codex/logs_api_metrics.json arka-meta/reports/codex/observabilite.md | sed 's|  ./||' > arka-meta/reports/codex/R2_5/sha256sums.txt && test -s arka-meta/reports/codex/R2_5/sha256sums.txt"
+    "ci:pr:sums": "sha256sum logs/vercel_build_*.log arka-meta/reports/codex/logs_api_metrics.json arka-meta/reports/codex/observabilite.md | sed 's|  ./||' > arka-meta/reports/codex/R2_5/sha256sums.txt && test -s arka-meta/reports/codex/R2_5/sha256sums.txt",
+    "ci:encoding:check": "node scripts/check_encoding.mjs"
   },
   "dependencies": {
     "next": "14.2.3",
