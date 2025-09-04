@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ObsKpiCard } from '../../../src/ui/ObsKpiCard';
 import { ObsRunsTable, type RunRow } from '../../../src/ui/ObsRunsTable';
 import { uiLog } from '../../../lib/ui-log';
@@ -48,6 +48,17 @@ export default function ObservabilitePage() {
     };
     loadRuns();
   }, [lot, sprint, page]);
+
+  const spark = useMemo(() => {
+    const values = rows.map((r) => r.ttft_ms);
+    const w = 300, h = 72, pad = 4;
+    if (values.length === 0) return { w, h, d: '' };
+    const min = Math.min(...values), max = Math.max(...values) || 1;
+    const norm = (v: number) => h - pad - ((v - min) / (max - min || 1)) * (h - pad * 2);
+    const step = values.length === 1 ? 0 : (w - pad * 2) / (values.length - 1);
+    const pts = values.map((v, i) => `${pad + i * step},${norm(v)}`).join(' ');
+    return { w, h, d: pts };
+  }, [rows]);
 
   const cards = [
     {
@@ -107,6 +118,17 @@ export default function ObservabilitePage() {
           <ObsKpiCard key={k.label} {...k} />
         ))}
       </div>
+
+      <section className="rounded-xl border p-4" style={{ borderColor: 'var(--arka-border)', background: 'var(--arka-card)' }}>
+        <h3 className="mb-2 text-sm font-semibold">TTFT (ms) — sparkline</h3>
+        {rows.length === 0 ? (
+          <div className="text-xs text-slate-400">Aucune donnée à afficher.</div>
+        ) : (
+          <svg width={spark.w} height={spark.h} role="img" aria-label="Graphe TTFT">
+            <polyline fill="none" stroke="#FAB652" strokeWidth="2" points={spark.d} />
+          </svg>
+        )}
+      </section>
 
       <ObsRunsTable rows={rows} page={page} total={total} onPage={setPage} />
     </div>
