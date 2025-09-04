@@ -35,7 +35,7 @@ const ASSETS = {
   LOGO_WHITE: assetUrl('/assets/logo/arka-logo-blanc.svg'),
   LOGO_GRAD: assetUrl('/assets/logo/arka-logo-blanc-radient.svg'),
   HERO_VISUAL: assetUrl('/assets/hero/arkabox-board.png'),
-  SCREENSHOT_CONSOLE: assetUrl('/assets/hero/arkabox.png'),
+  SCREENSHOT_CONSOLE: assetUrl('/assets/hero/arkabox-board.png'),
   SCHEMA_AGENTS: assetUrl('/assets/hero/schema-agents.png'),
 };
 
