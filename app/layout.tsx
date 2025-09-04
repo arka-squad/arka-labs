@@ -16,6 +16,9 @@ const poppins = Poppins({
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" suppressHydrationWarning>
+      <head>
+        <meta charSet="utf-8" />
+      </head>
       <body className={`${poppins.className} min-h-screen bg-[#0C1319] text-slate-100`}>{children}</body>
     </html>
   );
