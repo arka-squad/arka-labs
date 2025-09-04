@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
 export const metadata: Metadata = {
-  title: "Arka Cockpit",
-  description: "Cockpit Arka â€” v0.1",
+  title: "Arka Console",
+  description: "Console Arka â€” v0.1",
 };
 
 const poppins = Poppins({
@@ -20,5 +20,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
 
 
