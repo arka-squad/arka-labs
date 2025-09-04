@@ -22,44 +22,41 @@ headers['X-Trace-Id'] = crypto.randomUUID();
 
 async function getJson(path) {
   const res = await fetch(`${HOST}${path}`, { headers });
-  if (!res.ok) throw new Error(`${path} -> ${res.status}`);
-  return res.json();
+  const text = await res.text();
+  try { return JSON.parse(text); } catch { return { status: res.status, raw: text }; }
+}
+
+function write(name, data) {
+  const p = join(OUT_DIR, name);
+  const s = JSON.stringify(data, null, 2);
+  writeFileSync(p, s);
+  return { path: p, data: s };
 }
 
 async function main() {
   const artifacts = [];
-  const write = (name, data) => {
-    const p = join(OUT_DIR, name);
-    const s = JSON.stringify(data, null, 2);
-    writeFileSync(p, s);
-    artifacts.push({ path: p, data: s });
-  };
+  const health = await getJson('/api/health');
+  artifacts.push(write('health.json', health));
 
-  const health = await getJson('/api/health').catch((e) => ({ error: String(e) }));
-  write('health.json', health);
+  const kpis = await getJson('/api/metrics/kpis');
+  artifacts.push(write('kpis.json', kpis));
 
-  const kpis = await getJson('/api/metrics/kpis').catch((e) => ({ error: String(e) }));
-  write('kpis.json', kpis);
+  const runs = await getJson('/api/metrics/runs?page=1&limit=20');
+  artifacts.push(write('runs.json', runs));
 
-  const runs = await getJson('/api/metrics/runs?page=1&limit=20').catch((e) => ({ error: String(e) }));
-  write('runs.json', runs);
-
-  // sha256sums
-  const lines = artifacts.map(({ path, data }) => {
+  const sums = artifacts.map(({ path, data }) => {
     const h = createHash('sha256').update(data).digest('hex');
     return `${h}  ${path}`;
-  });
-  writeFileSync(join(OUT_DIR, 'sha256sums.txt'), lines.join('\n') + '\n');
+  }).join('\n') + '\n';
+  writeFileSync(join(OUT_DIR, 'sha256sums.txt'), sums);
 
   // Print summary for CR
   console.log('\nEvidence summary (R3)');
   console.log(`HOST=${HOST}`);
-  try {
-    const p95 = kpis?.p95 || kpis?.p95_ms || {};
-    console.log(`- p95 TTFT: ${p95.ttft_ms ?? 'n/a'} ms`);
-    console.log(`- p95 RTT : ${p95.rtt_ms ?? 'n/a'} ms`);
-    console.log(`- Error rate: ${kpis?.error_rate_percent ?? 'n/a'} %`);
-  } catch {}
+  const p95 = kpis?.p95 || kpis?.p95_ms || {};
+  console.log(`- p95 TTFT: ${p95.ttft_ms ?? 'n/a'} ms`);
+  console.log(`- p95 RTT : ${p95.rtt_ms ?? 'n/a'} ms`);
+  console.log(`- Error rate: ${kpis?.error_rate_percent ?? 'n/a'} %`);
 }
 
 main().catch((err) => {
