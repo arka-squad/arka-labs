@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base resets only; no theme here */
+:root {
+  color-scheme: light dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+
+/* Simple motion helpers shared */
+:root {
+  --motion-tab-duration: 240ms;
+  --motion-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-skeleton-duration: 200ms;
+  --motion-stagger: 60ms;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up var(--motion-tab-duration) var(--motion-ease-standard) both;
+}

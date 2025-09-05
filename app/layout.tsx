@@ -1,17 +1,12 @@
-﻿import "./globals.css";
+import "../styles/base.css";
+import "../design-system/tokens.css";
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
 
 export const metadata: Metadata = {
-  title: "Arka Cockpit",
-  description: "Cockpit Arka - v0.1",
+  title: "Arka — Cockpit IA pour piloter vos projets (chat multi‑agents)",
+  description:
+    "Pilotez vos projets avec des assistants IA : chat multi‑agents, recettes de gouvernance, observabilité et preuves partageables.",
 };
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  display: "swap",
-});
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -19,7 +14,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta charSet="utf-8" />
       </head>
-      <body className={`${poppins.className} min-h-screen bg-[#0C1319] text-slate-100`}>{children}</body>
+      <body className="min-h-screen">{children}</body>
     </html>
   );
 }
+

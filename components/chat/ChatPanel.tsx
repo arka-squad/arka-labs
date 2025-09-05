@@ -1,0 +1,170 @@
+"use client";
+
+import { useMemo, useRef, useState } from 'react';
+import { MessageSquare, Link2, Plus, SquareDashedMousePointer, ArrowUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
+
+export type Thread = { id: string; title: string; squad?: string; last_msg_at?: string };
+export type ChatMsg = { id: string; from: string; role?: 'human'|'agent'|'system'; at: string; text: string; status?: 'queued'|'sending'|'delivered'|'failed' };
+export type Agent = { id: string; name: string; role?: string; tz?: string; load?: number; status?: 'green'|'orange'|'red'; missions?: string[]; risk?: string|null; doc?: string|null; kpis?: { ttft:number; pass:number; commits:number } };
+
+type Props = {
+  threads: Thread[];
+  messagesByThread: Record<string, ChatMsg[]>;
+  agents: Agent[];
+  activeThreadId: string;
+  onSelectThread?: (id: string) => void;
+  onSelectAgent?: (id: string) => void;
+  onSend?: (threadId: string, payload: { text: string }) => Promise<void> | void;
+};
+
+export default function ChatPanel({ threads, messagesByThread, agents, activeThreadId, onSelectThread, onSelectAgent, onSend }: Props) {
+  const [agentId, setAgentId] = useState<string>(agents[0]?.id || '');
+  const a = useMemo(() => agents.find(x => x.id === agentId) || agents[0], [agents, agentId]);
+  const msgs = messagesByThread[activeThreadId] || [];
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const send = async () => {
+    const val = (inputRef.current?.value || '').trim();
+    if (!val) return;
+    await onSend?.(activeThreadId, { text: val });
+    if (inputRef.current) inputRef.current.value = '';
+  };
+
+  return (
+    <div className="h-full flex flex-col w-full">
+      {/* Header 56px */}
+      <div className="h-14 px-3 border-b border-[var(--border)] flex items-center justify-between">
+        <div className="flex items-center gap-2 min-w-0 text-[var(--fg)]">
+          <MessageSquare className="w-4 h-4" aria-hidden />
+          <span className="text-sm">Chat</span>
+          <select
+            aria-label="Sélection du fil"
+            value={activeThreadId}
+            onChange={(e)=> onSelectThread?.(e.target.value)}
+            className="bg-transparent text-[var(--fg)] border border-[var(--border)] rounded px-2 py-1 text-xs max-w-[260px] whitespace-normal leading-tight"
+            style={{ whiteSpace:'normal' }}
+          >
+            {threads.map(t => <option key={t.id} value={t.id} className="bg-[var(--surface)]">{t.title}</option>)}
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-[var(--fgdim)]">Squad</span>
+          <span className="px-1.5 py-0.5 rounded bg-white/5 text-[10px] text-[var(--fg)]">{threads.find(t=>t.id===activeThreadId)?.squad || 'Alpha'}</span>
+        </div>
+      </div>
+
+      {/* Agent header compact */}
+      <div className="p-3 border-b border-[var(--border)] bg-white/\[0.02\] shrink-0">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Link2 className="w-4 h-4 text-[var(--primary)]" aria-hidden />
+            <span className="text-xs text-[var(--fgdim)]">Agent du fil</span>
+          </div>
+          <select
+            aria-label="Sélection de l’agent"
+            value={agentId}
+            onChange={(e)=>{ setAgentId(e.target.value); onSelectAgent?.(e.target.value); }}
+            className="bg-transparent text-[var(--fg)] border border-[var(--border)] rounded px-2 py-1 text-xs max-w-[260px] whitespace-normal leading-tight"
+            style={{ whiteSpace:'normal' }}
+          >
+            {agents.map(ag => <option key={ag.id} value={ag.id} className="bg-[var(--surface)]">{ag.name} · {ag.role}</option>)}
+          </select>
+        </div>
+        <div className="mt-1 text-[10px] leading-4 text-[var(--fgdim)] break-words max-w-full">{a?.name} · {a?.role}</div>
+        <div className="mt-2">
+          <div className="flex items-center gap-2">
+            <div className="relative w-5 h-5 rounded-full bg-white/10 grid place-items-center text-[10px]">{(a?.name||'?').split(' ')[0][0]}</div>
+            <div className="text-sm text-[var(--fg)]">{a?.name}</div>
+            <div className="text-xs text-[var(--fgdim)]">— {a?.role}</div>
+            <span className={`ml-auto w-2 h-2 rounded-full ${a?.status==='green'?'bg-[var(--success)]':a?.status==='orange'?'bg-[var(--warn)]':'bg-[var(--danger)]'}`} aria-label={`status ${a?.status||'green'}`}/>
+            <div className="text-xs text-[var(--fgdim)]">UTC{a?.tz||'+01'}</div>
+          </div>
+          <div className="mt-2 flex items-center gap-2">
+            <div className="flex-1 h-2 rounded bg-white/10 overflow-hidden">
+              <div className="h-2" style={{ backgroundImage: 'var(--brand-grad)', width: `${Math.round((a?.load||0)*100)}%` }} />
+            </div>
+            <span className="tabular-nums text-[var(--fg)]/90 text-xs">{Math.round((a?.load||0)*100)}%</span>
+          </div>
+          <div className="mt-2 flex items-center gap-1 text-xs">
+            {(a?.missions||[]).slice(0,2).map(m => <span key={m} className="px-1.5 py-0.5 rounded bg-white/5 text-[var(--fg)]/90 font-mono">{m}</span>)}
+            {a?.risk && <span className="px-1.5 py-0.5 rounded bg-[var(--warn)]/10 text-[var(--warn)]">⚠ perf</span>}
+            {a?.doc && <span className="px-1.5 py-0.5 rounded bg-white/5 text-[var(--fg)]/90">📄 {a.doc}</span>}
+          </div>
+          <div className="mt-1 text-xs text-[var(--fgdim)]">TTFT {a?.kpis?.ttft ?? 1.2}j · Gate {a?.kpis?.pass ?? 92}% · {a?.kpis?.commits ?? 8}/sem</div>
+        </div>
+      </div>
+
+      {/* Feed */}
+      <div role="log" aria-live="polite" className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto scroller p-3 space-y-3">
+          {msgs.map((m) => (
+            <div key={m.id} className={`text-sm flex ${m.from.toLowerCase()==='owner' ? 'justify-end' : 'justify-start'}`}>
+              <div className="max-w-[75%]">
+                <div className={`mb-1 flex items-center gap-2 text-xs ${m.from.toLowerCase()==='owner' ? 'justify-end' : 'justify-start'}`}>
+                  {m.from.toLowerCase()!=='owner' && <div className="w-5 h-5 rounded-full bg-white/10 grid place-items-center text-[10px]">{m.from[0]}</div>}
+                  <span className={`font-medium ${m.from.toLowerCase()==='owner' ? 'text-[var(--fg)]/90' : 'text-[var(--fg)]'}`}>{m.from}</span>
+                  <span className="text-[var(--fgdim)]">{m.at}</span>
+                  {m.status==='failed' && (
+                    <span title="Échec"><AlertTriangle className="w-3 h-3 text-[var(--danger)]" aria-hidden /></span>
+                  )}
+                  {m.status==='delivered' && (
+                    <span title="Livré"><CheckCircle2 className="w-3 h-3 text-[var(--success)]" aria-hidden /></span>
+                  )}
+                </div>
+                {m.from.toLowerCase()==='owner' ? (
+                  <div className="px-3 py-2 rounded-[12px] text-[var(--fg)] shadow" style={{ background: 'var(--bubble)' }}>
+                    <div className="whitespace-pre-wrap">{highlightMotifs(m.text)}</div>
+                  </div>
+                ) : (
+                  <div className="whitespace-pre-wrap text-[var(--fg)]/90 border-l-2 border-[var(--border)] pl-3">
+                    {highlightMotifs(m.text)}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Composer 96px */}
+        <div className="p-3 border-t border-[var(--border)]">
+          <div className="relative rounded-[20px] bg-[var(--elevated)]/80 border border-[var(--border)] px-4 py-4 focus-within:ring-1 focus-within:ring-[var(--ring-soft)]">
+            <textarea
+              ref={inputRef}
+              className="w-full h-24 resize-none bg-transparent outline-none text-sm leading-relaxed pr-16 text-[var(--fg)] placeholder:text-[var(--fgdim)]/70"
+              placeholder={`Message à squad ${threads.find(t=>t.id===activeThreadId)?.squad || 'alpha'}…`}
+              onKeyDown={(e) => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
+            />
+            <div className="absolute left-3 bottom-3 flex items-center gap-2">
+              <button className="w-8 h-8 rounded-full bg-white/5 border border-[var(--border)] grid place-items-center" title="Ajouter"><Plus className="w-4 h-4"/></button>
+              <button className="h-8 px-3 rounded-full bg-white/5 border border-[var(--border)] text-sm flex items-center gap-1" title="Auto">
+                <SquareDashedMousePointer className="w-4 h-4"/>
+                <span>Auto</span>
+              </button>
+            </div>
+            <button onClick={send} className="absolute right-3 bottom-3 w-8 h-8 rounded-full bg-[var(--fgdim)]/20 grid place-items-center border border-[var(--border)] hover:bg-[var(--fgdim)]/30" title="Envoyer"><ArrowUp className="w-4 h-4"/></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function highlightMotifs(text: string) {
+  const motifs = [/(^|\b)(Action:)/g, /(\b)(\d+\s+fichiers\s+lus)/g];
+  let out: (string | JSX.Element)[] = [text];
+  motifs.forEach((re) => {
+    const next: (string | JSX.Element)[] = [];
+    out.forEach((chunk) => {
+      if (typeof chunk !== 'string') return next.push(chunk);
+      let last = 0; let m: RegExpExecArray | null;
+      const r = new RegExp(re);
+      while ((m = r.exec(chunk))) {
+        if (m.index > last) next.push(chunk.slice(last, m.index));
+        next.push(<span key={m.index} className="text-[var(--primary)] font-medium">{m[2] || m[0]}</span>);
+        last = m.index + (m[0]?.length || 0);
+      }
+      if (last < chunk.length) next.push(chunk.slice(last));
+    });
+    out = next;
+  });
+  return <>{out}</>;
+}

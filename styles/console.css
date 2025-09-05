@@ -1,0 +1,29 @@
+body.console-theme { background-color: var(--bg); color: var(--fg); }
+
+/* Utility surfaces for console */
+.console-card { background-color: var(--surface); border: 1px solid var(--border); }
+.console-ring-soft { box-shadow: 0 0 0 1px rgb(51 65 85 / 0.60) inset; }
+
+/* Scrollbars: hidden by default, visible on hover */
+.scroller {
+  overflow: auto;
+  scrollbar-gutter: stable both-edges;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent; /* idle invisible */
+  /* Ensure content doesn't sit flush to the fold */
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+.scroller:hover { scrollbar-color: var(--scroll-thumb, var(--bubble, #18212B)) var(--scroll-track, transparent); }
+.scroller::-webkit-scrollbar { width: 8px; height: 8px; }
+.scroller.dense::-webkit-scrollbar { width: 6px; height: 6px; }
+.scroller::-webkit-scrollbar-track { background: var(--scroll-track, transparent); }
+.scroller::-webkit-scrollbar-thumb {
+  background: transparent;          /* idle invisible */
+  border-radius: 8px;
+  border: 2px solid transparent;    /* thin handle */
+}
+.scroller:hover::-webkit-scrollbar-thumb { background: var(--scroll-thumb, #18212B); }
+.scroller:hover::-webkit-scrollbar-thumb:active { background: var(--scroll-thumb-hover, #223042); }
+.scroller::-webkit-scrollbar-corner { background: var(--scroll-track, transparent); }

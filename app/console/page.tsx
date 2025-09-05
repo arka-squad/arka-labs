@@ -1,164 +1,91 @@
 'use client';
 
+import { useState } from 'react';
+import Leftbar from '../../components/leftbar';
+import ChatPanel from '../../components/chat/ChatPanel';
+import KpiCard from '../../components/kpis/KpiCard';
+import RoadmapCard from '../../components/roadmap/RoadmapCard';
+import RunsTable from '../../components/runs/RunsTable';
+import RunsList from '../../components/runs/RunsList';
+import AgentCard from '../../components/roster/AgentCard';
+import { demoKpis, demoRoadmap, demoRuns, demoRoster, demoThreads, demoAgents, demoMessages } from './demo-data';
+import ConsoleGuard from '../../components/ConsoleGuard';
 
-import { redirect } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react';
-
-import { apiFetch } from '../../lib/http';
-import { generateTraceId, TRACE_HEADER } from '../../lib/trace';
-
-type Project = {
-  id: string;
-  name: string;
-  description: string;
-  last_activity: string;
-};
-function since(ts: string) {
-  const d = Math.max(0, Date.now() - new Date(ts).getTime());
-  const m = Math.floor(d / 60000),
-    h = Math.floor(m / 60),
-    dd = Math.floor(h / 24);
-  if (dd) return `il y a ${dd} j`;
-  if (h) return `il y a ${h} h`;
-  if (m) return `il y a ${m} min`;
-  return 'à l’instant';
-}
-export default function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[] | null>(null);
-  const [err, setErr] = useState('');
-  const [threads, setThreads] = useState<{ id: string; title: string; last_msg_at: string }[]>([]);
-
-  useEffect(() => {
-    let active = true;
-    const load = async () => {
-      try {
-        const trace_id = generateTraceId();
-        const res = await apiFetch('/api/projects', { credentials: 'include', headers: { [TRACE_HEADER]: trace_id } });
-        const data = await (res.ok
-          ? res.json()
-          : Promise.reject(new Error(String(res.status))));
-        const delay =
-          parseInt(
-            getComputedStyle(document.documentElement).getPropertyValue(
-              '--motion-skeleton-duration',
-            ),
-          ) || 200;
-        setTimeout(() => {
-          if (active) setProjects(data.projects || []);
-        }, delay);
-      } catch {
-        if (active) {
-          setErr('Erreur de récupération');
-          setProjects([]);
-        }
-      }
-    };
-    load();
-    // Threads récents (max 5)
-    const loadThreads = async () => {
-      try {
-        const trace_id = generateTraceId();
-        const res = await apiFetch('/api/chat/threads', { headers: { [TRACE_HEADER]: trace_id } });
-        const data = await (res.ok ? res.json() : { items: [] });
-        setThreads(Array.isArray(data.items) ? data.items.slice(0, 5) : []);
-      } catch {
-        setThreads([]);
-      }
-    };
-    loadThreads();
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const content = useMemo(() => {
-    if (projects === null) {
-      return (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-28 animate-pulse rounded-2xl border border-slate-700/40 bg-slate-800/30 p-4"
-            />
-          ))}
-        </div>
-      );
-    }
-    if (!projects.length) {
-      return (
-        <div className="mx-auto max-w-md text-center">
-          <div className="rounded-2xl border border-slate-700/50 bg-slate-800/40 p-8">
-            <h3 className="mb-2 text-lg font-semibold">Aucun projet</h3>
-            <p className="mb-4 text-sm text-slate-400">
-              Créez votre premier projet pour commencer.
-            </p>
-            <button
-              className="rounded-xl px-4 py-2 text-white"
-              style={{
-                background:
-                  'linear-gradient(135deg,#FAB652 0%,#F25636 35%,#E0026D 100%)',
-              }}
-              onClick={() => alert('POST /api/projects (à brancher)')}
-            >
-              Créer un projet
-            </button>
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.map((p, i) => (
-          <div
-            key={p.id}
-            style={{ animationDelay: `calc(var(--motion-stagger) * ${i})` }}
-            className="animate-fade-in-up opacity-0 rounded-2xl border border-slate-700/40 bg-slate-800/30 p-4"
-          >
-            <div className="mb-1 text-base font-semibold">{p.name}</div>
-            <div className="mb-3 text-sm text-slate-300">
-              {p.description || '—'}
-            </div>
-            <div className="text-xs text-slate-400">
-              Dernière activité • {since(p.last_activity)}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }, [projects]);
-
+export default function ConsoleDashboardPage() {
+  const [view, setView] = useState<'dashboard'|'roadmap'|'builder'|'docdesk'|'observa'|'runs'|'roster'>('dashboard');
+  const [activeThreadId, setActiveThreadId] = useState<string>(demoThreads[0]?.id || '');
+  const [msgs, setMsgs] = useState<Record<string, any[]>>({ ...demoMessages });
+  const handleSend = async (threadId: string, payload: { text: string }) => {
+    const list = msgs[threadId] || [];
+    const now = new Date();
+    const newMsg = { id: 'loc_'+now.getTime(), from: 'Owner', role: 'human', at: now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), text: payload.text, status: 'delivered' };
+    setMsgs({ ...msgs, [threadId]: [...list, newMsg] });
+  };
   return (
-    <main className="mx-auto max-w-6xl px-6 py-8 text-slate-200">
-      <header className="mb-6 flex items-center justify-between">
-        <h1 className="bg-gradient-to-r from-amber-400 via-rose-500 to-fuchsia-600 bg-clip-text text-2xl font-bold text-transparent">
-          Projects
-        </h1>
-        <span className="text-xs text-emerald-400">
-          {err ? 'API status: error' : 'API status: ok'}
-        </span>
-      </header>
-      <section className="mb-6">
-        <h2 className="mb-2 text-sm font-semibold text-slate-300">Threads récents</h2>
-        {threads.length === 0 ? (
-          <div className="rounded-xl border border-slate-700/40 bg-slate-800/30 p-3 text-xs text-slate-400">Aucun thread récent.</div>
-        ) : (
-          <ul className="divide-y divide-slate-700/40 rounded-xl border border-slate-700/40 bg-slate-800/30">
-            {threads.map((t) => (
-              <li key={t.id} className="flex items-center justify-between px-3 py-2 text-sm">
-                <span className="truncate pr-3 text-slate-200">{t.title || '(sans titre)'}</span>
-                <span className="text-xs text-slate-400">{since(t.last_msg_at)}</span>
-              </li>
-            ))}
-          </ul>
+    <div className="h-[calc(100dvh-56px)] grid gap-3 grid-cols-[72px_380px_minmax(0,1fr)] md:grid-cols-[72px_320px_minmax(0,1fr)] lg:grid-cols-[72px_380px_minmax(0,1fr)]">
+      <ConsoleGuard />
+      {/* Leftbar */}
+      <aside className="h-full overflow-hidden"><Leftbar value={view as any} onChange={(id:any)=>setView(id)} unread={2} presence="online" /></aside>
+      {/* Chat dock (380px) */}
+      <div className="h-full overflow-hidden pt-3 pb-6">
+      <aside className="h-full overflow-hidden rounded-xl border border-soft elevated">
+        <ChatPanel
+          threads={demoThreads as any}
+          messagesByThread={msgs as any}
+          agents={demoAgents as any}
+          activeThreadId={activeThreadId}
+          onSelectThread={(id)=>setActiveThreadId(id)}
+          onSelectAgent={()=>{}}
+          onSend={handleSend}
+        />
+      </aside>
+      </div>
+      {/* Content */}
+      <section className="h-full overflow-hidden pt-3 pb-6 pr-3">
+        {/* Router views */}
+        {view === 'dashboard' && (
+          <div className="grid h-full grid-rows-[auto_1fr] gap-3">
+            {/* KPIs row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {demoKpis.map(k => (
+                <KpiCard key={k.id} label={k.label} value={k.value} unit={k.unit} trend={k.trend} />
+              ))}
+            </div>
+            {/* Dashboard content grid 3 cols */}
+            <div className="grid grid-cols-3 gap-3 h-full">
+              <div className="col-span-2 grid grid-rows-[40%_1fr] gap-3 h-full">
+                <div className="overflow-hidden"><RoadmapCard months={demoRoadmap.months} lanes={demoRoadmap.lanes} /></div>
+              <div className="min-h-0 overflow-hidden pb-3"><RunsTable items={demoRuns} /></div>
+              </div>
+              <div className="min-h-0 overflow-hidden">
+              <div className="h-full overflow-auto scroller rounded-xl border border-soft elevated p-3 flex flex-col gap-3">
+                <div className="text-xs text-secondary">ROSTER · RISQUES</div>
+                {demoRoster.map(a => (
+                  <AgentCard key={a.id} a={{ id: a.id, name: a.name, role: a.role, load: a.load, missions: a.missions, doc: a.doc || null, kpis: a.kpis, status: 'green' }} />
+                ))}
+              </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {view === 'observa' && (
+          <div className="p-4 h-full min-h-0 overflow-hidden grid grid-rows-[auto_1fr] gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {demoKpis.map(k => (
+                <KpiCard key={k.id} label={`${k.label}`} value={k.value} unit={k.unit} trend={k.trend} />
+              ))}
+            </div>
+            <div className="rounded-xl border border-soft elevated p-8 text-[var(--fgdim)]">
+              Sélectionnez l’onglet <span className="text-[var(--fg)]">Runs</span> pour la liste détaillée paginée (20/l).
+            </div>
+          </div>
+        )}
+        {view === 'runs' && (
+          <div className="p-4 h-full min-h-0 overflow-hidden">
+            <RunsList data={demoRuns as any} />
+          </div>
         )}
       </section>
-      {err && (
-        <div className="mb-4 rounded-xl border border-rose-700/40 bg-rose-900/30 px-4 py-2 text-sm text-rose-200">
-          {err}
-        </div>
-      )}
-
-      {content}
-    </main>
+    </div>
   );
 }

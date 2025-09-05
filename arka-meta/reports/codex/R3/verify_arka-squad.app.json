@@ -1,0 +1,41 @@
+{
+  "host": "https://arka-squad.app",
+  "ts": "2025-09-04T19:02:09.996Z",
+  "checks": [
+    {
+      "name": "health",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "kpis",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "runs",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "memory_health",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "ai_stream_optional",
+      "pass": true,
+      "status": 404
+    },
+    {
+      "name": "documents_optional",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "threads_optional",
+      "pass": true,
+      "status": 200
+    }
+  ]
+}

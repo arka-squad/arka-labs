@@ -1,0 +1,35 @@
+﻿import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
+const CANONICAL_HOST = 'arka-squad.app';
+
+export function middleware(request: NextRequest) {
+  const env = process.env.VERCEL_ENV;
+
+  // Only enforce canonical host in production.
+  if (env !== 'production') {
+    return NextResponse.next();
+  }
+
+  const host = request.headers.get('host') || request.nextUrl.host;
+
+  // Already on canonical host or host missing â†’ proceed.
+  if (!host || host === CANONICAL_HOST) {
+    return NextResponse.next();
+  }
+
+  // Redirect any non-canonical host to the apex canonical domain.
+  const url = new URL(request.nextUrl);
+  url.protocol = 'https:';
+  url.host = CANONICAL_HOST;
+  return NextResponse.redirect(url, 301);
+}
+
+// Avoid matching Next.js internals and common static files.
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|assets).*)',
+  ],
+};
+
+
