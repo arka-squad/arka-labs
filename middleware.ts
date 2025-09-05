@@ -9,15 +9,16 @@ export function middleware(request: NextRequest) {
   const host = request.headers.get('host') || request.nextUrl.host;
   const pathname = request.nextUrl.pathname;
 
-  // Redirect root "/console" to "/cockpit" (do not affect "/console/*").
-  if (pathname === '/console' || pathname === '/console/') {
+  // Redirect root "/console" to "/cockpit" only in production
+  // (do not affect "/console/*"). In dev, keep /console for UI previews.
+  if (isProd && (pathname === '/console' || pathname === '/console/')) {
     const url = new URL(request.nextUrl);
     url.pathname = '/cockpit';
-    if (isProd && host && host !== CANONICAL_HOST) {
+    if (host && host !== CANONICAL_HOST) {
       url.protocol = 'https:';
       url.host = CANONICAL_HOST;
     }
-    return NextResponse.redirect(url, isProd ? 308 : 302);
+    return NextResponse.redirect(url, 308);
   }
 
 

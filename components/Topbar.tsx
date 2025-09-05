@@ -1,70 +1,104 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { uiLog } from '../lib/ui-log';
-import { apiFetch } from '../lib/http';
-import RoleBadge from './RoleBadge';
+import { useEffect, useRef } from 'react';
+import { Search, Share2, Play } from 'lucide-react';
 
-export default function Topbar() {
-  const router = useRouter();
-  const [authed, setAuthed] = useState(false);
+type Role = 'viewer' | 'operator' | 'owner';
+
+type TopbarProps = {
+  role: Role;
+  onSearchFocus?: () => void;
+  onShare?: () => void;
+  onRun?: () => void;
+  onLogoClick?: () => void;
+  placeholder?: string;
+  sticky?: boolean;
+};
+
+export default function Topbar({
+  role,
+  onSearchFocus,
+  onShare,
+  onRun,
+  onLogoClick,
+  placeholder = 'Rechercher (⌘K)',
+  sticky = true,
+}: TopbarProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const hasToken =
-      typeof window !== 'undefined' &&
-      (localStorage.getItem('RBAC_TOKEN') || localStorage.getItem('token') || /(arka_access_token|arka_auth)=/.test(document.cookie));
-    setAuthed(Boolean(hasToken));
-  }, []);
+    const onKey = (e: KeyboardEvent) => {
+      const mac = navigator.platform.toUpperCase().includes('MAC');
+      const mod = mac ? e.metaKey : e.ctrlKey;
+      if (mod && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        inputRef.current?.focus();
+        onSearchFocus?.();
+      }
+      if (e.key === 'Escape' && document.activeElement === inputRef.current) {
+        (document.activeElement as HTMLElement).blur();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onSearchFocus]);
 
-  async function logout() {
-    await apiFetch('/api/auth/logout', { method: 'POST' });
-    try {
-      localStorage.removeItem('token');
-      localStorage.removeItem('RBAC_TOKEN');
-      localStorage.removeItem('access_token');
-    } catch {}
-    uiLog('logout');
-    router.replace('/login');
-  }
+  const roleCls = role === 'owner'
+    ? 'border-[var(--primary)] text-[var(--primary)]'
+    : role === 'operator'
+    ? 'border-[var(--success)] text-[var(--success)]'
+    : 'border-[var(--muted)] text-[var(--muted)]';
 
   return (
-    <header className="flex items-center justify-between border-b border-slate-700/50 px-4 py-3" style={{backgroundColor: 'var(--arka-bg)'}}>
-      <div className="flex items-center gap-4">
-        <a href="/" data-codex-id="topbar_logo" className="text-xl font-extrabold lowercase tracking-tight text-white">arka</a>
-        <span className="text-lg font-semibold">Console</span>
-        <RoleBadge />
-        <span className={`rounded-full px-2 py-0.5 text-xs ${authed ? 'bg-emerald-600' : 'bg-slate-600'}`}
-          aria-label="Statut session">
-          {authed ? 'Connecté' : 'Anonyme'}
-        </span>
-        <select
-          data-codex-id="project_selector"
-          defaultValue=""
-          className="rounded-md bg-slate-800 px-2 py-1 text-sm"
+    <header
+      role="banner"
+      aria-label="Application top bar"
+      className={`h-14 box-border border-b border-[var(--border)] bg-[var(--surface)] grid grid-cols-[auto_1fr_auto] items-center px-4 gap-4 ${sticky ? 'sticky top-0 z-30' : ''}`}
+    >
+      {/* Left: logo */}
+      <div className="flex items-center">
+        <a
+          href="/"
+          aria-label="Arka"
+          onClick={onLogoClick}
+          className="inline-flex h-8 items-center px-1 rounded hover:opacity-100 opacity-90"
         >
-          <option value="" disabled>
-            Aucun projet - créez-en un
-          </option>
-        </select>
+          <img src="/assets/logo/arka-logo-blanc.svg" alt="Arka" className="h-5 w-auto" />
+        </a>
       </div>
-      <div className="flex items-center gap-2">
-        <button data-codex-id="btn_theme" className="rounded bg-slate-700 px-2 py-1 text-sm" onClick={() => {}}>
-          Thème
+      {/* Center: search */}
+      <div className="flex justify-center">
+        <div className="flex items-center gap-2 text-[var(--fgdim)] bg-[var(--elevated)] border border-[var(--border)] rounded-full px-3 py-1 w-full max-w-xl focus-within:ring-1 focus-within:ring-[var(--ring-soft)]">
+          <Search className="w-4 h-4" aria-hidden />
+          <input
+            ref={inputRef}
+            type="search"
+            placeholder={placeholder}
+            aria-label="Rechercher"
+            className="bg-transparent outline-none text-[var(--fg)] placeholder:text-[var(--fgdim)]/70 w-full"
+          />
+        </div>
+      </div>
+      {/* Right: role + actions */}
+      <div className="flex items-center gap-3 justify-end">
+        <span className="text-xs text-[var(--fgdim)]">Role:</span>
+        <span className={`px-2 py-1 rounded text-xs border ${roleCls}`} aria-label={`Current role: ${role.toUpperCase()}`}>
+          {role.toUpperCase()}
+        </span>
+        <button
+          onClick={onShare}
+          className="h-8 px-3 rounded bg-white/5 border border-[var(--border)] text-xs flex items-center gap-1 hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-[var(--ring-soft)]"
+        >
+          <Share2 className="w-3 h-3" aria-hidden />Share
         </button>
-        <button data-codex-id="btn_settings" className="rounded bg-slate-700 px-2 py-1 text-sm" onClick={() => {}}>
-          Paramètres
+        <button
+          onClick={onRun}
+          className="h-8 px-3 rounded bg-white/5 border border-[var(--border)] text-xs flex items-center gap-1 hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-[var(--ring-soft)]"
+        >
+          <Play className="w-3 h-3" aria-hidden />Run
         </button>
-        {authed && (
-          <button
-            data-codex-id="topbar_logout"
-            onClick={logout}
-            className="rounded bg-slate-700 px-2 py-1 text-sm"
-          >
-            Déconnexion
-          </button>
-        )}
       </div>
     </header>
   );
 }
+

@@ -1,0 +1,19 @@
+/* Light(ish) marketing palette and tokens */
+:root {
+  --site-bg: #0E1116;
+  --site-section: #0F141B;
+  --site-text: #E5E7EB;
+  --site-muted: #9AA4B2;
+  --site-border: #1F2A33;
+  --site-grad: linear-gradient(135deg, #FAB652 0%, #F25636 50%, #E0026D 100%);
+  --site-radius-xl: 16px;
+}
+
+body.site-theme {
+  background-color: var(--site-bg);
+  color: var(--site-text);
+}
+
+.site-card { background-color: var(--site-section); border: 1px solid var(--site-border); border-radius: var(--site-radius-xl); }
+.site-muted { color: var(--site-muted); }
+

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import '../globals.css';
+import '../../styles/console.css';
+import Topbar from '../../components/Topbar';
 
 export const metadata: Metadata = {
   title: 'Arka Cockpit',
@@ -10,10 +11,11 @@ export const metadata: Metadata = {
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 export default function CockpitLayout({ children }: { children: React.ReactNode }) {
-  // Nested layout: no <html>/<body>; scope Inter + dark theme to this segment
+  // Nested layout aligned with /console: padding around app grid, no body scroll
   return (
-    <div className={`${inter.className} min-h-screen bg-[#0C1117] text-slate-100`}>
-      {children}
+    <div className={`${inter.className} console-theme min-h-screen flex flex-col overflow-hidden`}>
+      <Topbar role="owner" />
+      <div className="flex-1 w-full overflow-hidden">{children}</div>
     </div>
   );
 }

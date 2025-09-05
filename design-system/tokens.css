@@ -1,0 +1,28 @@
+:root {
+  /* Spec tokens (v12) */
+  --bg:#0C1117; --surface:#10161D; --elevated:#141B23; --border:#1F2A33;
+  --ring-soft: rgb(51 65 85 / 0.60);
+  --fg:#FFFFFF; --fgdim:#CBD5E1; --muted:#94A3B8;
+  --success:#10B981; --danger:#E11D48; --warn:#F59E0B;
+  --grad-start:#FAB652; --grad-mid:#F25636; --grad-end:#E0026D;
+  --brand-grad: linear-gradient(135deg,var(--grad-start),var(--grad-mid) 50%,var(--grad-end));
+  --bubble:#18212B; --r-xs:6px; --r-md:12px; --r-xl:16px;
+  /* Scrollbar tokens */
+  --scroll-thumb: var(--bubble);
+  --scroll-thumb-hover: color-mix(in oklab, var(--bubble) 88%, white);
+  --scroll-track: transparent;
+
+  /* Aliases (compat) */
+  --text-primary: var(--fg);
+  --text-secondary: var(--fgdim);
+  --text-muted: var(--muted);
+  --warning: var(--warn);
+}
+
+.brand-grad { background: var(--brand-grad); }
+.text-primary { color: var(--fg); }
+.text-secondary { color: var(--fgdim); }
+.text-muted { color: var(--muted); }
+.surface { background: var(--surface); }
+.elevated { background: var(--elevated); }
+.border-soft { border-color: var(--border); }

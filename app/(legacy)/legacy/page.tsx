@@ -27,15 +27,15 @@ const ASSETS = {
   SCHEMA_AGENTS: '/assets/hero/schema-agents.png',
 };
 
-export default function ArkaLanding() {
+export default function LegacyLanding() {
   return (
     <div className="min-h-screen text-white font-[Poppins]" style={{ backgroundColor: TOKENS.bgBody }}>
       {/* Header */}
       <header className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <img src={ASSETS.LOGO_WHITE} alt="Arka logo" className="h-8 w-auto" />
         <nav className="hidden gap-4 text-sm text-slate-300 sm:flex">
-          <a href="#features" className="hover:text-white" data-codex-id="link_fonctionnalites">Fonctionnalit&eacute;s</a>
-          <a href="/beta" className="hover:text-white" data-codex-id="link_beta">B&ecirc;ta</a>
+          <a href="#features" className="hover:text-white" data-codex-id="link_fonctionnalites">Fonctionnalités</a>
+          <a href="/beta" className="hover:text-white" data-codex-id="link_beta">Bêta</a>
           <a href="#pricing" className="hover:text-white" data-codex-id="link_tarification">Tarification</a>
         </nav>
         <div className="flex items-center gap-2">
@@ -49,13 +49,13 @@ export default function ArkaLanding() {
         <div className="md:col-span-6 lg:col-span-7">
           <img src={ASSETS.LOGO_GRAD} alt="Arka" className="h-auto w-[133px]" />
           <h1 className="mt-8 text-white">
-            <span className="block leading-tight sm:text-[32px] md:text-[34px] lg:text-[36px]">la <span className="font-extrabold">puissance</span> des grandes &eacute;quipes,</span>
+            <span className="block leading-tight sm:text-[32px] md:text-[34px] lg:text-[36px]">la <span className="font-extrabold">puissance</span> des grandes équipes,</span>
             <span className={`${TOKENS.gradTextClass} bg-clip-text font-semibold leading-tight text-transparent block sm:text-[32px] md:text-[34px] lg:text-[34px]`}>mise entre les mains des petites</span>
           </h1>
-          <p className="mt-6 max-w-xl text-slate-300">Cockpit multi-agents, prompt builder et observabilit&eacute; &mdash; pens&eacute; pour les &eacute;quipes de 2 &agrave; 30 personnes.</p>
+          <p className="mt-6 max-w-xl text-slate-300">Cockpit multi-agents, prompt builder et observabilité — pensé pour les équipes de 2 à 30 personnes.</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a href="/cockpit" className="rounded-full px-5 py-3 text-sm font-medium text-white shadow-lg" style={{ background: TOKENS.gradCTA }}>
-              Inscrivez-vous &agrave; la b&ecirc;ta
+              Inscrivez-vous à la bêta
             </a>
             <a href="/fonctionnalites" className={`flex items-center gap-2 rounded-full px-5 py-3 text-sm text-slate-200 ring-1 ${TOKENS.ringSoft}`}>
               Voir les features <ArrowRight className="h-4 w-4" />
@@ -70,10 +70,10 @@ export default function ArkaLanding() {
       {/* Under-hero KPIs */}
       <div className="mx-auto mt-16 grid max-w-7xl grid-cols-2 gap-6 md:grid-cols-4 px-6">
         {[
-          { icon: '⚡', k: 'Chat SSE', v: 'TTFT 680ms', d: 'Streaming fluide, agents disponibles instantan&eacute;ment.' },
-          { icon: '🧩', k: 'Prompt Builder', v: '+30% rapidit&eacute;', d: 'Composer, tester et r&eacute;utiliser vos prompts facilement.' },
-          { icon: '📊', k: 'Observabilit&eacute;', v: '100% flux trac&eacute;s', d: 'KPIs clairs : TTFT, RTT, erreurs, objectifs sprint.' },
-          { icon: '🚀', k: 'V&eacute;locit&eacute;', v: '+30%', d: 'Des performances accrues pour vos &eacute;quipes, sans lourdeur.' },
+          { icon: '💬', k: 'Chat SSE', v: 'TTFT 680ms', d: 'Streaming fluide, agents disponibles instantanément.' },
+          { icon: '🧩', k: 'Prompt Builder', v: '+30% rapidité', d: 'Composer, tester et réutiliser vos prompts facilement.' },
+          { icon: '📈', k: 'Observabilité', v: '100% flux tracés', d: 'KPIs clairs : TTFT, RTT, erreurs, objectifs sprint.' },
+          { icon: '⚡', k: 'Vélocité', v: '+30%', d: 'Des performances accrues pour vos équipes, sans lourdeur.' },
         ].map((i) => (
           <div key={i.k} className={`rounded-2xl p-5 text-center shadow-sm ring-1 ${TOKENS.ringSoft} flex flex-col justify-between`} style={{ backgroundColor: '#151F27', borderColor: '#1F2A33', minHeight: '200px' }}>
             <div>
@@ -89,20 +89,21 @@ export default function ArkaLanding() {
       {/* Cockpit Section */}
       <section id="console" className="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
         <div>
-          <h2 className="text-2xl font-bold mb-4">Un cockpit con&ccedil;u pour vos agents</h2>
+          <h2 className="text-2xl font-bold mb-4">Un cockpit conçu pour vos agents</h2>
           <p className="text-slate-400 mb-6">
-            Arka R1 r&eacute;unit en une seule interface trois briques essentielles : <b>Prompt Builder</b>, <b>gestion documentaire</b> et <b>observabilit&eacute; en temps r&eacute;el</b>.
-            Cette int&eacute;gration unique fait d&rsquo;Arka un cockpit multi-agents pr&ecirc;t &agrave; l&rsquo;emploi. Id&eacute;ale pour des petites &eacute;quipes qui veulent livrer plus vite,
-            avec plus de rigueur et un niveau de qualit&eacute; sup&eacute;rieur.
+            Arka R1 réunit en une seule interface trois briques essentielles : <b>Prompt Builder</b>, <b>gestion documentaire</b> et <b>observabilité en temps réel</b>.
+            Cette intégration unique fait d’Arka un cockpit multi-agents prêt à l’emploi. Idéale pour des petites équipes qui veulent livrer plus vite,
+            avec plus de rigueur et un niveau de qualité supérieur.
           </p>
           <a href="/cockpit" className="rounded-xl px-5 py-2 text-sm font-semibold text-white" style={{ background: TOKENS.gradCTA }}>
-            Inscrivez-vous &agrave; la b&ecirc;ta
+            Inscrivez-vous à la bêta
           </a>
         </div>
         <div className="bg-[#151F27] h-72 rounded-xl flex items-center justify-center border border-[#1F2A33]">
-          <img src={ASSETS.SCREENSHOT_CONSOLE} alt="Screenshot anim&eacute; du cockpit" className="h-full object-contain rounded-lg" />
+          <img src={ASSETS.SCREENSHOT_CONSOLE} alt="Screenshot animé du cockpit" className="h-full object-contain rounded-lg" />
         </div>
       </section>
     </div>
   );
 }
+
