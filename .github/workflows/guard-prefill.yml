@@ -1,0 +1,29 @@
+name: Guard-PREFILL
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail if NEXT_PUBLIC_COCKPIT_PREFILL=1 for production/main
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking PREFILL on main..."
+          # Reject if any env file sets NEXT_PUBLIC_COCKPIT_PREFILL=1
+          if git grep -n "^NEXT_PUBLIC_COCKPIT_PREFILL=1\b" -- .env* 2>/dev/null; then
+            echo "ERROR: NEXT_PUBLIC_COCKPIT_PREFILL=1 detected in env files on main."
+            exit 1
+          fi
+          # Also reject if code hardcodes PREFILL=1 in config
+          if git grep -n "NEXT_PUBLIC_COCKPIT_PREFILL\s*===\s*'1'" -- || git grep -n "NEXT_PUBLIC_COCKPIT_PREFILL\s*[:=]\s*1" -- ; then
+            echo "NOTE: PREFILL usage found in code (expected), but guard relies on env files."
+          fi
+

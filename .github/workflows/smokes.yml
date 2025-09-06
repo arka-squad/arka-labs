@@ -113,6 +113,23 @@ jobs:
           echo "trace_id=$TID" >> "$GITHUB_ENV"
           test "$fail" -eq 0
 
+      - name: RBAC smoke /api/keys (expect 401 on production without JWT)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ steps.host.outputs.host }}"
+          code=$(curl -4sS -o /dev/null -w '%{http_code}' --connect-timeout 5 --max-time 15 -X POST -H 'Content-Type: application/json' -d '{"provider":"openai","key":"x"}' "$BASE/api/keys" || echo 000)
+          echo "/api/keys (no auth) -> $code"
+          if [ "${{ matrix.envname }}" = "production" ]; then
+            test "$code" = "401"
+          else
+            # preview may be bypassed (DEV), accept 201/401
+            if [ "$code" != "201" ] && [ "$code" != "401" ]; then
+              echo "Unexpected code on preview: $code" >&2
+              exit 1
+            fi
+          fi
+
       - name: KPIs minimal (visibility)
         shell: bash
         env:
