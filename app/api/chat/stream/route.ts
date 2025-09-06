@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { AI_ENABLED } from '../../../../lib/env';
+import { resolveClient } from '../../../../lib/providers/router';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -26,32 +27,29 @@ export async function GET(req: Request) {
   const traceId = req.headers.get('x-trace-id') || crypto.randomUUID();
   const role = searchParams.get('role') || 'viewer';
   const agent = searchParams.get('agent') || 'AGP';
-  const provider = req.headers.get('x-provider') || 'demo';
-  const model = req.headers.get('x-model') || 'demo';
+  const provider = req.headers.get('x-provider') || 'openai';
+  const model = req.headers.get('x-model') || 'gpt-4.1-mini';
   // Accept either a provider session or a raw key (preview only)
   const providerSession = req.headers.get('x-provider-session') || null;
-  const providerKey = req.headers.get('x-provider-key') || null;
 
-  const text = `Bienvenue sur Arka — flux Chat (socle B13). Rôle: ${role}.`;
-  const parts = text.split(' ');
-  const encoder = new TextEncoder();
+  // Construct prompt
+  const prompt = [{ role: 'user', content: 'Bienvenue sur Arka — flux Chat (socle B13). Rôle: ' + role }];
 
-  const start = Date.now();
-  let firstAt = 0;
-
+  // Use client to stream response
+  const client = resolveClient(provider, providerSession);
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      // Send open event first
-      controller.enqueue(encoder.encode(sse({ t: 'open', trace_id: traceId, agent, provider, model })));
-      await sleep(200 + Math.random() * 200);
-      for (let i = 0; i < parts.length; i++) {
-        const payload = { t: 'token', v: parts[i], at: Date.now() - start } as const;
-        if (!firstAt) firstAt = Date.now();
-        controller.enqueue(encoder.encode(sse(payload)));
-        await sleep(30 + Math.random() * 40);
+      controller.enqueue(new TextEncoder().encode(sse({ t: 'open', trace_id: traceId, agent, provider, model })));
+      let firstAt = 0;
+      const startTime = Date.now();
+      for await (const chunk of client.stream!({ model, prompt })) {
+        const now = Date.now();
+        if (!firstAt) firstAt = now;
+        controller.enqueue(new TextEncoder().encode(sse({ t: 'token', v: chunk, at: now - startTime })));
       }
-      const ttftMs = firstAt ? firstAt - start : 0;
-      controller.enqueue(encoder.encode(sse({ t: 'done', ttft_ms: ttftMs, tokens: parts.length })));
+      const ttftMs = firstAt ? firstAt - startTime : 0;
+      // Done event
+      controller.enqueue(new TextEncoder().encode(sse({ t: 'done', ttft_ms: ttftMs, tokens: 0 })));
       controller.close();
     },
   });
@@ -73,7 +71,6 @@ export async function GET(req: Request) {
       provider,
       model,
       has_session: !!providerSession,
-      has_key: !!providerKey,
       trace_id: traceId,
     };
     try {

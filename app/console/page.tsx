@@ -26,7 +26,7 @@ export default function ConsoleDashboardPage() {
       <ConsoleGuard />
       {/* Leftbar */}
       <aside className="h-full overflow-hidden"><Leftbar value={view as any} onChange={(id:any)=>setView(id)} unread={2} presence="online" /></aside>
-      {/* Chat dock (380px) */}
+      {/* Chat panel (380px) */}
       <div className="h-full overflow-hidden pt-3 pb-6">
       <aside className="h-full overflow-hidden rounded-xl border border-soft elevated">
         <ChatPanel

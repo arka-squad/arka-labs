@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react';
 import { MessageSquare, Link2, Plus, SquareDashedMousePointer, ArrowUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import ChatHeaderControls from './ChatHeaderControls';
 
 export type Thread = { id: string; title: string; squad?: string; last_msg_at?: string };
 export type ChatMsg = { id: string; from: string; role?: 'human'|'agent'|'system'; at: string; text: string; status?: 'queued'|'sending'|'delivered'|'failed' };
@@ -93,6 +94,9 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
           <div className="mt-1 text-xs text-[var(--fgdim)]">TTFT {a?.kpis?.ttft ?? 1.2}j · Gate {a?.kpis?.pass ?? 92}% · {a?.kpis?.commits ?? 8}/sem</div>
         </div>
       </div>
+
+      {/* Chat controls: provider select, token, TTFT, trace */}
+      <ChatHeaderControls agentId={agentId} />
 
       {/* Feed */}
       <div role="log" aria-live="polite" className="flex-1 flex flex-col min-h-0">

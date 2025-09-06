@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "jest:init",
+			"type": "shell",
+			"command": "npx jest --init",
+			"args": []
+		},
+		{
+			"label": "jest:run",
+			"type": "shell",
+			"command": "npm run test:ui",
+			"args": []
+		}
+	]
+}

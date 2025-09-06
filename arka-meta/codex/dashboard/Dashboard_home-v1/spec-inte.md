@@ -1,5 +1,5 @@
 
-# base CSS prête à coller
+# base CSS — Spécification ultra‑détaillée (v1.0)
 
 ```css
 
@@ -511,7 +511,7 @@ type LeftbarProps = {
 
 
 
-# Arka Console — Dashboard v12 · Handoff & Layout spec
+# Arka Console — — Spécification ultra‑détaillée (v1.0)
 
 
 > **Scope figé :** page **Dashboard** (accueil), **Topbar**, **Leftbar (sidebar)** et **Chat** persistant. Style sombre, back‑office, full‑page, scroll **par section** uniquement.
@@ -1212,3 +1212,421 @@ const agents = DEMO.roster.cards.map(c => ({
 ---
 
 **Note** : Spécification strictement *UI/front* (pas de back). Respecter AA (contrastes ≥ 4.5:1). Ne pas faire défiler la page globale : scroller les **conteneurs** (Roster, sélecteurs Chat).
+
+Arg, l’injection auto a **échoué** (le moteur a rejeté un gros bloc JSX dans un seul remplacement). Du coup je te file un patch propre, en 5 mini-étapes sûres à coller **tel quel** dans ton fichier `Console-arka-preview-v12` (je n’écrase rien d’existant).
+
+---
+
+# **RunsList** — Spécification ultra‑détaillée (v1.0)
+
+### 1) Imports — ajoute les icônes manquantes
+
+Cherche la ligne d’import `lucide-react` et remplace-la par celle-ci (on ajoute `ChevronLeft`, `ChevronUp`, `ArrowUpDown`) :
+
+```ts
+import { Activity, BadgeCheck, ChevronDown, ChevronRight, ChevronLeft, ChevronUp, ArrowUpDown, FileText, Gauge, GitCommit, Menu, MessageSquare, Play, Save, Share2, Shield, SquareDashedMousePointer, Users, ZoomIn, ZoomOut, Plus, Search, Filter, Settings, Layers, Link2, FileSearch, Eye, UploadCloud, XCircle, CheckCircle2, AlertTriangle, Circle, ArrowUp } from "lucide-react";
+```
+
+---
+
+### 2) Nouveau composant **RunsList** (tri + pagination + copier `trace_id`)
+
+Colle ce bloc **juste après** le bloc `// --- Runs table` (avant `// --- Agent card`), ou à la fin du fichier si tu préfères :
+
+```tsx
+// --- RunsList (full page) ---------------------------------------------------
+type RunRow = {
+  run_id: string;
+  status: 'PASS'|'FAIL'|'WARN';
+  p95_ms: number;
+  error_pct: number;
+  sprint: string;
+  trace_id: string;
+  created_at?: string;
+};
+
+const ORDER: Record<RunRow['status'], number> = { FAIL: 0, WARN: 1, PASS: 2 };
+
+const sortStable = (by: keyof RunRow, dir: 'asc'|'desc') => (a: RunRow, b: RunRow) => {
+  const m = dir === 'asc' ? 1 : -1;
+  if (by === 'status') {
+    if (ORDER[a.status] !== ORDER[b.status]) return (ORDER[a.status] - ORDER[b.status]) * m;
+    return a.run_id.localeCompare(b.run_id);
+  }
+  if (by === 'sprint') {
+    const na = parseInt(a.sprint.replace(/\D+/g,'')) || 0;
+    const nb = parseInt(b.sprint.replace(/\D+/g,'')) || 0;
+    if (na !== nb) return (na - nb) * m;
+    return a.run_id.localeCompare(b.run_id);
+  }
+  const va = (a as any)[by]; const vb = (b as any)[by];
+  if (va < vb) return -1 * m; if (va > vb) return 1 * m; return a.run_id.localeCompare(b.run_id);
+};
+
+const SortIcon: React.FC<{ active: boolean; dir: 'asc'|'desc' }> = ({ active, dir }) =>
+  active ? (dir === 'asc' ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>) : <ArrowUpDown className="w-3 h-3"/>;
+
+const RunsList: React.FC<{ data?: RunRow[] }> = ({ data }) => {
+  const PAGE_SIZE = 20;
+  const base = (data && data.length ? data : runs) as RunRow[];
+
+  const [page, setPage] = React.useState(1);
+  const [sort, setSort] = React.useState<{ by: keyof RunRow; dir: 'asc'|'desc' }>({ by: 'run_id', dir: 'desc' });
+  const [copied, setCopied] = React.useState<string|null>(null);
+
+  const total = base.length;
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  const pageRows = React.useMemo(() => {
+    const sorted = [...base].sort(sortStable(sort.by, sort.dir));
+    const start = (page - 1) * PAGE_SIZE;
+    return sorted.slice(start, start + PAGE_SIZE);
+  }, [base, page, sort]);
+
+  const setSortCol = (by: keyof RunRow) =>
+    setSort(s => ({ by, dir: s.by === by ? (s.dir === 'asc' ? 'desc' : 'asc') : 'desc' }));
+
+  const onCopy = async (t: string) => {
+    try { await navigator.clipboard.writeText(t); setCopied(t); setTimeout(() => setCopied(null), 1200); } catch {}
+  };
+
+  return (
+    <Card className="p-3 h-full overflow-hidden"
+      onKeyDown={(e)=>{ if(e.altKey && e.key==='ArrowLeft'){ e.preventDefault(); setPage(p=>Math.max(1,p-1)); }
+                        if(e.altKey && e.key==='ArrowRight'){ e.preventDefault(); setPage(p=>Math.min(pages,p+1)); } }}>
+      <div className="flex items-center justify-between mb-2">
+        <SectionTitle icon={<GitCommit className="w-4 h-4"/>}>DERNIERS RUNS (20/L)</SectionTitle>
+        <div className="flex items-center gap-2">
+          <button className="px-2 py-1 rounded bg-white/5 border border-[var(--border)] text-xs flex items-center gap-1" title="Filtres">
+            <Filter className="w-3 h-3"/> Filtres
+          </button>
+        </div>
+      </div>
+
+      <div className="h-full min-h-0 overflow-auto scroller">
+        <table className="w-full text-sm" role="table">
+          <thead className="sticky top-0 bg-[var(--surface)] text-[var(--fgdim)]" role="rowgroup">
+            <tr className="text-left" role="row">
+              {([
+                ['run_id','run_id'],
+                ['status','status'],
+                ['p95_ms','p95 (ms)'],
+                ['error_pct','error %'],
+                ['sprint','sprint'],
+                ['trace_id','trace_id'],
+              ] as [keyof RunRow, string][]).map(([key, label]) => (
+                <th key={key as string} scope="col" className="px-3 py-2 select-none">
+                  <button onClick={() => key!=='trace_id' && setSortCol(key)}
+                          className="inline-flex items-center gap-1 text-[var(--fgdim)] hover:text-[var(--fg)]">
+                    <span>{label}</span>
+                    {key!=='trace_id' && <SortIcon active={sort.by === key} dir={sort.dir}/>}
+                  </button>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody role="rowgroup">
+            {pageRows.map(r => (
+              <tr key={r.run_id} className="border-t border-[var(--border)]/60 hover:bg-white/5" role="row">
+                <td className="px-3 py-2 font-mono text-[var(--fg)]/90" role="cell">#{r.run_id}</td>
+                <td className="px-3 py-2" role="cell"><StatusPill s={r.status as any}/></td>
+                <td className="px-3 py-2 tabular-nums" role="cell">{r.p95_ms}</td>
+                <td className="px-3 py-2 tabular-nums" role="cell">{r.error_pct}</td>
+                <td className="px-3 py-2" role="cell">{r.sprint}</td>
+                <td className="px-3 py-2" role="cell">
+                  <button onClick={()=>onCopy(r.trace_id)} className="text-[var(--primary)] hover:underline"
+                          aria-label={`Copier le trace_id ${r.trace_id}`} title="Copier le trace_id">
+                    {r.trace_id}
+                  </button>
+                  {copied===r.trace_id && <span className="ml-2 text-[10px] text-[var(--fgdim)]">Copié</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex items-center justify-end gap-2 pt-2">
+        <button aria-label="Page précédente" onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page<=1}
+                className="px-2 py-1 rounded bg-white/5 border border-[var(--border)] disabled:opacity-50">
+          <ChevronLeft className="w-3 h-3"/>
+        </button>
+        <span className="text-xs text-[var(--fgdim)]">page {page} / {pages}</span>
+        <button aria-label="Page suivante" onClick={()=>setPage(p=>Math.min(pages,p+1))} disabled={page>=pages}
+                className="px-2 py-1 rounded bg-white/5 border border-[var(--border)] disabled:opacity-50">
+          <ChevronRight className="w-3 h-3"/>
+        </button>
+      </div>
+    </Card>
+  );
+};
+```
+
+> Note : on garde **RunsTable** pour le Dashboard, et on utilise **RunsList** pour l’onglet dédié.
+
+---
+
+### 3) Observabilité sans runs + nouvelle vue **Runs**
+
+Remplace **uniquement** le composant `ObservaView` par ceci **et ajoute** `RunsView` juste en dessous :
+
+```tsx
+const ObservaView: React.FC = () => (
+  <div className="p-4 h-full min-h-0 overflow-hidden grid grid-rows-[auto_1fr] gap-4">
+    <div className="grid grid-cols-3 gap-4">
+      {kpis.map((k,i) => (
+        <KpiCard key={k.key} colorIdx={i} label={`${k.key} (p95)`} value={k.value} unit={k.unit} trend={DEMO.kpis.tiles[i]?.trend}/>
+      ))}
+    </div>
+    <Card className="p-8 text-[var(--fgdim)]">
+      Sélectionnez l’onglet <span className="text-[var(--fg)]">Runs</span> pour la liste détaillée paginée (20/l).
+    </Card>
+  </div>
+);
+
+const RunsView: React.FC = () => (
+  <div className="p-4 h-full min-h-0 overflow-hidden">
+    <RunsList data={runs as any}/>
+  </div>
+);
+```
+
+---
+
+### 4) Sidebar — ajoute l’entrée **Runs**
+
+Dans le tableau des boutons du `Sidebar`, insère la ligne ci-dessous **après** l’entrée Observabilité :
+
+```tsx
+{ id:'runs', label:'Runs', icon: <GitCommit className="w-5 h-5"/> },
+```
+
+---
+
+### 5) Router d’app — ajoute l’état `runs`
+
+* Modifie la ligne du state :
+
+```ts
+const [view, setView] = useState<'dashboard'|'roadmap'|'builder'|'docdesk'|'observa'|'runs'|'roster'>('dashboard');
+```
+
+* Et ajoute le rendu :
+
+```tsx
+{view==='observa' && <ObservaView/>}
+{view==='runs' && <RunsView/>}
+{view==='roster' && <RosterView/>}
+```
+
+---
+
+### Attendu
+
+* **Tri** par colonne (clic sur l’entête, icône `ArrowUpDown` ↔ `ChevronUp/Down`).
+* **Pagination** 20/l avec boutons et **Alt+←/→**.
+* **Copie `trace_id`** avec feedback “Copié”.
+* **Header sticky** + scroll **dans** le tableau uniquement.
+* Observa = **KPIs uniquement**.
+
+# Scrollbar — Spécification UI (Arka Dark) v1.0
+
+> **Objectif** : une barre de défilement **discrète**, **cohérente** avec le thème Arka (bulle du chat), **visible uniquement à l’interaction**, et **cantonnée aux sections** (pas de scroll global). Couverture Chrome/Edge/Safari (WebKit) + Firefox.
+
+---
+
+## 1) Principes
+
+* **Pas de scroll global** : `html, body { overflow: hidden; }` ; chaque zone scrollable est un **conteneur** avec la classe `.scroller`.
+* **Look & feel** : même teinte que la **bulle du chat** ; invisible au repos, **apparaît au survol** / à l’usage.
+* **Finesse** : 8px (desktop), 6px (dense). Rayon 8px.
+* **Performances** : uniquement sur `.scroller` (pas de styles lourds en global) ; pas d’ombres.
+* **A11y** : contraste suffisant sur hover ; respect de `prefers-reduced-motion` et `forced-colors`.
+
+---
+
+## 2) Tokens
+
+Utiliser/ajouter ces variables (déjà partiellement présentes dans `Tokens`):
+
+```css
+:root {
+  --bubble: #18212B;           /* bulle du chat */
+  --border: #1F2A33;           /* border.soft */
+  --ring-soft: rgb(51 65 85 / .60);
+  --scroll-thumb: var(--bubble);                 /* normal */
+  --scroll-thumb-hover: color-mix(in oklab, var(--bubble) 88%, white); /* léger éclaircissement */
+  --scroll-track: transparent;
+}
+```
+
+> **Note** : `color-mix()` est supporté par Chrome/Edge/Firefox/Safari modernes. Si indisponible, fallback → même couleur que `--scroll-thumb`.
+
+---
+
+## 3) Styles de base
+
+À placer **une fois** (ex. dans le `<style>` du composant `Tokens` ou dans `globals.css`).
+
+```css
+/* Global — neutralise le scroll body */
+html, body { height: 100%; overflow: hidden; }
+
+/* Conteneur scrollable */
+.scroller {
+  overflow: auto;                 /* vertical/horizontal selon contenu */
+  scrollbar-gutter: stable both-edges; /* évite CLS quand la barre apparaît */
+  overscroll-behavior: contain;   /* pas de propagation */
+  -webkit-overflow-scrolling: touch; /* inertie iOS */
+
+  /* Firefox */
+  scrollbar-width: thin;          /* ~8px */
+  scrollbar-color: transparent transparent; /* idle invisible */
+}
+.scroller:hover { scrollbar-color: var(--scroll-thumb) var(--scroll-track); }
+
+/* WebKit (Chrome/Edge/Safari) */
+.scroller::-webkit-scrollbar { width: 8px; height: 8px; }
+.scroller.dense::-webkit-scrollbar { width: 6px; height: 6px; }
+.scroller::-webkit-scrollbar-track { background: var(--scroll-track); }
+.scroller::-webkit-scrollbar-thumb {
+  background: transparent;              /* idle invisible */
+  border-radius: 8px;
+  border: 2px solid transparent;        /* poignée fine (4px) */
+}
+.scroller:hover::-webkit-scrollbar-thumb { background: var(--scroll-thumb); }
+.scroller:hover::-webkit-scrollbar-thumb:active { background: var(--scroll-thumb-hover); }
+
+/* Coins & doubles barres */
+.scroller::-webkit-scrollbar-corner { background: var(--scroll-track); }
+
+/* Motion / A11y */
+@media (prefers-reduced-motion: reduce) {
+  .scroller { scroll-behavior: auto; }
+}
+@media (forced-colors: active) {
+  .scroller { scrollbar-color: auto; }
+}
+```
+
+### Option : mode "quasi invisible" global
+
+> À n’utiliser **que si le besoin d’uniformiser la barre dans tout le shell** se confirme.
+
+```css
+/* Niv. global (hors .scroller) — affiche la barre uniquement au survol */
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: transparent; border-radius: 8px; }
+*:hover::-webkit-scrollbar-thumb { background: var(--scroll-thumb); }
+```
+
+---
+
+## 4) Règles d’usage (où appliquer `.scroller`)
+
+* **Chat** : feed des messages + liste compactée si présente (sélecteurs restent fixes).
+* **Dashboard** : colonne **Roster — à risque**, tableau **Derniers runs**, zone **Roadmap** si overflow.
+* **Observabilité** : sections graphiques si empilement vertical > viewport.
+* **DocDesk** : colonnes Kanban (scroll indépendant par colonne 🡒 `.scroller` sur chaque colonne) + zone content.
+* **Builder** : canvas (pan/zoom) dans un wrapper avec `.scroller` horizontal+vertical.
+
+> **Ne pas** mettre `.scroller` sur le `<main>` global, uniquement sur des **panneaux** dédiés.
+
+---
+
+## 5) Variantes & états
+
+* `.scroller.dense` : largeur 6px (tables denses, petits écrans).
+* `.scroller.xonly` / `.scroller.yonly` : si besoin d’un contrôle :
+
+  ```css
+  .scroller.xonly { overflow-x: auto; overflow-y: hidden; }
+  .scroller.yonly { overflow-y: auto; overflow-x: hidden; }
+  ```
+* `.scroll-stable` : utilise `scrollbar-gutter: stable both-edges;` pour garder la mise en page **stable** lorsque la barre apparaît.
+
+---
+
+## 6) Intégration Tailwind (optionnelle)
+
+Si vous préférez des utilitaires Tailwind personnalisés :
+
+```js
+// tailwind.config.js
+module.exports = {
+  theme: { extend: {} },
+  plugins: [function({ addUtilities }) {
+    addUtilities({
+      '.scroller': {
+        overflow: 'auto',
+        'scrollbar-gutter': 'stable both-edges',
+        'overscroll-behavior': 'contain'
+      },
+      '.scroller-dense': { },
+    })
+  }]
+}
+```
+
+> Les pseudo-éléments `::-webkit-scrollbar*` restent à poser dans un CSS global (limitation CSS‑in‑JS).
+
+---
+
+## 7) QA — critères d’acceptation
+
+1. **Visibilité** : la barre est **transparente au repos**, devient visible **uniquement** au **survol** du conteneur (Chrome/Edge/Safari) ou par `scrollbar-color` (Firefox).
+2. **Couleur** : le **thumb** correspond à `--bubble` (#18212B) ; en `:active`, léger éclaircissement (mix). Le **track** est transparent.
+3. **Confinement** : le scroll de **chaque section** n’impacte pas la page (pas de double barre globale).
+4. **Stabilité** : pas de **CLS** quand le scroll apparaît/disparaît (grâce à `scrollbar-gutter: stable`).
+5. **Accessibilité** : en **mode contrasté** (`forced-colors`), la barre demeure lisible/fonctionnelle.
+6. **Mobile** : inertie iOS OK (`-webkit-overflow-scrolling: touch`).
+
+---
+
+## 8) Patch minimal à appliquer dans `Tokens` (si besoin)
+
+Remplacer/compléter le bloc `<style>` existant par :
+
+```css
+html, body { height: 100%; overflow: hidden; }
+.scroller { overflow: auto; scrollbar-gutter: stable both-edges; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.scroller:hover { scrollbar-color: var(--scroll-thumb) transparent; }
+.scroller::-webkit-scrollbar { width: 8px; height: 8px; }
+.scroller::-webkit-scrollbar-track { background: transparent; }
+.scroller::-webkit-scrollbar-thumb { background: transparent; border-radius: 8px; border: 2px solid transparent; }
+.scroller:hover::-webkit-scrollbar-thumb { background: var(--scroll-thumb); }
+.scroller:hover::-webkit-scrollbar-thumb:active { background: var(--scroll-thumb-hover); }
+```
+
+> **Déjà en place** dans la preview : base global + `.scroller` (presque complet). Cette spec **aligne** les noms de tokens et ajoute `scrollbar-gutter` + `:active` + color‑mix.
+
+---
+
+## 9) Do / Don’t
+
+**Do**
+
+* Appliquer `.scroller` **uniquement** aux panneaux overflow (Chat feed, Runs table body, Roster, Kanban columns…).
+* Conserver `min-h-0` sur les **panneaux parents** (Grid/Flex) pour que le scroll s’active correctement.
+* Tester macOS (overlay), Windows (classique), Linux (varié) ; Firefox spécifique.
+
+**Don’t**
+
+* Mettre `overflow: auto` sur le `<body>` / `<main>` global.
+* Utiliser des ombres ou des couleurs vives sur le thumb (hors état actif).
+* Forcer des largeurs < 6px (difficile à saisir).
+
+---
+
+## 10) Mapping composants Arka
+
+* **ChatPanel** : `.scroller` sur le **feed** (déjà OK) ; textarea non scrollable.
+* **Dashboard** : `.scroller` sur **Roster** et **RunsTable** ; **Roadmap** selon contenu.
+* **DocDesk** : `.scroller` par **colonne** du Kanban et sur le conteneur global.
+* **Observabilité** : `.scroller` sur zone listes si overflow (graphiques généralement sans scroll vertical).
+
+---
+
+### Fin — v1.0
+
+Si tu veux, je prépare un **diff exact** pour remplacer le bloc `<style>` de `Tokens` afin d’être 1:1 avec cette spec.
