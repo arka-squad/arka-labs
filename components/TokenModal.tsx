@@ -104,7 +104,7 @@ export default function TokenModal({ agentId, initialProvider, initialModel, onC
           Clé API :
           <input type="password" value={token} onChange={e => setToken(e.target.value)} className="w-full mt-1 bg-[var(--bubble)] border border-[var(--border)] rounded px-2 py-1 text-[var(--fg)]" />
         </label>
-        <div className="text-xs text-[var(--muted)] mb-2">La clé n'est pas stockée durablement. Session éphémère.</div>
+        <div className="text-xs text-[var(--muted)] mb-2">La clé n&#39;est pas stockée durablement. Session éphémère.</div>
         {testResult && <div className="mb-2 text-sm text-[var(--fg)]">Résultat test: {testResult}</div>}
         {error && <div className="mb-2 text-sm text-[var(--danger)]">{error}</div>}
         <div className="flex flex-wrap gap-2 justify-end mt-2">
@@ -125,4 +125,3 @@ export default function TokenModal({ agentId, initialProvider, initialModel, onC
     </div>
   );
 }
-
