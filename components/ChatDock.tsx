@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import TokenModal from './TokenModal';
-import ProviderSelect from './ProviderSelect';
+// import TokenModal from './TokenModal';
+// import ProviderSelect from './ProviderSelect'; // Removed outdated usage
 import { AiOutlineClockCircle, AiOutlineLink } from 'react-icons/ai';
 
 export default function ChatDock() {
   const [open, setOpen] = useState(true);
-  const [showTokenModal, setShowTokenModal] = useState(false);
   const [ttl, setTtl] = useState<number | null>(null);
   const [traceId, setTraceId] = useState<string>('');
   const [agentMapping, setAgentMapping] = useState<Record<string, {provider:string,model:string}>>({});
@@ -51,16 +50,13 @@ export default function ChatDock() {
         {open ? 'Fermer' : 'Ouvrir'} Dock
       </button>
       <div className="flex flex-col space-y-4">
-        <button className="btn" onClick={() => setShowTokenModal(true)}>
-          Connecter une IA
-        </button>
         {ttl !== null && (
           <div className="flex items-center space-x-1 text-sm text-gray-700">
             <AiOutlineClockCircle />
             <span>Expire dans {Math.floor(ttl / 60)} min</span>
           </div>
         )}
-        <ProviderSelect />
+        {/* ProviderSelect moved to ChatPanel header via ChatHeaderControls */}
         <div className="flex items-center space-x-1 text-sm">
           <AiOutlineLink />
           <span>Trace ID: {traceId}</span>
@@ -72,7 +68,6 @@ export default function ChatDock() {
           <div key={agent} className="text-xs text-gray-500">{agent}: {provider} / {model}</div>
         ))}
       </div>
-      {showTokenModal && <TokenModal onClose={() => setShowTokenModal(false)} />}
     </div>
   );
 }
