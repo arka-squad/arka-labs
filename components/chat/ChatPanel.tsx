@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MessageSquare, Link2, Plus, SquareDashedMousePointer, ArrowUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import ChatHeaderControls from './ChatHeaderControls';
+import { streamChat } from '../../lib/chat/stream';
 
 export type Thread = { id: string; title: string; squad?: string; last_msg_at?: string };
 export type ChatMsg = { id: string; from: string; role?: 'human'|'agent'|'system'; at: string; text: string; status?: 'queued'|'sending'|'delivered'|'failed' };
@@ -23,12 +24,39 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
   const a = useMemo(() => agents.find(x => x.id === agentId) || agents[0], [agents, agentId]);
   const msgs = messagesByThread[activeThreadId] || [];
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [providerMap, setProviderMap] = useState<Record<string, { providerId?: string; modelId?: string }>>({});
+
+  useEffect(() => {
+    function onProviderChange(e: CustomEvent) {
+      const { agent, provider, model } = e.detail as any;
+      setProviderMap((m) => ({ ...m, [agent]: { providerId: provider, modelId: model } }));
+    }
+    window.addEventListener('providerChange', onProviderChange as EventListener);
+    return () => window.removeEventListener('providerChange', onProviderChange as EventListener);
+  }, []);
 
   const send = async () => {
     const val = (inputRef.current?.value || '').trim();
     if (!val) return;
     await onSend?.(activeThreadId, { text: val });
     if (inputRef.current) inputRef.current.value = '';
+    // Start SSE stream for TTFT/Trace (B13)
+    const mapping = providerMap[agentId] || {};
+    const sessionId = localStorage.getItem('session_token');
+    if (!mapping.providerId || !mapping.modelId || !sessionId) {
+      window.dispatchEvent(new CustomEvent('chat:toast', { detail: { type: 'warn', text: 'Connectez un fournisseur pour cet agent' } }));
+      return;
+    }
+    try {
+      await streamChat({
+        agentId,
+        threadId: activeThreadId,
+        providerId: mapping.providerId,
+        modelId: mapping.modelId,
+        sessionId,
+        onToken: () => {},
+      });
+    } catch {}
   };
 
   return (

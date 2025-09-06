@@ -4,7 +4,6 @@ export interface IAClient {
 }
 
 import OpenAI from 'openai';
-import { Configuration } from 'openai';
 
 export function resolveClient(provider: string, sessionToken: string| null): IAClient {
   switch(provider) {
@@ -23,5 +22,24 @@ export function resolveClient(provider: string, sessionToken: string| null): IAC
     // TODO: ajout des autres providers (Anthropic, OpenRouter)
     default:
       throw new Error(`Unknown provider: ${provider}`);
+  }
+}
+
+// Test provider key validity
+export async function testProviderKey(provider: string, model: string, apiKey: string) {
+  switch(provider) {
+    case 'openai': {
+      const client = new OpenAI({ apiKey });
+      try {
+        // Send a minimal prompt to verify key validity
+        await client.chat.completions.create({ model, messages: [{ role: 'system', content: 'ping' }] });
+        return { ok: true };
+      } catch (e: any) {
+        return { ok: false, error: e.message || 'Erreur Unknown' };
+      }
+    }
+    // TODO: implement for other providers
+    default:
+      return { ok: false, error: 'Provider non supporté' };
   }
 }
