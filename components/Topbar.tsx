@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { Search, Share2, Play } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Search, Share2, Play, ChevronDown } from 'lucide-react';
+import RoleBadge from './RoleBadge';
 
 type Role = 'viewer' | 'operator' | 'owner';
 
@@ -25,6 +26,7 @@ export default function Topbar({
   sticky = true,
 }: TopbarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -43,11 +45,15 @@ export default function Topbar({
     return () => window.removeEventListener('keydown', onKey);
   }, [onSearchFocus]);
 
-  const roleCls = role === 'owner'
-    ? 'border-[var(--primary)] text-[var(--primary)]'
-    : role === 'operator'
-    ? 'border-[var(--success)] text-[var(--success)]'
-    : 'border-[var(--muted)] text-[var(--muted)]';
+  function logout() {
+    try {
+      localStorage.removeItem('RBAC_TOKEN');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('jwt');
+      localStorage.removeItem('session_token');
+    } catch {}
+    window.location.href = '/login';
+  }
 
   return (
     <header
@@ -79,12 +85,9 @@ export default function Topbar({
           />
         </div>
       </div>
-      {/* Right: role + actions */}
-      <div className="flex items-center gap-3 justify-end">
-        <span className="text-xs text-[var(--fgdim)]">Role:</span>
-        <span className={`px-2 py-1 rounded text-xs border ${roleCls}`} aria-label={`Current role: ${role.toUpperCase()}`}>
-          {role.toUpperCase()}
-        </span>
+      {/* Right: role badge + actions + user menu */}
+      <div className="relative flex items-center gap-3 justify-end">
+        <RoleBadge />
         <button
           onClick={onShare}
           className="h-8 px-3 rounded bg-white/5 border border-[var(--border)] text-xs flex items-center gap-1 hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-[var(--ring-soft)]"
@@ -97,8 +100,27 @@ export default function Topbar({
         >
           <Play className="w-3 h-3" aria-hidden />Run
         </button>
+        {/* User avatar/menu */}
+        <div className="relative">
+          <button
+            aria-haspopup="menu"
+            aria-expanded={open ? 'true' : 'false'}
+            onClick={() => setOpen(o => !o)}
+            className="h-8 pl-2 pr-2 rounded-full bg-white/5 border border-[var(--border)] flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-[var(--ring-soft)]"
+          >
+            <span aria-hidden className="w-6 h-6 rounded-full bg-white/10 grid place-items-center text-[10px]">U</span>
+            <ChevronDown className="w-3 h-3" />
+          </button>
+          {open && (
+            <div role="menu" className="absolute right-0 mt-2 min-w-[200px] rounded-xl border border-[var(--border)] elevated bg-[var(--surface)] shadow-2xl p-2 z-50">
+              <div className="px-2 py-1 text-xs text-[var(--fgdim)]">Compte</div>
+              <button role="menuitem" className="w-full text-left px-3 py-2 rounded hover:bg-white/5 text-sm">Paramètres</button>
+              <div className="my-2 h-px bg-white/10" />
+              <button role="menuitem" onClick={logout} className="w-full text-left px-3 py-2 rounded hover:bg-white/5 text-sm text-red-300">Se déconnecter</button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
 }
-
