@@ -5,11 +5,11 @@ export interface IAClient {
 
 import OpenAI from 'openai';
 
-export function resolveClient(provider: string, sessionToken: string| null): IAClient {
+export function resolveClient(provider: string, apiKey: string | null): IAClient {
   switch(provider) {
     case 'openai':
       const openai = new OpenAI({
-        apiKey: sessionToken || process.env.OPENAI_API_KEY,
+        apiKey: apiKey || process.env.OPENAI_API_KEY,
       });
       return {
         stream: async function*({ model, prompt }) {

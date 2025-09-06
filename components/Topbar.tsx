@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Search, Share2, Play } from 'lucide-react';
+import RoleBadge from './RoleBadge';
 
 type Role = 'viewer' | 'operator' | 'owner';
 
@@ -43,11 +44,7 @@ export default function Topbar({
     return () => window.removeEventListener('keydown', onKey);
   }, [onSearchFocus]);
 
-  const roleCls = role === 'owner'
-    ? 'border-[var(--primary)] text-[var(--primary)]'
-    : role === 'operator'
-    ? 'border-[var(--success)] text-[var(--success)]'
-    : 'border-[var(--muted)] text-[var(--muted)]';
+  // Logout supprimé de la Topbar (menu utilisateur déplacé sur l’avatar en bas de la sidebar)
 
   return (
     <header
@@ -79,12 +76,9 @@ export default function Topbar({
           />
         </div>
       </div>
-      {/* Right: role + actions */}
-      <div className="flex items-center gap-3 justify-end">
-        <span className="text-xs text-[var(--fgdim)]">Role:</span>
-        <span className={`px-2 py-1 rounded text-xs border ${roleCls}`} aria-label={`Current role: ${role.toUpperCase()}`}>
-          {role.toUpperCase()}
-        </span>
+      {/* Right: role badge + actions */}
+      <div className="relative flex items-center gap-3 justify-end">
+        <RoleBadge />
         <button
           onClick={onShare}
           className="h-8 px-3 rounded bg-white/5 border border-[var(--border)] text-xs flex items-center gap-1 hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-[var(--ring-soft)]"
@@ -101,4 +95,3 @@ export default function Topbar({
     </header>
   );
 }
-
