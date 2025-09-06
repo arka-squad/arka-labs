@@ -45,6 +45,7 @@ export default function ChatHeaderControls({ agentId }: Props) {
     return () => window.removeEventListener('chat:ttft', onTtft as EventListener);
   }, []);
 
+
   // Open Token modal on request
   useEffect(() => {
     function onOpen() { setShowTokenModal(true); }
@@ -121,3 +122,4 @@ export default function ChatHeaderControls({ agentId }: Props) {
     </div>
   );
 }
+

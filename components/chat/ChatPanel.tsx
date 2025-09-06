@@ -25,9 +25,11 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
   const msgs = messagesByThread[activeThreadId] || [];
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [providerMap, setProviderMap] = useState<Record<string, { providerId?: string; modelId?: string }>>({});
+
   const [streamingText, setStreamingText] = useState('');
   const [streaming, setStreaming] = useState(false);
   const [toasts, setToasts] = useState<{id:string;level:'info'|'warn'|'error';msg:string}[]>([]);
+
 
   useEffect(() => {
     function onProviderChange(e: CustomEvent) {
@@ -37,6 +39,7 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
     window.addEventListener('providerChange', onProviderChange as EventListener);
     return () => window.removeEventListener('providerChange', onProviderChange as EventListener);
   }, []);
+
 
   // Toasts listener (trace copiée, erreurs, etc.)
   useEffect(() => {
@@ -55,6 +58,7 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
     };
   }, []);
 
+
   const send = async () => {
     const val = (inputRef.current?.value || '').trim();
     if (!val) return;
@@ -64,18 +68,21 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
     const mapping = providerMap[agentId] || {};
     const sessionId = localStorage.getItem('session_token');
     if (!mapping.providerId || !mapping.modelId || !sessionId) {
+
       window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'warn', msg: 'Connectez un fournisseur pour cet agent' } }));
       return;
     }
     try {
       setStreaming(true);
       setStreamingText('');
+
       await streamChat({
         agentId,
         threadId: activeThreadId,
         providerId: mapping.providerId,
         modelId: mapping.modelId,
         sessionId,
+
         onToken: (chunk) => { setStreamingText((s) => s + (chunk || '')); },
         onDone: () => { setStreaming(false); },
       });
@@ -89,6 +96,7 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
         window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'error', msg: 'Erreur flux' } }));
       }
     }
+
   };
 
   return (

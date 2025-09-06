@@ -49,7 +49,9 @@ export default function TokenModal({ agentId, initialProvider, initialModel, onC
     setError(null);
     const res = await fetch('/api/keys', {
       method: 'POST',
+
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('jwt') || ''}` },
+
       body: JSON.stringify({ provider, key: token }),
     });
     if (res.ok) {
@@ -59,6 +61,7 @@ export default function TokenModal({ agentId, initialProvider, initialModel, onC
       onTokenExchange({ agentId, provider, model, ttlSec: data.ttl_sec });
       onClose();
     } else {
+
       const data = await res.json().catch(() => ({}));
       const msg = data?.error || "Erreur lors de l'enregistrement";
       setError(msg);
@@ -66,6 +69,7 @@ export default function TokenModal({ agentId, initialProvider, initialModel, onC
         // Propose dev login
         window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'warn', msg: 'Non connecté. Cliquez Se connecter.' } }));
       }
+
     }
     setLoading(false);
   };
@@ -113,6 +117,7 @@ export default function TokenModal({ agentId, initialProvider, initialModel, onC
         {testResult && <div className="mb-2 text-sm text-[var(--fg)]">Résultat test: {testResult}</div>}
         {error && <div className="mb-2 text-sm text-[var(--danger)]">{error}</div>}
         <div className="flex flex-wrap gap-2 justify-end mt-2">
+
           {!localStorage.getItem('jwt') && (
             <button onClick={async ()=>{
               try {
@@ -127,6 +132,7 @@ export default function TokenModal({ agentId, initialProvider, initialModel, onC
               } catch {}
             }} className="px-3 py-1 bg-emerald-600 text-white rounded cursor-pointer">Se connecter</button>
           )}
+
           <button onClick={handleRevoke} className="px-3 py-1 bg-red-500 text-white rounded cursor-pointer" disabled={loading}>Révoquer</button>
           <button onClick={handleTest} className="px-3 py-1 bg-gray-200 rounded cursor-pointer disabled:opacity-60" disabled={loading}>Tester</button>
           <button onClick={handleSave} className="px-3 py-1 bg-blue-600 text-white rounded cursor-pointer disabled:opacity-60" disabled={loading || !token}>Enregistrer</button>
