@@ -12,6 +12,7 @@ type StreamOpts = {
   providerId: string;
   modelId: string;
   sessionId?: string | null;
+  role?: string;
   signal?: AbortSignal;
   onOpen?: (ev: { trace_id: string }) => void;
   onToken?: (chunk: string) => void;
@@ -28,10 +29,10 @@ export async function streamChat(opts: StreamOpts) {
   };
   if (sessionId) headers['X-Provider-Session'] = sessionId;
 
-  const url = `/api/chat/stream?agent=${encodeURIComponent(agentId)}${threadId ? `&thread_id=${encodeURIComponent(threadId)}` : ''}`;
+  const url = `/api/chat/stream?agent=${encodeURIComponent(agentId)}${threadId ? `&thread_id=${encodeURIComponent(threadId)}` : ''}${opts.role ? `&role=${encodeURIComponent(opts.role)}` : ''}`;
   const res = await fetch(url, { headers, signal });
   if (!res.ok || !res.body) {
-    throw new Error('chat_stream_bad_response');
+    throw new Error(`chat_stream_bad_response:${res.status}`);
   }
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
@@ -71,4 +72,3 @@ export async function streamChat(opts: StreamOpts) {
     }
   }
 }
-

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { MessageSquare, Link2, Plus, SquareDashedMousePointer, ArrowUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import ChatHeaderControls from './ChatHeaderControls';
 import { streamChat } from '../../lib/chat/stream';
+import { getCurrentRole } from '../../lib/auth/role';
 
 export type Thread = { id: string; title: string; squad?: string; last_msg_at?: string };
 export type ChatMsg = { id: string; from: string; role?: 'human'|'agent'|'system'; at: string; text: string; status?: 'queued'|'sending'|'delivered'|'failed' };
@@ -24,10 +25,13 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
   const a = useMemo(() => agents.find(x => x.id === agentId) || agents[0], [agents, agentId]);
   const msgs = messagesByThread[activeThreadId] || [];
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const feedRef = useRef<HTMLDivElement>(null);
+  const endRef = useRef<HTMLDivElement>(null);
   const [providerMap, setProviderMap] = useState<Record<string, { providerId?: string; modelId?: string }>>({});
 
   const [streamingText, setStreamingText] = useState('');
   const [streaming, setStreaming] = useState(false);
+  const draftRef = useRef('');
   const [toasts, setToasts] = useState<{id:string;level:'info'|'warn'|'error';msg:string}[]>([]);
 
 
@@ -58,12 +62,35 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
     };
   }, []);
 
+  // Nettoyage du draft agent lors d'un changement de fil
+  useEffect(() => {
+    setStreaming(false);
+    setStreamingText('');
+    draftRef.current = '';
+  }, [activeThreadId]);
+
 
   const send = async () => {
     const val = (inputRef.current?.value || '').trim();
     if (!val) return;
+    // Intents: if starts with '/'
+    if (val.startsWith('/')) {
+      const jwt = localStorage.getItem('jwt') || localStorage.getItem('RBAC_TOKEN') || '';
+      try {
+        await fetch('/api/chat/intents', { method:'POST', headers: { 'Content-Type':'application/json', ...(jwt?{Authorization:`Bearer ${jwt}`}:{}) }, body: JSON.stringify({ t: val.split(' ')[0], payload: { text: val, threadId: activeThreadId }, trace_id: crypto?.randomUUID?.() || Math.random().toString(36).slice(2) }) });
+      } catch {}
+      // Echo agent confirmation
+      const now = new Date();
+      const agentName = (a?.name)||'Agent';
+      const echo = { id: 'intent_'+now.getTime(), from: agentName, role: 'agent', at: now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), text: `Intent reçu: ${val}`, status: 'delivered' } as any;
+      window.dispatchEvent(new CustomEvent('chat:agentReply', { detail: { threadId: activeThreadId, agentId, text: echo.text } }));
+      if (inputRef.current) inputRef.current.value = '';
+      return;
+    }
     await onSend?.(activeThreadId, { text: val });
     if (inputRef.current) inputRef.current.value = '';
+    // scroll to bottom after inserting own message
+    requestAnimationFrame(() => { endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }); });
     // Start SSE stream for TTFT/Trace (B13)
     const mapping = providerMap[agentId] || {};
     const sessionId = localStorage.getItem('session_token');
@@ -82,9 +109,21 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
         providerId: mapping.providerId,
         modelId: mapping.modelId,
         sessionId,
+        role: getCurrentRole(),
 
-        onToken: (chunk) => { setStreamingText((s) => s + (chunk || '')); },
-        onDone: () => { setStreaming(false); },
+        onToken: (chunk) => {
+          draftRef.current = draftRef.current + (chunk || '');
+          setStreamingText((s) => s + (chunk || ''));
+        },
+        onDone: () => {
+          const text = draftRef.current;
+          // Persiste la réponse agent dans le fil
+          window.dispatchEvent(new CustomEvent('chat:agentReply', { detail: { threadId: activeThreadId, agentId, text } }));
+          draftRef.current = '';
+          setStreaming(false);
+          setStreamingText('');
+          requestAnimationFrame(()=> endRef.current?.scrollIntoView({ behavior:'smooth', block:'end' }));
+        },
       });
     } catch (e: any) {
       setStreaming(false);
@@ -92,12 +131,19 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
       if (msg.includes('401') || msg.includes('unauthorized')) {
         window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'error', msg: 'Session expirée' } }));
         window.dispatchEvent(new CustomEvent('chat:openTokenModal'));
+      } else if (msg.includes('429')) {
+        window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'warn', msg: 'Limite atteinte' } }));
       } else {
         window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'error', msg: 'Erreur flux' } }));
       }
     }
 
   };
+
+  // Auto-scroll on new messages or streaming updates
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [activeThreadId, msgs.length, streamingText]);
 
   return (
     <div className="h-full flex flex-col w-full">
@@ -168,7 +214,7 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
 
       {/* Feed */}
       <div role="log" aria-live="polite" className="flex-1 flex flex-col min-h-0">
-        <div className="flex-1 overflow-auto scroller p-3 space-y-3">
+        <div ref={feedRef} className="flex-1 overflow-auto scroller p-3 space-y-3">
           {msgs.map((m) => (
             <div key={m.id} className={`text-sm flex ${m.from.toLowerCase()==='owner' ? 'justify-end' : 'justify-start'}`}>
               <div className="max-w-[75%]">
@@ -195,13 +241,14 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
               </div>
             </div>
           ))}
-          {streaming && (
+          {(streamingText.length > 0) && (
             <div className="text-sm flex justify-start">
               <div className="max-w-[75%] whitespace-pre-wrap text-[var(--fg)]/90 border-l-2 border-[var(--border)] pl-3">
                 {streamingText || '…'}
               </div>
             </div>
           )}
+          <div ref={endRef} />
         </div>
         {/* Composer 96px */}
         <div className="p-3 border-t border-[var(--border)]">

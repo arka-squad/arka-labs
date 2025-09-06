@@ -1,6 +1,6 @@
 import { randomBytes, createHash } from 'crypto';
 
-interface Session { provider: string; keyHash: string; createdAt: number; }
+interface Session { provider: string; keyHash: string; keyPlain?: string; createdAt: number; }
 
 export class SessionVault {
   private sessions: Map<string, Session>;
@@ -14,7 +14,8 @@ export class SessionVault {
   createSession(provider: string, key: string): string {
     const id = randomBytes(16).toString('hex');
     const keyHash = createHash('sha256').update(key + process.env.SESSION_SALT).digest('hex');
-    this.sessions.set(id, { provider, keyHash, createdAt: Date.now() });
+    // Stockage en mémoire (éphémère) de la clé pour les appels runtime
+    this.sessions.set(id, { provider, keyHash, keyPlain: key, createdAt: Date.now() });
     return id;
   }
 

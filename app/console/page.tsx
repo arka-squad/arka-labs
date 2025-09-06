@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Leftbar from '../../components/leftbar';
 import ChatPanel from '../../components/chat/ChatPanel';
 import KpiCard from '../../components/kpis/KpiCard';
@@ -21,11 +21,28 @@ export default function ConsoleDashboardPage() {
     const newMsg = { id: 'loc_'+now.getTime(), from: 'Owner', role: 'human', at: now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), text: payload.text, status: 'delivered' };
     setMsgs({ ...msgs, [threadId]: [...list, newMsg] });
   };
+
+  // Append agent reply from streaming (dispatched by ChatPanel)
+  useEffect(() => {
+    function onAgentReply(e: any) {
+      const { threadId, agentId, text } = (e as CustomEvent).detail || {};
+      if (!threadId || !text) return;
+      setMsgs(prev => {
+        const arr = prev[threadId] || [];
+        const now = new Date();
+        const agentName = (demoAgents.find(a=>a.id===agentId)?.name) || 'Agent';
+        const agentMsg = { id: 'agent_'+now.getTime(), from: agentName, role: 'agent', at: now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), text, status: 'delivered' };
+        return { ...prev, [threadId]: [...arr, agentMsg] };
+      });
+    }
+    window.addEventListener('chat:agentReply', onAgentReply as EventListener);
+    return () => window.removeEventListener('chat:agentReply', onAgentReply as EventListener);
+  }, []);
   return (
     <div className="h-[calc(100dvh-56px)] grid gap-3 grid-cols-[72px_380px_minmax(0,1fr)] md:grid-cols-[72px_320px_minmax(0,1fr)] lg:grid-cols-[72px_380px_minmax(0,1fr)]">
       <ConsoleGuard />
       {/* Leftbar */}
-      <aside className="h-full overflow-hidden"><Leftbar value={view as any} onChange={(id:any)=>setView(id)} unread={2} presence="online" /></aside>
+      <aside className="h-full overflow-visible"><Leftbar value={view as any} onChange={(id:any)=>setView(id)} unread={2} presence="online" /></aside>
       {/* Chat panel (380px) */}
       <div className="h-full overflow-hidden pt-3 pb-6">
       <aside className="h-full overflow-hidden rounded-xl border border-soft elevated">

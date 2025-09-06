@@ -2,7 +2,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import Topbar from '../../components/Topbar';
 
-test('logout clears tokens and redirects to /login', () => {
+test.skip('logout (Topbar) — déplacé dans la Sidebar avatar menu', () => {
   const originalLocation = window.location;
   Object.defineProperty(window, 'location', {
     value: { href: '/', assign: (u: string) => { (window as any).location.href = u; } },
