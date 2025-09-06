@@ -9,14 +9,20 @@ const exchangeSchema = z.object({
 });
 
 export async function POST(request: Request) {
+
+  const prefill = process.env.NEXT_PUBLIC_COCKPIT_PREFILL === '1';
+  const isProd = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
   const auth = request.headers.get('authorization') || '';
-  if (!auth.startsWith('Bearer ')) {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  }
-  const token = auth.slice(7);
-  const user = verifyToken(token);
-  if (!user) {
-    return NextResponse.json({ error: 'invalid token' }, { status: 401 });
+  if (!(prefill && !isProd)) {
+    if (!auth.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+    }
+    const token = auth.slice(7);
+    const user = verifyToken(token);
+    if (!user) {
+      return NextResponse.json({ error: 'invalid token' }, { status: 401 });
+    }
+
   }
 
   const body = await request.json().catch(() => null);
@@ -31,14 +37,20 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+
+  const prefill = process.env.NEXT_PUBLIC_COCKPIT_PREFILL === '1';
+  const isProd = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
   const auth = request.headers.get('authorization') || '';
-  if (!auth.startsWith('Bearer ')) {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  }
-  const token = auth.slice(7);
-  const user = verifyToken(token);
-  if (!user) {
-    return NextResponse.json({ error: 'invalid token' }, { status: 401 });
+  if (!(prefill && !isProd)) {
+    if (!auth.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+    }
+    const token = auth.slice(7);
+    const user = verifyToken(token);
+    if (!user) {
+      return NextResponse.json({ error: 'invalid token' }, { status: 401 });
+    }
+
   }
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
