@@ -31,7 +31,9 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
 
   const [streamingText, setStreamingText] = useState('');
   const [streaming, setStreaming] = useState(false);
+
   const draftRef = useRef('');
+
   const [toasts, setToasts] = useState<{id:string;level:'info'|'warn'|'error';msg:string}[]>([]);
 
 
@@ -62,12 +64,14 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
     };
   }, []);
 
+
   // Nettoyage du draft agent lors d'un changement de fil
   useEffect(() => {
     setStreaming(false);
     setStreamingText('');
     draftRef.current = '';
   }, [activeThreadId]);
+
 
 
   const send = async () => {
@@ -109,6 +113,7 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
         providerId: mapping.providerId,
         modelId: mapping.modelId,
         sessionId,
+
         role: getCurrentRole(),
 
         onToken: (chunk) => {
@@ -124,6 +129,7 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
           setStreamingText('');
           requestAnimationFrame(()=> endRef.current?.scrollIntoView({ behavior:'smooth', block:'end' }));
         },
+
       });
     } catch (e: any) {
       setStreaming(false);
@@ -131,8 +137,10 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
       if (msg.includes('401') || msg.includes('unauthorized')) {
         window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'error', msg: 'Session expirée' } }));
         window.dispatchEvent(new CustomEvent('chat:openTokenModal'));
+
       } else if (msg.includes('429')) {
         window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'warn', msg: 'Limite atteinte' } }));
+
       } else {
         window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'error', msg: 'Erreur flux' } }));
       }
@@ -241,14 +249,18 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
               </div>
             </div>
           ))}
+
           {(streamingText.length > 0) && (
+
             <div className="text-sm flex justify-start">
               <div className="max-w-[75%] whitespace-pre-wrap text-[var(--fg)]/90 border-l-2 border-[var(--border)] pl-3">
                 {streamingText || '…'}
               </div>
             </div>
           )}
+
           <div ref={endRef} />
+
         </div>
         {/* Composer 96px */}
         <div className="p-3 border-t border-[var(--border)]">
