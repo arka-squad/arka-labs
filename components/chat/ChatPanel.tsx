@@ -25,6 +25,9 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
   const msgs = messagesByThread[activeThreadId] || [];
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [providerMap, setProviderMap] = useState<Record<string, { providerId?: string; modelId?: string }>>({});
+  const [streamingText, setStreamingText] = useState('');
+  const [streaming, setStreaming] = useState(false);
+  const [toasts, setToasts] = useState<{id:string;level:'info'|'warn'|'error';msg:string}[]>([]);
 
   useEffect(() => {
     function onProviderChange(e: CustomEvent) {
@@ -33,6 +36,23 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
     }
     window.addEventListener('providerChange', onProviderChange as EventListener);
     return () => window.removeEventListener('providerChange', onProviderChange as EventListener);
+  }, []);
+
+  // Toasts listener (trace copiée, erreurs, etc.)
+  useEffect(() => {
+    function onToast(e: CustomEvent) {
+      const id = Math.random().toString(36).slice(2);
+      const { level, msg } = e.detail as any;
+      setToasts((t) => [...t, { id, level, msg }]);
+      setTimeout(() => setToasts((t) => t.filter(x => x.id !== id)), 1500);
+    }
+    function onTraceCopied() { onToast({ detail: { level:'info', msg:'Trace copiée' } } as any as CustomEvent); }
+    window.addEventListener('chat:toast', onToast as EventListener);
+    window.addEventListener('chat:traceCopied', onTraceCopied as EventListener);
+    return () => {
+      window.removeEventListener('chat:toast', onToast as EventListener);
+      window.removeEventListener('chat:traceCopied', onTraceCopied as EventListener);
+    };
   }, []);
 
   const send = async () => {
@@ -44,19 +64,31 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
     const mapping = providerMap[agentId] || {};
     const sessionId = localStorage.getItem('session_token');
     if (!mapping.providerId || !mapping.modelId || !sessionId) {
-      window.dispatchEvent(new CustomEvent('chat:toast', { detail: { type: 'warn', text: 'Connectez un fournisseur pour cet agent' } }));
+      window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'warn', msg: 'Connectez un fournisseur pour cet agent' } }));
       return;
     }
     try {
+      setStreaming(true);
+      setStreamingText('');
       await streamChat({
         agentId,
         threadId: activeThreadId,
         providerId: mapping.providerId,
         modelId: mapping.modelId,
         sessionId,
-        onToken: () => {},
+        onToken: (chunk) => { setStreamingText((s) => s + (chunk || '')); },
+        onDone: () => { setStreaming(false); },
       });
-    } catch {}
+    } catch (e: any) {
+      setStreaming(false);
+      const msg = String(e?.message||'');
+      if (msg.includes('401') || msg.includes('unauthorized')) {
+        window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'error', msg: 'Session expirée' } }));
+        window.dispatchEvent(new CustomEvent('chat:openTokenModal'));
+      } else {
+        window.dispatchEvent(new CustomEvent('chat:toast', { detail: { level: 'error', msg: 'Erreur flux' } }));
+      }
+    }
   };
 
   return (
@@ -155,6 +187,13 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
               </div>
             </div>
           ))}
+          {streaming && (
+            <div className="text-sm flex justify-start">
+              <div className="max-w-[75%] whitespace-pre-wrap text-[var(--fg)]/90 border-l-2 border-[var(--border)] pl-3">
+                {streamingText || '…'}
+              </div>
+            </div>
+          )}
         </div>
         {/* Composer 96px */}
         <div className="p-3 border-t border-[var(--border)]">
@@ -175,6 +214,12 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
             <button onClick={send} className="absolute right-3 bottom-3 w-8 h-8 rounded-full bg-[var(--fgdim)]/20 grid place-items-center border border-[var(--border)] hover:bg-[var(--fgdim)]/30" title="Envoyer"><ArrowUp className="w-4 h-4"/></button>
           </div>
         </div>
+      </div>
+      {/* Toasts container */}
+      <div className="pointer-events-none fixed bottom-4 right-4 z-50 space-y-2">
+        {toasts.map(t => (
+          <div key={t.id} className={`pointer-events-auto rounded px-3 py-2 text-sm border ${t.level==='error'?'bg-red-500/20 text-red-200 border-red-500/30': t.level==='warn'?'bg-amber-500/20 text-amber-200 border-amber-500/30':'bg-emerald-500/20 text-emerald-200 border-emerald-500/30'}`}>{t.msg}</div>
+        ))}
       </div>
     </div>
   );

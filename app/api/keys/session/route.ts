@@ -4,9 +4,9 @@ import { verifyToken } from '../../../../lib/auth';
 
 export async function GET(request: Request) {
   const auth = request.headers.get('authorization') || '';
-  // TTL endpoint peut être consulté sans JWT en dev pour faciliter l'UI
   const devBypass = process.env.NEXT_PUBLIC_COCKPIT_PREFILL === '1';
-  if (!devBypass) {
+  const isProd = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
+  if (!(devBypass && !isProd)) {
     if (!auth.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
     }
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'invalid token' }, { status: 401 });
     }
   }
-  const sessionId = request.headers.get('x-provider-session') || (globalThis.localStorage as any)?.getItem?.('session_token') || '';
+  const sessionId = request.headers.get('x-provider-session') || '';
   if (!sessionId) return NextResponse.json({ ttl_remaining: null }, { status: 200 });
   const vault = getSessionVault();
   const session = vault.getSession(sessionId);
@@ -25,4 +25,3 @@ export async function GET(request: Request) {
   const ttl_remaining = Math.max(0, vault.ttlSeconds - ageSec);
   return NextResponse.json({ ttl_remaining }, { status: 200 });
 }
-

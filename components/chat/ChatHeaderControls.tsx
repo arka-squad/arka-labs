@@ -45,6 +45,32 @@ export default function ChatHeaderControls({ agentId }: Props) {
     return () => window.removeEventListener('chat:ttft', onTtft as EventListener);
   }, []);
 
+  // Open Token modal on request
+  useEffect(() => {
+    function onOpen() { setShowTokenModal(true); }
+    window.addEventListener('chat:openTokenModal', onOpen as EventListener);
+    return () => window.removeEventListener('chat:openTokenModal', onOpen as EventListener);
+  }, []);
+
+  // TTL sync polling (dev/demo)
+  useEffect(() => {
+    let id: any;
+    async function poll() {
+      const sessionId = localStorage.getItem('session_token');
+      if (!sessionId) { setTtl(null); return; }
+      try {
+        const r = await fetch('/api/keys/session', { headers: { 'X-Provider-Session': sessionId, Authorization: `Bearer ${localStorage.getItem('jwt') || ''}` } });
+        if (r.ok) {
+          const j = await r.json();
+          if (typeof j.ttl_remaining === 'number') setTtl(j.ttl_remaining);
+        }
+      } catch {}
+    }
+    poll();
+    id = setInterval(poll, 30000);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <div className="p-3 border-b">
       <div className="flex flex-wrap items-center gap-2 justify-between">
@@ -95,4 +121,3 @@ export default function ChatHeaderControls({ agentId }: Props) {
     </div>
   );
 }
-
