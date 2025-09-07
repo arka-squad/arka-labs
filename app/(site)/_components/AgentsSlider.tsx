@@ -18,7 +18,10 @@ export default function AgentsSlider({
   initialIndex = 0,
 }: { items?: AgentCardData[]; initialIndex?: number }) {
   const railRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<HTMLDivElement[]>([]);
+
+  // Use HTMLElement because <article> is HTMLArticleElement, not HTMLDivElement
+  const cardRefs = useRef<HTMLElement[]>([]);
+
   const [active, setActive] = useState(initialIndex);
 
   const snapTo = useCallback((index: number, smooth = true) => {
@@ -101,7 +104,9 @@ export default function AgentsSlider({
       <div className="mt-6 w-screen relative left-1/2 right-1/2 -mx-[50vw]">
         <div id="agents-rail" ref={railRef} role="group" aria-roledescription="carousel" aria-label="Agents" aria-live="off" className="rail flex gap-6 overflow-x-auto snap-x snap-mandatory pb-6" style={{ scrollBehavior: 'smooth', scrollbarGutter: 'stable both-edges' }}>
           {data.map((a, i) => (
-            <article key={a.id} ref={(el) => { if (el) cardRefs.current[i] = el; }} role="region" aria-label={`${a.role} — ${a.title}`} tabIndex={0} className="flex-none w-[55%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-1 ring-black/5 shadow-[0_12px_24px_rgba(15,23,42,.08)]">
+
+            <article key={a.id} ref={(el: HTMLElement | null) => { if (el) cardRefs.current[i] = el; }} role="region" aria-label={`${a.role} — ${a.title}`} tabIndex={0} className="flex-none w-[55%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-1 ring-black/5 shadow-[0_12px_24px_rgba(15,23,42,.08)]">
+
               <div className="relative overflow-hidden rounded-t-[16px] bg-slate-100 h-28 md:h-36 lg:h-44 xl:h-48">
                 <img src={a.image} alt={`${a.role} — ${a.title}, illustration`} className="absolute inset-0 h-full w-full object-cover" loading={i===0?'eager':'lazy'} decoding="async" />
               </div>

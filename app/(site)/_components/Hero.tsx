@@ -38,7 +38,9 @@ export default function Hero() {
         {/* Right: image */}
         <div className="col-span-12 md:col-span-5 mt-8 md:mt-0 flex justify-center">
           <img
-            src="/assets/hero/arkabox-board.png"
+
+            src={process.env.NEXT_PUBLIC_HERO_IMG || '/assets/hero/arkabox-board.png'}
+
             alt="Aperçu du cockpit Arka — board et actions visibles"
             decoding="async"
             fetchPriority="high"
