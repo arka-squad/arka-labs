@@ -53,7 +53,7 @@ export default function Hero() {
       <style jsx>{`
         #hero { background: var(--site-hero-bg); }
         .accent {
-          background-image: linear-gradient(12deg, #FAB652, #F25636 50%, #E0026D);
+          background-image: var(--site-grad);
           -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 900;
         }
       `}</style>
