@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RecipeDef",
+  "type": "object",
+  "required": ["id", "version", "title", "steps", "inputs", "outputs", "scope", "tags"],
+  "properties": {
+    "id": {"type": "string"},
+    "version": {"type": "string"},
+    "title": {"type": "string"},
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {"type": "string"},
+          "gate_id": {"type": "string"},
+          "recipe_id": {"type": "string"},
+          "if": {"type": "string"},
+          "parallel": {"type": "boolean"},
+          "retry": {
+            "type": "object",
+            "required": ["count", "backoff_ms"],
+            "properties": {
+              "count": {"type": "integer", "minimum": 0},
+              "backoff_ms": {"type": "integer", "minimum": 0}
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "inputs": {"type": "object"},
+    "outputs": {"type": "object"},
+    "scope": {"enum": ["safe", "owner-only"]},
+    "tags": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}
