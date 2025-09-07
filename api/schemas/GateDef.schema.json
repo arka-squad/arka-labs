@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GateDef",
+  "type": "object",
+  "required": ["id", "version", "title", "category", "inputs", "outputs", "risk", "scope", "est_duration_ms", "tags"],
+  "properties": {
+    "id": {"type": "string"},
+    "version": {"type": "string"},
+    "title": {"type": "string"},
+    "category": {"enum": ["perf", "security", "contracts", "ops", "kpis"]},
+    "inputs": {"type": "object"},
+    "outputs": {"type": "object"},
+    "risk": {"enum": ["low", "med", "high"]},
+    "scope": {"enum": ["safe", "owner-only"]},
+    "est_duration_ms": {"type": "integer", "minimum": 0},
+    "tags": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

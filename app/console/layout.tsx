@@ -1,5 +1,6 @@
 'use client';
 
+import '../../design-system/tokens.css';
 import '../../styles/console.css';
 
 import type { ReactNode } from 'react';
