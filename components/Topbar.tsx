@@ -6,6 +6,7 @@ import RoleBadge from './RoleBadge';
 
 type Role = 'viewer' | 'operator' | 'owner';
 
+type Scope = 'safe' | 'owner-only';
 type TopbarProps = {
   role: Role;
   onSearchFocus?: () => void;
@@ -14,6 +15,7 @@ type TopbarProps = {
   onLogoClick?: () => void;
   placeholder?: string;
   sticky?: boolean;
+  runScope?: Scope;
 };
 
 export default function Topbar({
@@ -24,6 +26,7 @@ export default function Topbar({
   onLogoClick,
   placeholder = 'Rechercher (⌘K)',
   sticky = true,
+  runScope = 'safe',
 }: TopbarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -79,18 +82,22 @@ export default function Topbar({
       {/* Right: role badge + actions */}
       <div className="relative flex items-center gap-3 justify-end">
         <RoleBadge />
-        <button
-          onClick={onShare}
-          className="h-8 px-3 rounded bg-white/5 border border-[var(--border)] text-xs flex items-center gap-1 hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-[var(--ring-soft)]"
-        >
-          <Share2 className="w-3 h-3" aria-hidden />Share
-        </button>
-        <button
-          onClick={onRun}
-          className="h-8 px-3 rounded bg-white/5 border border-[var(--border)] text-xs flex items-center gap-1 hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-[var(--ring-soft)]"
-        >
-          <Play className="w-3 h-3" aria-hidden />Run
-        </button>
+        {role !== 'viewer' && (
+          <button
+            onClick={onShare}
+            className="h-8 px-3 rounded bg-white/5 border border-[var(--border)] text-xs flex items-center gap-1 hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-[var(--ring-soft)]"
+          >
+            <Share2 className="w-3 h-3" aria-hidden />Share
+          </button>
+        )}
+        { (role === 'owner' || (role === 'operator' && runScope === 'safe')) && (
+          <button
+            onClick={onRun}
+            className="h-8 px-3 rounded bg-white/5 border border-[var(--border)] text-xs flex items-center gap-1 hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-[var(--ring-soft)]"
+          >
+            <Play className="w-3 h-3" aria-hidden />Run
+          </button>
+        )}
       </div>
     </header>
   );

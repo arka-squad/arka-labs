@@ -17,6 +17,7 @@
     "tests/**/*.tsx",
     "app/api/metrics/**/*.ts",
     "app/api/documents/**/*.ts",
+    "app/api/gates/**/*.ts",
     "services/**/*.ts"
   ],
 

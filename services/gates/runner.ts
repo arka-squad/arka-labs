@@ -16,6 +16,8 @@ interface Job {
   userId: string;
   gate_id: string;
   status: 'running' | 'pass' | 'fail' | 'error';
+  started_at: number;
+  idempotency_key?: string;
   results?: any[];
   error?: string;
 }
@@ -127,11 +129,14 @@ export async function runGates(
     throw new Error('concurrency-limit');
   }
   const jobId = randomUUID();
+  const now = Date.now();
   const job: Job = {
     id: jobId,
     userId: opts.userId,
     gate_id: gateId,
-    status: 'running'
+    status: 'running',
+    started_at: now,
+    idempotency_key: opts.idempotencyKey,
   };
   jobs.set(jobId, job);
   active.add(jobId);
