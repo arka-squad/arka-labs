@@ -7,7 +7,7 @@ import EnClair from './_components/EnClair';
 import AgentsSlider from './_components/AgentsSlider';
 import SectionExemples from './_components/SectionExemples';
 import SectionFonctionnalites from './_components/SectionFonctionnalites';
-import SectionOuVit from './_components/SectionOuVit';
+import WorkspaceSlider from './_components/WorkspaceSlider';
 import SectionPreuve from './_components/SectionPreuve';
 
 export default function MarketingLanding() {
@@ -20,7 +20,7 @@ export default function MarketingLanding() {
       <AgentsSlider />
       <SectionExemples />
       <SectionFonctionnalites />
-      <SectionOuVit />
+      <WorkspaceSlider />
       <SectionPreuve />
       <Audience />
 
