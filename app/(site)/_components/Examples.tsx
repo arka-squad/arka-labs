@@ -1,3 +1,4 @@
+'use client';
 import { Sparkles } from 'lucide-react';
 import React from 'react';
 
@@ -81,4 +82,3 @@ export default function Examples({ title = 'Exemples', tagline = '1 commande = 1
     </div>
   );
 }
-
