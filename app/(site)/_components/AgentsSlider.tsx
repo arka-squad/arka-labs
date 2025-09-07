@@ -1,7 +1,8 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
+import { uiLog } from '../../../lib/ui-log';
 
 export type AgentCardData = {
   id: string;
@@ -31,6 +32,7 @@ export default function AgentsSlider({
     const target = card.offsetLeft - pl;
     const max = rail.scrollWidth - rail.clientWidth;
     rail.scrollTo({ left: Math.max(0, Math.min(target, max)), behavior: smooth ? 'smooth' : 'auto' });
+    card.focus();
   }, []);
 
   useEffect(() => {
@@ -54,19 +56,25 @@ export default function AgentsSlider({
     return () => { cancelAnimationFrame(raf); rail.removeEventListener('scroll', onScroll); };
   }, []);
 
+  const handleKey = useCallback((e: ReactKeyboardEvent) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); snapTo(Math.max(0, active - 1)); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); snapTo(Math.min(items.length - 1, active + 1)); }
+    if (e.key === 'Home') { e.preventDefault(); snapTo(0, false); }
+    if (e.key === 'End') { e.preventDefault(); snapTo(items.length - 1, false); }
+    if (e.key === 'Escape') { e.preventDefault(); uiLog('landing.slider.reset', { count: active }); snapTo(0); }
+  }, [active, items.length, snapTo]);
+
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') { e.preventDefault(); snapTo(Math.max(0, active - 1)); }
-      if (e.key === 'ArrowRight') { e.preventDefault(); snapTo(Math.min(items.length - 1, active + 1)); }
-      if (e.key === 'Home') { e.preventDefault(); snapTo(0, false); }
-      if (e.key === 'End') { e.preventDefault(); snapTo(items.length - 1, false); }
-      if (e.key === 'Escape') { e.preventDefault(); snapTo(0); }
-    };
-    window.addEventListener('keydown', onKey);
     const onResize = () => snapTo(active, false);
     window.addEventListener('resize', onResize);
-    return () => { window.removeEventListener('keydown', onKey); window.removeEventListener('resize', onResize); };
-  }, [active, items.length, snapTo]);
+    return () => { window.removeEventListener('resize', onResize); };
+  }, [active, snapTo]);
+
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    uiLog('landing.slider.agents.slide', { index: active });
+  }, [active]);
 
   // Align to initial index on mount without animation
   useEffect(() => { requestAnimationFrame(() => snapTo(initialIndex, false)); }, [initialIndex, snapTo]);
@@ -86,7 +94,7 @@ export default function AgentsSlider({
   const atEnd = active === Math.max(0, data.length - 1);
 
   return (
-    <section id="agents" aria-labelledby="agents-title" className="py-16">
+    <section id="agents" aria-labelledby="agents-title" className="py-16" onKeyDown={handleKey}>
       <div className="mx-auto max-w-[1440px] px-6">
         <header className="flex items-end justify-between gap-4">
           <div>
@@ -94,6 +102,14 @@ export default function AgentsSlider({
             <p className="mt-2" style={{ color: '#334155' }}>Une squad où chaque rôle est clair…</p>
           </div>
           <div className="hidden md:flex items-center gap-2">
+            {active > 0 && (
+              <button
+                aria-controls="agents-rail"
+                aria-label="Revenir au début"
+                onClick={() => { uiLog('landing.slider.reset', { count: active }); snapTo(0); }}
+                className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10"
+              >↩</button>
+            )}
             <button aria-controls="agents-rail" aria-label="Carte précédente" disabled={atStart} onClick={() => snapTo(Math.max(0, active - 1))} className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed">◀</button>
             <button aria-controls="agents-rail" aria-label="Carte suivante" disabled={atEnd} onClick={() => snapTo(Math.min(data.length - 1, active + 1))} className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed">▶</button>
           </div>
@@ -102,13 +118,29 @@ export default function AgentsSlider({
 
       {/* rail full‑bleed */}
       <div className="mt-6 w-screen relative left-1/2 right-1/2 -mx-[50vw]">
-        <div id="agents-rail" ref={railRef} role="group" aria-roledescription="carousel" aria-label="Agents" aria-live="off" className="rail flex gap-6 overflow-x-auto snap-x snap-mandatory pb-6" style={{ scrollBehavior: 'smooth', scrollbarGutter: 'stable both-edges' }}>
+        <div
+          id="agents-rail"
+          ref={railRef}
+          role="group"
+          aria-roledescription="carousel"
+          aria-label="Agents"
+          aria-live="off"
+          className="rail flex gap-6 overflow-x-auto snap-x snap-mandatory pb-6"
+          style={{ scrollBehavior: 'smooth', scrollbarGutter: 'stable both-edges' }}
+        >
           {data.map((a, i) => (
 
             <article key={a.id} ref={(el: HTMLElement | null) => { if (el) cardRefs.current[i] = el; }} role="region" aria-label={`${a.role} — ${a.title}`} tabIndex={0} className="flex-none w-[55%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-1 ring-black/5 shadow-[0_12px_24px_rgba(15,23,42,.08)]">
 
               <div className="relative overflow-hidden rounded-t-[16px] bg-slate-100 h-28 md:h-36 lg:h-44 xl:h-48">
-                <img src={a.image} alt={`${a.role} — ${a.title}, illustration`} className="absolute inset-0 h-full w-full object-cover" loading={i===0?'eager':'lazy'} decoding="async" />
+                <img
+                  src={a.image}
+                  alt={`${a.role} — ${a.title}, illustration`}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  loading={i===0?'eager':'lazy'}
+                  decoding="async"
+                  onError={() => uiLog('landing.slider.image_error', { id: a.id })}
+                />
               </div>
               <div className="p-6 grid [grid-template-rows:auto_auto_1fr_auto] min-h-[190px]">
                 <div className="flex items-center justify-between">
