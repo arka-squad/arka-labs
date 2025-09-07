@@ -66,15 +66,11 @@ export default function WorkspaceSlider({
 
   useEffect(() => { requestAnimationFrame(() => snapTo(initialIndex, false)); }, [initialIndex, snapTo]);
 
-  useEffect(() => {
-    (window as any)?.gtag?.('event', 'landing.slider.workspace.slide', { index: active });
-  }, [active]);
-
   const data = useMemo<WorkspaceCardData[]>(() => (
     items.length ? items : [
-      { id:'cockpit', title:'Cockpit', desc:'Chat, recettes, observabilité', icon: LayoutDashboard },
-      { id:'docs', title:'Docs', desc:'Prompts, contrats, versions', icon: BookOpen },
-      { id:'evidence', title:'Evidence', desc:'Paquets texte + empreintes', icon: ClipboardList },
+      { id: 'chat', title: 'Chat', desc: 'Là où l’on décide et déclenche.', icon: LayoutDashboard },
+      { id: 'docdesk', title: 'DocDesk', desc: 'Documents, contrats, supports versionnés.', icon: BookOpen },
+      { id: 'evidence', title: 'Evidence', desc: 'Le paquet de preuves à partager.', icon: ClipboardList },
     ]
   ), [items]);
 
@@ -90,14 +86,23 @@ export default function WorkspaceSlider({
             <p className="mt-2 font-medium" style={{ color: 'var(--site-muted)' }}>Tout est visible, rien n’est perdu</p>
           </div>
           <div className="hidden md:flex items-center gap-2">
-            <button aria-controls="workspace-rail" aria-label="Carte précédente" disabled={atStart} onClick={() => snapTo(Math.max(0, active - 1))} className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed">◀</button>
-            <button aria-controls="workspace-rail" aria-label="Carte suivante" disabled={atEnd} onClick={() => snapTo(Math.min(data.length - 1, active + 1))} className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed">▶</button>
+            <button aria-controls="workspace-rail" aria-label="Précédent" disabled={atStart} onClick={() => snapTo(Math.max(0, active - 1))} className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed">◀︎</button>
+            <button aria-controls="workspace-rail" aria-label="Suivant" disabled={atEnd} onClick={() => snapTo(Math.min(data.length - 1, active + 1))} className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed">▶︎</button>
           </div>
         </header>
       </div>
 
       <div className="mt-6 w-screen relative left-1/2 right-1/2 -mx-[50vw]">
-        <div id="workspace-rail" ref={railRef} role="group" aria-roledescription="carousel" aria-label="Workspace" aria-live="off" className="rail flex gap-6 overflow-x-auto snap-x snap-mandatory pb-6" style={{ scrollBehavior: 'smooth', scrollbarGutter: 'stable both-edges' }}>
+        <div
+          id="workspace-rail"
+          ref={railRef}
+          role="group"
+          aria-roledescription="carousel"
+          aria-label="Workspace"
+          aria-live="off"
+          className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-6"
+          style={{ ['--pad' as any]: 'max(calc((100vw - 90rem)/2 + 24px), 16px)', paddingLeft:'var(--pad)', paddingRight:'var(--pad)', scrollPaddingLeft:'var(--pad)', scrollPaddingRight:'var(--pad)', scrollBehavior: 'smooth', scrollbarGutter: 'stable both-edges', willChange:'scroll-position' }}
+        >
           {data.map((w, i) => (
             <article key={w.id} ref={(el: HTMLElement | null) => { if (el) cardRefs.current[i] = el; }} role="region" aria-label={w.title} tabIndex={0} className="flex-none w-[88%] sm:w-[60%] md:w-[340px] lg:w-[380px] xl:w-[420px] snap-start snap-always rounded-[20px] bg-white ring-1 ring-black/5 shadow-[0_12px_24px_rgba(15,23,42,.08)] p-6 grid [grid-template-rows:auto_auto_1fr]">
               <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-white" style={{ backgroundImage: 'var(--brand-grad)' }}>
@@ -111,9 +116,9 @@ export default function WorkspaceSlider({
       </div>
 
       <div className="mt-4 flex items-center justify-center gap-3">
-        <div className="flex items-center gap-2" role="tablist" aria-label="Pagination workspace">
+        <div className="flex items-center gap-2" aria-label="Pagination workspace">
           {data.map((_, i) => (
-            <button key={i} role="tab" aria-selected={active===i} aria-controls="workspace-rail" onClick={() => snapTo(i)} aria-label={`Aller à la carte ${i+1}`} className={`h-2.5 w-2.5 rounded-full ${active===i ? 'bg-slate-800' : 'bg-slate-400/40'}`} />
+            <button key={i} aria-current={active===i} aria-controls="workspace-rail" onClick={() => snapTo(i)} aria-label={`Aller à l’élément ${i+1}`} className={`h-2.5 w-2.5 rounded-full ${active===i ? 'bg-slate-800' : 'bg-slate-400/40'}`} />
           ))}
         </div>
         <span className="ml-2 text-sm" style={{ color: 'var(--site-muted)' }}>{active+1} / {data.length}</span>
