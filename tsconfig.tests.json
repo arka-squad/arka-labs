@@ -12,19 +12,16 @@
     "jsx": "react-jsx"
   },
 
-    "include": [
-      "tests/metrics.test.ts",
-      "tests/metrics.observability.test.ts",
-      "tests/openai-stream.test.ts",
-      "tests/webhook.test.ts",
-      "tests/chat-threads.test.ts",
-      "tests/login.page.test.ts",
-      "tests/gates.api.test.ts",
-      "tests/gates.webhook.test.ts",
-      "app/api/metrics/**/*.ts",
-      "app/api/documents/**/*.ts",
-      "services/**/*.ts"
-    ],
+
+  "include": [
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "app/api/metrics/**/*.ts",
+    "app/api/documents/**/*.ts",
+    "app/api/gates/**/*.ts",
+    "services/**/*.ts"
+  ],
+
 
   "exclude": ["lib/storage.ts"]
 }

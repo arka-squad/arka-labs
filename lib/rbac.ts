@@ -40,9 +40,15 @@ export function Guard({ role, roles, children }: { role: Role; roles: Role[]; ch
   return roles.includes(role) ? React.createElement(React.Fragment, null, children) : null;
 }
 
+export function hasScope(role: Role, scope: 'safe' | 'owner-only') {
+  if (scope === 'owner-only') return role === 'owner';
+  return role === 'editor' || role === 'admin' || role === 'owner';
+}
+
 export function withAuth(
   allowed: (Role | 'public' | 'github-webhook')[],
-  handler: (req: NextRequest, user: User | null, context: any) => Promise<NextResponse> | NextResponse
+  handler: (req: NextRequest, user: User | null, context: any) => Promise<NextResponse> | NextResponse,
+  opts: { scope?: 'safe' | 'owner-only' } = {}
 ) {
   return async (req: NextRequest, context: any = {}): Promise<NextResponse> => {
     const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
@@ -60,7 +66,7 @@ export function withAuth(
       } else {
         const token = auth.slice(7);
         user = verifyToken(token);
-        if (!user || !allowed.includes(user.role)) {
+        if (!user || !allowed.includes(user.role) || (opts.scope && !hasScope(user.role, opts.scope))) {
           res = NextResponse.json({ error: 'forbidden' }, { status: 403 });
         } else {
           (req as any).user = user;

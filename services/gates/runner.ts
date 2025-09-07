@@ -18,6 +18,8 @@ interface Job {
   gate_id?: string;
   recipe_id?: string;
   status: 'running' | 'pass' | 'fail' | 'error';
+  started_at: number;
+  idempotency_key?: string;
   results?: any[];
   result?: any;
   error?: string;
@@ -141,14 +143,17 @@ export async function runGates(
     throw new Error('concurrency-limit');
   }
   const jobId = randomUUID();
+  const now = Date.now();
   const job: Job = {
     id: jobId,
     userId: opts.userId,
     type: 'gate',
     gate_id: gateId,
     status: 'running',
-    trace_id: opts.traceId || randomUUID(),
-    started_at: new Date().toISOString(),
+
+    started_at: now,
+    idempotency_key: opts.idempotencyKey,
+
   };
   jobs.set(jobId, job);
   active.add(jobId);
