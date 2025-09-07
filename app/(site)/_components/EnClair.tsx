@@ -42,10 +42,10 @@ export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL
     <section id="what" aria-labelledby="what-title" className="py-16">
       <div className="container">
         <header className="text-center max-w-3xl mx-auto">
-          <h2 id="what-title" className="text-3xl font-semibold text-[var(--site-text)]">
+          <h2 id="what-title" className="text-4xl md:text-5xl font-semibold text-[var(--site-text)]">
             {title}
           </h2>
-          <p className="mt-2 mx-auto max-w-[60ch] text-[var(--site-muted)]">{subtitle}</p>
+          <p className="mt-2 mx-auto max-w-[60ch] text-[var(--site-muted)] text-lg md:text-xl">{subtitle}</p>
         </header>
 
         <div className="mt-8 md:mt-10 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -54,12 +54,20 @@ export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL
               key={it.title}
               className={`card ${idx === 0 ? 'glow-a' : 'glow-b'} p-8 md:p-12 relative overflow-hidden h-full`}
             >
-              <div className="grid h-full [grid-template-rows:auto_auto_1fr] gap-3">
-                <div className="w-10 h-10 grid place-items-center rounded-[12px] bg-black/5 border border-black/5" aria-hidden="true">
-                  <Icon name={it.icon} />
+              <div className="h-full flex flex-col items-center text-center gap-3">
+                <div className="flex items-center justify-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-full grid place-items-center shadow-sm"
+                    aria-hidden="true"
+                    style={{ backgroundImage: 'var(--brand-grad)' }}
+                  >
+                    <span className="w-7 h-7 grid place-items-center rounded-full bg-white/15">
+                      <Icon name={it.icon} />
+                    </span>
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-semibold text-[var(--site-text)]">{it.title}</h3>
                 </div>
-                <h3 className="text-xl font-semibold text-[var(--site-text)]">{it.title}</h3>
-                <p className="text-[var(--site-muted)] leading-relaxed">{it.text}</p>
+                <p className="text-[var(--site-muted)] leading-relaxed max-w-[58ch]">{it.text}</p>
               </div>
             </article>
           ))}
@@ -68,4 +76,3 @@ export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL
     </section>
   );
 }
-
