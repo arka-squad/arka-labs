@@ -5,7 +5,7 @@ import Audience from './_components/Audience';
 import Footer from './_components/Footer';
 import EnClair from './_components/EnClair';
 import AgentsSlider from './_components/AgentsSlider';
-import SectionExemples from './_components/SectionExemples';
+import Examples from './_components/Examples';
 import SectionFonctionnalites from './_components/SectionFonctionnalites';
 import WorkspaceSlider from './_components/WorkspaceSlider';
 import SectionPreuve from './_components/SectionPreuve';
@@ -18,7 +18,34 @@ export default function MarketingLanding() {
       <KPIStrip />
       <EnClair />
       <AgentsSlider />
-      <SectionExemples />
+      <Examples
+        items={[
+          {
+            title: 'Préparer un onboarding RH',
+            command: '/kit onboarding',
+            status: 'A_FAIRE',
+            resultTitle: 'Onboarding',
+            resultDesc:
+              'Le Conseiller RH prépare le kit, le Coach organisation vérifie les étapes, le Qualité valide la conformité. Résultat : checklist complète J‑7 à J+7.',
+          },
+          {
+            title: 'Mettre une procédure à jour',
+            command: '/assign Proc-23',
+            status: 'A_FAIRE',
+            resultTitle: 'Procédure mise à jour',
+            resultDesc:
+              'Le Coach prend la tâche, le Qualité revoit la cohérence, le Support la publie. Résultat : procédure à jour, validée.',
+          },
+          {
+            title: 'Signaler un risque conformité',
+            command: '/gate conformité',
+            status: 'A_RISQUE',
+            resultTitle: 'Conformité',
+            resultDesc:
+              'Le Qualité évalue, l’Analyste propose des correctifs, le Coach les intègre. Résultat : livrable marqué À risque avec actions proposées.',
+          },
+        ]}
+      />
       <SectionFonctionnalites />
       <WorkspaceSlider />
       <SectionPreuve />
