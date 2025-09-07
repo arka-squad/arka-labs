@@ -23,8 +23,8 @@ const DEFAULT_SUBTITLE =
   'Avec Arka, vous ne dialoguez pas avec une machine. Vous dirigez une squad spÃ©cialisÃ©e : RH, Formation, QualitÃ©, Organisation. Chaque agent IA est un expert dans son domaine, et tous travaillent ensemble, en ping-pong, pour livrer mieux.';
 const DEFAULT_CHIPS = ['Experts, pas gÃ©nÃ©ralistes', 'Collaboration multi-rÃ´les', 'MÃ©moire souveraine'];
 const DEFAULT_CTAS = [
-  { label: 'Inscription à la Bêta', href: '/cockpit?demo=1', variant: 'primary' as const },
-  { label: 'Voir la dÃ©mo 90s', href: '#demo', variant: 'secondary' as const },
+  { label: 'Inscription à la Bêta', href: '/beta', variant: 'primary' as const },
+  { label: 'Contactez-nous', href: '/contact', variant: 'secondary' as const },
 ];
 const DEFAULT_IMAGE = {
   src: '/assets/hero/arkabox-board.png',
@@ -65,7 +65,7 @@ export default function Hero({
                   href={c.href}
                   className="rounded-[12px] px-5 py-3 text-sm font-medium text-white shadow-[0_10px_20px_rgba(226,2,109,.22)] hover:-translate-y-px transition will-change-transform"
                   style={{ backgroundImage: 'linear-gradient(135deg,#FAB652 0%,#F25636 50%,#E0026D 100%)' }}
-                  aria-label="Inscription à la Bêta (dÃ©mo)"
+                  aria-label="Inscription à la Bêta"
                 >
                   {c.label}
                 </a>
@@ -75,7 +75,7 @@ export default function Hero({
                   href={c.href}
                   className="rounded-[12px] px-5 py-3 text-sm text-white/90 hover:bg-white/10 border"
                   style={{ borderColor: 'rgba(255,255,255,.14)' }}
-                  aria-label="Voir la dÃ©mo 90s"
+                  aria-label="Contactez-nous"
                 >
                   {c.label}
                 </a>
@@ -129,4 +129,5 @@ export default function Hero({
     </section>
   );
 }
+
 
