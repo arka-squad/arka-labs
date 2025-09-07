@@ -86,8 +86,8 @@ export default function WorkspaceSlider({
       <div className="mx-auto max-w-[1440px] px-6">
         <header className="flex items-end justify-between gap-4">
           <div>
-            <h2 id="workspace-title" className="text-3xl md:text-4xl font-semibold" style={{ color: '#0F172A' }}>Où vit le projet</h2>
-            <p className="mt-2 font-medium" style={{ color: '#334155' }}>Tout est visible, rien n’est perdu</p>
+            <h2 id="workspace-title" className="text-3xl md:text-4xl font-semibold" style={{ color: 'var(--site-text)' }}>Où vit le projet</h2>
+            <p className="mt-2 font-medium" style={{ color: 'var(--site-muted)' }}>Tout est visible, rien n’est perdu</p>
           </div>
           <div className="hidden md:flex items-center gap-2">
             <button aria-controls="workspace-rail" aria-label="Carte précédente" disabled={atStart} onClick={() => snapTo(Math.max(0, active - 1))} className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed">◀</button>
@@ -103,8 +103,8 @@ export default function WorkspaceSlider({
               <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-white" style={{ backgroundImage: 'var(--brand-grad)' }}>
                 <w.icon size={20} />
               </div>
-              <h3 className="mt-4 text-xl font-semibold" style={{ color: '#0F172A' }}>{w.title}</h3>
-              <p className="mt-2 text-sm" style={{ color: '#334155' }}>{w.desc}</p>
+              <h3 className="mt-4 text-xl font-semibold" style={{ color: 'var(--site-text)' }}>{w.title}</h3>
+              <p className="mt-2 text-sm" style={{ color: 'var(--site-muted)' }}>{w.desc}</p>
             </article>
           ))}
         </div>
@@ -116,7 +116,7 @@ export default function WorkspaceSlider({
             <button key={i} role="tab" aria-selected={active===i} aria-controls="workspace-rail" onClick={() => snapTo(i)} aria-label={`Aller à la carte ${i+1}`} className={`h-2.5 w-2.5 rounded-full ${active===i ? 'bg-slate-800' : 'bg-slate-400/40'}`} />
           ))}
         </div>
-        <span className="ml-2 text-sm" style={{ color: '#334155' }}>{active+1} / {data.length}</span>
+        <span className="ml-2 text-sm" style={{ color: 'var(--site-muted)' }}>{active+1} / {data.length}</span>
       </div>
 
       <style jsx>{`

@@ -29,8 +29,8 @@ export default function Audience({ title = 'Pour qui', subtitle = 'Aujourd’hui
     <section id="who" aria-labelledby="who-title" className="py-16">
       <div className="mx-auto max-w-[1440px] px-6">
         <header className="text-center max-w-4xl mx-auto">
-          <h2 id="who-title" className="text-3xl md:text-4xl font-semibold" style={{ color: '#0F172A' }}>{title}</h2>
-          <p className="mt-2" style={{ color: '#334155' }}>{subtitle}</p>
+          <h2 id="who-title" className="text-3xl md:text-4xl font-semibold" style={{ color: 'var(--site-text)' }}>{title}</h2>
+          <p className="mt-2" style={{ color: 'var(--site-muted)' }}>{subtitle}</p>
         </header>
 
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -47,9 +47,9 @@ export default function Audience({ title = 'Pour qui', subtitle = 'Aujourd’hui
                     <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-white" style={{ backgroundImage: 'var(--brand-grad)' }}>
                       {item.icon ?? <Users className="w-5 h-5" aria-hidden />}
                     </div>
-                    <h3 className="text-base font-semibold" style={{ color: '#0F172A' }}>{item.title}</h3>
+                    <h3 className="text-base font-semibold" style={{ color: 'var(--site-text)' }}>{item.title}</h3>
                   </div>
-                  <div className="mt-3 text-sm leading-relaxed" style={{ color: '#334155' }}>
+                  <div className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--site-muted)' }}>
                     {item.points ? (
                       <ul className="list-none space-y-1">
                         {item.points.map((p) => (

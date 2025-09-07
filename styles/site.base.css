@@ -5,6 +5,8 @@
     --site-section: #ffffff; /* cartes blanches */
     --site-text: #0F172A;    /* texte principal */
     --site-muted: #334155;   /* texte secondaire */
+    --site-muted-2: #475569; /* texte secondaire alt */
+    --site-label: #64748B;   /* textes d'étiquettes */
     --site-border: rgba(0,0,0,.08);
     --site-grad: linear-gradient(135deg, #FAB652 0%, #F25636 50%, #E0026D 100%);
     --site-radius-xl: 16px;
