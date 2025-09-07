@@ -1,8 +1,9 @@
-import TopbarLanding from './_components/TopbarLanding';
+﻿import TopbarLanding from './_components/TopbarLanding';
 import Hero from './_components/Hero';
 import KPIStrip from './_components/KPIStrip';
 import EnClair from './_components/EnClair';
 import AgentsSlider from './_components/AgentsSlider';
+import BetaSignup from './_components/BetaSignup';
 import Examples from './_components/Examples';
 import SectionFonctionnalites from './_components/SectionFonctionnalites';
 import WorkspaceSlider from './_components/WorkspaceSlider';
@@ -21,28 +22,28 @@ export default function MarketingLanding() {
       <Examples
         items={[
           {
-            title: 'Préparer un onboarding RH',
+            title: 'PrÃ©parer un onboarding RH',
             command: '/kit onboarding',
             status: 'A_FAIRE',
             resultTitle: 'Onboarding',
             resultDesc:
-              'Le Conseiller RH prépare le kit, le Coach organisation vérifie les étapes, le Qualité valide la conformité. Résultat : checklist complète J‑7 → J+7.',
+              'Le Conseiller RH prÃ©pare le kit, le Coach organisation vÃ©rifie les Ã©tapes, le QualitÃ© valide la conformitÃ©. RÃ©sultat : checklist complÃ¨te Jâ€‘7 â†’ J+7.',
           },
           {
-            title: 'Mettre une procédure à jour',
+            title: 'Mettre une procÃ©dure Ã  jour',
             command: '/assign Proc-23',
             status: 'A_FAIRE',
-            resultTitle: 'Procédure mise à jour',
+            resultTitle: 'ProcÃ©dure mise Ã  jour',
             resultDesc:
-              'Le Coach prend la tâche, le Qualité revoit la cohérence, le Support la publie. Résultat : procédure à jour, validée.',
+              'Le Coach prend la tÃ¢che, le QualitÃ© revoit la cohÃ©rence, le Support la publie. RÃ©sultat : procÃ©dure Ã  jour, validÃ©e.',
           },
           {
-            title: 'Signaler un risque conformité',
-            command: '/gate conformité',
+            title: 'Signaler un risque conformitÃ©',
+            command: '/gate conformitÃ©',
             status: 'A_RISQUE',
-            resultTitle: 'Conformité',
+            resultTitle: 'ConformitÃ©',
             resultDesc:
-              'Le Qualité évalue, l’Analyste propose des correctifs, le Coach les intègre. Résultat : livrable marqué à risque avec actions proposées.',
+              'Le QualitÃ© Ã©value, lâ€™Analyste propose des correctifs, le Coach les intÃ¨gre. RÃ©sultat : livrable marquÃ© Ã  risque avec actions proposÃ©es.',
           },
         ]}
       />
@@ -50,10 +51,11 @@ export default function MarketingLanding() {
       <WorkspaceSlider />
       <SectionPreuve />
       <Audience />
+      <BetaSignup />
 
       {/* Anchors required by header; for v1, #how and #pricing point to #features or placeholders as per spec */}
       <section id="features" className="sr-only" aria-hidden>
-        Features placeholder (redirigé via nav)
+        Features placeholder (redirigÃ© via nav)
       </section>
 
       <Footer />
