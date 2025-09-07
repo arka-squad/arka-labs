@@ -1,3 +1,4 @@
+
 import '../../styles/console.css';
 
 import type { Metadata } from 'next';

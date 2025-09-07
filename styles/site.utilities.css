@@ -1,0 +1,6 @@
+@layer utilities {
+  .site-muted { color: var(--site-muted); }
+
+  /* Full-bleed rail padding + snap padding */
+  .rail { padding-inline: var(--rail-pad); scroll-padding-inline: var(--rail-pad); }
+}

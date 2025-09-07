@@ -16,7 +16,8 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "app/api/metrics/**/*.ts",
-    "app/api/documents/**/*.ts"
+    "app/api/documents/**/*.ts",
+    "services/**/*.ts"
   ],
 
   "exclude": ["lib/storage.ts"]

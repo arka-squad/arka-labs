@@ -5,10 +5,9 @@ import Audience from './_components/Audience';
 import Footer from './_components/Footer';
 import EnClair from './_components/EnClair';
 import AgentsSlider from './_components/AgentsSlider';
-import SectionAgents from './_components/SectionAgents';
 import SectionExemples from './_components/SectionExemples';
 import SectionFonctionnalites from './_components/SectionFonctionnalites';
-import SectionOuVit from './_components/SectionOuVit';
+import WorkspaceSlider from './_components/WorkspaceSlider';
 import SectionPreuve from './_components/SectionPreuve';
 
 export default function MarketingLanding() {
@@ -19,10 +18,9 @@ export default function MarketingLanding() {
       <KPIStrip />
       <EnClair />
       <AgentsSlider />
-      <SectionAgents />
       <SectionExemples />
       <SectionFonctionnalites />
-      <SectionOuVit />
+      <WorkspaceSlider />
       <SectionPreuve />
       <Audience />
 
