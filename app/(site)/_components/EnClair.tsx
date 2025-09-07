@@ -14,7 +14,7 @@ export type EnClairProps = {
 };
 
 const DEFAULT_SUBTITLE =
-  "Pas un robot, une équipe coordonnée. Vous gardez la main, ils exécutent et s’améliorent ensemble.";
+  'Pas un robot, une équipe coordonnée. Vous gardez la main, ils exécutent et s’améliorent ensemble.';
 
 const DEFAULT_ITEMS: EnClairItem[] = [
   {
@@ -68,3 +68,4 @@ export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL
     </section>
   );
 }
+
