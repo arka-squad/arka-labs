@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "npm run test:pre && npm run test:node",
     "test:pre": "tsc -p tsconfig.tests.json",
-    "test:node": "node --test dist-tests/tests/metrics.test.js dist-tests/tests/metrics.observability.test.js dist-tests/tests/openai-stream.test.js dist-tests/tests/webhook.test.js dist-tests/tests/chat-threads.test.js dist-tests/tests/login.page.test.js tests/sessionVault.test.ts tests/api/keys.test.ts",
+    "test:node": "node --test dist-tests/tests/*.test.js",
     "test:ui": "jest --config jest.config.cjs --colors 'tests/components/**/*.test.tsx'",
     "ci:net:selfcheck": "node scripts/net_self_check.mjs",
     "api:lint": "npx --no-install @redocly/cli lint --config redocly.yaml arka",
