@@ -8,7 +8,7 @@ import AgentsSlider from './_components/AgentsSlider';
 import SectionAgents from './_components/SectionAgents';
 import SectionExemples from './_components/SectionExemples';
 import SectionFonctionnalites from './_components/SectionFonctionnalites';
-import SectionOuVit from './_components/SectionOuVit';
+import WorkspaceSlider from './_components/WorkspaceSlider';
 import SectionPreuve from './_components/SectionPreuve';
 
 export default function MarketingLanding() {
@@ -22,7 +22,7 @@ export default function MarketingLanding() {
       <SectionAgents />
       <SectionExemples />
       <SectionFonctionnalites />
-      <SectionOuVit />
+      <WorkspaceSlider />
       <SectionPreuve />
       <Audience />
 
