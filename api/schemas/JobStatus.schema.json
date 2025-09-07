@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JobStatus",
+  "type": "object",
+  "required": ["job_id", "type", "status", "progress", "trace_id"],
+  "properties": {
+    "job_id": {"type": "string"},
+    "type": {"enum": ["gate", "recipe"]},
+    "status": {"enum": ["queued", "running", "pass", "fail", "warn", "error", "canceled"]},
+    "started_at": {"type": "string", "format": "date-time"},
+    "finished_at": {"type": "string", "format": "date-time"},
+    "progress": {
+      "type": "object",
+      "required": ["total", "done"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 0},
+        "done": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "trace_id": {"type": "string"}
+  },
+  "additionalProperties": false
+}
