@@ -1,3 +1,4 @@
+@tailwind utilities;
 @layer utilities {
   .site-muted { color: var(--site-muted); }
 
