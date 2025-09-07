@@ -1,4 +1,4 @@
-body.console-theme { background-color: var(--bg); color: var(--fg); }
+.console-theme { background-color: var(--bg); color: var(--fg); }
 
 /* Utility surfaces for console */
 .console-card { background-color: var(--surface); border: 1px solid var(--border); }
