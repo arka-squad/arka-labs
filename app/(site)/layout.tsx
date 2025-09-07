@@ -29,7 +29,7 @@ export default function SiteLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={poppins.className}>
+    <div className={poppins.className} style={{ background: '#e3e0db', color: '#0F172A' }}>
       {/* Consent/Cookies minimal */}
       <Script id="ga4-consent" strategy="afterInteractive">
         {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('consent', 'default', { 'ad_storage': 'denied', 'analytics_storage': 'denied' });`}
@@ -46,7 +46,7 @@ export default function SiteLayout({
           gtag('config', 'G-ARKA12345', { anonymize_ip: true });
         `}
       </Script>
-      <div style={{ minHeight: '100vh' }}>{children}</div>
+      <div id="main" style={{ minHeight: '100vh' }}>{children}</div>
     </div>
   );
 }
