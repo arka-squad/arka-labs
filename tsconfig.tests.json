@@ -12,6 +12,7 @@
     "jsx": "react-jsx"
   },
 
+
   "include": [
     "tests/**/*.ts",
     "tests/**/*.tsx",
@@ -20,6 +21,7 @@
     "app/api/gates/**/*.ts",
     "services/**/*.ts"
   ],
+
 
   "exclude": ["lib/storage.ts"]
 }

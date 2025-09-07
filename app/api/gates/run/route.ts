@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import path from 'node:path';
 import { z } from 'zod';
 import { withAuth, hasScope } from '../../../../lib/rbac';
@@ -8,8 +9,10 @@ import { TRACE_HEADER, generateTraceId } from '../../../../lib/trace';
 
 const Body = z.object({ gate_id: z.string(), inputs: z.any().optional() });
 
+
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
 
 export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextRequest, user) => {
   const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
@@ -57,3 +60,4 @@ export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextReque
     return NextResponse.json({ error: 'internal_error' }, { status: 500 });
   }
 });
+
