@@ -42,7 +42,7 @@ export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL
     <section id="what" aria-labelledby="what-title" className="py-16">
       <div className="container">
         <header className="text-center max-w-3xl mx-auto">
-          <h2 id="what-title" className="text-4xl md:text-5xl font-semibold text-[var(--site-text)]">
+          <h2 id="what-title" className="text-3xl md:text-4xl font-semibold text-[var(--site-text)]">
             {title}
           </h2>
           <p className="mt-2 mx-auto max-w-[60ch] text-[var(--site-muted)] text-lg md:text-xl">{subtitle}</p>
