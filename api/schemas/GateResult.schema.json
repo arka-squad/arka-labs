@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GateResult",
+  "type": "object",
+  "required": ["gate_id", "status", "metrics", "evidence"],
+  "properties": {
+    "gate_id": {"type": "string"},
+    "status": {"enum": ["pass", "fail", "warn"]},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {"type": "number"},
+          {"type": "string"}
+        ]
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {"$ref": "./EvidenceRef.schema.json"}
+    },
+    "message": {"type": "string"}
+  },
+  "additionalProperties": false
+}
