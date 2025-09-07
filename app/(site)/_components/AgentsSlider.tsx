@@ -208,6 +208,10 @@ export default function AgentsSlider({
       onKeyDown={handleKey}
     >
       <div className="mx-auto max-w-[1440px] px-6">
+        <header className="text-center max-w-3xl mx-auto">
+          <h2 id="agents-title" className="text-3xl md:text-4xl font-semibold" style={{ color: 'var(--site-text)' }}>Nos agents experts</h2>
+          <p className="mt-2" style={{ color: 'var(--site-muted)' }}>Une squad où chaque rôle est clair, et où chacun connaît ses collègues.</p>
+        </header>
         <header className="flex items-end justify-between gap-4">
           <div>
             <h2

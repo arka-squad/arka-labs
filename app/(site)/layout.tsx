@@ -23,11 +23,7 @@ const poppins = Poppins({
   display: 'swap',
 });
 
-export default function SiteLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={poppins.className} style={{ background: '#e3e0db', color: '#0F172A' }}>
       {/* Consent/Cookies minimal */}
@@ -35,10 +31,7 @@ export default function SiteLayout({
         {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('consent', 'default', { 'ad_storage': 'denied', 'analytics_storage': 'denied' });`}
       </Script>
       {/* GA4 placeholder (replace G-ARKA12345) */}
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-ARKA12345"
-        strategy="afterInteractive"
-      />
+      <Script src="https://www.googletagmanager.com/gtag/js?id=G-ARKA12345" strategy="afterInteractive" />
       <Script id="ga4-init" strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
@@ -50,3 +43,4 @@ export default function SiteLayout({
     </div>
   );
 }
+

@@ -1,14 +1,14 @@
 import TopbarLanding from './_components/TopbarLanding';
 import Hero from './_components/Hero';
 import KPIStrip from './_components/KPIStrip';
-import Audience from './_components/Audience';
-import Footer from './_components/Footer';
 import EnClair from './_components/EnClair';
 import AgentsSlider from './_components/AgentsSlider';
 import Examples from './_components/Examples';
 import SectionFonctionnalites from './_components/SectionFonctionnalites';
 import WorkspaceSlider from './_components/WorkspaceSlider';
 import SectionPreuve from './_components/SectionPreuve';
+import Audience from './_components/Audience';
+import Footer from './_components/Footer';
 
 export default function MarketingLanding() {
   return (
@@ -26,7 +26,7 @@ export default function MarketingLanding() {
             status: 'A_FAIRE',
             resultTitle: 'Onboarding',
             resultDesc:
-              'Le Conseiller RH prépare le kit, le Coach organisation vérifie les étapes, le Qualité valide la conformité. Résultat : checklist complète J‑7 à J+7.',
+              'Le Conseiller RH prépare le kit, le Coach organisation vérifie les étapes, le Qualité valide la conformité. Résultat : checklist complète J‑7 → J+7.',
           },
           {
             title: 'Mettre une procédure à jour',
@@ -42,7 +42,7 @@ export default function MarketingLanding() {
             status: 'A_RISQUE',
             resultTitle: 'Conformité',
             resultDesc:
-              'Le Qualité évalue, l’Analyste propose des correctifs, le Coach les intègre. Résultat : livrable marqué À risque avec actions proposées.',
+              'Le Qualité évalue, l’Analyste propose des correctifs, le Coach les intègre. Résultat : livrable marqué à risque avec actions proposées.',
           },
         ]}
       />
@@ -60,3 +60,4 @@ export default function MarketingLanding() {
     </main>
   );
 }
+
