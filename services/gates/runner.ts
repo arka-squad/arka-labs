@@ -18,13 +18,12 @@ interface Job {
   gate_id?: string;
   recipe_id?: string;
   status: 'running' | 'pass' | 'fail' | 'error';
-  started_at: number;
+  started_at: number; // epoch ms
   idempotency_key?: string;
   results?: any[];
   result?: any;
   error?: string;
   trace_id: string;
-  started_at: string;
   finished_at?: string;
 }
 
@@ -150,10 +149,9 @@ export async function runGates(
     type: 'gate',
     gate_id: gateId,
     status: 'running',
-
     started_at: now,
     idempotency_key: opts.idempotencyKey,
-
+    trace_id: opts.traceId || randomUUID(),
   };
   jobs.set(jobId, job);
   active.add(jobId);
@@ -204,7 +202,7 @@ export async function runRecipe(
     recipe_id: recipeId,
     status: 'running',
     trace_id: opts.traceId || randomUUID(),
-    started_at: new Date().toISOString(),
+    started_at: Date.now(),
   };
   jobs.set(jobId, job);
   active.add(jobId);

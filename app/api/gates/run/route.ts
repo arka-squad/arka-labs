@@ -33,6 +33,10 @@ export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextReque
   try {
     const mod = await import(path.join(process.cwd(), 'gates', 'catalog', `${gate_id}.mjs`));
     const scope: 'safe' | 'owner-only' = mod.meta?.scope === 'owner-only' ? 'owner-only' : 'safe';
+    // Guard: ensure user is present (TypeScript safety) even though withAuth enforces auth
+    if (!user) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+    }
     if (!hasScope(user.role, scope)) {
       log('info', 'forbidden_scope', { route, status: 403, trace_id: traceId });
       return NextResponse.json({ error: 'forbidden' }, { status: 403 });
@@ -60,4 +64,3 @@ export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextReque
     return NextResponse.json({ error: 'internal_error' }, { status: 500 });
   }
 });
-
