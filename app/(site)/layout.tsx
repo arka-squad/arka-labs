@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter, Sora } from 'next/font/google';
-import '../../styles/site.css';
+import '../../styles/site.base.css';
+import '../../styles/site.components.css';
+import '../../styles/site.utilities.css';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
