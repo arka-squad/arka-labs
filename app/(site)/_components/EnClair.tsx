@@ -42,10 +42,10 @@ export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL
     <section id="what" aria-labelledby="what-title" className="py-16">
       <div className="mx-auto max-w-[1440px] px-6">
         <header className="text-center max-w-3xl mx-auto">
-          <h2 id="what-title" className="text-3xl font-semibold" style={{ color: '#0F172A' }}>
+          <h2 id="what-title" className="text-3xl font-semibold" style={{ color: 'var(--site-text)' }}>
             {title}
           </h2>
-          <p className="mt-2 mx-auto" style={{ color: '#334155', maxWidth: '60ch' }}>
+          <p className="mt-2 mx-auto" style={{ color: 'var(--site-muted)', maxWidth: '60ch' }}>
             {subtitle}
           </p>
         </header>
@@ -55,18 +55,18 @@ export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL
             <article
               key={it.title}
               className={`card ${idx === 0 ? 'glow-a' : 'glow-b'} p-6 md:p-8 rounded-[20px] border relative overflow-hidden shadow-[0_12px_24px_rgba(15,23,42,.08)]`}
-              style={{ borderColor: 'rgba(0,0,0,.06)', background: '#FFFFFF' }}
+              style={{ borderColor: 'rgba(0,0,0,.06)', background: 'var(--site-section)' }}
             >
               <div className="grid [grid-template-rows:auto_auto_1fr] gap-3">
                 <div className="flex items-center justify-center gap-3 text-center">
                   <div className="inline-flex h-10 w-10 items-center justify-center rounded-full text-white shadow-[0_6px_16px_rgba(226,2,109,.18)]" style={{ backgroundImage: 'var(--brand-grad)' }} aria-hidden="true">
                     <Icon name={it.icon} />
                   </div>
-                  <h3 className="text-xl font-semibold text-center" style={{ color: '#0F172A' }}>
+                  <h3 className="text-xl font-semibold text-center" style={{ color: 'var(--site-text)' }}>
                     {it.title}
                   </h3>
                 </div>
-                <p className="text-sm md:text-base leading-relaxed text-center" style={{ color: '#334155' }}>
+                <p className="text-sm md:text-base leading-relaxed text-center" style={{ color: 'var(--site-muted)' }}>
                   {it.text}
                 </p>
               </div>

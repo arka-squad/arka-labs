@@ -55,13 +55,13 @@ function KpiBlock({ label, value, unit, series }: { label: string; value: number
     <div className="relative bg-white ring-1 ring-black/5 shadow-[0_8px_24px_rgba(15,23,42,.06)] rounded-2xl p-5">
       <div className="flex items-start justify-between">
         <div>
-          <div className="uppercase text-xs" style={{ color: '#64748B' }}>{label}</div>
-          <div className="mt-1 text-2xl font-semibold [font-variant-numeric:tabular-nums]" style={{ color: '#0F172A' }}>
-            {format1(value)}<span className="ml-1" style={{ color: '#64748B' }}>{nbsp}{unit}</span>
+          <div className="uppercase text-xs" style={{ color: 'var(--site-faint)' }}>{label}</div>
+          <div className="mt-1 text-2xl font-semibold [font-variant-numeric:tabular-nums]" style={{ color: 'var(--site-text)' }}>
+            {format1(value)}<span className="ml-1" style={{ color: 'var(--site-faint)' }}>{nbsp}{unit}</span>
           </div>
         </div>
         {s.length > 0 && (
-          <div className="text-xs" style={{ color: '#64748B' }}>Min {format1(min)} • Max {format1(max)}</div>
+          <div className="text-xs" style={{ color: 'var(--site-faint)' }}>Min {format1(min)} • Max {format1(max)}</div>
         )}
       </div>
       <div className="mt-3">

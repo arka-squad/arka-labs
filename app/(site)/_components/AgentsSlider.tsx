@@ -90,8 +90,8 @@ export default function AgentsSlider({
       <div className="mx-auto max-w-[1440px] px-6">
         <header className="flex items-end justify-between gap-4">
           <div>
-            <h2 id="agents-title" className="text-3xl md:text-4xl font-semibold" style={{ color: '#0F172A' }}>Nos agents experts</h2>
-            <p className="mt-2" style={{ color: '#334155' }}>Une squad où chaque rôle est clair…</p>
+            <h2 id="agents-title" className="text-3xl md:text-4xl font-semibold" style={{ color: 'var(--site-text)' }}>Nos agents experts</h2>
+            <p className="mt-2" style={{ color: 'var(--site-muted)' }}>Une squad où chaque rôle est clair…</p>
           </div>
           <div className="hidden md:flex items-center gap-2">
             <button aria-controls="agents-rail" aria-label="Carte précédente" disabled={atStart} onClick={() => snapTo(Math.max(0, active - 1))} className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed">◀</button>
@@ -112,11 +112,11 @@ export default function AgentsSlider({
               </div>
               <div className="p-6 grid [grid-template-rows:auto_auto_1fr_auto] min-h-[190px]">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold" style={{ color: '#0F172A' }}>{a.title}</h3>
+                  <h3 className="text-xl font-semibold" style={{ color: 'var(--site-text)' }}>{a.title}</h3>
                   <span className="px-3 py-1 rounded-full text-sm font-semibold text-white" style={{ backgroundImage: 'var(--brand-grad)' }}>{a.role}</span>
                 </div>
-                <p className="mt-2" style={{ color: '#334155' }}>{a.summary}</p>
-                <ul className="mt-4 grid grid-cols-3 gap-2 text-sm" style={{ color: '#334155' }}>
+                <p className="mt-2" style={{ color: 'var(--site-muted)' }}>{a.summary}</p>
+                <ul className="mt-4 grid grid-cols-3 gap-2 text-sm" style={{ color: 'var(--site-muted)' }}>
                   {a.skills.slice(0,3).map((s, j) => (
                     <li key={j} className="col-span-3 sm:col-span-1 flex items-center gap-2">✓ {s}</li>
                   ))}
@@ -134,7 +134,7 @@ export default function AgentsSlider({
               className={`h-2.5 w-2.5 rounded-full ${active===i ? 'bg-slate-800' : 'bg-slate-400/40'}`} />
           ))}
         </div>
-        <span className="ml-2 text-sm" style={{ color: '#334155' }}>{active+1} / {data.length}</span>
+        <span className="ml-2 text-sm" style={{ color: 'var(--site-muted)' }}>{active+1} / {data.length}</span>
       </div>
 
       <style jsx>{`

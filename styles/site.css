@@ -4,6 +4,11 @@
   --site-section: #ffffff; /* cartes blanches */
   --site-text: #0F172A;    /* texte principal */
   --site-muted: #334155;   /* texte secondaire */
+  --site-subtle: #475569;   /* texte tertiaire */
+  --site-faint: #64748B;    /* texte discret */
+  --site-invert: #FFFFFF;   /* texte inversé sur fond sombre */
+  --site-invert-muted: #D1D5DB; /* texte inversé secondaire */
+  --site-hero-bg: #0b1015; /* fond section héro */
   --site-border: rgba(0,0,0,.08);
   --site-grad: linear-gradient(135deg, #FAB652 0%, #F25636 50%, #E0026D 100%);
   --site-radius-xl: 16px;

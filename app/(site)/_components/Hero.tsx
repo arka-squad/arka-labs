@@ -7,15 +7,15 @@ export default function Hero() {
       <div className="mx-auto max-w-[1440px] px-6 grid grid-cols-12 gap-x-6">
         {/* Left: text */}
         <div className="col-span-12 md:col-span-7">
-          <div className="inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-xs text-white" style={{ background: 'rgba(255,255,255,.10)', borderColor: 'rgba(255,255,255,.18)', backgroundColor: '#0b1015' }}>
+          <div className="inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-xs text-white" style={{ background: 'rgba(255,255,255,.10)', borderColor: 'rgba(255,255,255,.18)', backgroundColor: 'var(--site-hero-bg)' }}>
             <span>Cockpit v0.1.0-demo</span>
             <span aria-hidden>•</span>
             <span>Données de démo</span>
           </div>
-          <h1 className="mt-4 leading-tight" style={{ color: '#FFFFFF' }}>
+          <h1 className="mt-4 leading-tight" style={{ color: 'var(--site-invert)' }}>
             <span className="block text-[28px] sm:text-[32px] md:text-[34px] lg:text-[36px] font-semibold">Pilotez une équipe d’ <span className="accent">agents IA experts</span> — pas un assistant isolé.</span>
           </h1>
-          <p className="mt-5 max-w-2xl text-sm md:text-base" style={{ color: '#D1D5DB' }}>
+          <p className="mt-5 max-w-2xl text-sm md:text-base" style={{ color: 'var(--site-invert-muted)' }}>
             Avec Arka, vous ne dialoguez pas avec une machine. Vous dirigez une squad spécialisée : RH, Formation, Qualité, Organisation.
             Chaque agent IA est un expert dans son domaine, et tous travaillent ensemble, en ping-pong, pour livrer mieux.
           </p>
@@ -30,7 +30,7 @@ export default function Hero() {
 
           <div className="mt-6 flex flex-wrap gap-2" aria-label="Atouts">
             {['Experts, pas généralistes', 'Collaboration multi-rôles', 'Mémoire souveraine'].map((c) => (
-              <span key={c} className="inline-flex items-center rounded-full border px-3 py-1 text-xs" style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,.18)', background: 'rgba(255,255,255,.10)' }}>{c}</span>
+              <span key={c} className="inline-flex items-center rounded-full border px-3 py-1 text-xs" style={{ color: 'var(--site-invert)', borderColor: 'rgba(255,255,255,.18)', background: 'rgba(255,255,255,.10)' }}>{c}</span>
             ))}
           </div>
         </div>
@@ -51,7 +51,7 @@ export default function Hero() {
 
       {/* Dark local background spanning container width */}
       <style jsx>{`
-        #hero { background: #0b1015; }
+        #hero { background: var(--site-hero-bg); }
         .accent {
           background-image: linear-gradient(12deg, #FAB652, #F25636 50%, #E0026D);
           -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 900;

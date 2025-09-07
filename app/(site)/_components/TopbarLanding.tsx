@@ -44,7 +44,7 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
       }}
     >
       {/* Skip link (option) */}
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-white text-[#0F172A] px-3 py-1 rounded" aria-label="Aller au contenu">
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-white text-[var(--site-text)] px-3 py-1 rounded" aria-label="Aller au contenu">
         Aller au contenu
       </a>
       <div className="mx-auto h-full max-w-[1440px] px-6 grid grid-cols-[auto_1fr_auto] items-center gap-4">
@@ -70,7 +70,7 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
               <li key={l.href}>
                 <a
                   href={l.href}
-                  className="text-sm font-medium text-[#334155] hover:text-[#0F172A] underline-offset-4 hover:underline rounded py-1.5 px-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                  className="text-sm font-medium text-[var(--site-muted)] hover:text-[var(--site-text)] underline-offset-4 hover:underline rounded py-1.5 px-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
                 >
                   {l.label}
                 </a>
@@ -84,7 +84,7 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
           <a
             href="/login"
             onClick={onLogin}
-            className="inline-flex items-center h-9 px-3 rounded-[12px] border text-[#0F172A] hover:bg-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+            className="inline-flex items-center h-9 px-3 rounded-[12px] border text-[var(--site-text)] hover:bg-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
             style={{ borderColor: 'rgba(15,23,42,.12)' }}
           >
             Se connecter
@@ -121,7 +121,7 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
                   <li key={l.href}>
                     <a
                       href={l.href}
-                      className="block text-sm font-medium text-[#334155] hover:text-[#0F172A] underline-offset-4 hover:underline rounded py-2 px-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                      className="block text-sm font-medium text-[var(--site-muted)] hover:text-[var(--site-text)] underline-offset-4 hover:underline rounded py-2 px-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
                       onClick={() => setOpen(false)}
                     >
                       {l.label}
@@ -134,7 +134,7 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
               <a
                 href="/login"
                 onClick={onLogin}
-                className="inline-flex items-center justify-center h-10 px-4 rounded-[12px] border text-[#0F172A] hover:bg-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                className="inline-flex items-center justify-center h-10 px-4 rounded-[12px] border text-[var(--site-text)] hover:bg-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
                 style={{ borderColor: 'rgba(15,23,42,.12)' }}
               >
                 Se connecter
