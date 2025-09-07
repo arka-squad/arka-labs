@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { Inter, Sora } from 'next/font/google';
+import { Poppins } from 'next/font/google';
+import '../../styles/site.reset.css';
 import '../../styles/site.base.css';
 import '../../styles/site.components.css';
 import '../../styles/site.utilities.css';
@@ -16,8 +17,11 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image' },
 };
 
-const inter = Inter({ subsets: ['latin'], display: 'swap' });
-const sora = Sora({ subsets: ['latin'], display: 'swap' });
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '900'],
+  display: 'swap',
+});
 
 export default function SiteLayout({
   children,
@@ -25,7 +29,7 @@ export default function SiteLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`site-theme ${inter.className}`}>
+    <div className={poppins.className}>
       {/* Consent/Cookies minimal */}
       <Script id="ga4-consent" strategy="afterInteractive">
         {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('consent', 'default', { 'ad_storage': 'denied', 'analytics_storage': 'denied' });`}
@@ -42,9 +46,7 @@ export default function SiteLayout({
           gtag('config', 'G-ARKA12345', { anonymize_ip: true });
         `}
       </Script>
-      <div style={{ minHeight: '100vh' }} className={sora.className}>
-        {children}
-      </div>
+      <div style={{ minHeight: '100vh' }}>{children}</div>
     </div>
   );
 }
