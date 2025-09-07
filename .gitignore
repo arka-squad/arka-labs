@@ -14,6 +14,11 @@ logs/
 logs_*.json
 logs_*.txt
 
+# local debug dumps (do not commit)
+dump_*
+out*.txt
+tmp_*
+
 # local workspace (untracked)
 local/
 
