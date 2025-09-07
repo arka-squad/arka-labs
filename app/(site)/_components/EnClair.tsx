@@ -52,7 +52,7 @@ export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL
           {items.slice(0, 2).map((it, idx) => (
             <article
               key={it.title}
-              className={`card bg-white ${idx === 0 ? 'glow-a' : 'glow-b'} p-8 md:p-12 relative overflow-hidden h-full`}
+              className={`card bg-white ${idx === 0 ? 'glow-a' : 'glow-b'} p-8 md:p-12 relative overflow-hidden h-full border-0 shadow-[0_12px_30px_rgba(15,23,42,.08)]`}
             >
               <div className="h-full flex flex-col items-center text-center gap-3">
                 <div className="flex items-center justify-center gap-3">
