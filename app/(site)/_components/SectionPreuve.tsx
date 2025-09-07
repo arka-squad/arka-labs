@@ -148,7 +148,7 @@ export default function SectionPreuve() {
   };
 
   return (
-    <section id="evidence" aria-labelledby="evidence-title" className="py-20 md:py-24">
+    <section id="evidence" aria-labelledby="evidence-title" className="py-16">
       <div className="container grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
         {/* Colonne gauche : texte */}
         <div className="lg:col-span-6">
