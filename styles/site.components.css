@@ -29,4 +29,26 @@
       radial-gradient(200px 160px at 80% 20%, rgba(242,86,54,.10), transparent 60%),
       radial-gradient(180px 140px at 15% 75%, rgba(250,182,82,.12), transparent 60%);
   }
+
+  /* Examples internal glow variants per spec */
+  .example-card::before{
+    content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+    background:
+      radial-gradient(38% 30% at 10% 0%,  #FAB65222, transparent 60%),
+      radial-gradient(30% 26% at 95% 100%, #E0026D14, transparent 60%);
+  }
+  .example-card.b-2::before{ background:
+      radial-gradient(32% 28% at 85% 90%, #F256361a, transparent 60%),
+      radial-gradient(26% 22% at 15% 80%, #FAB6521f, transparent 60%); }
+  .example-card.b-3::before{ background:
+      radial-gradient(36% 26% at 20% 10%, #FAB65222, transparent 60%),
+      radial-gradient(26% 22% at 80% 85%, #E0026D14, transparent 60%); }
+
+  /* Section 8 — Evidence: strict internal decorative glows */
+  .evidence-card::before{
+    content:""; position:absolute; inset:0; pointer-events:none; opacity:.85;
+    background:
+      radial-gradient(60% 60% at 120% -10%, rgba(242,86,54,.13), transparent 60%),
+      radial-gradient(30% 30% at 0% 100%, rgba(224,2,109,.08), transparent 60%);
+  }
 }

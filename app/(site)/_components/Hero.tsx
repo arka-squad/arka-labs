@@ -2,6 +2,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { CheckCircle2, Users, Database } from 'lucide-react';
 
 export type HeroProps = {
   badge?: string;
@@ -83,15 +84,23 @@ export default function Hero({
           </div>
 
           <div className="flex flex-wrap gap-2" aria-label="Atouts">
-            {chips.map((c) => (
-              <span
-                key={c}
-                className="inline-flex items-center rounded-full border px-3 py-1 text-xs"
-                style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,.18)', backgroundColor: 'rgba(255,255,255,.10)' }}
-              >
-                {c}
-              </span>
-            ))}
+            {chips.map((c) => {
+              const icon = c.toLowerCase().includes('expert')
+                ? <CheckCircle2 className="w-3.5 h-3.5" aria-hidden />
+                : c.toLowerCase().includes('multi') || c.toLowerCase().includes('rôle')
+                ? <Users className="w-3.5 h-3.5" aria-hidden />
+                : <Database className="w-3.5 h-3.5" aria-hidden />;
+              return (
+                <span
+                  key={c}
+                  className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs"
+                  style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,.18)', backgroundColor: 'rgba(255,255,255,.10)' }}
+                >
+                  <span aria-hidden className="text-white">{icon}</span>
+                  {c}
+                </span>
+              );
+            })}
           </div>
         </div>
 

@@ -43,7 +43,7 @@ export default function AgentsSlider({
 
   const [active, setActive] = useState(initialIndex);
 
-  const snapTo = useCallback((index: number, smooth = true) => {
+  const snapTo = useCallback((index: number, smooth = true, shouldFocus = true) => {
     const rail = railRef.current;
     if (!rail) return;
     const card = cardRefs.current[index];
@@ -55,7 +55,7 @@ export default function AgentsSlider({
       left: Math.max(0, Math.min(target, max)),
       behavior: smooth ? 'smooth' : 'auto',
     });
-    card.focus();
+    if (shouldFocus) try { (card as HTMLElement).focus({ preventScroll: true } as any); } catch {}
   }, []);
 
   useEffect(() => {
@@ -91,32 +91,32 @@ export default function AgentsSlider({
     (e: ReactKeyboardEvent) => {
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        snapTo(Math.max(0, active - 1));
+        snapTo(Math.max(0, active - 1), true, true);
       }
       if (e.key === 'ArrowRight') {
         e.preventDefault();
-        snapTo(Math.min(items.length - 1, active + 1));
+        snapTo(Math.min(items.length - 1, active + 1), true, true);
       }
       if (e.key === 'Home') {
         e.preventDefault();
-        snapTo(0, false);
+        snapTo(0, false, true);
       }
       if (e.key === 'End') {
         e.preventDefault();
-        snapTo(items.length - 1, false);
+        snapTo(items.length - 1, false, true);
       }
       if (e.key === 'Escape') {
         e.preventDefault();
         uiLog('landing.slider.agents.reset', { count: active });
         onReset?.();
-        snapTo(0);
+        snapTo(0, true, true);
       }
     },
     [active, items.length, onReset, snapTo],
   );
 
   useEffect(() => {
-    const onResize = () => snapTo(active, false);
+    const onResize = () => snapTo(active, false, false);
     window.addEventListener('resize', onResize);
     return () => {
       window.removeEventListener('resize', onResize);
@@ -135,7 +135,7 @@ export default function AgentsSlider({
 
   // Align to initial index on mount without animation
   useEffect(() => {
-    requestAnimationFrame(() => snapTo(initialIndex, false));
+    requestAnimationFrame(() => snapTo(initialIndex, false, false));
   }, [initialIndex, snapTo]);
 
   const data = useMemo<AgentCardData[]>(
@@ -198,7 +198,7 @@ export default function AgentsSlider({
   const atStart = active === 0;
   const atEnd = active === Math.max(0, data.length - 1);
 
-  const railPad = 'clamp(16px, calc((100vw - 90rem) / 2 + 24px), 96px)';
+  const railPad = 'max(calc((100vw - 90rem) / 2 + 24px), 16px)';
 
   return (
     <section
@@ -275,6 +275,8 @@ export default function AgentsSlider({
             scrollPaddingLeft: 'var(--rail-pad)',
             scrollPaddingRight: 'var(--rail-pad)',
             scrollBehavior: 'smooth',
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
             scrollbarGutter: 'stable both-edges',
           }}
         >
@@ -287,7 +289,7 @@ export default function AgentsSlider({
               role="region"
               aria-label={`${a.role} — ${a.title}`}
               tabIndex={0}
-              className="flex-none w-[55%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-1 ring-black/5 shadow-[0_12px_24px_rgba(15,23,42,.08)]"
+              className="flex-none w-[55%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-0 shadow-[0_12px_24px_rgba(15,23,42,.08)]"
               onClick={() => {
                 snapTo(i);
                 uiLog('landing.slider.agents.expand', { index: i });
@@ -304,7 +306,7 @@ export default function AgentsSlider({
             >
               <div className="relative overflow-hidden rounded-t-[16px] bg-slate-100 h-28 md:h-36 lg:h-44 xl:h-48">
                 <img
-                  src={a.image}
+                  src={a.image || `/assets/agents/agent-${a.id}.png`}
                   alt={`${a.role} — ${a.title}, illustration`}
                   className="absolute inset-0 h-full w-full object-cover"
                   loading={i === 0 ? 'eager' : 'lazy'}
@@ -351,7 +353,7 @@ export default function AgentsSlider({
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-center gap-3">
+      <div className="mt-4 flex items-center justify-center gap-3 hidden">
         <div className="flex items-center gap-2" aria-label="Pagination agents">
           {data.map((_, i) => (
             <button
@@ -376,6 +378,7 @@ export default function AgentsSlider({
             scroll-behavior: auto !important;
           }
         }
+        #agents-rail::-webkit-scrollbar { display: none; height: 0; }
       `}</style>
     </section>
   );

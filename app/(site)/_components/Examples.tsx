@@ -65,7 +65,7 @@ export default function Examples({ title = 'Exemples', tagline = '1 commande = 1
         <div className="mx-auto max-w-[1440px] px-6">
           <header className="text-center max-w-3xl mx-auto">
             <h2 id="examples-title" className="text-3xl md:text-4xl font-semibold text-[#0F172A]">{title}</h2>
-            <p className="mt-2 text-sm font-medium text-[#64748B]">{tagline}</p>
+            <p className="mt-2 text-sm font-medium text-[#64748B]">Une commande → une mission prise en main par toute la squad.</p>
           </header>
           <div className="mt-8 grid gap-6">
             {items.map((item, idx) => (

@@ -74,17 +74,7 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
       <div className="mx-auto h-full max-w-[1440px] px-6 grid grid-cols-[auto_1fr_auto] items-center gap-4">
         {/* Logo */}
         <a href="/" aria-label="Arka" className="inline-flex items-center h-8 opacity-90 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-black/20 rounded px-1">
-          <span
-            className="text-[18px] font-extrabold tracking-tight"
-            style={{
-              backgroundImage: 'var(--brand-grad)',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              color: 'transparent',
-            }}
-          >
-            ARKA
-          </span>
+          <img src="/assets/logo/arka-logo-noir-radient.svg" alt="Arka" className="h-8 w-auto" />
         </a>
 
         {/* Center nav (desktop) */}
@@ -190,4 +180,3 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
     </header>
   );
 }
-

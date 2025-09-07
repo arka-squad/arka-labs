@@ -22,3 +22,5 @@ test_output.txt
 rapport_oracles.json
 *.log
 *.tmp
+CON
+tmp_*

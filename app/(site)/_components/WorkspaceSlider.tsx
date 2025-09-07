@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { LayoutDashboard, BookOpen, ClipboardList, type LucideIcon } from 'lucide-react';
+import { MessageSquare, Route, BookOpen, Settings, Users, Activity, HardDrive, ClipboardList, type LucideIcon, ArrowRight } from 'lucide-react';
 
 export type WorkspaceCardData = {
   id: string;
@@ -68,9 +68,14 @@ export default function WorkspaceSlider({
 
   const data = useMemo<WorkspaceCardData[]>(() => (
     items.length ? items : [
-      { id: 'chat', title: 'Chat', desc: 'Là où l’on décide et déclenche.', icon: LayoutDashboard },
-      { id: 'docdesk', title: 'DocDesk', desc: 'Documents, contrats, supports versionnés.', icon: BookOpen },
-      { id: 'evidence', title: 'Evidence', desc: 'Le paquet de preuves à partager.', icon: ClipboardList },
+      { id:'chat',      title:'Chat',                  desc:"Là où l’on décide et déclenche.",            icon: MessageSquare },
+      { id:'roadmap',   title:'Roadmap',              desc:'Missions et jalons.',                         icon: Route },
+      { id:'docdesk',   title:'DocDesk',              desc:'Documents, contrats, supports versionnés.',   icon: BookOpen },
+      { id:'builder',   title:'Builder Gouvernance',  desc:'Règles et check‑lists.',                      icon: Settings },
+      { id:'roster',    title:'Roster',               desc:'Rôles de la squad, charges, dispo.',          icon: Users },
+      { id:'observa',   title:'Observabilité',        desc:'Santé et indicateurs clés.',                  icon: Activity },
+      { id:'arkameta',  title:'ArkaMeta',             desc:'Mémoire souveraine, chez vous.',              icon: HardDrive },
+      { id:'evidence',  title:'Evidence',             desc:'Le paquet de preuves à partager.',            icon: ClipboardList },
     ]
   ), [items]);
 
@@ -101,35 +106,32 @@ export default function WorkspaceSlider({
           aria-label="Workspace"
           aria-live="off"
           className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-6"
-          style={{ ['--pad' as any]: 'max(calc((100vw - 90rem)/2 + 24px), 16px)', paddingLeft:'var(--pad)', paddingRight:'var(--pad)', scrollPaddingLeft:'var(--pad)', scrollPaddingRight:'var(--pad)', scrollBehavior: 'smooth', scrollbarGutter: 'stable both-edges', willChange:'scroll-position' }}
+          style={{ ['--pad' as any]: 'max(calc((100vw - 90rem)/2 + 24px), 16px)', paddingLeft:'var(--pad)', paddingRight:'var(--pad)', scrollPaddingLeft:'var(--pad)', scrollPaddingRight:'var(--pad)', scrollBehavior: 'smooth', msOverflowStyle:'none', scrollbarWidth:'none', scrollbarGutter: 'stable both-edges', willChange:'scroll-position' }}
         >
           {data.map((w, i) => (
-            <article key={w.id} ref={(el: HTMLElement | null) => { if (el) cardRefs.current[i] = el; }} role="region" aria-label={w.title} tabIndex={0} className="flex-none w-[88%] sm:w-[60%] md:w-[340px] lg:w-[380px] xl:w-[420px] snap-start snap-always rounded-[20px] bg-white ring-1 ring-black/5 shadow-[0_12px_24px_rgba(15,23,42,.08)] p-6 grid [grid-template-rows:auto_auto_1fr]">
+            <article key={w.id} ref={(el: HTMLElement | null) => { if (el) cardRefs.current[i] = el; }} role="region" aria-label={w.title} tabIndex={0} className="flex-none w-[88%] sm:w-[60%] md:w-[340px] lg:w-[380px] xl:w-[420px] snap-start snap-always rounded-[20px] bg-white ring-0 shadow-[0_12px_24px_rgba(15,23,42,.08)] p-6 grid [grid-template-rows:auto_auto_1fr]">
               <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-white" style={{ backgroundImage: 'var(--brand-grad)' }}>
-                <w.icon size={20} />
+                <w.icon size={20} className="text-white" />
               </div>
               <h3 className="mt-4 text-xl font-semibold" style={{ color: 'var(--site-text)' }}>{w.title}</h3>
               <p className="mt-2 text-sm" style={{ color: 'var(--site-muted)' }}>{w.desc}</p>
+              {/* CTA optionnel */}
+              <button aria-label={`Ouvrir ${w.title}`} className="mt-3 h-9 w-9 rounded-full bg-[#0F172A] text-white grid place-items-center shadow-sm justify-self-start">
+                <ArrowRight size={16} />
+              </button>
             </article>
           ))}
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-center gap-3">
-        <div className="flex items-center gap-2" aria-label="Pagination workspace">
-          {data.map((_, i) => (
-            <button key={i} aria-current={active===i} aria-controls="workspace-rail" onClick={() => snapTo(i)} aria-label={`Aller à l’élément ${i+1}`} className={`h-2.5 w-2.5 rounded-full ${active===i ? 'bg-slate-800' : 'bg-slate-400/40'}`} />
-          ))}
-        </div>
-        <span className="ml-2 text-sm" style={{ color: 'var(--site-muted)' }}>{active+1} / {data.length}</span>
-      </div>
+      {/* Bullets/fraction masquées en v1 */}
 
       <style jsx>{`
         @media (prefers-reduced-motion: reduce){
           #workspace-rail { scroll-behavior:auto !important; }
         }
+        #workspace-rail::-webkit-scrollbar { display:none; height:0; }
       `}</style>
     </section>
   );
 }
-

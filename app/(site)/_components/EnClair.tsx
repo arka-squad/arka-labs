@@ -32,15 +32,15 @@ const DEFAULT_ITEMS: EnClairItem[] = [
 ];
 
 function Icon({ name }: { name: string }) {
-  if (name === 'Command') return <Command className="w-5 h-5 opacity-80" aria-hidden />;
-  if (name === 'AlertTriangle') return <AlertTriangle className="w-5 h-5 opacity-80" aria-hidden />;
+  if (name === 'Command') return <Command className="w-5 h-5 text-white" aria-hidden />;
+  if (name === 'AlertTriangle') return <AlertTriangle className="w-5 h-5 text-white" aria-hidden />;
   return <span aria-hidden className="w-5 h-5" />;
 }
 
 export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITLE, items = DEFAULT_ITEMS }: EnClairProps) {
   return (
     <section id="what" aria-labelledby="what-title" className="py-16">
-      <div className="container">
+      <div className="mx-auto max-w-[1440px] px-6">
         <header className="text-center max-w-3xl mx-auto">
           <h2 id="what-title" className="text-3xl md:text-4xl font-semibold text-[var(--site-text)]">
             {title}
@@ -57,13 +57,11 @@ export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL
               <div className="h-full flex flex-col items-center text-center gap-3">
                 <div className="flex items-center justify-center gap-3">
                   <div
-                    className="w-10 h-10 rounded-full grid place-items-center shadow-sm"
+                    className="w-10 h-10 rounded-full grid place-items-center shadow-sm text-white"
                     aria-hidden="true"
                     style={{ backgroundImage: 'var(--brand-grad)' }}
                   >
-                    <span className="w-7 h-7 grid place-items-center rounded-full bg-white/15">
-                      <Icon name={it.icon} />
-                    </span>
+                    <Icon name={it.icon} />
                   </div>
                   <h3 className="text-xl md:text-2xl font-semibold text-[var(--site-text)]">{it.title}</h3>
                 </div>
