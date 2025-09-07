@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+﻿/* eslint-disable @next/next/no-img-element */
 import { Command, AlertTriangle } from 'lucide-react';
 
 export type EnClairItem = {
@@ -14,20 +14,20 @@ export type EnClairProps = {
 };
 
 const DEFAULT_SUBTITLE =
-  'Pas un robot, une équipe coordonnée. Vous gardez la main, ils exécutent et s’améliorent ensemble.';
+  'Pas un robot, une Ã©quipe coordonnÃ©e. Vous gardez la main, ils exÃ©cutent et sâ€™amÃ©liorent ensemble.';
 
 const DEFAULT_ITEMS: EnClairItem[] = [
   {
     icon: 'Command',
     title: 'Un poste de commande',
     text:
-      'Vous donnez la direction. Les agents experts s’organisent entre eux : assignations, validations, corrections.',
+      'Vous donnez la direction. Les agents experts sâ€™organisent entre eux : assignations, validations, corrections.',
   },
   {
     icon: 'AlertTriangle',
-    title: 'Retour d’état immédiat',
+    title: 'Retour dâ€™Ã©tat immÃ©diat',
     text:
-      'La squad vous répond : OK ou À risque. Et si besoin, propose déjà une alternative.',
+      'La squad vous rÃ©pond : OK ou Ã€ risque. Et si besoin, propose dÃ©jÃ  une alternative.',
   },
 ];
 
@@ -74,3 +74,4 @@ export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL
     </section>
   );
 }
+

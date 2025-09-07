@@ -1,8 +1,10 @@
 export default function ContactPage() {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-12">
-      <h1 className="text-2xl font-bold text-white">Contact</h1>
-      <p className="mt-4 text-slate-300">Placeholder. Merci d’écrire à contact@exemple.com.</p>
+    <main className="min-h-[60vh] grid place-items-center">
+      <div className="text-center">
+        <h1 className="text-3xl md:text-4xl font-semibold" style={{ color: 'var(--site-text)' }}>Contact — coming soon</h1>
+        <p className="mt-2" style={{ color: 'var(--site-muted)' }}>Dites-nous ce dont vous avez besoin. Le formulaire arrive très vite.</p>
+      </div>
     </main>
   );
 }

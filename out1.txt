@@ -208,6 +208,10 @@ export default function AgentsSlider({
       onKeyDown={handleKey}
     >
       <div className="mx-auto max-w-[1440px] px-6">
+        <header className="text-center max-w-3xl mx-auto">
+          <h2 id="agents-title" className="text-3xl md:text-4xl font-semibold" style={{ color: 'var(--site-text)' }}>Nos agents experts</h2>
+          <p className="mt-2" style={{ color: 'var(--site-muted)' }}>Une squad oÃ¹ chaque rÃ´le est clair, et oÃ¹ chacun connaÃ®t ses collÃ¨gues.</p>
+        </header>
         <header className="flex items-end justify-between gap-4">
           <div>
             <h2
@@ -218,7 +222,7 @@ export default function AgentsSlider({
               Nos agents experts
             </h2>
             <p className="mt-2" style={{ color: 'var(--site-muted)' }}>
-              Une squad où chaque rôle est clair, et où chacun connaît ses collègues.
+              Une squad oÃ¹ chaque rÃ´le est clairâ€¦
             </p>
           </div>
           <div className="hidden md:flex items-center gap-2">
@@ -234,152 +238,3 @@ export default function AgentsSlider({
                 className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10"
               >
                 â†©
-              </button>
-            )}
-            <button
-              aria-controls="agents-rail"
-              aria-label="Carte prÃ©cÃ©dente"
-              disabled={atStart}
-              onClick={() => snapTo(Math.max(0, active - 1))}
-              className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              â—€
-            </button>
-            <button
-              aria-controls="agents-rail"
-              aria-label="Carte suivante"
-              disabled={atEnd}
-              onClick={() => snapTo(Math.min(data.length - 1, active + 1))}
-              className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              â–¶
-            </button>
-          </div>
-        </header>
-      </div>
-
-      {/* rail fullâ€‘bleed */}
-      <div className="mt-6 w-screen relative left-1/2 right-1/2 -mx-[50vw]">
-        <div
-          id="agents-rail"
-          ref={railRef}
-          role="group"
-          aria-roledescription="carousel"
-          aria-label="Agents"
-          aria-live="off"
-          className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-6"
-          style={{
-            ['--rail-pad' as any]: railPad,
-            paddingLeft: 'var(--rail-pad)',
-            paddingRight: 'var(--rail-pad)',
-            scrollPaddingLeft: 'var(--rail-pad)',
-            scrollPaddingRight: 'var(--rail-pad)',
-            scrollBehavior: 'smooth',
-            msOverflowStyle: 'none',
-            scrollbarWidth: 'none',
-            scrollbarGutter: 'stable both-edges',
-          }}
-        >
-          {data.map((a, i) => (
-            <article
-              key={a.id}
-              ref={(el: HTMLElement | null) => {
-                if (el) cardRefs.current[i] = el;
-              }}
-              role="region"
-              aria-label={`${a.role} â€” ${a.title}`}
-              tabIndex={0}
-              className="flex-none w-[55%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-0 shadow-[0_12px_24px_rgba(15,23,42,.08)]"
-              onClick={() => {
-                snapTo(i);
-                uiLog('landing.slider.agents.expand', { index: i });
-                onExpand?.(i);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  snapTo(i);
-                  uiLog('landing.slider.agents.expand', { index: i });
-                  onExpand?.(i);
-                }
-              }}
-            >
-              <div className="relative overflow-hidden rounded-t-[16px] bg-slate-100 h-28 md:h-36 lg:h-44 xl:h-48">
-                <img
-                  src={a.image || `/assets/agents/agent-${a.id}.png`}
-                  alt={`${a.role} â€” ${a.title}, illustration`}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  decoding="async"
-                  onError={() =>
-                    uiLog('landing.slider.agents.image_error', { id: a.id })
-                  }
-                />
-              </div>
-              <div className="p-6 grid [grid-template-rows:auto_auto_1fr_auto] min-h-[190px]">
-                <div className="flex items-center justify-between">
-                  <h3
-                    className="text-xl font-semibold"
-                    style={{ color: 'var(--site-text)' }}
-                  >
-                    {a.title}
-                  </h3>
-                  <span
-                    className="px-3 py-1 rounded-full text-sm font-semibold text-white"
-                    style={{ backgroundImage: 'var(--brand-grad)' }}
-                  >
-                    {a.role}
-                  </span>
-                </div>
-                <p className="mt-2" style={{ color: 'var(--site-muted)' }}>
-                  {a.summary}
-                </p>
-                <ul
-                  className="mt-4 grid grid-cols-3 gap-2 text-sm"
-                  style={{ color: 'var(--site-muted)' }}
-                >
-                  {a.skills.slice(0, 3).map((s, j) => (
-                    <li
-                      key={j}
-                      className="col-span-3 sm:col-span-1 flex items-center gap-2"
-                    >
-                      âœ“ {s}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center justify-center gap-3 hidden">
-        <div className="flex items-center gap-2" aria-label="Pagination agents">
-          {data.map((_, i) => (
-            <button
-              key={i}
-              aria-current={active === i}
-              aria-label={`Aller Ã  la carte ${i + 1}`}
-              onClick={() => snapTo(i)}
-              className={`h-2.5 w-2.5 rounded-full ${
-                active === i ? 'bg-slate-800' : 'bg-slate-400/40'
-              }`}
-            />
-          ))}
-        </div>
-        <span className="ml-2 text-sm" style={{ color: 'var(--site-muted)' }}>
-          {active + 1} / {data.length}
-        </span>
-      </div>
-
-      <style jsx>{`
-        @media (prefers-reduced-motion: reduce) {
-          #agents-rail {
-            scroll-behavior: auto !important;
-          }
-        }
-        #agents-rail::-webkit-scrollbar { display: none; height: 0; }
-      `}</style>
-    </section>
-  );
-}
