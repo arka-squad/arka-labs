@@ -1,21 +1,71 @@
-@tailwind base;
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&display=swap');
+
 @layer base {
-  /* Marketing palette (light) */
   :root {
-    --site-page-bg: #e3e0db; /* page claire (spec) */
-    --site-section: #ffffff; /* cartes blanches */
-    --site-text: #0F172A;    /* texte principal */
-    --site-muted: #334155;   /* texte secondaire */
-    --site-muted-2: #475569; /* texte secondaire alt */
-    --site-label: #64748B;   /* textes d'étiquettes */
-    --site-border: rgba(0,0,0,.08);
-    --site-grad: linear-gradient(135deg, #FAB652 0%, #F25636 50%, #E0026D 100%);
-    --site-radius-xl: 16px;
-    /* Section 4: rail variables */
+    /* Brand */
+    --grad-start: #fab652;
+    --grad-mid: #f25636;
+    --grad-end: #e0026d;
+    --brand-grad: linear-gradient(
+      135deg,
+      var(--grad-start) 0%,
+      var(--grad-mid) 50%,
+      var(--grad-end) 100%
+    );
+
+    /* Surfaces */
+    --bg: #e3e0db;
+    --surface: #ffffff;
+    --ink: #0f172a;
+    --muted: #334155;
+    --border: rgba(0, 0, 0, 0.06);
+
+    /* Radii & depth */
+    --r-lg: 16px;
+    --r-xl: 20px;
+    --shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+
+    /* Container */
     --container: 90rem; /* 1440px */
-    --gutter: 24px;
-    --rail-pad: max(calc((100vw - var(--container)) / 2 + var(--gutter)), 16px);
   }
 
-  .site-theme { background-color: var(--site-page-bg); color: var(--site-text); }
+  html,
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Poppins, ui-sans-serif, system-ui, Arial;
+  }
+
+  .container {
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    backdrop-filter: blur(8px);
+  }
+
+  .grad {
+    background-image: var(--brand-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 }
