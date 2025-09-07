@@ -21,12 +21,36 @@ const DEFAULT_LINKS = [
 export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, onLogin, sticky = true }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeHref, setActiveHref] = useState('');
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Observe sections to set aria-current dynamically
+  useEffect(() => {
+    const ids = links
+      .map((l) => l.href)
+      .filter((h) => h.startsWith('#'))
+      .map((h) => h.slice(1));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveHref(`#${entry.target.id}`);
+          }
+        });
+      },
+      { rootMargin: '-50% 0px -50% 0px' }
+    );
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, [links]);
 
   const stickyCls = sticky ? 'sticky top-0 z-50' : '';
   const borderColor = scrolled ? 'rgba(0,0,0,.12)' : 'rgba(0,0,0,.08)';
@@ -70,7 +94,12 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
               <li key={l.href}>
                 <a
                   href={l.href}
-                  className="text-sm font-medium text-[var(--site-muted)] hover:text-[var(--site-text)] underline-offset-4 hover:underline rounded py-1.5 px-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                  aria-current={activeHref === l.href ? 'page' : undefined}
+                  className={`text-sm font-medium underline-offset-4 hover:underline rounded py-1.5 px-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 ${
+                    activeHref === l.href
+                      ? 'text-[var(--site-text)]'
+                      : 'text-[var(--site-muted)] hover:text-[var(--site-text)]'
+                  }`}
                 >
                   {l.label}
                 </a>
@@ -119,16 +148,21 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
               <ul className="flex flex-col gap-2">
                 {links.map((l) => (
                   <li key={l.href}>
-                    <a
-                      href={l.href}
-                      className="block text-sm font-medium text-[var(--site-muted)] hover:text-[var(--site-text)] underline-offset-4 hover:underline rounded py-2 px-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
-                      onClick={() => setOpen(false)}
-                    >
-                      {l.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+                <a
+                  href={l.href}
+                  aria-current={activeHref === l.href ? 'page' : undefined}
+                  className={`block text-sm font-medium underline-offset-4 hover:underline rounded py-2 px-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 ${
+                    activeHref === l.href
+                      ? 'text-[var(--site-text)]'
+                      : 'text-[var(--site-muted)] hover:text-[var(--site-text)]'
+                  }`}
+                  onClick={() => setOpen(false)}
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
             </nav>
             <div className="flex flex-col gap-2 pt-1">
               <a
