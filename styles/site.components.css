@@ -1,0 +1,31 @@
+@layer components {
+  .site-card { background-color: var(--site-section); border: 1px solid var(--site-border); border-radius: var(--site-radius-xl); }
+
+  /* Card glow variants (per spec) */
+  .cardGlowA::before{content:"";position:absolute;inset:0;pointer-events:none;background:
+    radial-gradient(30% 24% at 10% 8%, #FAB6521A, transparent),
+    radial-gradient(22% 18% at 90% 88%, #E0026D12, transparent)}
+  .cardGlowB::before{content:"";position:absolute;inset:0;pointer-events:none;background:
+    radial-gradient(36% 30% at 88% 12%, #FAB6521A, transparent),
+    radial-gradient(24% 22% at 18% 82%, #E0026D12, transparent)}
+  .cardGlowC::before{content:"";position:absolute;inset:0;pointer-events:none;background:
+    radial-gradient(40% 30% at 14% 88%, #FAB6521A, transparent),
+    radial-gradient(24% 22% at 86% 24%, #E0026D12, transparent)}
+  .cardGlowD::before{content:"";position:absolute;inset:0;pointer-events:none;background:
+    radial-gradient(48% 38% at 78% 52%, #FAB65219, transparent),
+    radial-gradient(24% 20% at 22% 20%, #E0026D10, transparent)}
+
+  /* Section 3 — En clair glows (internal, localized) */
+  .card.glow-a::before {
+    content: ""; position: absolute; inset: -20%; pointer-events: none;
+    background:
+      radial-gradient(180px 140px at 20% 25%, rgba(250,182,82,.12), transparent 60%),
+      radial-gradient(220px 160px at 85% 80%, rgba(224,2,109,.10), transparent 60%);
+  }
+  .card.glow-b::before {
+    content: ""; position: absolute; inset: -20%; pointer-events: none;
+    background:
+      radial-gradient(200px 160px at 80% 20%, rgba(242,86,54,.10), transparent 60%),
+      radial-gradient(180px 140px at 15% 75%, rgba(250,182,82,.12), transparent 60%);
+  }
+}

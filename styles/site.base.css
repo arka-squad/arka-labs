@@ -1,0 +1,18 @@
+@layer base {
+  /* Marketing palette (light) */
+  :root {
+    --site-page-bg: #e3e0db; /* page claire (spec) */
+    --site-section: #ffffff; /* cartes blanches */
+    --site-text: #0F172A;    /* texte principal */
+    --site-muted: #334155;   /* texte secondaire */
+    --site-border: rgba(0,0,0,.08);
+    --site-grad: linear-gradient(135deg, #FAB652 0%, #F25636 50%, #E0026D 100%);
+    --site-radius-xl: 16px;
+    /* Section 4: rail variables */
+    --container: 90rem; /* 1440px */
+    --gutter: 24px;
+    --rail-pad: max(calc((100vw - var(--container)) / 2 + var(--gutter)), 16px);
+  }
+
+  .site-theme { background-color: var(--site-page-bg); color: var(--site-text); }
+}
