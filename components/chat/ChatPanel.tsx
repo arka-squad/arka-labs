@@ -5,6 +5,7 @@ import { MessageSquare, Link2, Plus, SquareDashedMousePointer, ArrowUp, AlertTri
 import ChatHeaderControls from './ChatHeaderControls';
 import { streamChat } from '../../lib/chat/stream';
 import { getCurrentRole, UIRole } from '../../lib/auth/role';
+import { handleIntent } from '../../src/chat/intents';
 
 export type Thread = { id: string; title: string; squad?: string; last_msg_at?: string };
 export type ChatMsg = { id: string; from: string; role?: 'human'|'agent'|'system'; at: string; text: string; status?: 'queued'|'sending'|'delivered'|'failed' };
@@ -87,10 +88,14 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
     // Intents: if starts with '/'
     if (val.startsWith('/')) {
       const jwt = localStorage.getItem('jwt') || localStorage.getItem('RBAC_TOKEN') || '';
+      const handled = await handleIntent(val, { threadId: activeThreadId, agentId, jwt });
+      if (handled) {
+        if (inputRef.current) inputRef.current.value = '';
+        return;
+      }
       try {
         await fetch('/api/chat/intents', { method:'POST', headers: { 'Content-Type':'application/json', ...(jwt?{Authorization:`Bearer ${jwt}`}:{}) }, body: JSON.stringify({ t: val.split(' ')[0], payload: { text: val, threadId: activeThreadId }, trace_id: crypto?.randomUUID?.() || Math.random().toString(36).slice(2) }) });
       } catch {}
-      // Echo agent confirmation
       const now = new Date();
       const agentName = (a?.name)||'Agent';
       const echo = { id: 'intent_'+now.getTime(), from: agentName, role: 'agent', at: now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), text: `Intent reçu: ${val}`, status: 'delivered' } as any;
