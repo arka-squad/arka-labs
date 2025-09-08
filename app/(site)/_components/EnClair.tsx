@@ -54,8 +54,8 @@ export default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL
               key={it.title}
               className={`card ${idx === 0 ? 'glow-a' : 'glow-b'} p-8 md:p-12 relative overflow-hidden h-full`}
             >
-              <div className="h-full flex flex-col items-center text-center gap-3">
-                <div className="flex items-center justify-center gap-3">
+              <div className="h-full flex flex-col gap-3 items-start text-left md:items-center md:text-center">
+                <div className="flex items-center gap-3 justify-start md:justify-center">
                   <div
                     className="w-10 h-10 rounded-full grid place-items-center shadow-sm text-white"
                     aria-hidden="true"
