@@ -1,7 +1,4 @@
 import { NextResponse } from 'next/server';
-import { log } from '../../../../lib/logger';
-import { TRACE_HEADER } from '../../../../lib/trace';
-import { trackSse } from '../../../../services/metrics';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -26,10 +23,7 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const format = (searchParams.get('format') || 'txt').toLowerCase(); // 'es' or 'txt'
-  const traceId =
-    req.headers.get(TRACE_HEADER) ||
-    searchParams.get(TRACE_HEADER) ||
-    crypto.randomUUID();
+  const traceId = req.headers.get('x-trace-id') || crypto.randomUUID();
   const role = searchParams.get('role') || 'viewer';
 
   const text = `Bienvenue sur Arka — flux IA (pilote). Rôle: ${role}. TTFT mesuré.`;
@@ -39,10 +33,8 @@ export async function GET(req: Request) {
   const start = Date.now();
   let firstChunkAt = 0;
 
-  const route = '/api/ai/stream';
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      if (format === 'es') trackSse(route, +1);
       // petite latence pour simuler modèle
       await sleep(250 + Math.random() * 250);
       for (let i = 0; i < tokens.length; i++) {
@@ -55,15 +47,11 @@ export async function GET(req: Request) {
         await sleep(40 + Math.random() * 60);
       }
       controller.close();
-      if (format === 'es') trackSse(route, -1);
-    },
-    cancel() {
-      if (format === 'es') trackSse(route, -1);
     },
   });
 
   const headers: Record<string, string> = {
-    [TRACE_HEADER]: traceId,
+    'x-trace-id': traceId,
     'cache-control': 'no-store',
   };
   if (format === 'es') headers['content-type'] = 'text/event-stream; charset=utf-8';
@@ -71,24 +59,27 @@ export async function GET(req: Request) {
 
   // Log NDJSON (stdout par défaut; filesystem si autorisé)
   const ttft = async () => {
+    // attendre un tick pour capturer la valeur après le premier enqueue
     await sleep(0);
     const ttftMs = firstChunkAt ? firstChunkAt - start : 0;
     const rec = {
-      route,
-      status: 200,
-      trace_id: traceId,
-      user_role: role,
+      ts: new Date().toISOString(),
+      route: '/api/ai/stream',
+      role,
       ttft_ms: ttftMs,
       tokens: tokens.length,
+      trace_id: traceId,
     };
     try {
       if (process.env.AI_LOG_TO_FS === '1') {
+        // Lazy import fs only if requested
         const fs = await import('fs');
         const path = 'logs/ai_gateway.ndjson';
         fs.mkdirSync('logs', { recursive: true });
-        fs.appendFileSync(path, JSON.stringify({ ts: new Date().toISOString(), ...rec }) + '\n');
+        fs.appendFileSync(path, JSON.stringify(rec) + '\n');
+      } else {
+        console.log('ai_gateway', JSON.stringify(rec));
       }
-      log('info', 'ai_gateway', rec);
     } catch {
       // ignore logging errors
     }

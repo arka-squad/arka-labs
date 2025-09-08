@@ -5,7 +5,6 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 import { TRACE_HEADER, generateTraceId } from '../../../../lib/trace';
-import { trackSse } from '../../../../services/metrics';
 
 export const GET = withAuth(
   ['viewer', 'editor', 'admin', 'owner'],
@@ -38,20 +37,14 @@ export const GET = withAuth(
       return res;
     }
     const encoder = new TextEncoder();
-    const route = '/api/gates/stream';
     const stream = new ReadableStream({
       start(controller) {
-        trackSse(route, +1);
         controller.enqueue(encoder.encode('event: open\n\n'));
         for (const line of content.trim().split('\n')) {
           controller.enqueue(encoder.encode(`data: ${line}\n\n`));
         }
         controller.enqueue(encoder.encode('event: end\n\n'));
         controller.close();
-        trackSse(route, -1);
-      },
-      cancel() {
-        trackSse(route, -1);
       },
     });
     return new NextResponse(stream, {

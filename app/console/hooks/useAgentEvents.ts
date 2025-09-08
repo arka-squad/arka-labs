@@ -2,7 +2,6 @@
 
 
 import { useEffect, useRef, useState } from 'react';
-import { generateTraceId, TRACE_HEADER } from '../../../lib/trace';
 
 export const MAX_ITEMS = 500;
 
@@ -40,10 +39,7 @@ export function useAgentEvents<T = unknown>(agentId: string) {
       requestAnimationFrame(flush);
     }, 50);
 
-    const trace_id = generateTraceId();
-    const es = new EventSource(
-      `/api/agents/events?agent=${agentId}&${TRACE_HEADER}=${trace_id}`
-    );
+    const es = new EventSource(`/api/agents/events?agent=${agentId}`);
 
     es.onopen = () => {
       setStatus('connected');

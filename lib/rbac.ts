@@ -51,10 +51,7 @@ export function withAuth(
   opts: { scope?: 'safe' | 'owner-only' } = {}
 ) {
   return async (req: NextRequest, context: any = {}): Promise<NextResponse> => {
-    const traceId =
-      req.headers.get(TRACE_HEADER) ||
-      req.nextUrl.searchParams.get(TRACE_HEADER) ||
-      generateTraceId();
+    const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
     const start = Date.now();
     let res: NextResponse;
     let user: User | null = null;
@@ -82,24 +79,10 @@ export function withAuth(
     const route = req.nextUrl.pathname;
     const method = req.method as Method;
     const actor = user?.sub || 'anonymous';
-    const user_role = user?.role || 'public';
+    const role = user?.role || 'public';
     const decision = res.status < 400 ? 'allow' : 'deny';
-    log('debug', 'rbac', {
-      route,
-      status: res.status,
-      trace_id: traceId,
-      method,
-      user_role,
-      decision,
-    });
-    log('info', 'api', {
-      route,
-      status: res.status,
-      trace_id: traceId,
-      actor,
-      user_role,
-      duration_ms,
-    });
+    log('debug', 'rbac', { route, status: res.status, trace_id: traceId, method, role, decision });
+    log('info', 'api', { route, status: res.status, trace_id: traceId, actor, role });
     try {
       await sql`insert into metrics_raw (trace_id, route, status, duration_ms) values (${traceId}, ${route}, ${res.status}, ${duration_ms})`;
       const buf = (globalThis as any).__TRACE_BUFFER__;
