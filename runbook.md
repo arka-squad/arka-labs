@@ -25,10 +25,6 @@ curl -X POST http://localhost:3000/api/webhook/github \
 
 Vercel calls `/api/jobs/drain` every 5 minutes as configured in `vercel.json`.
 
-## Gates & recettes
-
-Voir `docs/gates-demo.md` pour exécuter un gate ou une recette et suivre le job associé.
-
 ## Secrets policy
 
 All credentials are managed outside the repository. Never commit real secrets or `.env.local`; use `.env.example` for placeholders only. Rotate exposed keys immediately and store them in the team's secret manager. Run `scripts/pre-commit-secrets` before pushing changes and ensure CI secret scans pass.
