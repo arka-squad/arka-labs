@@ -38,6 +38,11 @@ async function runForHost(host) {
   const health = await fetchJson(host, '/api/health');
   result.checks.push({ name: 'health', pass: health.ok, status: health.status });
 
+  // Version (optional)
+  const ver = await fetchJson(host, '/api/version');
+  const vpass = ver.ok && ver.json && typeof (ver.json.version || ver.json.commit_sha || ver.json.env) !== 'undefined';
+  result.checks.push({ name: 'version_optional', pass: !!vpass, status: ver.status });
+
   // KPIs
   const kpis = await fetchJson(host, '/api/metrics/kpis');
   const kpass = kpis.ok && kpis.json && expectKeys(kpis.json, ['p95', 'error_rate_percent']);
