@@ -1,5 +1,7 @@
-﻿import type { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { verifyToken, Role } from './lib/auth';
+import { hasScope } from './lib/rbac';
 
 const CANONICAL_HOST = 'arka-squad.app';
 
@@ -21,20 +23,33 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-
   // Enforce canonical host in production for the rest of the app.
   if (isProd) {
-    if (!host || host === CANONICAL_HOST) {
-      return NextResponse.next();
+    if (host && host !== CANONICAL_HOST) {
+      const url = new URL(request.nextUrl);
+      url.protocol = 'https:';
+      url.host = CANONICAL_HOST;
+      return NextResponse.redirect(url, 301);
     }
-    const url = new URL(request.nextUrl);
-    url.protocol = 'https:';
-    url.host = CANONICAL_HOST;
-    return NextResponse.redirect(url, 301);
-
   }
 
-  return NextResponse.next();
+  const auth = request.headers.get('authorization') || request.cookies.get('RBAC_TOKEN')?.value || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : auth;
+  const user = token ? verifyToken(token) : null;
+  const role: Role | 'public' = user?.role || 'public';
+  const scope = request.headers.get('x-scope') as 'safe' | 'owner-only' | null;
+  if (scope) {
+    if (!user) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+    }
+    if (!hasScope(role as Role, scope)) {
+      return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+    }
+  }
+  const res = NextResponse.next();
+  if (user) res.headers.set('x-user', user.sub);
+  res.headers.set('x-role', role);
+  return res;
 }
 
 // Avoid matching Next.js internals and common static files.

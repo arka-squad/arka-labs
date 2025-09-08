@@ -214,6 +214,12 @@ export async function runRecipe(
     return jobs.get(idempotencyKeys.get(key)!)!;
   }
   const active = userJobs.get(opts.userId) ?? new Set();
+  for (const jid of active) {
+    const j = jobs.get(jid);
+    if (j && j.status === 'running' && j.recipe_id === recipeId) {
+      return j;
+    }
+  }
   if (active.size >= 5) {
     throw new Error('concurrency-limit');
   }
@@ -226,6 +232,7 @@ export async function runRecipe(
     status: 'running',
     trace_id: opts.traceId || randomUUID(),
     started_at: Date.now(),
+    idempotency_key: opts.idempotencyKey,
   };
   jobs.set(jobId, job);
   active.add(jobId);
