@@ -1,41 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '../../../../lib/rbac';
-import { getJob } from '../../../../services/gates/runner';
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import { TRACE_HEADER, generateTraceId } from '../../../../lib/trace';
+import { logs, jobs } from '../../../../services/gates/state';
 
-export const GET = withAuth(
-  ['viewer', 'editor', 'admin', 'owner'],
-  async (req: NextRequest) => {
-    const jobId = req.nextUrl.searchParams.get('job_id');
-    if (!jobId) {
-      return NextResponse.json({ error: 'job_id-required' }, { status: 400 });
-    }
-    const job = getJob(jobId);
-    if (!job) return NextResponse.json({ error: 'not_found' }, { status: 404 });
-    const dir = job.type === 'gate' ? 'gates' : 'recipes';
-    let content: string;
-    try {
-      content = await fs.readFile(
-        path.join(process.cwd(), 'logs', dir, `${jobId}.ndjson`),
-        'utf8'
-      );
-    } catch {
-      return NextResponse.json({ error: 'not_found' }, { status: 404 });
-    }
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      start(controller) {
-        controller.enqueue(encoder.encode('event: open\n\n'));
-        for (const line of content.trim().split('\n')) {
-          controller.enqueue(encoder.encode(`data: ${line}\n\n`));
-        }
-        controller.enqueue(encoder.encode('event: end\n\n'));
-        controller.close();
-      },
-    });
-    return new NextResponse(stream, {
-      headers: { 'content-type': 'text/event-stream' },
-    });
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req: NextRequest) => {
+  const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
+  const { searchParams } = new URL(req.url);
+  const jobId = searchParams.get('job_id') || '';
+  if (!jobId) {
+    const res = NextResponse.json({ error: 'invalid_input' }, { status: 400 });
+    res.headers.set(TRACE_HEADER, traceId);
+    return res;
   }
-);
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      const send = (obj: any) => controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
+      send({ t: 'open', job_id: jobId, trace_id: traceId });
+      let idx = 0;
+      const timer = setInterval(() => {
+        const arr = logs.get(jobId) || [];
+        while (idx < arr.length) {
+          try { send(JSON.parse(arr[idx++])); } catch { idx++; }
+        }
+        const j = jobs.get(jobId);
+        if (!j || ['pass', 'fail', 'warn', 'error', 'canceled'].includes(j.status)) {
+          clearInterval(timer);
+          send({ t: 'done', status: j?.status || 'unknown' });
+          controller.close();
+        }
+      }, 200);
+    },
+    cancel() { /* no-op */ },
+  });
+  return new NextResponse(stream, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache, no-transform',
+      Connection: 'keep-alive',
+      [TRACE_HEADER]: traceId,
+    },
+  });
+});
+

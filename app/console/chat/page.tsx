@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ChatMessage, ChatMessageProps } from '../../../src/ui/ChatMessage';
 import { uiLog } from '../../../lib/ui-log';
+import { generateTraceId, TRACE_HEADER } from '../../../lib/trace';
 import { useRole } from '../../../src/role-context';
 
 export default function ChatPage() {
@@ -20,6 +21,12 @@ export default function ChatPage() {
   async function send() {
     if (readOnly) return;
     if (!input.trim()) return;
+    // intents: /gate <id> or /test <id>
+    const intent = input.trim();
+    if (await runFromIntent(intent)) {
+      setInput('');
+      return;
+    }
     const userMsg: ChatMessageProps = { role: 'user', content: input };
     setMessages((m) => [...m, userMsg, { role: 'agent', content: '', streaming: true }]);
     uiLog('send_message', { role });
@@ -32,6 +39,48 @@ export default function ChatPage() {
         return copy;
       });
     }, 1000);
+  }
+
+  async function runFromIntent(text: string) {
+    const m = text.match(/^\/(gate|test)\s+([^\s]+).*$/i);
+    if (!m) return false;
+    const kind = m[1].toLowerCase();
+    const id = m[2];
+    const trace_id = generateTraceId();
+    try {
+      if (kind === 'gate') {
+        const res = await fetch('/api/gates/run', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'x-idempotency-key': crypto.randomUUID(),
+            [TRACE_HEADER]: trace_id,
+            authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+          },
+          body: JSON.stringify({ gate_id: id, inputs: {} }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          uiLog('chat.intent.gate', { id, job_id: data.job_id, trace_id });
+        }
+      } else {
+        const res = await fetch('/api/recipes/run', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'x-idempotency-key': crypto.randomUUID(),
+            [TRACE_HEADER]: trace_id,
+            authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+          },
+          body: JSON.stringify({ recipe_id: id, inputs: {} }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          uiLog('chat.intent.test', { id, job_id: data.job_id, trace_id });
+        }
+      }
+    } catch {}
+    return true;
   }
 
   return (
@@ -59,4 +108,3 @@ export default function ChatPage() {
     </div>
   );
 }
-

@@ -84,12 +84,16 @@ export function withAuth(
     log('debug', 'rbac', { route, status: res.status, trace_id: traceId, method, role, decision });
     log('info', 'api', { route, status: res.status, trace_id: traceId, actor, role });
     try {
-      await sql`insert into metrics_raw (trace_id, route, status, duration_ms) values (${traceId}, ${route}, ${res.status}, ${duration_ms})`;
-      const buf = (globalThis as any).__TRACE_BUFFER__;
-      if (Array.isArray(buf)) buf.push(traceId);
+      if (process.env.POSTGRES_URL) {
+        await sql`insert into metrics_raw (trace_id, route, status, duration_ms) values (${traceId}, ${route}, ${res.status}, ${duration_ms})`;
+        const buf = (globalThis as any).__TRACE_BUFFER__;
+        if (Array.isArray(buf)) buf.push(traceId);
+      }
     } catch (e) {
-      console.error('metrics_raw_insert_fail', e);
-
+      // degrade gracefully in local/dev without DB
+      if (process.env.NODE_ENV === 'production') {
+        console.error('metrics_raw_insert_fail', e);
+      }
     }
     res.headers.set(TRACE_HEADER, traceId);
     return res;
