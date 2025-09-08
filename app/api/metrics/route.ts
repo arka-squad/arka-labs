@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sql } from '../../../lib/db';
 import { computeOverview } from '../../../lib/metrics-api';
 import { log } from '../../../lib/logger';
 
@@ -9,7 +10,6 @@ export const GET = async (req: NextRequest) => {
   const start = Date.now();
   const trace_id = req.headers.get('x-trace-id') ?? crypto.randomUUID();
   try {
-    const { sql } = await import('../../../lib/db');
     const { rows } = await sql`
       select (payload_json->>'ttft_ms')::int as ttft_ms,
              (payload_json->>'rtt_ms')::int as rtt_ms,
@@ -40,3 +40,4 @@ export const GET = async (req: NextRequest) => {
     return res;
   }
 };
+

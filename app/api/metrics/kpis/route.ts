@@ -1,4 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
+import { sql } from '../../../../lib/db';
 import { computeKpis } from '../../../../lib/metrics-api';
 import { log } from '../../../../lib/logger';
 import { withAuth } from '../../../../lib/rbac';
@@ -10,7 +11,6 @@ export const GET = withAuth(['admin', 'owner'], async (req: NextRequest) => {
   const start = Date.now();
   const trace_id = req.headers.get('x-trace-id') ?? crypto.randomUUID();
   try {
-    const { sql } = await import('../../../../lib/db');
     const { rows } = await sql`
       select (payload_json->>'ttft_ms')::int as ttft_ms,
              (payload_json->>'rtt_ms')::int as rtt_ms,

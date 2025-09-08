@@ -24,6 +24,19 @@ const poppins = Poppins({
   display: 'swap',
 });
 
+const siteTheme = {
+  '--bg': '#e3e0db',
+  '--surface': '#ffffff',
+  '--ink': '#0F172A',
+  '--muted': '#334155',
+  '--border': 'rgba(0,0,0,0.06)',
+  '--site-text': '#0F172A',
+  '--site-muted': '#334155',
+  '--site-border': 'rgba(0,0,0,0.06)',
+  '--site-section': '#ffffff',
+  background: '#e3e0db',
+  color: '#0F172A',
+} as CSSProperties;
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (

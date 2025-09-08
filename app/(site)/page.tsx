@@ -54,11 +54,9 @@ export default function MarketingLanding() {
       <BetaSignup />
 
       {/* Anchors required by header; for v1, #how and #pricing point to #features or placeholders as per spec */}
-
       <section id="features" className="sr-only" aria-hidden>
-        Features placeholder (redirigÃ© via nav)
+        Features placeholder (redirigé via nav)
       </section>
-
 
       <Footer />
     </main>

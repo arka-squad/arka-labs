@@ -7,25 +7,7 @@ export const meta = {
   id: 'release.preflight',
   version: '1.0.0',
   title: 'Release Preflight',
-  steps: [
-    { id: 'kpis', gate_id: 'ops.kpis.kpi_snapshot' },
-    { id: 'ttft', gate_id: 'perf.api.ttft_p95' },
-    { id: 'webhook', gate_id: 'security.webhook.hmac' }
-  ],
-  inputs: {
-    window_minute: { type: 'number', minimum: 0 },
-    payload: { type: 'string' },
-    secret: { type: 'string' }
-  },
-  outputs: {
-    ttft_p95: { type: 'number' },
-    rtt_p95: { type: 'number' },
-    error_rate_percent: { type: 'number' },
-    status: { type: 'string' },
-    hmac: { type: 'string' }
-  },
-  scope: 'owner-only',
-  tags: ['seed', 'release']
+  scope: 'owner-only'
 };
 
 const schema = z.object({

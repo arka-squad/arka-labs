@@ -4,8 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { MessageSquare, Link2, Plus, SquareDashedMousePointer, ArrowUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import ChatHeaderControls from './ChatHeaderControls';
 import { streamChat } from '../../lib/chat/stream';
-import { getCurrentRole, UIRole } from '../../lib/auth/role';
-import { handleIntent } from '../../src/chat/intents';
+import { getCurrentRole } from '../../lib/auth/role';
 
 export type Thread = { id: string; title: string; squad?: string; last_msg_at?: string };
 export type ChatMsg = { id: string; from: string; role?: 'human'|'agent'|'system'; at: string; text: string; status?: 'queued'|'sending'|'delivered'|'failed' };
@@ -29,13 +28,6 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
   const feedRef = useRef<HTMLDivElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const [providerMap, setProviderMap] = useState<Record<string, { providerId?: string; modelId?: string }>>({});
-
-  const [role, setRole] = useState<UIRole>(getCurrentRole());
-  useEffect(() => {
-    const id = setInterval(() => setRole(getCurrentRole()), 2000);
-    return () => clearInterval(id);
-  }, []);
-  const readOnly = role === 'viewer';
 
   const [streamingText, setStreamingText] = useState('');
   const [streaming, setStreaming] = useState(false);
@@ -88,14 +80,10 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
     // Intents: if starts with '/'
     if (val.startsWith('/')) {
       const jwt = localStorage.getItem('jwt') || localStorage.getItem('RBAC_TOKEN') || '';
-      const handled = await handleIntent(val, { threadId: activeThreadId, agentId, jwt });
-      if (handled) {
-        if (inputRef.current) inputRef.current.value = '';
-        return;
-      }
       try {
         await fetch('/api/chat/intents', { method:'POST', headers: { 'Content-Type':'application/json', ...(jwt?{Authorization:`Bearer ${jwt}`}:{}) }, body: JSON.stringify({ t: val.split(' ')[0], payload: { text: val, threadId: activeThreadId }, trace_id: crypto?.randomUUID?.() || Math.random().toString(36).slice(2) }) });
       } catch {}
+      // Echo agent confirmation
       const now = new Date();
       const agentName = (a?.name)||'Agent';
       const echo = { id: 'intent_'+now.getTime(), from: agentName, role: 'agent', at: now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), text: `Intent reçu: ${val}`, status: 'delivered' } as any;
@@ -281,25 +269,16 @@ export default function ChatPanel({ threads, messagesByThread, agents, activeThr
               ref={inputRef}
               className="w-full h-24 resize-none bg-transparent outline-none text-sm leading-relaxed pr-16 text-[var(--fg)] placeholder:text-[var(--fgdim)]/70"
               placeholder={`Message à squad ${threads.find(t=>t.id===activeThreadId)?.squad || 'alpha'}…`}
-              onKeyDown={(e) => { if (!readOnly && e.key==='Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-              readOnly={readOnly}
-              disabled={readOnly}
+              onKeyDown={(e) => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
             />
-            {!readOnly && (
-              <div className="absolute left-3 bottom-3 flex items-center gap-2">
-                <button className="w-8 h-8 rounded-full bg-white/5 border border-[var(--border)] grid place-items-center" title="Ajouter"><Plus className="w-4 h-4"/></button>
-                <button className="h-8 px-3 rounded-full bg-white/5 border border-[var(--border)] text-sm flex items-center gap-1" title="Auto">
-                  <SquareDashedMousePointer className="w-4 h-4"/>
-                  <span>Auto</span>
-                </button>
-              </div>
-            )}
-            <button
-              onClick={send}
-              disabled={readOnly}
-              className={`absolute right-3 bottom-3 w-8 h-8 rounded-full grid place-items-center border border-[var(--border)] ${readOnly ? 'bg-[var(--fgdim)]/20 opacity-50 cursor-not-allowed' : 'bg-[var(--fgdim)]/20 hover:bg-[var(--fgdim)]/30'}`}
-              title="Envoyer"
-            ><ArrowUp className="w-4 h-4"/></button>
+            <div className="absolute left-3 bottom-3 flex items-center gap-2">
+              <button className="w-8 h-8 rounded-full bg-white/5 border border-[var(--border)] grid place-items-center" title="Ajouter"><Plus className="w-4 h-4"/></button>
+              <button className="h-8 px-3 rounded-full bg-white/5 border border-[var(--border)] text-sm flex items-center gap-1" title="Auto">
+                <SquareDashedMousePointer className="w-4 h-4"/>
+                <span>Auto</span>
+              </button>
+            </div>
+            <button onClick={send} className="absolute right-3 bottom-3 w-8 h-8 rounded-full bg-[var(--fgdim)]/20 grid place-items-center border border-[var(--border)] hover:bg-[var(--fgdim)]/30" title="Envoyer"><ArrowUp className="w-4 h-4"/></button>
           </div>
         </div>
       </div>

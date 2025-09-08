@@ -6,18 +6,7 @@ export const meta = {
   version: '1.0.0',
   title: 'Webhook HMAC',
   category: 'security',
-  inputs: {
-    payload: { type: 'string' },
-    secret: { type: 'string' }
-  },
-  outputs: {
-    status: { type: 'string' },
-    hmac: { type: 'string' }
-  },
-  risk: 'high',
-  scope: 'owner-only',
-  est_duration_ms: 500,
-  tags: ['seed', 'security']
+  scope: 'owner-only'
 };
 
 const schema = z.object({

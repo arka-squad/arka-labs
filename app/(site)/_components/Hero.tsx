@@ -13,22 +13,22 @@ export type HeroProps = {
   image?: { src: string; alt: string; srcset?: string; sizes?: string };
 };
 
-const DEFAULT_BADGE = 'Cockpit v0.1.0-demo Â· DonnÃ©es de dÃ©mo';
+const DEFAULT_BADGE = 'Cockpit v0.1.0-demo · Données de démo';
 const DEFAULT_TITLE = (
   <>
-    Pilotez une Ã©quipe dâ€™ <span className="accent">agents IA experts</span> â€” pas un assistant isolÃ©.
+    Pilotez une équipe d’ <span className="accent">agents IA experts</span> — pas un assistant isolé.
   </>
 );
 const DEFAULT_SUBTITLE =
-  'Avec Arka, vous ne dialoguez pas avec une machine. Vous dirigez une squad spÃ©cialisÃ©e : RH, Formation, QualitÃ©, Organisation. Chaque agent IA est un expert dans son domaine, et tous travaillent ensemble, en ping-pong, pour livrer mieux.';
-const DEFAULT_CHIPS = ['Experts, pas gÃ©nÃ©ralistes', 'Collaboration multi-rÃ´les', 'MÃ©moire souveraine'];
+  'Avec Arka, vous ne dialoguez pas avec une machine. Vous dirigez une squad spécialisée : RH, Formation, Qualité, Organisation. Chaque agent IA est un expert dans son domaine, et tous travaillent ensemble, en ping-pong, pour livrer mieux.';
+const DEFAULT_CHIPS = ['Experts, pas généralistes', 'Collaboration multi-rôles', 'Mémoire souveraine'];
 const DEFAULT_CTAS = [
   { label: 'Inscription à la Bêta', href: '/beta', variant: 'primary' as const },
   { label: 'Contactez-nous', href: '/contact', variant: 'secondary' as const },
 ];
 const DEFAULT_IMAGE = {
   src: '/assets/hero/arkabox-board.png',
-  alt: 'AperÃ§u du cockpit Arka â€“ board et actions visibles',
+  alt: 'Aperçu du cockpit Arka – board et actions visibles',
   srcset:
     '/assets/hero/arkabox-board.png?w=480 480w, /assets/hero/arkabox-board.png?w=768 768w, /assets/hero/arkabox-board.png?w=1200 1200w, /assets/hero/arkabox-board.png?w=1600 1600w',
   sizes: '(max-width: 768px) 90vw, (max-width: 1200px) 40vw, 560px',
@@ -43,7 +43,7 @@ export default function Hero({
   image = DEFAULT_IMAGE,
 }: HeroProps) {
   return (
-    <section id="hero" aria-label="Section de tÃªte" className="py-16 md:py-20 lg:py-24 text-white">
+    <section id="hero" aria-label="Section de tête" className="py-16 md:py-20 lg:py-24 text-white">
       <div className="mx-auto max-w-[1440px] px-6 grid grid-cols-12 gap-x-6">
         {/* Left: text */}
         <div className="col-span-12 md:col-span-7 space-y-6">
@@ -87,14 +87,14 @@ export default function Hero({
                 ),
             )}
           </div>
-
-
-          <div className="flex flex-wrap gap-2" aria-label="Atouts">
+          <div
+            className="flex flex-wrap gap-2 opacity-0 motion-safe:animate-fade-up [animation-delay:400ms]"
+            aria-label="Atouts"
+          >
             {chips.map((c) => {
               const icon = c.toLowerCase().includes('expert')
                 ? <CheckCircle2 className="w-3.5 h-3.5" aria-hidden />
-                : c.toLowerCase().includes('multi') || c.toLowerCase().includes('rÃ´le')
-
+                : c.toLowerCase().includes('multi') || c.toLowerCase().includes('rôle')
                 ? <Users className="w-3.5 h-3.5" aria-hidden />
                 : <Database className="w-3.5 h-3.5" aria-hidden />;
               return (

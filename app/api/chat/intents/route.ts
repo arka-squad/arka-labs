@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 import { verifyToken } from '../../../../lib/auth';
-import { log } from '../../../../lib/logger';
-import { TRACE_HEADER, generateTraceId } from '../../../../lib/trace';
 
 export async function POST(req: Request) {
   try {
@@ -11,22 +9,10 @@ export async function POST(req: Request) {
     // Minimal validation
     const t = String(body?.t || '').trim();
     const payload = body?.payload || {};
-    const trace_id =
-      req.headers.get(TRACE_HEADER) || body?.trace_id || generateTraceId();
+    const trace_id = body?.trace_id || null;
     // Log intent (dev)
-    try {
-      log('info', 'chat_intent', {
-        route: '/api/chat/intents',
-        status: 202,
-        trace_id,
-        user_role: user?.role || 'public',
-        t,
-        payload,
-      });
-    } catch {}
-    const res = NextResponse.json({ accepted: true }, { status: 202 });
-    res.headers.set(TRACE_HEADER, trace_id);
-    return res;
+    try { console.log('chat_intent', JSON.stringify({ ts: new Date().toISOString(), sub: user?.sub || 'dev', t, payload, trace_id })); } catch {}
+    return NextResponse.json({ accepted: true }, { status: 202 });
   } catch {
     return NextResponse.json({ error: 'invalid' }, { status: 400 });
   }
