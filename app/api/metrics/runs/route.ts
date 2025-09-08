@@ -1,5 +1,4 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { sql } from '../../../../lib/db';
 import { parsePagination, formatRuns } from '../../../../lib/metrics-api';
 import { log } from '../../../../lib/logger';
 import { withAuth } from '../../../../lib/rbac';
@@ -14,6 +13,7 @@ export const GET = withAuth(['admin', 'owner'], async (req: NextRequest) => {
   const { page, page_size } = parsePagination(searchParams);
   const offset = (page - 1) * page_size;
   try {
+    const { sql } = await import('../../../../lib/db');
     const { rows } = await sql`
       select ts,
              (payload_json->>'run_id') as run_id,
