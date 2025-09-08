@@ -5,7 +5,17 @@ export const meta = {
   id: 'contracts.basic',
   version: '1.0.0',
   title: 'Contracts Basic',
-  scope: 'safe'
+  steps: [
+    { id: 'contracts', gate_id: 'contracts.schema.documents' }
+  ],
+  inputs: {
+    doc_ids: { type: 'array', items: { type: 'string' }, minItems: 1 }
+  },
+  outputs: {
+    schema_mismatch_count: { type: 'number' }
+  },
+  scope: 'safe',
+  tags: ['seed', 'contracts']
 };
 
 const schema = z.object({

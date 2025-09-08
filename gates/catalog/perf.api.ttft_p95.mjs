@@ -5,7 +5,16 @@ export const meta = {
   version: '1.0.0',
   title: 'API TTFT p95',
   category: 'perf',
-  scope: 'safe'
+  inputs: {
+    window_minute: { type: 'number', minimum: 0 }
+  },
+  outputs: {
+    p95_ms: { type: 'number' }
+  },
+  risk: 'low',
+  scope: 'safe',
+  est_duration_ms: 1000,
+  tags: ['seed', 'perf']
 };
 
 const schema = z.object({
