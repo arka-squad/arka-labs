@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { CSSProperties } from 'react';
 import { Poppins } from 'next/font/google';
 import '../../styles/site.reset.css';
 import '../../styles/site.base.css';
@@ -23,9 +24,23 @@ const poppins = Poppins({
   display: 'swap',
 });
 
+const siteTheme = {
+  '--bg': '#e3e0db',
+  '--surface': '#ffffff',
+  '--ink': '#0F172A',
+  '--muted': '#334155',
+  '--border': 'rgba(0,0,0,0.06)',
+  '--site-text': '#0F172A',
+  '--site-muted': '#334155',
+  '--site-border': 'rgba(0,0,0,0.06)',
+  '--site-section': '#ffffff',
+  background: '#e3e0db',
+  color: '#0F172A',
+} as CSSProperties;
+
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={poppins.className} style={{ background: '#e3e0db', color: '#0F172A' }}>
+    <div className={poppins.className} style={siteTheme}>
       {/* Consent/Cookies minimal */}
       <Script id="ga4-consent" strategy="afterInteractive">
         {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('consent', 'default', { 'ad_storage': 'denied', 'analytics_storage': 'denied' });`}
