@@ -24,6 +24,18 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: 
     res.headers.set(TRACE_HEADER, traceId);
     return res;
   }
+  // Load gate meta and enforce scope
+  const gate = getGates().find((g) => g.id === gateId);
+  if (!gate) {
+    const res = NextResponse.json({ error: 'not_found' }, { status: 404 });
+    res.headers.set(TRACE_HEADER, traceId);
+    return res;
+  }
+  if (!hasScope(user!.role, (gate as any).scope || 'safe')) {
+    const res = NextResponse.json({ error: 'forbidden' }, { status: 403 });
+    res.headers.set(TRACE_HEADER, traceId);
+    return res;
+  }
   // Idempotency reuse
   const existing = getIdempotentJobId(key);
   if (existing) {
@@ -32,7 +44,7 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: 
     return res;
   }
   // input validation
-  const v = validateInputs(gate.inputs, inputs);
+  const v = validateInputs((gate as any).inputs, inputs);
   if (!v.ok) {
     const res = NextResponse.json({ error: 'shape_mismatch', details: v.errors }, { status: 422 });
     res.headers.set(TRACE_HEADER, traceId);
@@ -77,15 +89,3 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: 
   sweepIdempotency();
   return res;
 });
-  // Load gate meta and enforce scope
-  const gate = getGates().find((g) => g.id === gateId);
-  if (!gate) {
-    const res = NextResponse.json({ error: 'not_found' }, { status: 404 });
-    res.headers.set(TRACE_HEADER, traceId);
-    return res;
-  }
-  if (!hasScope(user!.role, gate.scope || 'safe')) {
-    const res = NextResponse.json({ error: 'forbidden' }, { status: 403 });
-    res.headers.set(TRACE_HEADER, traceId);
-    return res;
-  }
