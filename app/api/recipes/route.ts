@@ -6,11 +6,10 @@ import { TRACE_HEADER, generateTraceId } from '../../../lib/trace';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export const GET = withAuth(['public'], async (req: NextRequest) => {
+export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req: NextRequest) => {
   const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
   const items = getRecipes();
   const res = NextResponse.json({ items });
   res.headers.set(TRACE_HEADER, traceId);
   return res;
 });
-

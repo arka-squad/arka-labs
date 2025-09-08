@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '../../../../lib/rbac';
+import { withAuth, hasScope } from '../../../../lib/rbac';
 import { TRACE_HEADER, generateTraceId } from '../../../../lib/trace';
 import { jobs, results, logs, idempotency, appendLog, Job } from '../../../../services/gates/state';
+import { getGates } from '../../../../lib/gates/catalog';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export const POST = withAuth(['admin', 'owner'], async (req: NextRequest) => {
+export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: any) => {
   const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
   const key = req.headers.get('x-idempotency-key');
   if (!key) {
@@ -66,4 +67,15 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest) => {
   res.headers.set(TRACE_HEADER, traceId);
   return res;
 });
-
+  // Load gate meta and enforce scope
+  const gate = getGates().find((g) => g.id === gateId);
+  if (!gate) {
+    const res = NextResponse.json({ error: 'not_found' }, { status: 404 });
+    res.headers.set(TRACE_HEADER, traceId);
+    return res;
+  }
+  if (!hasScope(user!.role, gate.scope || 'safe')) {
+    const res = NextResponse.json({ error: 'forbidden' }, { status: 403 });
+    res.headers.set(TRACE_HEADER, traceId);
+    return res;
+  }

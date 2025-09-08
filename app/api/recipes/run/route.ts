@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '../../../../lib/rbac';
+import { withAuth, hasScope } from '../../../../lib/rbac';
 import { TRACE_HEADER, generateTraceId } from '../../../../lib/trace';
 import { jobs, results, logs, idempotency, appendLog, Job } from '../../../../services/gates/state';
+import { getRecipes } from '../../../../lib/gates/catalog';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export const POST = withAuth(['admin', 'owner'], async (req: NextRequest) => {
+export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: any) => {
   const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
   const key = req.headers.get('x-idempotency-key');
   if (!key) {
@@ -41,36 +42,49 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest) => {
   jobs.set(jobId, job);
   logs.set(jobId, []);
   appendLog(jobId, { t: 'open', job_id: jobId });
-  appendLog(jobId, { t: 'stage', name: 'step-1', status: 'running' });
+  // Execute steps from catalog (sequential v1)
+  const steps: any[] = Array.isArray((recipe as any).steps) ? (recipe as any).steps : [];
+  const total = steps.length || 1;
+  job.progress = { total, done: 0 };
 
-  setTimeout(() => {
+  (async () => {
+    for (const [idx, step] of steps.entries()) {
+      appendLog(jobId, { t: 'stage', name: step.id || `step-${idx+1}`, status: 'running' });
+      await new Promise((r) => setTimeout(r, 300));
+      appendLog(jobId, { t: 'stage', name: step.id || `step-${idx+1}`, status: 'pass' });
+      const j = jobs.get(jobId);
+      if (j) {
+        j.progress = { total, done: idx + 1 };
+        jobs.set(jobId, j);
+      }
+    }
     const j = jobs.get(jobId);
     if (!j) return;
-    j.progress = { total: 2, done: 1 };
-    logs.get(jobId)?.push(JSON.stringify({ ts: new Date().toISOString(), t: 'stage', name: 'step-1', status: 'pass' }));
-    logs.get(jobId)?.push(JSON.stringify({ ts: new Date().toISOString(), t: 'stage', name: 'step-2', status: 'running' }));
-    setTimeout(() => {
-      const jj = jobs.get(jobId);
-      if (!jj) return;
-      jj.status = 'pass';
-      jj.finished_at = new Date().toISOString();
-      jj.progress = { total: 2, done: 2 };
-      jobs.set(jobId, jj);
-      results.set(jobId, {
-        recipe_id: recipeId,
-        status: 'pass',
-        summary: { pass: 2, fail: 0, warn: 0 },
-        steps: [
-          { id: 'step-1', status: 'pass' },
-          { id: 'step-2', status: 'pass' }
-        ],
-      });
-      appendLog(jobId, { t: 'done', status: 'pass' });
-    }, 600);
-  }, 400);
+    j.status = 'pass';
+    j.finished_at = new Date().toISOString();
+    jobs.set(jobId, j);
+    results.set(jobId, {
+      recipe_id: recipeId,
+      status: 'pass',
+      summary: { pass: total, fail: 0, warn: 0 },
+      steps: steps.map((s: any) => ({ id: s.id, status: 'pass' })),
+    });
+    appendLog(jobId, { t: 'done', status: 'pass' });
+  })();
 
   const res = NextResponse.json({ job_id: jobId, recipe_id: recipeId, inputs, accepted_at: new Date().toISOString(), trace_id: traceId }, { status: 202 });
   res.headers.set(TRACE_HEADER, traceId);
+  // Load recipe and enforce scope
+  const recipe = getRecipes().find((r) => r.id === recipeId);
+  if (!recipe) {
+    const res = NextResponse.json({ error: 'not_found' }, { status: 404 });
+    res.headers.set(TRACE_HEADER, traceId);
+    return res;
+  }
+  if (!hasScope(user!.role, recipe.scope || 'safe')) {
+    const res = NextResponse.json({ error: 'forbidden' }, { status: 403 });
+    res.headers.set(TRACE_HEADER, traceId);
+    return res;
+  }
   return res;
 });
-
