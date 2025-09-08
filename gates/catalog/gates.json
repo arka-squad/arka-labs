@@ -1,0 +1,65 @@
+{
+  "items": [
+    {
+      "id": "perf.api.ttft_p95",
+      "version": "1.0.0",
+      "title": "TTFT p95",
+      "category": "perf",
+      "scope": "safe",
+      "risk": "low",
+      "inputs": { "window_minute": { "type": "integer", "minimum": 1, "default": 1 } },
+      "outputs": { "p95_ms": { "type": "integer" } },
+      "est_duration_ms": 2000,
+      "tags": ["api", "kpis"]
+    },
+    {
+      "id": "perf.api.rtt_p95",
+      "version": "1.0.0",
+      "title": "RTT p95",
+      "category": "perf",
+      "scope": "safe",
+      "risk": "low",
+      "inputs": { "window_minute": { "type": "integer", "minimum": 1, "default": 1 } },
+      "outputs": { "p95_ms": { "type": "integer" } },
+      "est_duration_ms": 2000,
+      "tags": ["api", "kpis"]
+    },
+    {
+      "id": "security.webhook.hmac",
+      "version": "1.0.0",
+      "title": "Webhook HMAC",
+      "category": "security",
+      "scope": "owner-only",
+      "risk": "med",
+      "inputs": { "secret_ref": { "type": "string" } },
+      "outputs": { "verified": { "type": "boolean" } },
+      "est_duration_ms": 1000,
+      "tags": ["security", "webhook"]
+    },
+    {
+      "id": "contracts.schema.documents",
+      "version": "1.0.0",
+      "title": "Contrats: schémas documents",
+      "category": "contracts",
+      "scope": "safe",
+      "risk": "med",
+      "inputs": { "doc_ids": { "type": "array", "items": { "type": "string" } } },
+      "outputs": { "schema_mismatch_count": { "type": "integer" } },
+      "est_duration_ms": 3000,
+      "tags": ["contracts", "schema"]
+    },
+    {
+      "id": "ops.release.preflight.checks",
+      "version": "1.0.0",
+      "title": "Préflight Release (checks)",
+      "category": "ops",
+      "scope": "safe",
+      "risk": "low",
+      "inputs": { "env": { "type": "string", "enum": ["preview", "production"] } },
+      "outputs": { "pass_count": { "type": "integer" }, "fail_count": { "type": "integer" } },
+      "est_duration_ms": 5000,
+      "tags": ["ops", "preflight"]
+    }
+  ]
+}
+

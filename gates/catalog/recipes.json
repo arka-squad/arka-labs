@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "id": "release.preflight",
+      "version": "1.0.0",
+      "title": "Préflight Release",
+      "steps": [
+        { "id": "kpi-ttft", "gate_id": "perf.api.ttft_p95" },
+        { "id": "kpi-rtt", "gate_id": "perf.api.rtt_p95" }
+      ],
+      "scope": "safe",
+      "tags": ["ops", "preflight"]
+    },
+    {
+      "id": "security.webhook.verification",
+      "version": "1.0.0",
+      "title": "Vérification Webhook",
+      "steps": [ { "id": "verify", "gate_id": "security.webhook.hmac" } ],
+      "scope": "owner-only",
+      "tags": ["security"]
+    },
+    {
+      "id": "contracts.validation.batch",
+      "version": "1.0.0",
+      "title": "Validation contrats (lot)",
+      "steps": [ { "id": "schema", "gate_id": "contracts.schema.documents", "parallel": false } ],
+      "scope": "safe",
+      "tags": ["contracts"]
+    }
+  ]
+}
+
