@@ -289,7 +289,7 @@ export default function AgentsSlider({
               role="region"
               aria-label={`${a.role} — ${a.title}`}
               tabIndex={0}
-              className="flex-none w-[55%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-0 shadow-[0_12px_24px_rgba(15,23,42,.08)]"
+              className="flex-none w-[85%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-0 shadow-[0_12px_24px_rgba(15,23,42,.08)]"
               onClick={() => {
                 snapTo(i);
                 uiLog('landing.slider.agents.expand', { index: i });
