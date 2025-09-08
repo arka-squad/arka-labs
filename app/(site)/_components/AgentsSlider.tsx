@@ -143,30 +143,29 @@ export default function AgentsSlider({
       items.length
         ? items
         : [
-
             {
               id: 'rh',
               title: 'Conseiller RH',
               role: 'RH',
               image: '/assets/hero/arkabox.png',
-              summary: 'PrÃ©pare dossiers, contrats, onboarding.',
+              summary: 'Prépare dossiers, contrats, onboarding.',
               skills: ['Dossiers RH', 'Contrats', 'Onboarding'],
             },
             {
               id: 'edu',
               title: 'Formateur',
-              role: 'Ã‰DU',
+              role: 'ÉDU',
               image: '/assets/hero/arkabox.png',
-              summary: 'Parcours, Ã©valuations, ateliers.',
-              skills: ['Parcours', 'Ã‰valuations', 'Ateliers'],
+              summary: 'Parcours, évaluations, ateliers.',
+              skills: ['Parcours', 'Évaluations', 'Ateliers'],
             },
             {
               id: 'qual',
-              title: 'QualitÃ©',
+              title: 'Qualité',
               role: 'QUAL',
               image: '/assets/hero/arkabox.png',
-              summary: 'Processus, audits, conformitÃ©.',
-              skills: ['Processus', 'Audits', 'ConformitÃ©'],
+              summary: 'Processus, audits, conformité.',
+              skills: ['Processus', 'Audits', 'Conformité'],
             },
             {
               id: 'org',
@@ -181,8 +180,8 @@ export default function AgentsSlider({
               title: 'Support',
               role: 'SUP',
               image: '/assets/hero/arkabox.png',
-              summary: 'Tickets, rÃ©ponses, satisfaction.',
-              skills: ['Tickets', 'RÃ©ponses', 'Satisfaction'],
+              summary: 'Tickets, réponses, satisfaction.',
+              skills: ['Tickets', 'Réponses', 'Satisfaction'],
             },
             {
               id: 'marketing',
@@ -223,11 +222,10 @@ export default function AgentsSlider({
             </p>
           </div>
           <div className="hidden md:flex items-center gap-2">
-
             {active > 0 && (
               <button
                 aria-controls="agents-rail"
-                aria-label="Revenir au dÃ©but"
+                aria-label="Revenir au début"
                 onClick={() => {
                   uiLog('landing.slider.agents.reset', { count: active });
                   onReset?.();
@@ -235,17 +233,17 @@ export default function AgentsSlider({
                 }}
                 className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10"
               >
-                â†©
+                ↩
               </button>
             )}
             <button
               aria-controls="agents-rail"
-              aria-label="Carte prÃ©cÃ©dente"
+              aria-label="Carte précédente"
               disabled={atStart}
               onClick={() => snapTo(Math.max(0, active - 1))}
               className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              â—€
+              ◀
             </button>
             <button
               aria-controls="agents-rail"
@@ -254,17 +252,14 @@ export default function AgentsSlider({
               onClick={() => snapTo(Math.min(data.length - 1, active + 1))}
               className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              â–¶
+              ▶
             </button>
-
           </div>
         </header>
       </div>
 
-
-      {/* rail fullâ€‘bleed */}
+      {/* rail full‑bleed */}
       <div className="mt-6 w-screen relative left-1/2 right-1/2 -mx-[50vw]">
-
         <div
           id="agents-rail"
           ref={railRef}
@@ -292,11 +287,9 @@ export default function AgentsSlider({
                 if (el) cardRefs.current[i] = el;
               }}
               role="region"
-
-              aria-label={`${a.role} â€” ${a.title}`}
+              aria-label={`${a.role} — ${a.title}`}
               tabIndex={0}
-              className="flex-none w-[55%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-0 shadow-[0_12px_24px_rgba(15,23,42,.08)]"
-
+              className="flex-none w-[85%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-0 shadow-[0_12px_24px_rgba(15,23,42,.08)]"
               onClick={() => {
                 snapTo(i);
                 uiLog('landing.slider.agents.expand', { index: i });
@@ -314,9 +307,7 @@ export default function AgentsSlider({
               <div className="relative overflow-hidden rounded-t-[16px] bg-slate-100 h-28 md:h-36 lg:h-44 xl:h-48">
                 <img
                   src={a.image || `/assets/agents/agent-${a.id}.png`}
-
-                  alt={`${a.role} â€” ${a.title}, illustration`}
-
+                  alt={`${a.role} — ${a.title}, illustration`}
                   className="absolute inset-0 h-full w-full object-cover"
                   loading={i === 0 ? 'eager' : 'lazy'}
                   decoding="async"
@@ -352,9 +343,7 @@ export default function AgentsSlider({
                       key={j}
                       className="col-span-3 sm:col-span-1 flex items-center gap-2"
                     >
-
-                      âœ“ {s}
-
+                      ✓ {s}
                     </li>
                   ))}
                 </ul>
@@ -370,9 +359,7 @@ export default function AgentsSlider({
             <button
               key={i}
               aria-current={active === i}
-
-              aria-label={`Aller Ã  la carte ${i + 1}`}
-
+              aria-label={`Aller à la carte ${i + 1}`}
               onClick={() => snapTo(i)}
               className={`h-2.5 w-2.5 rounded-full ${
                 active === i ? 'bg-slate-800' : 'bg-slate-400/40'

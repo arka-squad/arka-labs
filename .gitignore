@@ -15,11 +15,6 @@ logs_*.json
 logs_*.txt
 !app/api/gates/jobs/[[]id[]]/logs/**
 
-# local debug dumps (do not commit)
-dump_*
-out*.txt
-tmp_*
-
 # local workspace (untracked)
 local/
 
