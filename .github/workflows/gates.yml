@@ -1,0 +1,64 @@
+name: gates
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ['**/*']
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: run lint
+        run: |
+          set -euo pipefail
+          mkdir -p results/gates logs/gates
+          npm run lint 2>&1 | tee logs/gates/lint.ndjson
+          echo '{"gate":"lint","status":"ok"}' > results/gates/lint.json
+      - name: run typecheck
+        run: |
+          set -euo pipefail
+          npm run typecheck 2>&1 | tee logs/gates/typecheck.ndjson
+          echo '{"gate":"typecheck","status":"ok"}' > results/gates/typecheck.json
+      - name: run unit tests
+        run: |
+          set -euo pipefail
+          npm test 2>&1 | tee logs/gates/unit.ndjson
+          echo '{"gate":"unit","status":"ok"}' > results/gates/unit.json
+      - name: run api tests
+        run: |
+          set -euo pipefail
+          npm run test:api 2>&1 | tee logs/gates/api.ndjson
+          echo '{"gate":"api","status":"ok"}' > results/gates/api.json
+      - name: run e2e tests
+        run: |
+          set -euo pipefail
+          npm run test:e2e 2>&1 | tee logs/gates/e2e.ndjson
+          echo '{"gate":"e2e","status":"ok"}' > results/gates/e2e.json
+      - name: sha256sums
+        run: |
+          sha256sum results/gates/*.json logs/gates/*.ndjson | sed 's|  ./||' > sha256sums.txt
+      - name: upload evidence artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gates-evidence
+          path: |
+            results/gates/*.json
+            logs/gates/*.ndjson
+            sha256sums.txt
+  rbac-smokes:
+    needs: gates
+    uses: ./.github/workflows/rbac-smokes.yml
+  network-gate:
+    needs: gates
+    uses: ./.github/workflows/network-gate.yml
