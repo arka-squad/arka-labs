@@ -2,6 +2,13 @@ import { randomUUID } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import { log } from '../../lib/logger';
+import {
+  recordJob,
+  recordGateDuration,
+  recordRecipeDuration,
+  recordGateError,
+} from '../metrics';
 
 export interface GateStep {
   gate_id: string;
@@ -38,8 +45,19 @@ async function appendLog(jobId: string, type: 'gate' | 'recipe', evt: any) {
     type === 'gate' ? 'gates' : 'recipes'
   );
   await fs.mkdir(dir, { recursive: true });
-  const line = JSON.stringify({ ts: Date.now(), ...evt }) + '\n';
+  const record = { ts: Date.now(), ...evt };
+  const line = JSON.stringify(record) + '\n';
   await fs.appendFile(path.join(dir, `${jobId}.ndjson`), line);
+  const base: any = {
+    route: type === 'gate' ? 'gates_runner' : 'recipes_runner',
+    job_id: jobId,
+    status: evt.status || null,
+    trace_id: evt.trace_id || null,
+    user_role: 'system',
+  };
+  if (evt.gate_id) base.gate_id = evt.gate_id;
+  if (evt.recipe_id) base.recipe_id = evt.recipe_id;
+  log('info', evt.event, base);
 }
 
 async function writeResult(jobId: string, type: 'gate' | 'recipe', result: any) {
@@ -165,6 +183,8 @@ export async function runGates(
     job.finished_at = new Date().toISOString();
     await appendLog(jobId, 'gate', { event: 'done', status: 'pass' });
     await writeResult(jobId, 'gate', { job_id: jobId, status: 'pass', results: res });
+    recordJob('gate', 'pass', { gate_id: gateId });
+    recordGateDuration(gateId, Date.now() - now);
     return job;
   } catch (err: any) {
     job.status = 'fail';
@@ -172,6 +192,9 @@ export async function runGates(
     job.finished_at = new Date().toISOString();
     await appendLog(jobId, 'gate', { event: 'done', status: 'fail', error: err.message });
     await writeResult(jobId, 'gate', { job_id: jobId, status: 'fail', error: err.message });
+    recordJob('gate', 'fail', { gate_id: gateId });
+    recordGateDuration(gateId, Date.now() - now);
+    recordGateError(gateId);
     return job;
   } finally {
     const set = userJobs.get(opts.userId);
@@ -225,6 +248,8 @@ export async function runRecipe(
     job.finished_at = new Date().toISOString();
     await appendLog(jobId, 'recipe', { event: 'done', status: job.status });
     await writeResult(jobId, 'recipe', { job_id: jobId, status: job.status, result: res });
+    recordJob('recipe', job.status, { recipe_id: recipeId });
+    recordRecipeDuration(recipeId, Date.now() - job.started_at);
     return job;
   } catch (err: any) {
     job.status = 'fail';
@@ -232,6 +257,8 @@ export async function runRecipe(
     job.finished_at = new Date().toISOString();
     await appendLog(jobId, 'recipe', { event: 'done', status: 'fail', error: err.message });
     await writeResult(jobId, 'recipe', { job_id: jobId, status: 'fail', error: err.message });
+    recordJob('recipe', 'fail', { recipe_id: recipeId });
+    recordRecipeDuration(recipeId, Date.now() - job.started_at);
     return job;
   } finally {
     const set = userJobs.get(opts.userId);

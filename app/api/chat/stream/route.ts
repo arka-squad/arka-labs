@@ -3,6 +3,9 @@ import { AI_ENABLED } from '../../../../lib/env';
 import { resolveClient } from '../../../../lib/providers/router';
 import { verifyToken } from '../../../../lib/auth';
 import { getSessionVault } from '../../../../lib/sessionVault';
+import { log } from '../../../../lib/logger';
+import { TRACE_HEADER } from '../../../../lib/trace';
+import { trackSse } from '../../../../services/metrics';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -26,7 +29,10 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url);
-  const traceId = req.headers.get('x-trace-id') || crypto.randomUUID();
+  const traceId =
+    req.headers.get(TRACE_HEADER) ||
+    searchParams.get(TRACE_HEADER) ||
+    crypto.randomUUID();
   // Derive role from JWT if available; fallback to query, then 'viewer'
   let role = 'viewer';
   try {
@@ -62,8 +68,10 @@ export async function GET(req: Request) {
 
   // Use client to stream response
   const client = resolveClient(provider, apiKey);
+  const route = '/api/chat/stream';
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
+      trackSse(route, +1);
       try {
         controller.enqueue(new TextEncoder().encode(sse({ t: 'open', trace_id: traceId, agent, provider, model })));
         let firstAt = 0;
@@ -82,11 +90,15 @@ export async function GET(req: Request) {
         controller.enqueue(new TextEncoder().encode(sse({ t: 'error', code, msg })));
         controller.close();
       }
+      trackSse(route, -1);
+    },
+    cancel() {
+      trackSse(route, -1);
     },
   });
 
   const headers: Record<string, string> = {
-    'x-trace-id': traceId,
+    [TRACE_HEADER]: traceId,
     'cache-control': 'no-store',
     'content-type': 'text/event-stream; charset=utf-8',
   };
@@ -94,19 +106,16 @@ export async function GET(req: Request) {
   // Log NDJSON (stdout default)
   (async () => {
     await sleep(0);
-    const rec = {
-      ts: new Date().toISOString(),
-      route: '/api/chat/stream',
-      role,
+    log('info', 'chat_gateway', {
+      route,
+      status: 200,
+      trace_id: traceId,
+      user_role: role,
       agent,
       provider,
       model,
       has_session: !!providerSession,
-      trace_id: traceId,
-    };
-    try {
-      console.log('chat_gateway', JSON.stringify(rec));
-    } catch {}
+    });
   })();
 
   return new Response(stream, { headers });
