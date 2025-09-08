@@ -3,16 +3,27 @@ import { withAuth } from '../../../../lib/rbac';
 import { getJob } from '../../../../services/gates/runner';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { z } from 'zod';
+import { TRACE_HEADER, generateTraceId } from '../../../../lib/trace';
 
 export const GET = withAuth(
   ['viewer', 'editor', 'admin', 'owner'],
   async (req: NextRequest) => {
-    const jobId = req.nextUrl.searchParams.get('job_id');
-    if (!jobId) {
-      return NextResponse.json({ error: 'job_id-required' }, { status: 400 });
+    const trace = req.headers.get(TRACE_HEADER) || generateTraceId();
+    const Query = z.object({ job_id: z.string() });
+    const parsed = Query.safeParse({ job_id: req.nextUrl.searchParams.get('job_id') });
+    if (!parsed.success) {
+      const res = NextResponse.json({ error: 'job_id-required' }, { status: 400 });
+      res.headers.set(TRACE_HEADER, trace);
+      return res;
     }
+    const jobId = parsed.data.job_id;
     const job = getJob(jobId);
-    if (!job) return NextResponse.json({ error: 'not_found' }, { status: 404 });
+    if (!job) {
+      const res = NextResponse.json({ error: 'not_found' }, { status: 404 });
+      res.headers.set(TRACE_HEADER, trace);
+      return res;
+    }
     const dir = job.type === 'gate' ? 'gates' : 'recipes';
     let content: string;
     try {
@@ -21,7 +32,9 @@ export const GET = withAuth(
         'utf8'
       );
     } catch {
-      return NextResponse.json({ error: 'not_found' }, { status: 404 });
+      const res = NextResponse.json({ error: 'not_found' }, { status: 404 });
+      res.headers.set(TRACE_HEADER, trace);
+      return res;
     }
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
@@ -35,7 +48,7 @@ export const GET = withAuth(
       },
     });
     return new NextResponse(stream, {
-      headers: { 'content-type': 'text/event-stream' },
+      headers: { 'content-type': 'text/event-stream', [TRACE_HEADER]: trace },
     });
   }
 );
