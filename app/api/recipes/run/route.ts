@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuth, hasScope } from '../../../../lib/rbac';
 import { TRACE_HEADER, generateTraceId } from '../../../../lib/trace';
-import { jobs, results, logs, idempotency, appendLog, Job } from '../../../../services/gates/state';
+import { jobs, results, logs, appendLog, Job, getIdempotentJobId, setIdempotency, sweepIdempotency } from '../../../../services/gates/state';
 import { getRecipes } from '../../../../lib/gates/catalog';
 
 export const runtime = 'nodejs';
@@ -23,14 +23,27 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: 
     res.headers.set(TRACE_HEADER, traceId);
     return res;
   }
-  const existing = idempotency.get(key);
+  // Load recipe and enforce scope
+  const recipe = getRecipes().find((r) => r.id === recipeId);
+  if (!recipe) {
+    const res = NextResponse.json({ error: 'not_found' }, { status: 404 });
+    res.headers.set(TRACE_HEADER, traceId);
+    return res;
+  }
+  if (!hasScope(user!.role, (recipe as any).scope || 'safe')) {
+    const res = NextResponse.json({ error: 'forbidden' }, { status: 403 });
+    res.headers.set(TRACE_HEADER, traceId);
+    return res;
+  }
+
+  const existing = getIdempotentJobId(key);
   if (existing) {
     const res = NextResponse.json({ job_id: existing, recipe_id: recipeId, inputs }, { status: 202 });
     res.headers.set(TRACE_HEADER, traceId);
     return res;
   }
   const jobId = `r_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
-  idempotency.set(key, jobId);
+  setIdempotency(key, jobId);
   const job: Job = {
     job_id: jobId,
     type: 'recipe',
@@ -74,17 +87,6 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: 
 
   const res = NextResponse.json({ job_id: jobId, recipe_id: recipeId, inputs, accepted_at: new Date().toISOString(), trace_id: traceId }, { status: 202 });
   res.headers.set(TRACE_HEADER, traceId);
-  // Load recipe and enforce scope
-  const recipe = getRecipes().find((r) => r.id === recipeId);
-  if (!recipe) {
-    const res = NextResponse.json({ error: 'not_found' }, { status: 404 });
-    res.headers.set(TRACE_HEADER, traceId);
-    return res;
-  }
-  if (!hasScope(user!.role, recipe.scope || 'safe')) {
-    const res = NextResponse.json({ error: 'forbidden' }, { status: 403 });
-    res.headers.set(TRACE_HEADER, traceId);
-    return res;
-  }
+  sweepIdempotency();
   return res;
 });

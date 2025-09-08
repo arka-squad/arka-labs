@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuth, hasScope } from '../../../../lib/rbac';
 import { TRACE_HEADER, generateTraceId } from '../../../../lib/trace';
-import { jobs, results, logs, idempotency, appendLog, Job } from '../../../../services/gates/state';
+import { jobs, results, logs, appendLog, Job, getIdempotentJobId, setIdempotency, sweepIdempotency } from '../../../../services/gates/state';
 import { getGates } from '../../../../lib/gates/catalog';
+import { validateInputs } from '../../../../lib/gates/validate';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -24,14 +25,21 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: 
     return res;
   }
   // Idempotency reuse
-  const existing = idempotency.get(key);
+  const existing = getIdempotentJobId(key);
   if (existing) {
     const res = NextResponse.json({ job_id: existing, gate_id: gateId, inputs }, { status: 202 });
     res.headers.set(TRACE_HEADER, traceId);
     return res;
   }
+  // input validation
+  const v = validateInputs(gate.inputs, inputs);
+  if (!v.ok) {
+    const res = NextResponse.json({ error: 'shape_mismatch', details: v.errors }, { status: 422 });
+    res.headers.set(TRACE_HEADER, traceId);
+    return res;
+  }
   const jobId = `g_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
-  idempotency.set(key, jobId);
+  setIdempotency(key, jobId);
   const job: Job = {
     job_id: jobId,
     type: 'gate',
@@ -65,6 +73,8 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: 
 
   const res = NextResponse.json({ job_id: jobId, gate_id: gateId, inputs, accepted_at: new Date().toISOString(), trace_id: traceId }, { status: 202 });
   res.headers.set(TRACE_HEADER, traceId);
+  // periodic sweep (best-effort)
+  sweepIdempotency();
   return res;
 });
   // Load gate meta and enforce scope
