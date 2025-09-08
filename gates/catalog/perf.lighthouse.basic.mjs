@@ -5,19 +5,7 @@ export const meta = {
   version: '1.0.0',
   title: 'Lighthouse Basic',
   category: 'perf',
-  inputs: {
-    url: { type: 'string', format: 'uri' }
-  },
-  outputs: {
-    lcp_ms: { type: 'number' },
-    tti_ms: { type: 'number' },
-    cls: { type: 'number' },
-    score_a11y: { type: 'number' }
-  },
-  risk: 'low',
-  scope: 'safe',
-  est_duration_ms: 5000,
-  tags: ['seed', 'perf']
+  scope: 'safe'
 };
 
 const schema = z.object({

@@ -6,23 +6,7 @@ export const meta = {
   id: 'perf.budget_demo',
   version: '1.0.0',
   title: 'Perf Budget Demo',
-  steps: [
-    { id: 'lighthouse', gate_id: 'perf.lighthouse.basic' },
-    { id: 'ttft', gate_id: 'perf.api.ttft_p95' }
-  ],
-  inputs: {
-    url: { type: 'string', format: 'uri' },
-    window_minute: { type: 'number', minimum: 0 }
-  },
-  outputs: {
-    lcp_ms: { type: 'number' },
-    tti_ms: { type: 'number' },
-    cls: { type: 'number' },
-    score_a11y: { type: 'number' },
-    p95_ms: { type: 'number' }
-  },
-  scope: 'safe',
-  tags: ['seed', 'perf']
+  scope: 'safe'
 };
 
 const schema = z.object({

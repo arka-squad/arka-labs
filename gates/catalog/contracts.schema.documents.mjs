@@ -5,16 +5,7 @@ export const meta = {
   version: '1.0.0',
   title: 'Schema Documents',
   category: 'contracts',
-  inputs: {
-    doc_ids: { type: 'array', items: { type: 'string' }, minItems: 1 }
-  },
-  outputs: {
-    schema_mismatch_count: { type: 'number' }
-  },
-  risk: 'med',
-  scope: 'safe',
-  est_duration_ms: 2000,
-  tags: ['seed', 'contracts']
+  scope: 'safe'
 };
 
 const schema = z.object({
