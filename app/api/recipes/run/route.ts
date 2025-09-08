@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '../../../../lib/rbac';
 import { log } from '../../../../lib/logger';
 import { runRecipe } from '../../../../services/gates/runner';
-import { randomUUID } from 'crypto';
 import path from 'node:path';
 import Ajv from 'ajv/dist/2020';
 import recipeResultSchema from '../../../../api/schemas/RecipeResult.schema.json';
 import gateResultSchema from '../../../../api/schemas/GateResult.schema.json';
 import evidenceSchema from '../../../../api/schemas/EvidenceRef.schema.json';
+import { TRACE_HEADER, generateTraceId } from '../../../../lib/trace';
 
 const ajv = new Ajv({ strict: false });
 ajv.addSchema(evidenceSchema as any, 'EvidenceRef.schema.json');
@@ -21,16 +21,18 @@ export const POST = withAuth(
   ['editor', 'admin', 'owner'],
   async (req: NextRequest, user) => {
     const start = Date.now();
-    const trace = req.headers.get('x-trace-id') || randomUUID();
+    const trace = req.headers.get(TRACE_HEADER) || generateTraceId();
     const key = req.headers.get('x-idempotency-key');
     if (!key) {
       const res = NextResponse.json({ error: 'idempotency-key-required' }, { status: 400 });
+      res.headers.set(TRACE_HEADER, trace);
       return res;
     }
     const body = await req.json().catch(() => null);
     if (!body || typeof body.recipe_id !== 'string' || typeof body.inputs !== 'object') {
       const res = NextResponse.json({ error: 'invalid_input' }, { status: 400 });
       res.headers.set('x-idempotency-key', key);
+      res.headers.set(TRACE_HEADER, trace);
       return res;
     }
     const modulePath = path.join(process.cwd(), 'gates', 'catalog', `${body.recipe_id}.mjs`);
@@ -40,11 +42,13 @@ export const POST = withAuth(
     } catch {
       const res = NextResponse.json({ error: 'not_found' }, { status: 404 });
       res.headers.set('x-idempotency-key', key);
+      res.headers.set(TRACE_HEADER, trace);
       return res;
     }
     if (mod.meta?.scope === 'owner-only' && user?.role !== 'owner') {
       const res = NextResponse.json({ error: 'forbidden' }, { status: 403 });
       res.headers.set('x-idempotency-key', key);
+      res.headers.set(TRACE_HEADER, trace);
       return res;
     }
     try {
@@ -52,6 +56,7 @@ export const POST = withAuth(
     } catch {
       const res = NextResponse.json({ error: 'invalid_input' }, { status: 422 });
       res.headers.set('x-idempotency-key', key);
+      res.headers.set(TRACE_HEADER, trace);
       return res;
     }
     const job = await runRecipe(body.recipe_id, body.inputs, {
@@ -62,6 +67,7 @@ export const POST = withAuth(
     if (job.result && !validateResult(job.result)) {
       const res = NextResponse.json({ error: 'invalid_output' }, { status: 500 });
       res.headers.set('x-idempotency-key', key);
+      res.headers.set(TRACE_HEADER, trace);
       return res;
     }
     const res = NextResponse.json(
@@ -75,6 +81,7 @@ export const POST = withAuth(
       { status: 202 }
     );
     res.headers.set('x-idempotency-key', key);
+    res.headers.set(TRACE_HEADER, trace);
     log('info', 'recipes_run', {
       route: '/api/recipes/run',
       status: res.status,

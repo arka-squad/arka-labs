@@ -8,6 +8,7 @@ import jobSchema from '../../../../../api/schemas/JobStatus.schema.json';
 import gateResultSchema from '../../../../../api/schemas/GateResult.schema.json';
 import recipeResultSchema from '../../../../../api/schemas/RecipeResult.schema.json';
 import evidenceSchema from '../../../../../api/schemas/EvidenceRef.schema.json';
+import { TRACE_HEADER, generateTraceId } from '../../../../../lib/trace';
 
 const ajv = new Ajv({ strict: false });
 ajv.addSchema(evidenceSchema as any, 'EvidenceRef.schema.json');
@@ -19,9 +20,14 @@ const validateRecipe = ajv.getSchema('RecipeResult.schema.json')!;
 
 export const GET = withAuth(
   ['viewer', 'editor', 'admin', 'owner'],
-  async (_req: NextRequest, _user, { params }: { params: { id: string } }) => {
+  async (req: NextRequest, _user, { params }: { params: { id: string } }) => {
+    const trace = req.headers.get(TRACE_HEADER) || generateTraceId();
     const job = getJob(params.id);
-    if (!job) return NextResponse.json({ error: 'not_found' }, { status: 404 });
+    if (!job) {
+      const res = NextResponse.json({ error: 'not_found' }, { status: 404 });
+      res.headers.set(TRACE_HEADER, trace);
+      return res;
+    }
     const jobStatus = {
       job_id: job.id,
       type: job.type,
@@ -32,7 +38,9 @@ export const GET = withAuth(
       trace_id: job.trace_id,
     };
     if (!validateJob(jobStatus)) {
-      return NextResponse.json({ error: 'invalid_job' }, { status: 500 });
+      const res = NextResponse.json({ error: 'invalid_job' }, { status: 500 });
+      res.headers.set(TRACE_HEADER, trace);
+      return res;
     }
     let result: any = undefined;
     try {
@@ -46,6 +54,8 @@ export const GET = withAuth(
       }
       result = data;
     } catch {}
-    return NextResponse.json({ job: jobStatus, result });
+    const res = NextResponse.json({ job: jobStatus, result });
+    res.headers.set(TRACE_HEADER, trace);
+    return res;
   }
 );

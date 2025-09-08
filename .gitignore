@@ -13,6 +13,7 @@ logs/
 *.ndjson
 logs_*.json
 logs_*.txt
+!app/api/gates/jobs/[[]id[]]/logs/**
 
 # local workspace (untracked)
 local/
