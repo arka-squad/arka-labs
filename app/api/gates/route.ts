@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '../../../lib/rbac';
 import { log } from '../../../lib/logger';
+import { randomUUID } from 'crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { z } from 'zod';
-import { TRACE_HEADER, generateTraceId } from '../../../lib/trace';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,7 +12,7 @@ export const GET = withAuth(
   ['viewer', 'editor', 'admin', 'owner'],
   async (req: NextRequest) => {
     const start = Date.now();
-    const trace = req.headers.get(TRACE_HEADER) || generateTraceId();
+    const trace = req.headers.get('x-trace-id') || randomUUID();
     const dir = path.join(process.cwd(), 'gates', 'catalog');
     const items: any[] = [];
     try {
@@ -24,12 +23,7 @@ export const GET = withAuth(
         if (mod.meta && mod.meta.category) items.push(mod.meta);
       }
     } catch {}
-    const List = z.object({ items: z.array(z.object({ id: z.string() }).passthrough()) });
-    const parsed = List.safeParse({ items });
-    const res = parsed.success
-      ? NextResponse.json(parsed.data)
-      : NextResponse.json({ error: 'invalid_output' }, { status: 500 });
-    res.headers.set(TRACE_HEADER, trace);
+    const res = NextResponse.json({ items });
     log('info', 'gates_list', {
       route: '/api/gates',
       status: res.status,
