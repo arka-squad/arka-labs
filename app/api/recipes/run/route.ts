@@ -59,56 +59,36 @@ export const POST = withAuth(
       res.headers.set(TRACE_HEADER, trace);
       return res;
     }
-    const calledAt = Date.now();
-    try {
-      const job = await runRecipe(body.recipe_id, body.inputs, {
-        userId: user!.sub,
-        idempotencyKey: key,
-        traceId: trace,
-      });
-      if (job.started_at < calledAt && job.idempotency_key !== key) {
-        const res = NextResponse.json({ error: 'already_running', job_id: job.id }, { status: 409 });
-        res.headers.set('x-idempotency-key', key);
-        res.headers.set(TRACE_HEADER, trace);
-        return res;
-      }
-      if (job.result && !validateResult(job.result)) {
-        const res = NextResponse.json({ error: 'invalid_output' }, { status: 500 });
-        res.headers.set('x-idempotency-key', key);
-        res.headers.set(TRACE_HEADER, trace);
-        return res;
-      }
-      const res = NextResponse.json(
-        {
-          job_id: job.id,
-          recipe_id: body.recipe_id,
-          inputs: body.inputs,
-          accepted_at: new Date().toISOString(),
-          trace_id: job.trace_id,
-        },
-        { status: 202 }
-      );
-      res.headers.set('x-idempotency-key', key);
-      res.headers.set(TRACE_HEADER, trace);
-      log('info', 'recipes_run', {
-        route: '/api/recipes/run',
-        status: res.status,
-        duration_ms: Date.now() - start,
-        trace_id: job.trace_id,
-        job_id: job.id,
-      });
-      return res;
-    } catch (err: any) {
-      if (err.message === 'concurrency-limit') {
-        const res = NextResponse.json({ error: 'rate_limited' }, { status: 429 });
-        res.headers.set('x-idempotency-key', key);
-        res.headers.set(TRACE_HEADER, trace);
-        return res;
-      }
-      const res = NextResponse.json({ error: 'internal_error' }, { status: 500 });
+    const job = await runRecipe(body.recipe_id, body.inputs, {
+      userId: user!.sub,
+      idempotencyKey: key,
+      traceId: trace,
+    });
+    if (job.result && !validateResult(job.result)) {
+      const res = NextResponse.json({ error: 'invalid_output' }, { status: 500 });
       res.headers.set('x-idempotency-key', key);
       res.headers.set(TRACE_HEADER, trace);
       return res;
     }
+    const res = NextResponse.json(
+      {
+        job_id: job.id,
+        recipe_id: body.recipe_id,
+        inputs: body.inputs,
+        accepted_at: new Date().toISOString(),
+        trace_id: job.trace_id,
+      },
+      { status: 202 }
+    );
+    res.headers.set('x-idempotency-key', key);
+    res.headers.set(TRACE_HEADER, trace);
+    log('info', 'recipes_run', {
+      route: '/api/recipes/run',
+      status: res.status,
+      duration_ms: Date.now() - start,
+      trace_id: job.trace_id,
+      job_id: job.id,
+    });
+    return res;
   }
 );
