@@ -60,11 +60,48 @@ export default function GatesPage() {
       if (!res.ok) throw new Error(String(res.status));
       const data = await res.json();
       setRuns((r) => [{ job_id: data.job_id, gate_id: selected.id, status: 'running' }, ...r]);
-      pollStatus(data.job_id);
+      streamJob(data.job_id);
     } catch (e) {
       uiLog('gate_run_error', { id: selected.id });
       alert('Échec du lancement, vérifiez vos droits.');
     }
+  }
+
+  async function streamJob(jobId: string) {
+    try {
+      const res = await fetch(`/api/gates/stream?job_id=${encodeURIComponent(jobId)}`, {
+        headers: { authorization: `Bearer ${localStorage.getItem('token') || ''}` },
+      });
+      if (!res.ok || !res.body) return;
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '';
+      setRuns((rs) => rs.map((j) => (j.job_id === jobId ? { ...j, status: 'running' } : j)));
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        let idx: number;
+        while ((idx = buf.indexOf('\n\n')) !== -1) {
+          const chunk = buf.slice(0, idx);
+          buf = buf.slice(idx + 2);
+          const line = chunk.split('\n').find((l) => l.startsWith('data: '));
+          if (!line) continue;
+          try {
+            const evt = JSON.parse(line.slice(6));
+            const t = evt.t as string | undefined;
+            if (t === 'gate:pass') {
+              setRuns((rs) => rs.map((j) => (j.job_id === jobId ? { ...j, status: 'pass' } : j)));
+            } else if (t === 'gate:fail') {
+              setRuns((rs) => rs.map((j) => (j.job_id === jobId ? { ...j, status: 'fail' } : j)));
+            } else if (t === 'done') {
+              const st = (evt.status as string) || 'pass';
+              setRuns((rs) => rs.map((j) => (j.job_id === jobId ? { ...j, status: st } : j)));
+            }
+          } catch {}
+        }
+      }
+    } catch {}
   }
 
   async function pollStatus(jobId: string) {
@@ -121,4 +158,3 @@ export default function GatesPage() {
     </div>
   );
 }
-
