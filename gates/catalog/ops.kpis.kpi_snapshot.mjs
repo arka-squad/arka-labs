@@ -5,7 +5,16 @@ export const meta = {
   version: '1.0.0',
   title: 'KPI Snapshot',
   category: 'kpis',
-  scope: 'safe'
+  inputs: {},
+  outputs: {
+    ttft_p95: { type: 'number' },
+    rtt_p95: { type: 'number' },
+    error_rate_percent: { type: 'number' }
+  },
+  risk: 'low',
+  scope: 'safe',
+  est_duration_ms: 500,
+  tags: ['seed', 'ops']
 };
 
 const schema = z.object({});

@@ -155,6 +155,7 @@ export default function SectionPreuve() {
           <h2 id="evidence-title" className="text-3xl md:text-4xl font-semibold text-[#0F172A]">C’est quoi une “preuve” ?</h2>
           <p className="mt-3 text-[#334155] max-w-2xl">Une preuve, c’est un petit dossier qui résume ce qui a été fait et validé — concret, pas techno.</p>
 
+
           {/* Liste graphique avec pictos brand */}
           <ul className="mt-4 grid gap-3 text-[#334155]">
             <li className="flex items-start gap-3">
@@ -183,6 +184,7 @@ export default function SectionPreuve() {
             </li>
           </ul>
 
+
           <p className="mt-3 text-[#334155] max-w-2xl">Lisible et rejouable. Utile pour un client, un audit, un dossier de subvention… Ou simplement pour garder la mémoire claire.</p>
         </div>
 
@@ -194,4 +196,3 @@ export default function SectionPreuve() {
     </section>
   );
 }
-

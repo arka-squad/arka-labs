@@ -48,16 +48,21 @@ export default function Hero({
         {/* Left: text */}
         <div className="col-span-12 md:col-span-7 space-y-6">
           <div
-            className="inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-xs"
+            className="inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-xs opacity-0 motion-safe:animate-fade-up"
             style={{ backgroundColor: 'rgba(255,255,255,.10)', borderColor: 'rgba(255,255,255,.18)' }}
           >
             <span>{badge}</span>
           </div>
-          <h1 className="text-[28px] sm:text-[32px] md:text-[34px] lg:text-[36px] font-semibold leading-tight">{title}</h1>
-          <p className="max-w-2xl text-sm md:text-base" style={{ color: '#D1D5DB' }}>
+          <h1 className="text-[28px] sm:text-[32px] md:text-[34px] lg:text-[36px] font-semibold leading-tight opacity-0 motion-safe:animate-fade-up [animation-delay:100ms]">
+            {title}
+          </h1>
+          <p
+            className="max-w-2xl text-sm md:text-base opacity-0 motion-safe:animate-fade-up [animation-delay:200ms]"
+            style={{ color: '#D1D5DB' }}
+          >
             {subtitle}
           </p>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 opacity-0 motion-safe:animate-fade-up [animation-delay:300ms]">
             {ctas.map((c) =>
               c.variant === 'primary' ? (
                 <a
@@ -79,15 +84,17 @@ export default function Hero({
                 >
                   {c.label}
                 </a>
-              ),
+                ),
             )}
           </div>
+
 
           <div className="flex flex-wrap gap-2" aria-label="Atouts">
             {chips.map((c) => {
               const icon = c.toLowerCase().includes('expert')
                 ? <CheckCircle2 className="w-3.5 h-3.5" aria-hidden />
                 : c.toLowerCase().includes('multi') || c.toLowerCase().includes('rÃ´le')
+
                 ? <Users className="w-3.5 h-3.5" aria-hidden />
                 : <Database className="w-3.5 h-3.5" aria-hidden />;
               return (
@@ -113,7 +120,7 @@ export default function Hero({
             alt={image.alt}
             decoding="async"
             fetchPriority="high"
-            className="w-full md:w-auto aspect-[16/10] md:aspect-auto max-h-[360px] md:max-h-[460px] lg:max-h-[520px] object-contain"
+            className="w-full md:w-auto aspect-[16/10] md:aspect-auto max-h-[360px] md:max-h-[460px] lg:max-h-[520px] object-contain opacity-0 motion-safe:animate-fade-up [animation-delay:500ms]"
           />
         </div>
       </div>

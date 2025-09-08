@@ -123,7 +123,7 @@ export default function Page() {
             className="text-center text-sm text-slate-300 hover:text-white"
             data-codex-id="link_reset"
           >
-            Mot de passe oubliÃ© ?
+            Mot de passe oublié ?
           </a>
           <button
             type="button"
