@@ -154,12 +154,37 @@ export default function SectionPreuve() {
         <div className="lg:col-span-6">
           <h2 id="evidence-title" className="text-3xl md:text-4xl font-semibold text-[#0F172A]">C’est quoi une “preuve” ?</h2>
           <p className="mt-3 text-[#334155] max-w-2xl">Une preuve, c’est un petit dossier qui résume ce qui a été fait et validé — concret, pas techno.</p>
-          <ul className="mt-4 space-y-2 text-[#334155]">
-            <li>Les actions clés (qui, quoi, quand).</li>
-            <li>Les résultats (OK / À risque, décisions).</li>
-            <li>La version livrée (référence horodatée).</li>
-            <li>Une empreinte numérique pour garantir l’intégrité.</li>
+
+
+          {/* Liste graphique avec pictos brand */}
+          <ul className="mt-4 grid gap-3 text-[#334155]">
+            <li className="flex items-start gap-3">
+              <span aria-hidden className="inline-flex h-6 w-6 items-center justify-center rounded-full text-white bg-gradient-to-tr from-[#FAB652] via-[#F25636] to-[#E0026D] ring-1 ring-black/5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              </span>
+              <span>Les actions clés (qui, quoi, quand).</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span aria-hidden className="inline-flex h-6 w-6 items-center justify-center rounded-full text-white bg-gradient-to-tr from-[#FAB652] via-[#F25636] to-[#E0026D] ring-1 ring-black/5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5"/></svg>
+              </span>
+              <span>Les résultats (OK / À risque, décisions).</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span aria-hidden className="inline-flex h-6 w-6 items-center justify-center rounded-full text-white bg-gradient-to-tr from-[#FAB652] via-[#F25636] to-[#E0026D] ring-1 ring-black/5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+              </span>
+              <span>La version livrée (référence horodatée).</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span aria-hidden className="inline-flex h-6 w-6 items-center justify-center rounded-full text-white bg-gradient-to-tr from-[#FAB652] via-[#F25636] to-[#E0026D] ring-1 ring-black/5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 12a3 3 0 0 1 3 3c0 2.5 1 4 1 4"/><path d="M9 12a6 6 0 0 1 6 6"/><path d="M7 12a8 8 0 0 1 8 8"/><path d="M12 12V8"/><path d="M12 2a10 10 0 0 0-7 17"/></svg>
+              </span>
+              <span>Une empreinte numérique pour garantir l’intégrité.</span>
+            </li>
           </ul>
+
+
           <p className="mt-3 text-[#334155] max-w-2xl">Lisible et rejouable. Utile pour un client, un audit, un dossier de subvention… Ou simplement pour garder la mémoire claire.</p>
         </div>
 

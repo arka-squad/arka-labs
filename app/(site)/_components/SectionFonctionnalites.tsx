@@ -51,7 +51,9 @@ export default function SectionFonctionnalites() {
             {items.map((it) => (
               <div key={it.key} className="flex items-start gap-3">
                 <span
-                  className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full aspect-square"
+
+                  className="inline-flex h-8 w-8 rounded-full items-center justify-center"
+
                   aria-hidden
                   style={{ backgroundImage: 'var(--brand-grad)', color: 'white' }}
                 >
@@ -71,7 +73,9 @@ export default function SectionFonctionnalites() {
                 key={c.label}
                 className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1 text-sm text-slate-800 cursor-default"
               >
-                <span aria-hidden className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full aspect-square" style={{ backgroundImage: 'var(--brand-grad)', color: 'white' }}>
+
+                <span aria-hidden className="inline-flex h-5 w-5 items-center justify-center rounded-full" style={{ backgroundImage: 'var(--brand-grad)', color: 'white' }}>
+
                   <c.icon className="w-3.5 h-3.5" />
                 </span>
                 {c.label}

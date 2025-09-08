@@ -12,8 +12,8 @@ export type HeaderProps = {
 };
 
 const DEFAULT_LINKS = [
-  { label: 'Fonctionnalités', href: '#features' },
-  { label: 'Comment ça marche', href: '#how' },
+  { label: 'FonctionnalitÃ©s', href: '#features' },
+  { label: 'Comment Ã§a marche', href: '#how' },
   { label: 'Tarifs', href: '#pricing' },
   { label: 'FAQ', href: '#faq' },
 ];
@@ -58,7 +58,7 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
   return (
     <header
       role="banner"
-      aria-label="En-tête du site"
+      aria-label="En-tÃªte du site"
       className={`h-14 ${stickyCls} border-b`}
       style={{
         background: 'rgba(227,224,219,0.80)',
@@ -113,7 +113,7 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
             onClick={onOpenCockpit}
             className="inline-flex items-center gap-2 h-9 px-4 rounded-[12px] text-white shadow-[0_6px_16px_rgba(226,2,109,.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 hover:-translate-y-px transition will-change-transform"
             style={{ backgroundImage: 'var(--brand-grad)' }}
-            aria-label="Entrer dans le cockpit (démo)"
+            aria-label="Entrer dans le cockpit (dÃ©mo)"
           >
             <Rocket className="w-4 h-4" aria-hidden />
             Inscription à la Bêta
@@ -168,7 +168,7 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
                 onClick={onOpenCockpit}
                 className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-[12px] text-white shadow-[0_6px_16px_rgba(226,2,109,.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
                 style={{ backgroundImage: 'var(--brand-grad)' }}
-                aria-label="Entrer dans le cockpit (démo)"
+                aria-label="Entrer dans le cockpit (dÃ©mo)"
               >
                 <Rocket className="w-4 h-4" aria-hidden />
                 Inscription à la Bêta
