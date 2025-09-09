@@ -1,0 +1,109 @@
+# AGP-Review — Gouvernance des Gates (template)
+# Usage: copier dans `arka-meta/gates/AGP-Review_gouvernance_gates.yaml`
+
+meta:
+  version: 1.0
+  scope: "Arka — TaskForce R3"
+  refs:
+    plan_directeur: "arka-meta/plan/Plan-Directeur-Arka_v3.1.md"
+    codex_rules: "arka-meta/codex/Codex-rules_current.md"
+    codex_ops: "arka-meta/codex/Codex_rules_OPS_v0.1.md"
+
+snippet_ticket_header: |
+  **Règles Gates** : `arka-meta/gates/Gouvernance-gates-Arka.md`  
+  **AGP-Review Template** : `arka-meta/gates/AGP-Review_gouvernance_gates.yaml`
+
+gates:
+  order: [DoR, AGP-PASS, Owner-PASS, QA-PASS, Owner-Release]
+  anti_sauts: true
+  temporary_overrides:
+    - gate: "AGP/QA"
+      applies_to: "B1"
+      approvers: ["Merlin", "Owner"]
+      reason: "fast-track urgent, hors process Codex"
+
+checklists:
+  DoR:
+    owner: PMO
+    must_have:
+      - definition_of_ready (contexte, objectif, portée)
+      - contrats.api (routes, schémas, codes, pagination)
+      - contrats.ui (pages, actions_api_map)
+      - oracles (curl_examples + expect_json_shape)
+      - tests_plan (G/W/T vérifiables)
+      - budgets (perf/a11y)
+      - rbac_matrix (viewer|operator|owner)
+  AGP-PASS:
+    owner: AGP
+    must_have:
+      - conformite.produit (multi-clients, local-first, mémoire biface)
+      - securite.basics (HMAC, idempotence, logs JSON non sensibles)
+      - performance.budgets (TTFT/RTT)
+      - adr (si choix structurant)
+      - labels (gate: AGP-PASS, risk:*)
+  Owner-PASS:
+    owner: Owner
+    must_have:
+      - alignment.strategy (vision, jalon, ROI)
+      - scope.locked (pas d’élargissement non validé)
+      - go_nogo_notes
+  QA-PASS:
+    owner: QA/ARC
+    must_have:
+      - tests (unit, int, e2e) verts
+      - perf (p95 budgets respectés)
+      - securite (secret-scan, SAST léger)
+      - contrats.strict (codes, shape linter)
+      - evidence.report (reports/qa_arc/YYYY-MM-DD/<issue>.md)
+  Owner-Release:
+    owner: Owner
+    must_have:
+      - evidence_pack (texte-only: JSON/NDJSON/MD)
+      - sha256sums (liste livrables)
+      - changelog_minimal (notes cut)
+
+ci_policies:
+  required_status_checks: [network-gate, rbac-smokes, secret-scan]
+  evidence_artifacts:
+    - logs/net_self_check.ndjson
+    - logs/rbac_smokes.ndjson
+    - logs/ui_network.json
+    - arka-meta/reports/**/sha256sums.txt
+
+# Formulaire de décision — à instancier par gate
+review:
+  gate: <DoR|AGP-PASS|Owner-PASS|QA-PASS|Owner-Release>
+  issue: <ID|slug>
+  decision: <PASS|FAIL>
+  labels_add: [<gate-labels>, <risk:*>, <status:*>]
+  labels_remove: []
+  actions_required:
+    - id: A1
+      title: "<action courte>"
+      owner: <AGP|PMO|QA|Owner>
+      due: <YYYY-MM-DD>
+  evidence_links:
+    - name: "oracles"
+      path: "arka-meta/oracles/<ticket>/"
+    - name: "qa_report"
+      path: "reports/qa_arc/YYYY-MM-DD/<issue>.md"
+  notes: |
+    <points clés, écarts, arbitrages>
+  ts: <YYYY-MM-DDTHH:mm:ssZ>
+  reviewer: <prenom_role>
+
+# Exemple — AGP-PASS (remplacer les <> et renseigner)
+example_agp_pass:
+  gate: AGP-PASS
+  issue: TCK-B3
+  decision: PASS
+  labels_add: ["AGP-PASS", "status:ready-for-owner", "risk:none"]
+  labels_remove: ["DOR"]
+  actions_required: []
+  evidence_links:
+    - name: adr
+      path: arka-meta/adr/ADR-20250905-0001.md
+  notes: |
+    Conformité produit OK. RBAC et logs JSON explicités. Budgets TTFT/RTT posés.
+  ts: 2025-09-08T09:00:00Z
+  reviewer: agp
