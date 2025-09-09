@@ -12,7 +12,7 @@ import {
 } from '@/lib/error-model';
 import { generateTraceId, TRACE_HEADER } from '@/lib/trace';
 import { validateRACIInvariants, validateSingleRACIAssignment } from '@/lib/raci-validator';
-import { withIdempotency } from '@/lib/idempotency';
+// import { withIdempotency } from '@/lib/idempotency'; // Temporarily disabled for production build
 
 const AssignSchema = z.object({
   agentId: z.string(),
@@ -22,7 +22,7 @@ const AssignSchema = z.object({
 
 // POST /api/folders/:id/assign
 export const POST = withAuth(['editor', 'admin', 'owner'], 
-  withIdempotency(async (req, user, { params }) => {
+  async (req, user, { params }) => {
     const { id } = params;
     const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
     
@@ -138,5 +138,5 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
       );
       return errorResponse(apiError, 500);
     }
-  })
+  }
 );
