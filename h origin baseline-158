@@ -1,0 +1,417 @@
+[33mtag baseline-158[m
+Tagger: Grim <grimonpont.jeremy@gmail.com>
+Date:   Mon Sep 8 10:30:26 2025 +0200
+
+Baseline post-#158
+
+[33mcommit c7049f40fbc56c3399109087e166ee9215d3190d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;33mtag: [m[1;33mbaseline-158[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: JeremyGrim <31514726+JeremyGrim@users.noreply.github.com>
+Date:   Mon Sep 8 10:20:02 2025 +0200
+
+    Rollback/main to 158 (#170)
+    
+    * Revert "Fix/smokes health metrics (#167)"
+    
+    This reverts commit 725690fad13d6a0102567918d9a184994ffc104d.
+    
+    * Revert "docs: ajouter guide gates (#166)"
+    
+    This reverts commit eddcd84589a7a3f3901bf4917e183c51342ed45f.
+    
+    * Revert "feat(console): add accessible gates page (#164)"
+    
+    This reverts commit 7cbcefd3c54fd7385e1af3e982d4be6d67066e7d.
+    
+    * Revert "feat(chat): add gate and test intents (#163)"
+    
+    This reverts commit c138df09f502432cc3c71406fa67f9377486fd84.
+    
+    * Revert "feat: add metrics service (#162)"
+    
+    This reverts commit a58971029936601b21eb7f513093cfe5cb46035b.
+    
+    * Revert "feat: enforce scopes and run dedupe (#161)"
+    
+    This reverts commit 18f949ed3e26f858048ac1baf1defbbd5efef5c6.
+    
+    * Revert "feat(api): add gates and recipes routes (#160)"
+    
+    This reverts commit e8e29cc12ad32e73f2577c769ecc64cfa0785839.
+    
+    * Revert "feat(gates): enrichir métadonnées des gates et recettes (#159)"
+    
+    This reverts commit dfda37e40e09fab3b69d3b683431f125a1871f5b.
+
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mindex e73e948..fc6bba9 100644[m
+[1m--- a/.gitignore[m
+[1m+++ b/.gitignore[m
+[36m@@ -13,12 +13,6 @@[m [mlogs/[m
+ *.ndjson[m
+ logs_*.json[m
+ logs_*.txt[m
+[31m-!app/api/gates/jobs/[[]id[]]/logs/**[m
+[31m-[m
+[31m-# local debug dumps (do not commit)[m
+[31m-dump_*[m
+[31m-out*.txt[m
+[31m-tmp_*[m
+ [m
+ # local workspace (untracked)[m
+ local/[m
+[1mdiff --git a/app/(site)/_components/AgentsSlider.tsx b/app/(site)/_components/AgentsSlider.tsx[m
+[1mindex 380ba33..1081a3a 100644[m
+[1m--- a/app/(site)/_components/AgentsSlider.tsx[m
+[1m+++ b/app/(site)/_components/AgentsSlider.tsx[m
+[36m@@ -143,47 +143,46 @@[m [mexport default function AgentsSlider({[m
+       items.length[m
+         ? items[m
+         : [[m
+[31m-[m
+[31m-            {[m
+[31m-              id: 'rh',[m
+[31m-              title: 'Conseiller RH',[m
+[31m-              role: 'RH',[m
+[31m-              image: '/assets/hero/arkabox.png',[m
+[31m-              summary: 'PrÃ©pare dossiers, contrats, onboarding.',[m
+[31m-              skills: ['Dossiers RH', 'Contrats', 'Onboarding'],[m
+[31m-            },[m
+[31m-            {[m
+[31m-              id: 'edu',[m
+[31m-              title: 'Formateur',[m
+[31m-              role: 'Ã‰DU',[m
+[31m-              image: '/assets/hero/arkabox.png',[m
+[31m-              summary: 'Parcours, Ã©valuations, ateliers.',[m
+[31m-              skills: ['Parcours', 'Ã‰valuations', 'Ateliers'],[m
+[31m-            },[m
+[31m-            {[m
+[31m-              id: 'qual',[m
+[31m-              title: 'QualitÃ©',[m
+[31m-              role: 'QUAL',[m
+[31m-              image: '/assets/hero/arkabox.png',[m
+[31m-              summary: 'Processus, audits, conformitÃ©.',[m
+[31m-              skills: ['Processus', 'Audits', 'ConformitÃ©'],[m
+[31m-            },[m
+[31m-            {[m
+[31m-              id: 'org',[m
+[31m-              title: 'Organisation',[m
+[31m-              role: 'ORG',[m
+[31m-              image: '/assets/hero/arkabox.png',[m
+[31m-              summary: 'Roadmaps, risques, arbitrages.',[m
+[31m-              skills: ['Roadmaps', 'Risques', 'Arbitrages'],[m
+[31m-            },[m
+[31m-            {[m
+[31m-              id: 'support',[m
+[31m-              title: 'Support',[m
+[31m-              role: 'SUP',[m
+[31m-              image: '/assets/hero/arkabox.png',[m
+[31m-              summary: 'Tickets, rÃ©ponses, satisfaction.',[m
+[31m-              skills: ['Tickets', 'RÃ©ponses', 'Satisfaction'],[m
+[31m-            },[m
+[32m+[m[32m            {[m
+[32m+[m[32m              id: 'rh',[m
+[32m+[m[32m              title: 'Conseiller RH',[m
+[32m+[m[32m              role: 'RH',[m
+[32m+[m[32m              image: '/assets/hero/arkabox.png',[m
+[32m+[m[32m              summary: 'Prépare dossiers, contrats, onboarding.',[m
+[32m+[m[32m              skills: ['Dossiers RH', 'Contrats', 'Onboarding'],[m
+[32m+[m[32m            },[m
+[32m+[m[32m            {[m
+[32m+[m[32m              id: 'edu',[m
+[32m+[m[32m              title: 'Formateur',[m
+[32m+[m[32m              role: 'ÉDU',[m
+[32m+[m[32m              image: '/assets/hero/arkabox.png',[m
+[32m+[m[32m              summary: 'Parcours, évaluations, ateliers.',[m
+[32m+[m[32m              skills: ['Parcours', 'Évaluations', 'Ateliers'],[m
+[32m+[m[32m            },[m
+[32m+[m[32m            {[m
+[32m+[m[32m              id: 'qual',[m
+[32m+[m[32m              title: 'Qualité',[m
+[32m+[m[32m              role: 'QUAL',[m
+[32m+[m[32m              image: '/assets/hero/arkabox.png',[m
+[32m+[m[32m              summary: 'Processus, audits, conformité.',[m
+[32m+[m[32m              skills: ['Processus', 'Audits', 'Conformité'],[m
+[32m+[m[32m            },[m
+[32m+[m[32m            {[m
+[32m+[m[32m              id: 'org',[m
+[32m+[m[32m              title: 'Organisation',[m
+[32m+[m[32m              role: 'ORG',[m
+[32m+[m[32m              image: '/assets/hero/arkabox.png',[m
+[32m+[m[32m              summary: 'Roadmaps, risques, arbitrages.',[m
+[32m+[m[32m              skills: ['Roadmaps', 'Risques', 'Arbitrages'],[m
+[32m+[m[32m            },[m
+[32m+[m[32m            {[m
+[32m+[m[32m              id: 'support',[m
+[32m+[m[32m              title: 'Support',[m
+[32m+[m[32m              role: 'SUP',[m
+[32m+[m[32m              image: '/assets/hero/arkabox.png',[m
+[32m+[m[32m              summary: 'Tickets, réponses, satisfaction.',[m
+[32m+[m[32m              skills: ['Tickets', 'Réponses', 'Satisfaction'],[m
+[32m+[m[32m            },[m
+             {[m
+               id: 'marketing',[m
+               title: 'Marketing',[m
+[36m@@ -223,48 +222,44 @@[m [mexport default function AgentsSlider({[m
+             </p>[m
+           </div>[m
+           <div className="hidden md:flex items-center gap-2">[m
+[31m-[m
+[31m-            {active > 0 && ([m
+[31m-              <button[m
+[31m-                aria-controls="agents-rail"[m
+[31m-                aria-label="Revenir au dÃ©but"[m
+[31m-                onClick={() => {[m
+[31m-                  uiLog('landing.slider.agents.reset', { count: active });[m
+[31m-                  onReset?.();[m
+[31m-                  snapTo(0);[m
+[31m-                }}[m
+[31m-                className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10"[m
+[31m-              >[m
+[31m-                â†©[m
+[31m-              </button>[m
+[31m-            )}[m
+[32m+[m[32m            {active > 0 && ([m
+[32m+[m[32m              <button[m
+[32m+[m[32m                aria-controls="agents-rail"[m
+[32m+[m[32m                aria-label="Revenir au début"[m
+[32m+[m[32m                onClick={() => {[m
+[32m+[m[32m                  uiLog('landing.slider.agents.reset', { count: active });[m
+[32m+[m[32m                  onReset?.();[m
+[32m+[m[32m                  snapTo(0);[m
+[32m+[m[32m                }}[m
+[32m+[m[32m                className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10"[m
+[32m+[m[32m              >[m
+[32m+[m[32m                ↩[m
+[32m+[m[32m              </button>[m
+[32m+[m[32m            )}[m
+             <button[m
+[31m-              aria-controls="agents-rail"[m
+[31m-              aria-label="Carte prÃ©cÃ©dente"[m
+[31m-              disabled={atStart}[m
+[31m-              onClick={() => snapTo(Math.max(0, active - 1))}[m
+[31m-              className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed"[m
+[31m-            >[m
+[31m-              â—€[m
+[31m-            </button>[m
+[32m+[m[32m              aria-controls="agents-rail"[m
+[32m+[m[32m              aria-label="Carte précédente"[m
+[32m+[m[32m              disabled={atStart}[m
+[32m+[m[32m              onClick={() => snapTo(Math.max(0, active - 1))}[m
+[32m+[m[32m              className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed"[m
+[32m+[m[32m            >[m
+[32m+[m[32m              ◀[m
+[32m+[m[32m            </button>[m
+             <button[m
+[31m-              aria-controls="agents-rail"[m
+[31m-              aria-label="Carte suivante"[m
+[31m-              disabled={atEnd}[m
+[31m-              onClick={() => snapTo(Math.min(data.length - 1, active + 1))}[m
+[31m-              className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed"[m
+[31m-            >[m
+[31m-              â–¶[m
+[31m-            </button>[m
+[31m-[m
+[32m+[m[32m              aria-controls="agents-rail"[m
+[32m+[m[32m              aria-label="Carte suivante"[m
+[32m+[m[32m              disabled={atEnd}[m
+[32m+[m[32m              onClick={() => snapTo(Math.min(data.length - 1, active + 1))}[m
+[32m+[m[32m              className="h-11 w-11 rounded-full bg-white ring-1 ring-black/10 disabled:opacity-40 disabled:cursor-not-allowed"[m
+[32m+[m[32m            >[m
+[32m+[m[32m              ▶[m
+[32m+[m[32m            </button>[m
+           </div>[m
+         </header>[m
+       </div>[m
+ [m
+[31m-[m
+[31m-      {/* rail fullâ€‘bleed */}[m
+[31m-      <div className="mt-6 w-screen relative left-1/2 right-1/2 -mx-[50vw]">[m
+[31m-[m
+[32m+[m[32m      {/* rail full‑bleed */}[m
+[32m+[m[32m      <div className="mt-6 w-screen relative left-1/2 right-1/2 -mx-[50vw]">[m
+         <div[m
+           id="agents-rail"[m
+           ref={railRef}[m
+[36m@@ -292,11 +287,9 @@[m [mexport default function AgentsSlider({[m
+                 if (el) cardRefs.current[i] = el;[m
+               }}[m
+               role="region"[m
+[31m-[m
+[31m-              aria-label={`${a.role} â€” ${a.title}`}[m
+[32m+[m[32m              aria-label={`${a.role} — ${a.title}`}[m
+               tabIndex={0}[m
+[31m-              className="flex-none w-[55%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-0 shadow-[0_12px_24px_rgba(15,23,42,.08)]"[m
+[31m-[m
+[32m+[m[32m              className="flex-none w-[85%] md:w-[240px] lg:w-[320px] xl:w-[360px] snap-start snap-always rounded-[16px] bg-white ring-0 shadow-[0_12px_24px_rgba(15,23,42,.08)]"[m
+               onClick={() => {[m
+                 snapTo(i);[m
+                 uiLog('landing.slider.agents.expand', { index: i });[m
+[36m@@ -314,9 +307,7 @@[m [mexport default function AgentsSlider({[m
+               <div className="relative overflow-hidden rounded-t-[16px] bg-slate-100 h-28 md:h-36 lg:h-44 xl:h-48">[m
+                 <img[m
+                   src={a.image || `/assets/agents/agent-${a.id}.png`}[m
+[31m-[m
+[31m-                  alt={`${a.role} â€” ${a.title}, illustration`}[m
+[31m-[m
+[32m+[m[32m                  alt={`${a.role} — ${a.title}, illustration`}[m
+                   className="absolute inset-0 h-full w-full object-cover"[m
+                   loading={i === 0 ? 'eager' : 'lazy'}[m
+                   decoding="async"[m
+[36m@@ -352,9 +343,7 @@[m [mexport default function AgentsSlider({[m
+                       key={j}[m
+                       className="col-span-3 sm:col-span-1 flex items-center gap-2"[m
+                     >[m
+[31m-[m
+[31m-                      âœ“ {s}[m
+[31m-[m
+[32m+[m[32m                      ✓ {s}[m
+                     </li>[m
+                   ))}[m
+                 </ul>[m
+[36m@@ -370,9 +359,7 @@[m [mexport default function AgentsSlider({[m
+             <button[m
+               key={i}[m
+               aria-current={active === i}[m
+[31m-[m
+[31m-              aria-label={`Aller Ã  la carte ${i + 1}`}[m
+[31m-[m
+[32m+[m[32m              aria-label={`Aller à la carte ${i + 1}`}[m
+               onClick={() => snapTo(i)}[m
+               className={`h-2.5 w-2.5 rounded-full ${[m
+                 active === i ? 'bg-slate-800' : 'bg-slate-400/40'[m
+[1mdiff --git a/app/(site)/_components/EnClair.tsx b/app/(site)/_components/EnClair.tsx[m
+[1mindex cb29177..285b686 100644[m
+[1m--- a/app/(site)/_components/EnClair.tsx[m
+[1m+++ b/app/(site)/_components/EnClair.tsx[m
+[36m@@ -52,7 +52,7 @@[m [mexport default function EnClair({ title = 'En clair', subtitle = DEFAULT_SUBTITL[m
+           {items.slice(0, 2).map((it, idx) => ([m
+             <article[m
+               key={it.title}[m
+[31m-              className={`card bg-white ${idx === 0 ? 'glow-a' : 'glow-b'} p-8 md:p-12 relative overflow-hidden h-full border-0 shadow-[0_12px_30px_rgba(15,23,42,.08)]`}[m
+[32m+[m[32m              className={`card ${idx === 0 ? 'glow-a' : 'glow-b'} p-8 md:p-12 relative overflow-hidden h-full`}[m
+             >[m
+               <div className="h-full flex flex-col gap-3 items-start text-left md:items-center md:text-center">[m
+                 <div className="flex items-center gap-3 justify-start md:justify-center">[m
+[1mdiff --git a/app/(site)/_components/Hero.tsx b/app/(site)/_components/Hero.tsx[m
+[1mindex 99ed9d3..a310ea4 100644[m
+[1m--- a/app/(site)/_components/Hero.tsx[m
+[1m+++ b/app/(site)/_components/Hero.tsx[m
+[36m@@ -1,140 +1,140 @@[m
+[31m-﻿/* eslint-disable @next/next/no-img-element */[m
+[31m-'use client';[m
+[31m-[m
+[31m-import type { ReactNode } from 'react';[m
+[31m-import { CheckCircle2, Users, Database } from 'lucide-react';[m
+[31m-[m
+[31m-export type HeroProps = {[m
+[31m-  badge?: string;[m
+[31m-  title?: ReactNode;[m
+[31m-  subtitle?: string;[m
+[31m-  chips?: string[];[m
+[31m-  ctas?: { label: string; href: string; variant: 'primary' | 'secondary' }[];[m
+[31m-  image?: { src: string; alt: string; srcset?: string; sizes?: string };[m
+[31m-};[m
+[31m-[m
+[31m-const DEFAULT_BADGE = 'Cockpit v0.1.0-demo Â· DonnÃ©es de dÃ©mo';[m
+[31m-const DEFAULT_TITLE = ([m
+[31m-  <>[m
+[31m-    Pilotez une Ã©quipe dâ€™ <span className="accent">agents IA experts</span> â€” pas un assistant isolÃ©.[m
+[31m-  </>[m
+[31m-);[m
+[31m-const DEFAULT_SUBTITLE =[m
+[31m-  'Avec Arka, vous ne dialoguez pas avec une machine. Vous dirigez une squad spÃ©cialisÃ©e : RH, Formation, QualitÃ©, Organisation. Chaque agent IA est un expert dans son domaine, et tous travaillent ensemble, en ping-pong, pour livrer mieux.';[m
+[31m-const DEFAULT_CHIPS = ['Experts, pas gÃ©nÃ©ralistes', 'Collaboration multi-rÃ´les', 'MÃ©moire souveraine'];[m
+[31m-const DEFAULT_CTAS = [[m
+[31m-  { label: 'Inscription à la Bêta', href: '/beta', variant: 'primary' as const },[m
+[31m-  { label: 'Contactez-nous', href: '/contact', variant: 'secondary' as const },[m
+[31m-];[m
+[31m-const DEFAULT_IMAGE = {[m
+[31m-  src: '/assets/hero/arkabox-board.png',[m
+[31m-  alt: 'AperÃ§u du cockpit Arka â€“ board et actions visibles',[m
+[31m-  srcset:[m
+[31m-    '/assets/hero/arkabox-board.png?w=480 480w, /assets/hero/arkabox-board.png?w=768 768w, /assets/hero/arkabox-board.png?w=1200 1200w, /assets/hero/arkabox-board.png?w=1600 1600w',[m
+[31m-  sizes: '(max-width: 768px) 90vw, (max-width: 1200px) 40vw, 560px',[m
+[31m-};[m
+[31m-[m
+[31m-export default function Hero({[m
+[31m-  badge = DEFAULT_BADGE,[m
+[31m-  title = DEFAULT_TITLE,[m
+[31m-  subtitle = DEFAULT_SUBTITLE,[m
+[31m-  chips = DEFAULT_CHIPS,[m
+[31m-  ctas = DEFAULT_CTAS,[m
+[31m-  image = DEFAULT_IMAGE,[m
+[31m-}: HeroProps) {[m
+[31m-  return ([m
+[31m-    <section id="hero" aria-label="Section de tÃªte" className="py-16 md:py-20 lg:py-24 text-white">[m
+[31m-      <div className="mx-auto max-w-[1440px] px-6 grid grid-cols-12 gap-x-6">[m
+[31m-        {/* Left: text */}[m
+[31m-        <div className="col-span-12 md:col-span-7 space-y-6">[m
+[31m-          <div[m
+[31m-            className="inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-xs opacity-0 motion-safe:animate-fade-up"[m
+[31m-            style={{ backgroundColor: 'rgba(255,255,255,.10)', borderColor: 'rgba(255,255,255,.18)' }}[m
+[31m-          >[m
+[31m-            <span>{badge}</span>[m
+[31m-          </div>[m
+[31m-          <h1 className="text-[28px] sm:text-[32px] md:text-[34px] lg:text-[36px] font-semibold leading-tight opacity-0 motion-safe:animate-fade-up [animation-delay:100ms]">[m
+[31m-            {title}[m
+[31m-          </h1>[m
+[31m-          <p[m
+[31m-            className="max-w-2xl text-sm md:text-base opacity-0 motion-safe:animate-fade-up [animation-delay:200ms]"[m
+[31m-            style={{ color: '#D1D5DB' }}[m
+[31m-          >[m
+[31m-            {subtitle}[m
+[31m-          </p>[m
+[31m-          <div className="flex flex-wrap items-center gap-3 opacity-0 motion-safe:animate-fade-up [animation-delay:300ms]">[m
+[31m-            {ctas.map((c) =>[m
+[31m-              c.variant === 'primary' ? ([m
+[31m-                <a[m
+[31m-                  key={c.label}[m
+[31m-                  href={c.href}[m
+[31m-                  className="rounded-[12px] px-5 py-3 text-sm font-medium text-white shadow-[0_10px_20px_rgba(226,2,109,.22)] hover:-translate-y-px transition will-change-transform"[m
+[31m-                  style={{ backgroundImage: 'linear-gradient(135deg,#FAB652 0%,#F25636 50%,#E0026D 100%)' }}[m
+[31m-                  aria-label="Inscription à la Bêta"[m
+[31m-                >[m
+[31m-                  {c.label}[m
+[31m-                </a>[m
+[31m-              ) : ([m
+[31m-                <a[m
+[31m-                  key={c.label}[m
+[31m-                  href={c.href}[m
+[31m-                  className="rounded-[12px] px-5 py-3 text-sm text-white/90 hover:bg-white/10 border"[m
+[31m-                  style={{ borderColor: 'rgba(255,255,255,.14)' }}[m
+[31m-                  aria-label="Contactez-nous"[m
+[31m-                >[m
+[31m-                  {c.label}[m
+[31m-                </a>[m
+[31m-                ),[m
+[31m-            )}[m
+[31m-          </div>[m
+[31m-[m
+[31m-[m
+[31m-          <div className="flex flex-wrap gap-2" aria-label="Atouts">[m
+[31m-            {chips.map((c) => {[m
+[31m-              const icon = c.toLowerCase().includes('expert')[m
+[31m-                ? <CheckCircle2 className="w-3.5 h-3.5" aria-hidden />[m
+[31m-                : c.toLowerCase().includes('multi') || c.toLowerCase().includes('rÃ´le')[m
+[31m-[m
+[31m-                ? <Users className="w-3.5 h-3.5" aria-hidden />[m
+[31m-                : <Database className="w-3.5 h-3.5" aria-hidden />;[m
+[31m-              return ([m
+[31m-                <span[m
+[31m-                  key={c}[m
+[31m-                  className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs"[m
+[31m-                  style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,.18)', backgroundColor: 'rgba(255,255,255,.10)' }}[m
+[31m-                >[m
+[31m-                  <span aria-hidden className="text-white">{icon}</span>[m
+[31m-                  {c}[m
+[31m-                </span>[m
+[31m-              );[m
+[31m-            })}[m
+[31m-          </div>[m
+[31m-        </div>[m
+[31m-[m
+[31m-        {/* Right: image */}[m
+[31m-        <div className="col-span-12 md:col-span-5 mt-8 md:mt-0 flex justify-center">[m
+[31m-          <img[m
+[31m-            src={process.env.NEXT_PUBLIC_HERO_IMG || image.src}[m
+[31m-    
