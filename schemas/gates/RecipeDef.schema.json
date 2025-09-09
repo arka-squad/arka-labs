@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://arka/schemas/gates/RecipeDef.schema.json",
+  "title": "RecipeDef",
+  "type": "object",
+  "required": ["id", "version", "title", "steps"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "minLength": 1 },
+    "title": { "type": "string" },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string" },
+          "gate_id": { "type": "string" },
+          "recipe_id": { "type": "string" },
+          "if": { "type": "string" },
+          "parallel": { "type": "boolean", "default": false },
+          "retry": {
+            "type": "object",
+            "required": ["count", "backoff_ms"],
+            "properties": {
+              "count": { "type": "integer", "minimum": 0 },
+              "backoff_ms": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "inputs": { "type": "object", "additionalProperties": true },
+    "outputs": { "type": "object", "additionalProperties": true },
+    "scope": { "type": "string", "enum": ["safe", "owner-only"], "default": "safe" },
+    "tags": { "type": "array", "items": { "type": "string" }, "default": [] }
+  },
+  "additionalProperties": true
+}
+

@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://arka/schemas/gates/GateDef.schema.json",
+  "title": "GateDef",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "title",
+    "category",
+    "scope",
+    "inputs",
+    "outputs",
+    "est_duration_ms"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "minLength": 1 },
+    "title": { "type": "string" },
+    "category": { "type": "string", "enum": ["perf", "security", "contracts", "ops", "kpis"] },
+    "scope": { "type": "string", "enum": ["safe", "owner-only"] },
+    "risk": { "type": "string", "enum": ["low", "med", "high"], "default": "low" },
+    "inputs": { "type": "object", "additionalProperties": true },
+    "outputs": { "type": "object", "additionalProperties": true },
+    "est_duration_ms": { "type": "integer", "minimum": 0 },
+    "tags": { "type": "array", "items": { "type": "string" }, "default": [] }
+  },
+  "additionalProperties": true
+}
+

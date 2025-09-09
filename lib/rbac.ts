@@ -19,6 +19,21 @@ const RBAC_MATRIX: Record<string, Partial<Record<Method, Role[]>>> = {
     GET: ['viewer', 'editor', 'admin', 'owner'],
     POST: ['editor', 'admin', 'owner'],
   },
+  '/api/folders/[id]': {
+    GET: ['viewer', 'editor', 'admin', 'owner'],
+  },
+  '/api/folders/[id]/documents': {
+    GET: ['viewer', 'editor', 'admin', 'owner'],
+  },
+  '/api/folders/[id]/assign': {
+    POST: ['editor', 'admin', 'owner'],
+  },
+  '/api/folders/[id]/context': {
+    POST: ['editor', 'admin', 'owner'],
+  },
+  '/api/folders/[id]/roadmap': {
+    GET: ['viewer', 'editor', 'admin', 'owner'],
+  },
 };
 
 export function canAccess(route: string, method: Method, role: Role): boolean {

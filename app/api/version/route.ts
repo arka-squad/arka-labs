@@ -9,7 +9,6 @@ export async function GET(_req: NextRequest) {
   const env = process.env.VERCEL_ENV || process.env.NODE_ENV || '';
   let version = '';
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const pkg = require('../../../package.json');
     version = pkg.version || '';
   } catch {}

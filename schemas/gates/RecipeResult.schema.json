@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://arka/schemas/gates/RecipeResult.schema.json",
+  "title": "RecipeResult",
+  "type": "object",
+  "required": ["recipe_id", "status", "summary", "steps"],
+  "properties": {
+    "recipe_id": { "type": "string" },
+    "status": { "type": "string", "enum": ["pass", "fail", "warn", "error"] },
+    "summary": {
+      "type": "object",
+      "required": ["pass", "fail", "warn"],
+      "properties": {
+        "pass": { "type": "integer", "minimum": 0 },
+        "fail": { "type": "integer", "minimum": 0 },
+        "warn": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "status": { "type": "string", "enum": ["queued", "running", "pass", "fail", "warn", "error", "canceled"] },
+          "gate_result": { "$ref": "GateResult.schema.json" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

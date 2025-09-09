@@ -41,3 +41,5 @@ export function getSessionVault(): SessionVault {
   }
   return vault;
 }
+
+export type { Session };

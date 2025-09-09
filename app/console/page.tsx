@@ -8,11 +8,12 @@ import RoadmapCard from '../../components/roadmap/RoadmapCard';
 import RunsTable from '../../components/runs/RunsTable';
 import RunsList from '../../components/runs/RunsList';
 import AgentCard from '../../components/roster/AgentCard';
+import DossiersPanel from '../../components/dossiers/DossiersPanel';
 import { demoKpis, demoRoadmap, demoRuns, demoRoster, demoThreads, demoAgents, demoMessages } from './demo-data';
 import ConsoleGuard from '../../components/ConsoleGuard';
 
 export default function ConsoleDashboardPage() {
-  const [view, setView] = useState<'dashboard'|'roadmap'|'builder'|'docdesk'|'observa'|'runs'|'roster'>('dashboard');
+  const [view, setView] = useState<'dashboard'|'roadmap'|'builder'|'docs'|'observa'|'runs'|'roster'>('dashboard');
   const [activeThreadId, setActiveThreadId] = useState<string>(demoThreads[0]?.id || '');
   const [msgs, setMsgs] = useState<Record<string, any[]>>({ ...demoMessages });
   const handleSend = async (threadId: string, payload: { text: string }) => {
@@ -100,6 +101,11 @@ export default function ConsoleDashboardPage() {
         {view === 'runs' && (
           <div className="p-4 h-full min-h-0 overflow-hidden">
             <RunsList data={demoRuns as any} />
+          </div>
+        )}
+        {view === 'docs' && (
+          <div className="h-full min-h-0 overflow-hidden">
+            <DossiersPanel />
           </div>
         )}
       </section>
