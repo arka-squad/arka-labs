@@ -80,7 +80,7 @@ export function extractMemoryBlocks(content: string, agent_source?: string): Ext
   for (const [pattern_type, config] of Object.entries(EXTRACTION_PATTERNS)) {
     const detection = detectPattern(content, config, pattern_type);
     
-    if (detection.found) {
+    if (detection.found && detection.content) {
       const block = createMemoryBlock(
         detection.content,
         pattern_type.replace('_detection', '') as MemoryBlock['block_type'],
