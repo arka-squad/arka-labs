@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { z } from 'zod';
@@ -9,7 +9,7 @@ import {
   validationError 
 } from '@/lib/error-model';
 import { generateTraceId, TRACE_HEADER } from '@/lib/trace';
-import { withIdempotency } from '@/lib/idempotency';
+// import { withIdempotency } from '@/lib/idempotency'; // Temporarily disabled for production build
 import { calculateContextCompletion, getWeightsForFolderType } from '@/lib/context-completion';
 
 const ContextSchema = z.object({
@@ -20,7 +20,7 @@ const ContextSchema = z.object({
 
 // POST /api/folders/:id/context
 export const POST = withAuth(['editor', 'admin', 'owner'], 
-  withIdempotency(async (req, user, { params }) => {
+  async (req, user, { params }) => {
     const { id } = params;
     const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
     
@@ -134,5 +134,5 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
       );
       return errorResponse(apiError, 500);
     }
-  })
+  }
 );

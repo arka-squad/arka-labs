@@ -3,7 +3,6 @@ import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { z } from 'zod';
 import { 
-  errorResponse, 
   createApiError, 
   folderNotFoundError, 
   agentNotFoundError, 
@@ -34,14 +33,14 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
       const folder = await sql`SELECT id FROM folders WHERE id = ${id}`;
       if (folder.length === 0) {
         const error = folderNotFoundError(id, traceId);
-        return errorResponse(error, 404);
+        return NextResponse.json(error, { status: 404 });
       }
       
       // Validate agent exists
       const agent = await sql`SELECT id FROM agents WHERE id = ${agentId}`;
       if (agent.length === 0) {
         const error = agentNotFoundError(agentId, traceId);
-        return errorResponse(error, 422);
+        return NextResponse.json(error, { status: 422 });
       }
       
       // Validate individual assignments
@@ -59,7 +58,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
       
       if (assignmentValidations.length > 0) {
         const error = validationError(assignmentValidations, traceId);
-        return errorResponse(error, 400);
+        return NextResponse.json(error, { status: 400 });
       }
       
       // Validate RACI invariants
@@ -70,7 +69,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
           raciValidation.violations.join('; '), 
           traceId
         );
-        return errorResponse(error, 422);
+        return NextResponse.json(error, { status: 422 });
       }
       
       // Process assignments
@@ -89,7 +88,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
             { folder_id: id, document_id: docId },
             traceId
           );
-          return errorResponse(error, 422);
+          return NextResponse.json(error, { status: 422 });
         }
         
         // Update assignment
@@ -126,7 +125,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
     } catch (error) {
       if (error instanceof z.ZodError) {
         const apiError = validationError(error.errors, traceId);
-        return errorResponse(apiError, 400);
+        return NextResponse.json(apiError, { status: 400 });
       }
       
       console.error('POST /api/folders/:id/assign error:', error);
@@ -136,7 +135,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
         { error: error instanceof Error ? error.message : 'Unknown error' },
         traceId
       );
-      return errorResponse(apiError, 500);
+      return NextResponse.json(apiError, { status: 500 });
     }
   }
 );

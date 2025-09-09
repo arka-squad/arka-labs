@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { z } from 'zod';
@@ -12,7 +12,7 @@ import {
 } from '@/lib/error-model';
 import { generateTraceId, TRACE_HEADER } from '@/lib/trace';
 import { validateRACIInvariantsProject, validateSingleRACIAssignment } from '@/lib/raci-validator-project';
-import { withIdempotency } from '@/lib/idempotency';
+// import { withIdempotency } from '@/lib/idempotency'; // Temporarily disabled for production build
 
 const AssignSchema = z.object({
   agentId: z.string(),
@@ -22,7 +22,7 @@ const AssignSchema = z.object({
 
 // POST /api/projects/:id/assign (mapped from folders)
 export const POST = withAuth(['editor', 'admin', 'owner'], 
-  withIdempotency(async (req, user, { params }) => {
+  async (req, user, { params }) => {
     const { id } = params;
     const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
     const projectId = parseInt(id);
@@ -170,5 +170,5 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
       );
       return errorResponse(apiError, 500);
     }
-  })
+  }
 );
