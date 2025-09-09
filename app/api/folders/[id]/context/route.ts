@@ -1,14 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { z } from 'zod';
 import { 
+  errorResponse, 
   createApiError, 
   folderNotFoundError,
   validationError 
 } from '@/lib/error-model';
 import { generateTraceId, TRACE_HEADER } from '@/lib/trace';
-// import { withIdempotency } from '@/lib/idempotency'; // Temporarily disabled for production build
+import { withIdempotency } from '@/lib/idempotency';
 import { calculateContextCompletion, getWeightsForFolderType } from '@/lib/context-completion';
 
 const ContextSchema = z.object({
@@ -19,7 +20,7 @@ const ContextSchema = z.object({
 
 // POST /api/folders/:id/context
 export const POST = withAuth(['editor', 'admin', 'owner'], 
-  async (req, user, { params }) => {
+  withIdempotency(async (req, user, { params }) => {
     const { id } = params;
     const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
     
@@ -35,14 +36,14 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
           {},
           traceId
         );
-        return NextResponse.json(error, { status: 422 });
+        return errorResponse(error, 422);
       }
       
       // Validate folder exists and get folder type
       const folder = await sql`SELECT id, vision FROM folders WHERE id = ${id}`;
       if (folder.length === 0) {
         const error = folderNotFoundError(id, traceId);
-        return NextResponse.json(error, { status: 404 });
+        return errorResponse(error, 404);
       }
       
       const folderData = folder[0];
@@ -71,7 +72,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
       // Calculate completion using deterministic formula
       const weights = getWeightsForFolderType(folderType);
       const completionResult = calculateContextCompletion(
-        contextEntries.map((entry: any) => ({
+        contextEntries.map(entry => ({
           type: entry.type,
           content: entry.content,
           agent: entry.agent
@@ -106,7 +107,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
         })}, NOW())
       `;
       
-      return NextResponse.json({
+      return Response.json({
         folder_id: id,
         context_id: contextId,
         type,
@@ -121,7 +122,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
     } catch (error) {
       if (error instanceof z.ZodError) {
         const apiError = validationError(error.errors, traceId);
-        return NextResponse.json(apiError, { status: 400 });
+        return errorResponse(apiError, 400);
       }
       
       console.error('POST /api/folders/:id/context error:', error);
@@ -131,7 +132,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
         { error: error instanceof Error ? error.message : 'Unknown error' },
         traceId
       );
-      return NextResponse.json(apiError, { status: 500 });
+      return errorResponse(apiError, 500);
     }
-  }
+  })
 );

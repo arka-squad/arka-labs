@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { folderNotFoundError, errorResponse, createApiError } from '@/lib/error-model';
@@ -45,7 +45,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     const ifNoneMatch = req.headers.get('if-none-match');
     
     if (ifNoneMatch === etag) {
-      return new NextResponse(null, { 
+      return new Response(null, { 
         status: 304,
         headers: {
           'ETag': etag,
@@ -54,7 +54,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
       });
     }
     
-    return NextResponse.json(result, {
+    return Response.json(result, {
       headers: {
         'ETag': etag,
         'X-Trace-Id': traceId

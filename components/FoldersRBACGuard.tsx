@@ -11,9 +11,14 @@ interface FoldersRBACGuardProps {
 }
 
 export function FoldersRBACGuard({ roles, children }: FoldersRBACGuardProps) {
-  // For development, use mock role matching withAuth approach  
-  const mockUserRole: Role = 'owner'; // Highest permission for development
-  const userRole = mockUserRole;
+  const { session } = useSession();
+  
+  // If no session, don't show protected content
+  if (!session?.user?.role) {
+    return null;
+  }
+  
+  const userRole = session.user.role as Role;
   
   // Check if user role is in allowed roles
   if (roles.includes(userRole)) {

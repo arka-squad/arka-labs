@@ -34,7 +34,7 @@ interface CaptureResponse {
 }
 
 // POST /api/memory/capture (operator+)
-export const POST = withAuth(['editor', 'admin', 'owner'], async (req, user, { params }) => {
+export const POST = withAuth(['operator', 'admin', 'owner'], async (req, user, { params }) => {
   const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
   const idempotencyKey = req.headers.get('idempotency-key');
   
@@ -45,9 +45,10 @@ export const POST = withAuth(['editor', 'admin', 'owner'], async (req, user, { p
       return errorResponse(error, 400);
     }
 
-    if (!validateIdempotencyKey(idempotencyKey)) {
-      const error = createApiError('ERR_VALIDATION_FAILED', 'Invalid idempotency key format', { key: idempotencyKey }, traceId);
-      return errorResponse(error, 400);
+    const idempotencyCheck = await validateIdempotencyKey(idempotencyKey, req.url, user?.sub || 'anonymous');
+    if (idempotencyCheck.conflict) {
+      const error = createIdempotencyConflictError(idempotencyKey, traceId);
+      return errorResponse(error, 409);
     }
     
     const body: CaptureRequest = await req.json();
@@ -95,7 +96,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'], async (req, user, { p
 
     // If no content from thread, require manual content
     if (!content_text.trim()) {
-      if (!body.content_blocks.some((block: any) => block.trim())) {
+      if (!body.content_blocks.some(block => block.trim())) {
         const error = createApiError('ERR_NO_CONTENT', 'No content to extract from thread or content_blocks', {}, traceId);
         return errorResponse(error, 400);
       }
@@ -112,10 +113,10 @@ export const POST = withAuth(['editor', 'admin', 'owner'], async (req, user, { p
     }
 
     // Save memory blocks to database
-    const saved_blocks: any[] = [];
-    const context_links_created: any[] = [];
+    const saved_blocks = [];
+    const context_links_created = [];
     
-    await sql.begin(async (sql: any) => {
+    await sql.begin(async (sql) => {
       for (const block of extraction.blocks) {
         const [saved] = await sql`
           INSERT INTO memory_blocks (project_id, thread_id, block_type, content, agent_source, importance, tags, hash)
@@ -136,8 +137,8 @@ export const POST = withAuth(['editor', 'admin', 'owner'], async (req, user, { p
 
       // Create context links based on semantic relationships
       // For now, implement basic linking: decision blocks relate to vision blocks
-      const vision_blocks = saved_blocks.filter((b: any) => b.type === 'vision');
-      const decision_blocks = saved_blocks.filter((b: any) => b.type === 'decision');
+      const vision_blocks = saved_blocks.filter(b => b.type === 'vision');
+      const decision_blocks = saved_blocks.filter(b => b.type === 'decision');
       
       for (const decision of decision_blocks) {
         for (const vision of vision_blocks) {
@@ -155,7 +156,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'], async (req, user, { p
     const all_blocks = await sql`
       SELECT block_type FROM memory_blocks WHERE project_id = ${project_id}
     `;
-    const context_completion = calculateContextCompletion(all_blocks.map((b: any) => ({ block_type: b.block_type })) as any);
+    const context_completion = calculateContextCompletion(all_blocks.map(b => ({ block_type: b.block_type })) as any);
 
     // Get agents mentioned for notification
     const agents_notified = [...new Set(extraction.metadata.agent_mentions)];

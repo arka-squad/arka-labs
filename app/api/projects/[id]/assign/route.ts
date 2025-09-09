@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { z } from 'zod';
 import { 
+  errorResponse, 
   createApiError, 
   folderNotFoundError, 
   agentNotFoundError, 
@@ -11,7 +12,7 @@ import {
 } from '@/lib/error-model';
 import { generateTraceId, TRACE_HEADER } from '@/lib/trace';
 import { validateRACIInvariantsProject, validateSingleRACIAssignment } from '@/lib/raci-validator-project';
-// import { withIdempotency } from '@/lib/idempotency'; // Temporarily disabled for production build
+import { withIdempotency } from '@/lib/idempotency';
 
 const AssignSchema = z.object({
   agentId: z.string(),
@@ -21,7 +22,7 @@ const AssignSchema = z.object({
 
 // POST /api/projects/:id/assign (mapped from folders)
 export const POST = withAuth(['editor', 'admin', 'owner'], 
-  async (req, user, { params }) => {
+  withIdempotency(async (req, user, { params }) => {
     const { id } = params;
     const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
     const projectId = parseInt(id);
@@ -34,14 +35,14 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
       const project = await sql`SELECT id FROM projects WHERE id = ${projectId}`;
       if (project.length === 0) {
         const error = folderNotFoundError(id, traceId);
-        return NextResponse.json(error, { status: 404 });
+        return errorResponse(error, 404);
       }
       
       // Validate agent exists
       const agent = await sql`SELECT id FROM agents WHERE id = ${agentId}`;
       if (agent.length === 0) {
         const error = agentNotFoundError(agentId, traceId);
-        return NextResponse.json(error, { status: 422 });
+        return errorResponse(error, 422);
       }
       
       // Convert docIds from format "doc.project.123" to actual IDs
@@ -67,7 +68,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
       
       if (assignmentValidations.length > 0) {
         const error = validationError(assignmentValidations, traceId);
-        return NextResponse.json(error, { status: 400 });
+        return errorResponse(error, 400);
       }
       
       // Validate RACI invariants
@@ -78,7 +79,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
           raciValidation.violations.join('; '), 
           traceId
         );
-        return NextResponse.json(error, { status: 422 });
+        return errorResponse(error, 422);
       }
       
       // Process assignments
@@ -97,7 +98,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
             { project_id: projectId, document_id: docId },
             traceId
           );
-          return NextResponse.json(error, { status: 422 });
+          return errorResponse(error, 422);
         }
         
         // Upsert assignment (insert or update)
@@ -143,7 +144,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
         WHERE id = ${projectId}
       `;
       
-      return NextResponse.json({
+      return Response.json({
         folder_id: id,
         agent_id: agentId,
         role,
@@ -157,7 +158,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
     } catch (error) {
       if (error instanceof z.ZodError) {
         const apiError = validationError(error.errors, traceId);
-        return NextResponse.json(apiError, { status: 400 });
+        return errorResponse(apiError, 400);
       }
       
       console.error('POST /api/projects/:id/assign error:', error);
@@ -167,7 +168,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
         { error: error instanceof Error ? error.message : 'Unknown error' },
         traceId
       );
-      return NextResponse.json(apiError, { status: 500 });
+      return errorResponse(apiError, 500);
     }
-  }
+  })
 );

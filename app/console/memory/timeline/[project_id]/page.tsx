@@ -84,8 +84,7 @@ export default function MemoryTimelinePage() {
       if (fromDate) params.append('from', fromDate);
       if (toDate) params.append('to', toDate);
       
-      const response = await apiFetch(`/api/memory/timeline/${project_id}?${params}`);
-      const data = await response.json();
+      const data = await apiFetch(`/api/memory/timeline/${project_id}?${params}`);
       setTimelineData(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de chargement');

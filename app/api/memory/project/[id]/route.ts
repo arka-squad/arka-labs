@@ -92,13 +92,13 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
 
     // Calculate memory summary
     const total_blocks = memory_blocks.length;
-    const by_type = memory_blocks.reduce((acc: Record<string, number>, block: any) => {
+    const by_type = memory_blocks.reduce((acc, block) => {
       acc[block.block_type] = (acc[block.block_type] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
     const context_completion = calculateContextCompletion(
-      memory_blocks.map((b: any) => ({ block_type: b.block_type })) as any
+      memory_blocks.map(b => ({ block_type: b.block_type })) as any
     );
 
     const last_updated = memory_blocks.length > 0 
@@ -127,7 +127,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     }
 
     // Extract governance information from governance blocks
-    const governance_blocks = memory_blocks.filter((b: any) => b.block_type === 'governance');
+    const governance_blocks = memory_blocks.filter(b => b.block_type === 'governance');
     let governance = {
       current_phase: 'execution',
       gates_passed: [] as string[],
@@ -148,14 +148,14 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     }
 
     // Get active blockers
-    const blocker_blocks = memory_blocks.filter((b: any) => b.block_type === 'blocker');
-    governance.blockers_active = blocker_blocks.map((b: any) => {
+    const blocker_blocks = memory_blocks.filter(b => b.block_type === 'blocker');
+    governance.blockers_active = blocker_blocks.map(b => {
       const content = b.content as any;
       return content.blocker || content.summary || 'Unknown blocker';
     }).slice(0, 5); // Max 5 active blockers
 
     // Format memory blocks for response
-    const formatted_blocks = memory_blocks.slice(0, 50).map((block: any) => ({ // Limit to 50 most recent
+    const formatted_blocks = memory_blocks.slice(0, 50).map(block => ({ // Limit to 50 most recent
       id: block.id,
       type: block.block_type,
       content: block.content,
@@ -185,7 +185,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     const ifNoneMatch = req.headers.get('if-none-match');
     
     if (ifNoneMatch === etag) {
-      return new NextResponse(null, { 
+      return new Response(null, { 
         status: 304,
         headers: {
           'ETag': etag,

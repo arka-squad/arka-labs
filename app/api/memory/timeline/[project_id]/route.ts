@@ -151,7 +151,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     `;
 
     // Format timeline entries
-    const timeline: TimelineEntry[] = timeline_blocks.map((block: any) => {
+    const timeline: TimelineEntry[] = timeline_blocks.map(block => {
       const content = block.content as any;
       let summary = '';
       let impact = '';
@@ -237,7 +237,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     const ifNoneMatch = req.headers.get('if-none-match');
     
     if (ifNoneMatch === etag) {
-      return new NextResponse(null, { 
+      return new Response(null, { 
         status: 304,
         headers: {
           'ETag': etag,
@@ -269,7 +269,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
 // Helper function to extract agent names from various content structures
 function extractAgents(content: any): string[] {
   if (Array.isArray(content)) {
-    return content.filter((item: any) => typeof item === 'string').slice(0, 5);
+    return content.filter(item => typeof item === 'string').slice(0, 5);
   }
   if (typeof content === 'string') {
     // Extract agent names from text using common patterns

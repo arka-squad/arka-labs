@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 
@@ -10,7 +10,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     // Validate folder exists
     const folder = await sql`SELECT id FROM folders WHERE id = ${id}`;
     if (folder.length === 0) {
-      return NextResponse.json({ error: 'folder not found' }, { status: 404 });
+      return Response.json({ error: 'folder not found' }, { status: 404 });
     }
     
     // Get milestones for this folder
@@ -29,15 +29,15 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     
     // Calculate progress
     const totalMilestones = milestones.length;
-    const completedMilestones = milestones.filter((m: any) => m.status === 'done').length;
+    const completedMilestones = milestones.filter(m => m.status === 'done').length;
     const progress = totalMilestones > 0 ? Math.round((completedMilestones / totalMilestones) * 100) : 0;
     
     // Determine critical path (simple implementation - all milestones in sequence)
-    const criticalPath = milestones.map((m: any) => m.id);
+    const criticalPath = milestones.map(m => m.id);
     
-    return NextResponse.json({
+    return Response.json({
       folder_id: id,
-      milestones: milestones.map((m: any) => ({
+      milestones: milestones.map(m => ({
         ...m,
         dependencies: typeof m.dependencies === 'string' ? JSON.parse(m.dependencies || '[]') : m.dependencies
       })),
@@ -46,6 +46,6 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     });
   } catch (error) {
     console.error('GET /api/folders/:id/roadmap error:', error);
-    return NextResponse.json({ error: 'internal server error' }, { status: 500 });
+    return Response.json({ error: 'internal server error' }, { status: 500 });
   }
 });
