@@ -10,12 +10,26 @@ export const GET = async (req: Request) => {
   const trace_id = req.headers.get('x-trace-id') || undefined;
   try {
     const { rows } = await sql`
-      select id, name, created_at
-      from projects
-      order by created_at desc, id asc
+      select 
+        p.id, p.name, p.created_at, p.created_by,
+        p.status, p.metadata,
+        COUNT(DISTINCT ps.squad_id) FILTER (WHERE ps.status = 'active') as squads_count
+      from projects p
+      left join project_squads ps on p.id = ps.project_id
+      group by p.id, p.name, p.created_at, p.created_by, p.status, p.metadata
+      order by p.created_at desc, p.id asc
     `;
     const { rows: c } = await sql`select count(*)::int as count from projects`;
-    const res = NextResponse.json({ items: rows, count: c[0].count });
+    const items = rows.map(row => ({
+      id: row.id,
+      name: row.name,
+      created_at: row.created_at,
+      created_by: row.created_by,
+      status: row.status || 'active',
+      squads_count: parseInt(row.squads_count) || 0,
+      metadata: row.metadata || {}
+    }));
+    const res = NextResponse.json({ items, count: c[0].count });
     log('info', 'projects', {
       route: '/api/projects',
       status: res.status,
