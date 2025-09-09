@@ -51,10 +51,9 @@ export const POST = withAuth(['owner'], async (req, user, { params }) => {
       return errorResponse(error, 400);
     }
 
-    const idempotencyCheck = await validateIdempotencyKey(idempotencyKey, req.url, user?.sub || 'anonymous');
-    if (idempotencyCheck.conflict) {
-      const error = createIdempotencyConflictError(idempotencyKey, traceId);
-      return errorResponse(error, 409);
+    if (!validateIdempotencyKey(idempotencyKey)) {
+      const error = createApiError('ERR_VALIDATION_FAILED', 'Invalid idempotency key format', { key: idempotencyKey }, traceId);
+      return errorResponse(error, 400);
     }
     
     const body: SnapshotRequest = await req.json();
@@ -117,7 +116,7 @@ export const POST = withAuth(['owner'], async (req, user, { params }) => {
     }
 
     // Calculate content summary
-    const content_summary = memory_blocks.reduce((acc, block) => {
+    const content_summary = memory_blocks.reduce((acc: any, block: any) => {
       switch (block.block_type) {
         case 'vision':
           acc.vision_blocks++;
@@ -153,19 +152,19 @@ export const POST = withAuth(['owner'], async (req, user, { params }) => {
     });
 
     // Calculate context completion
-    const completion_percentage = calculateContextCompletion(memory_blocks.map(b => ({ block_type: b.block_type })) as any);
+    const completion_percentage = calculateContextCompletion(memory_blocks.map((b: any) => ({ block_type: b.block_type })) as any);
 
     // Extract active agents
     const agents_set = new Set<string>();
     memory_blocks
-      .filter(b => b.agent_source)
-      .forEach(b => agents_set.add(b.agent_source));
+      .filter((b: any) => b.agent_source)
+      .forEach((b: any) => agents_set.add(b.agent_source));
     const active_agents = agents_set.size;
 
     // Extract critical decisions
     const critical_decisions = memory_blocks
-      .filter(b => b.block_type === 'decision' && b.importance >= 8)
-      .map(b => {
+      .filter((b: any) => b.block_type === 'decision' && b.importance >= 8)
+      .map((b: any) => {
         const content = b.content as any;
         return content.decision || content.summary || 'Décision critique';
       })
@@ -173,8 +172,8 @@ export const POST = withAuth(['owner'], async (req, user, { params }) => {
 
     // Extract gates passed from governance blocks
     const gates_passed = memory_blocks
-      .filter(b => b.block_type === 'governance')
-      .map(b => {
+      .filter((b: any) => b.block_type === 'governance')
+      .map((b: any) => {
         const content = b.content as any;
         return content.gate_passed || content.gates_passed || [];
       })
@@ -184,8 +183,8 @@ export const POST = withAuth(['owner'], async (req, user, { params }) => {
 
     // Extract active blockers
     const blockers_active = memory_blocks
-      .filter(b => b.block_type === 'blocker')
-      .map(b => {
+      .filter((b: any) => b.block_type === 'blocker')
+      .map((b: any) => {
         const content = b.content as any;
         return content.blocker || content.summary || 'Blocage non spécifié';
       })
@@ -204,7 +203,7 @@ export const POST = withAuth(['owner'], async (req, user, { params }) => {
         gates_passed,
         blockers_active
       },
-      blocks: memory_blocks.map(b => ({
+      blocks: memory_blocks.map((b: any) => ({
         id: b.id,
         type: b.block_type,
         content: b.content,

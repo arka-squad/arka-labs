@@ -1,6 +1,7 @@
 // Idempotency support for POST operations
 
 import { sql } from './db';
+import { createApiError, ApiError } from './error-model';
 
 export interface IdempotencyRecord {
   key: string;
@@ -122,13 +123,13 @@ export function validateIdempotencyKey(key: string): boolean {
 }
 
 // Create standardized idempotency conflict error
-export function createIdempotencyConflictError(key: string, traceId?: string): Response {
-  return Response.json({
-    code: 'ERR_IDEMPOTENCY_CONFLICT',
-    message: `Idempotency conflict: key '${key}' is already in use with different request data`,
-    details: { idempotency_key: key },
-    trace_id: traceId || 'unknown'
-  }, { status: 409 });
+export function createIdempotencyConflictError(key: string, traceId?: string): ApiError {
+  return createApiError(
+    'ERR_IDEMPOTENCY_CONFLICT',
+    `Idempotency conflict: key '${key}' is already in use with different request data`,
+    { idempotency_key: key },
+    traceId || 'unknown'
+  );
 }
 
 // Middleware wrapper for POST routes requiring idempotency

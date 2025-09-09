@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/withAuth';
 import { generateTraceId, TRACE_HEADER } from '@/lib/trace';
 
@@ -65,7 +65,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'],
       // Check if PostgreSQL is configured
       if (!process.env.POSTGRES_URL) {
         console.log('PostgreSQL not configured, using mock data');
-        return Response.json({ 
+        return NextResponse.json({ 
           items: mockFolders,
           total: mockFolders.length,
           trace_id: traceId 
@@ -88,7 +88,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'],
         ORDER BY f.updated_at DESC
       `;
 
-      return Response.json({ 
+      return NextResponse.json({ 
         items: folders,
         total: folders.length,
         trace_id: traceId 
@@ -98,7 +98,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'],
       
       // Fallback to mock data if database fails
       console.log('Database failed, falling back to mock data');
-      return Response.json({ 
+      return NextResponse.json({ 
         items: mockFolders,
         total: mockFolders.length,
         trace_id: traceId 
@@ -111,13 +111,16 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'],
 export const POST = withAuth(['editor', 'admin', 'owner'],
   async (req: NextRequest) => {
     const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
+    let title = 'New Folder';
+    let vision = { objectif: 'À définir', livrable: 'À définir', contraintes: [], succes: [] };
+    let context = { guided_notes: [], completion: 0 };
     
     try {
       const body = await req.json();
-      const { title, vision, context } = body;
+      ({ title, vision, context } = body);
 
       if (!title || !vision) {
-        return Response.json({
+        return NextResponse.json({
           code: 'ERR_VALIDATION_FAILED',
           message: 'Title and vision are required',
           details: { required_fields: ['title', 'vision'] },
@@ -142,7 +145,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
         // Add to mock data (in-memory only)
         mockFolders.push(newFolder);
         
-        return Response.json({
+        return NextResponse.json({
           folder: newFolder,
           trace_id: traceId
         }, { status: 201 });
@@ -165,7 +168,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
         RETURNING *
       `;
 
-      return Response.json({
+      return NextResponse.json({
         folder,
         trace_id: traceId
       }, { status: 201 });
@@ -175,16 +178,16 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
       // Fallback to mock creation
       const newFolder = {
         id: `folder-${Date.now()}`,
-        title: req.body?.title || 'New Folder',
+        title,
         status: 'pending',
-        vision: req.body?.vision || { objectif: 'À définir', livrable: 'À définir', contraintes: [], succes: [] },
-        context: { guided_notes: [], completion: 0 },
+        vision,
+        context,
         agents: [],
         stats: { docs_total: 0, docs_tested: 0, agents_assigned: 0, roadmap_progress: 0 },
         updated_at: new Date().toISOString()
       };
       
-      return Response.json({
+      return NextResponse.json({
         folder: newFolder,
         trace_id: traceId
       }, { status: 201 });

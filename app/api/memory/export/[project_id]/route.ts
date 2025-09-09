@@ -95,7 +95,7 @@ export const GET = withAuth(['owner'], async (req, user, { params }) => {
     }
 
     // Create comprehensive export structure
-    const blocksByType = memory_blocks.reduce((acc, block) => {
+    const blocksByType = memory_blocks.reduce((acc: Record<string, any[]>, block: any) => {
       if (!acc[block.block_type]) acc[block.block_type] = [];
       acc[block.block_type].push({
         id: block.id,
@@ -111,7 +111,7 @@ export const GET = withAuth(['owner'], async (req, user, { params }) => {
     }, {} as Record<string, any[]>);
 
     // Timeline
-    const timeline = memory_blocks.map(block => ({
+    const timeline = memory_blocks.map((block: any) => ({
       timestamp: block.created_at.toISOString(),
       type: block.block_type,
       agent: block.agent_source || 'system',
@@ -122,8 +122,8 @@ export const GET = withAuth(['owner'], async (req, user, { params }) => {
     }));
 
     // Governance traces
-    const governance_blocks = memory_blocks.filter(b => b.block_type === 'governance');
-    const gates_trace = governance_blocks.map(block => ({
+    const governance_blocks = memory_blocks.filter((b: any) => b.block_type === 'governance');
+    const gates_trace = governance_blocks.map((block: any) => ({
       timestamp: block.created_at.toISOString(),
       gate: (block.content as any).gate_passed || 'unknown',
       validator: block.agent_source,
@@ -132,8 +132,8 @@ export const GET = withAuth(['owner'], async (req, user, { params }) => {
       block_id: block.id
     }));
 
-    const decision_blocks = memory_blocks.filter(b => b.block_type === 'decision' && b.importance >= 8);
-    const validation_decisions = decision_blocks.map(block => ({
+    const decision_blocks = memory_blocks.filter((b: any) => b.block_type === 'decision' && b.importance >= 8);
+    const validation_decisions = decision_blocks.map((block: any) => ({
       timestamp: block.created_at.toISOString(),
       decision: (block.content as any).decision || 'decision',
       rationale: (block.content as any).rationale || '',
@@ -145,7 +145,7 @@ export const GET = withAuth(['owner'], async (req, user, { params }) => {
 
     // Evidence
     const evidence = {
-      snapshots_history: snapshots.map(s => ({
+      snapshots_history: snapshots.map((s: any) => ({
         id: s.id,
         type: s.snapshot_type,
         content_hash: s.content_hash,
@@ -155,7 +155,7 @@ export const GET = withAuth(['owner'], async (req, user, { params }) => {
         metadata: s.metadata,
         created_at: s.created_at.toISOString()
       })),
-      context_links: context_links.map(link => ({
+      context_links: context_links.map((link: any) => ({
         id: link.id,
         source_block_id: link.source_block_id,
         target_block_id: link.target_block_id,
@@ -174,7 +174,7 @@ export const GET = withAuth(['owner'], async (req, user, { params }) => {
       blocks_hash: 'sha256:' + crypto.createHash('sha256').update(blocks_content).digest('hex'),
       links_hash: 'sha256:' + crypto.createHash('sha256').update(links_content).digest('hex'),
       snapshots_hash: 'sha256:' + crypto.createHash('sha256').update(snapshots_content).digest('hex'),
-      individual_blocks: memory_blocks.reduce((acc, block) => {
+      individual_blocks: memory_blocks.reduce((acc: Record<string, string>, block: any) => {
         acc[block.id] = block.hash;
         return acc;
       }, {} as Record<string, string>)

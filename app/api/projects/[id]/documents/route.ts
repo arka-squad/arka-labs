@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { errorResponse, createApiError } from '@/lib/error-model';
@@ -88,7 +88,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     `;
     
     // Transform to expected format
-    const transformedDocs = documents.map(doc => ({
+    const transformedDocs = documents.map((doc: any) => ({
       id: `doc.project.${doc.id}`,
       title: doc.title,
       type: doc.type?.split('/')[0] || 'document',
@@ -109,7 +109,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     const ifNoneMatch = req.headers.get('if-none-match');
     
     if (ifNoneMatch === etag) {
-      return new Response(null, { 
+      return new NextResponse(null, { 
         status: 304,
         headers: {
           'ETag': etag,
@@ -118,7 +118,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
       });
     }
     
-    return Response.json({
+    return NextResponse.json({
       items: transformedDocs,
       page,
       limit,

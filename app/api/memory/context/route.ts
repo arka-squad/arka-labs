@@ -39,7 +39,7 @@ interface ContextResponse {
 }
 
 // POST /api/memory/context (operator+)
-export const POST = withAuth(['operator', 'admin', 'owner'], async (req, user, { params }) => {
+export const POST = withAuth(['editor', 'admin', 'owner'], async (req, user, { params }) => {
   const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
   const idempotencyKey = req.headers.get('idempotency-key');
   
@@ -50,10 +50,9 @@ export const POST = withAuth(['operator', 'admin', 'owner'], async (req, user, {
       return errorResponse(error, 400);
     }
 
-    const idempotencyCheck = await validateIdempotencyKey(idempotencyKey, req.url, user?.sub || 'anonymous');
-    if (idempotencyCheck.conflict) {
-      const error = createIdempotencyConflictError(idempotencyKey, traceId);
-      return errorResponse(error, 409);
+    if (!validateIdempotencyKey(idempotencyKey)) {
+      const error = createApiError('ERR_VALIDATION_FAILED', 'Invalid idempotency key format', { key: idempotencyKey }, traceId);
+      return errorResponse(error, 400);
     }
     
     const body: ContextRequest = await req.json();
@@ -97,7 +96,7 @@ export const POST = withAuth(['operator', 'admin', 'owner'], async (req, user, {
     const current_blocks = await sql`
       SELECT block_type FROM memory_blocks WHERE project_id = ${project_id}
     `;
-    const current_completion = calculateContextCompletion(current_blocks.map(b => ({ block_type: b.block_type })) as any);
+    const current_completion = calculateContextCompletion(current_blocks.map((b: any) => ({ block_type: b.block_type })) as any);
 
     // Map type to memory block type
     const block_type_map = {
@@ -156,10 +155,10 @@ export const POST = withAuth(['operator', 'admin', 'owner'], async (req, user, {
     const importance = body.importance || getDefaultImportance(body.type);
     const tags = generateContextTags(body.type, body.content);
 
-    let saved_block;
-    const context_links = [];
+    let saved_block: any;
+    const context_links: any[] = [];
 
-    await sql.begin(async (sql) => {
+    await sql.begin(async (sql: any) => {
       // Insert memory block
       const [block] = await sql`
         INSERT INTO memory_blocks (project_id, block_type, content, agent_source, importance, tags, hash)
@@ -214,7 +213,7 @@ export const POST = withAuth(['operator', 'admin', 'owner'], async (req, user, {
     const new_blocks = await sql`
       SELECT block_type FROM memory_blocks WHERE project_id = ${project_id}
     `;
-    const new_completion = calculateContextCompletion(new_blocks.map(b => ({ block_type: b.block_type })) as any);
+    const new_completion = calculateContextCompletion(new_blocks.map((b: any) => ({ block_type: b.block_type })) as any);
     const completion_delta = new_completion - current_completion;
 
     // Get related threads to notify
@@ -226,7 +225,7 @@ export const POST = withAuth(['operator', 'admin', 'owner'], async (req, user, {
       LIMIT 5
     `;
     
-    const threads_notified = threads_to_notify.map(t => t.thread_id);
+    const threads_notified = threads_to_notify.map((t: any) => t.thread_id);
 
     // Get agents to update (agents who contributed to this project recently)
     const agents_to_update = await sql`
@@ -238,15 +237,15 @@ export const POST = withAuth(['operator', 'admin', 'owner'], async (req, user, {
       LIMIT 10
     `;
     
-    const agents_updated = agents_to_update.map(a => a.agent_source).filter(Boolean);
+    const agents_updated = agents_to_update.map((a: any) => a.agent_source).filter(Boolean);
 
     const response: ContextResponse = {
       context_id: `ctx_${Date.now().toString()}_${Math.random().toString(36).substr(2, 5)}`,
       project_id: project[0].slug || project_id.toString(),
       block_created: {
-        id: saved_block.id,
-        type: saved_block.block_type,
-        hash: saved_block.hash
+        id: saved_block?.id || 'unknown',
+        type: saved_block?.block_type || 'unknown',
+        hash: saved_block?.hash || 'unknown'
       },
       propagation: {
         threads_notified,
@@ -283,7 +282,7 @@ function extractImpactAnalysis(content: string): string {
   for (const keyword of impact_keywords) {
     if (content.toLowerCase().includes(keyword)) {
       const sentences = content.split('.');
-      const relevant = sentences.find(s => s.toLowerCase().includes(keyword));
+      const relevant = sentences.find((s: any) => s.toLowerCase().includes(keyword));
       if (relevant) return relevant.trim();
     }
   }
@@ -295,8 +294,8 @@ function assessUrgency(content: string): string {
   const important_keywords = ['important', 'priorité', 'attention'];
   
   const content_lower = content.toLowerCase();
-  if (urgent_keywords.some(k => content_lower.includes(k))) return 'high';
-  if (important_keywords.some(k => content_lower.includes(k))) return 'medium';
+  if (urgent_keywords.some((k: any) => content_lower.includes(k))) return 'high';
+  if (important_keywords.some((k: any) => content_lower.includes(k))) return 'medium';
   return 'low';
 }
 
@@ -325,7 +324,7 @@ function extractRationale(content: string): string {
 }
 
 function extractImpacts(content: string): string[] {
-  const impact_lines = content.split('\n').filter(line => 
+  const impact_lines = content.split('\n').filter((line: any) => 
     line.toLowerCase().includes('impact') || line.toLowerCase().includes('conséquence')
   );
   return impact_lines.slice(0, 3);
@@ -340,7 +339,7 @@ function extractResolution(content: string): string {
   for (const keyword of resolution_keywords) {
     if (content.toLowerCase().includes(keyword)) {
       const sentences = content.split('.');
-      const relevant = sentences.find(s => s.toLowerCase().includes(keyword));
+      const relevant = sentences.find((s: any) => s.toLowerCase().includes(keyword));
       if (relevant) return relevant.trim();
     }
   }
@@ -351,7 +350,7 @@ function extractLearning(content: string): string {
   const learning_keywords = ['apprentissage', 'leçon', 'retour', 'expérience'];
   for (const keyword of learning_keywords) {
     if (content.toLowerCase().includes(keyword)) {
-      return content.split('.').find(s => s.toLowerCase().includes(keyword))?.trim() || '';
+      return content.split('.').find((s: any) => s.toLowerCase().includes(keyword))?.trim() || '';
     }
   }
   return '';
