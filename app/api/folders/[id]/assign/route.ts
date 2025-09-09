@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { z } from 'zod';
@@ -112,7 +112,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
         })}, NOW())
       `;
       
-      return Response.json({
+      return NextResponse.json({
         folder_id: id,
         agent_id: agentId,
         role,
