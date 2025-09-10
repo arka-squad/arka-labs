@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Leftbar from '../../components/leftbar';
 import ChatPanel from '../../components/chat/ChatPanel';
 import KpiCard from '../../components/kpis/KpiCard';
 import RoadmapCard from '../../components/roadmap/RoadmapCard';
@@ -40,10 +39,8 @@ export default function ConsoleDashboardPage() {
     return () => window.removeEventListener('chat:agentReply', onAgentReply as EventListener);
   }, []);
   return (
-    <div className="h-[calc(100dvh-56px)] grid gap-3 grid-cols-[72px_380px_minmax(0,1fr)] md:grid-cols-[72px_320px_minmax(0,1fr)] lg:grid-cols-[72px_380px_minmax(0,1fr)]">
+    <div className="h-[calc(100dvh-56px)] grid gap-3 grid-cols-[380px_minmax(0,1fr)] md:grid-cols-[320px_minmax(0,1fr)] lg:grid-cols-[380px_minmax(0,1fr)] ml-[72px]">
       <ConsoleGuard />
-      {/* Leftbar */}
-      <aside className="h-full overflow-visible"><Leftbar value={view as any} onChange={(id:any)=>setView(id)} unread={2} presence="online" /></aside>
       {/* Chat panel (380px) */}
       <div className="h-full overflow-hidden pt-3 pb-6">
       <aside className="h-full overflow-hidden rounded-xl border border-soft elevated">

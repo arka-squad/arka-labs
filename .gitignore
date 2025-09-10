@@ -24,3 +24,7 @@ rapport_oracles.json
 *.tmp
 CON
 tmp_*
+ 
+# local data stores
+data/
+*.db

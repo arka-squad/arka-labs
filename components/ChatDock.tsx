@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 // import TokenModal from './TokenModal';
 // import ProviderSelect from './ProviderSelect'; // Removed outdated usage
@@ -45,7 +47,7 @@ export default function ChatDock() {
   }, []);
 
   return (
-    <div className={`fixed right-0 top-0 h-full bg-white border-l p-4 shadow-lg transition-transform ${open ? 'translate-x-0' : 'translate-x-full'}`}>
+    <div className={`fixed right-0 top-14 h-[calc(100vh-56px)] bg-white border-l p-4 shadow-lg transition-transform ${open ? 'translate-x-0' : 'translate-x-full'}`}>
       <button className="mb-4 text-gray-500" onClick={() => setOpen(o => !o)}>
         {open ? 'Fermer' : 'Ouvrir'} Dock
       </button>

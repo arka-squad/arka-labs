@@ -15,6 +15,7 @@ type LeftbarProps = {
   items?: Item[];
   unread?: number;
   presence?: 'online'|'away'|'busy';
+  className?: string;
 };
 
 export default function Leftbar({
@@ -33,6 +34,7 @@ export default function Leftbar({
   ],
   unread = 0,
   presence = 'online',
+  className,
 }: LeftbarProps) {
   // Normalize API
   const current = (value ?? (view as NavId)) || 'dashboard';
@@ -102,7 +104,7 @@ export default function Leftbar({
   };
 
   return (
-    <aside className="h-full w-[72px] shrink-0 border-r border-[var(--border)] bg-[var(--surface)] flex flex-col z-20">
+    <aside className={`${className ?? ''} h-full w-[72px] shrink-0 border-r border-[var(--border)] bg-[var(--surface)] flex flex-col z-20`}>
       <div className="h-14 grid place-items-center border-b border-[var(--border)]">
         <Menu className="w-5 h-5" aria-label="Menu" />
       </div>
