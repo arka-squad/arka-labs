@@ -6,15 +6,21 @@ import ResponsiveWrapper from '../components/ResponsiveWrapper';
 
 interface Project {
   id: number;
-  name: string;
+  nom: string;
+  client: {
+    id: string;
+    nom: string;
+    secteur: string;
+  };
+  statut: 'actif' | 'inactif' | 'archive' | 'termine';
+  priorite: 'basse' | 'normale' | 'haute' | 'urgente';
+  budget: number;
+  deadline: string;
+  agents_count: number;
+  squads_count: number;
+  deadline_alert?: 'ok' | 'proche' | 'depassee';
   created_at: string;
   created_by: string;
-  status: 'active' | 'disabled' | 'archived';
-  squads_count: number;
-  metadata?: {
-    client?: string;
-    priority?: string;
-  };
 }
 
 export default function ProjectsPage() {
@@ -29,10 +35,25 @@ export default function ProjectsPage() {
     fetchProjects();
   }, []);
 
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchProjects();
+    }, 300); // Debounce de 300ms pour éviter trop d'appels API
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, statusFilter, priorityFilter]);
+
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/projects', {
+      
+      // Construire les paramètres de filtrage
+      const params = new URLSearchParams();
+      if (statusFilter) params.append('statut', statusFilter);
+      if (priorityFilter) params.append('priorite', priorityFilter);
+      if (searchTerm) params.append('search', searchTerm);
+      
+      const response = await fetch(`/api/backoffice/projets?${params.toString()}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
           'X-Trace-Id': `trace-${Date.now()}`
@@ -42,7 +63,7 @@ export default function ProjectsPage() {
       if (!response.ok) throw new Error('Failed to fetch projects');
       
       const data = await response.json();
-      setProjects(data.items);
+      setProjects(data.items || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -50,29 +71,41 @@ export default function ProjectsPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return '#10B981';
-      case 'disabled': return '#F59E0B';
-      case 'archived': return '#6B7280';
+  const getStatusColor = (statut: string) => {
+    switch (statut) {
+      case 'actif': return '#10B981';
+      case 'inactif': return '#F59E0B';
+      case 'archive': return '#6B7280';
+      case 'termine': return '#8B5CF6';
       default: return '#6B7280';
     }
   };
 
-  const getPriorityColor = (priority?: string) => {
-    switch (priority) {
-      case 'high': return '#EF4444';
-      case 'medium': return '#F59E0B';
-      case 'low': return '#10B981';
+  const getPriorityColor = (priorite?: string) => {
+    switch (priorite) {
+      case 'urgente': return '#EF4444';
+      case 'haute': return '#F59E0B';
+      case 'normale': return '#10B981';
+      case 'basse': return '#6B7280';
+      default: return '#6B7280';
+    }
+  };
+
+  const getDeadlineAlertColor = (alert?: string) => {
+    switch (alert) {
+      case 'depassee': return '#EF4444';
+      case 'proche': return '#F59E0B';
+      case 'ok': return '#10B981';
       default: return '#6B7280';
     }
   };
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.metadata?.client?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = !statusFilter || project.status === statusFilter;
-    const matchesPriority = !priorityFilter || project.metadata?.priority === priorityFilter;
+    const matchesSearch = project.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.client?.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.client?.secteur?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = !statusFilter || project.statut === statusFilter;
+    const matchesPriority = !priorityFilter || project.priorite === priorityFilter;
     
     return matchesSearch && matchesStatus && matchesPriority;
   });
@@ -146,9 +179,10 @@ export default function ProjectsPage() {
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm"
               >
                 <option value="">Tous statuts</option>
-                <option value="active">Actifs</option>
-                <option value="disabled">Désactivés</option>
-                <option value="archived">Archivés</option>
+                <option value="actif">Actifs</option>
+                <option value="inactif">Inactifs</option>
+                <option value="archive">Archivés</option>
+                <option value="termine">Terminés</option>
               </select>
             </div>
             
@@ -158,9 +192,10 @@ export default function ProjectsPage() {
               className="w-full sm:w-auto bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm"
             >
               <option value="">Toutes priorités</option>
-              <option value="high">Haute</option>
-              <option value="medium">Moyenne</option>
-              <option value="low">Faible</option>
+              <option value="urgente">Urgente</option>
+              <option value="haute">Haute</option>
+              <option value="normale">Normale</option>
+              <option value="basse">Basse</option>
             </select>
           </div>
         </div>
@@ -198,18 +233,29 @@ export default function ProjectsPage() {
                 <div className="flex items-center space-x-2">
                   <div
                     className="w-3 h-3 rounded-full animate-pulse"
-                    style={{ backgroundColor: getStatusColor(project.status) }}
+                    style={{ backgroundColor: getStatusColor(project.statut) }}
                   />
-                  <span className="text-sm text-gray-400 capitalize">{project.status}</span>
-                  {project.metadata?.priority && (
+                  <span className="text-sm text-gray-400 capitalize">{project.statut}</span>
+                  {project.priorite && (
                     <span
                       className="px-2 py-1 rounded text-xs font-medium"
                       style={{ 
-                        backgroundColor: getPriorityColor(project.metadata.priority) + '20',
-                        color: getPriorityColor(project.metadata.priority)
+                        backgroundColor: getPriorityColor(project.priorite) + '20',
+                        color: getPriorityColor(project.priorite)
                       }}
                     >
-                      {project.metadata.priority}
+                      {project.priorite}
+                    </span>
+                  )}
+                  {project.deadline_alert && project.deadline_alert !== 'ok' && (
+                    <span
+                      className="px-2 py-1 rounded text-xs font-medium"
+                      style={{ 
+                        backgroundColor: getDeadlineAlertColor(project.deadline_alert) + '20',
+                        color: getDeadlineAlertColor(project.deadline_alert)
+                      }}
+                    >
+                      {project.deadline_alert === 'proche' ? '⚠️ Deadline proche' : '🚨 Deadline dépassée'}
                     </span>
                   )}
                 </div>
@@ -219,26 +265,48 @@ export default function ProjectsPage() {
                 </div>
               </div>
 
-              <h3 className="text-lg font-semibold mb-2 text-white">{project.name}</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">{project.nom}</h3>
               <p className="text-gray-400 text-sm mb-4">Projet #{project.id}</p>
 
-              {project.metadata?.client && (
+              {project.client && (
                 <div className="flex items-center space-x-2 text-sm text-blue-400 mb-4">
                   <Briefcase size={14} />
-                  <span>{project.metadata.client}</span>
+                  <span>{project.client.nom}</span>
+                  {project.client.secteur && (
+                    <span className="text-gray-500">• {project.client.secteur}</span>
+                  )}
+                </div>
+              )}
+
+              {project.budget && (
+                <div className="flex items-center space-x-2 text-sm text-green-400 mb-2">
+                  <span>💰</span>
+                  <span>{project.budget.toLocaleString('fr-FR')} €</span>
+                </div>
+              )}
+
+              {project.deadline && (
+                <div className="flex items-center space-x-2 text-sm text-gray-400 mb-4">
+                  <Calendar size={14} />
+                  <span>Échéance: {new Date(project.deadline).toLocaleDateString('fr-FR')}</span>
                 </div>
               )}
 
               <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center space-x-2">
-                  <Users size={14} className="text-green-400" />
-                  <span className="text-green-400 font-medium">{project.squads_count}</span>
-                  <span className="text-gray-500 text-sm">squads</span>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <Users size={14} className="text-green-400" />
+                    <span className="text-green-400 font-medium">{project.agents_count}</span>
+                    <span className="text-gray-500 text-sm">agents</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-blue-400 font-medium">{project.squads_count}</span>
+                    <span className="text-gray-500 text-sm">squads</span>
+                  </div>
                 </div>
                 
                 <div className="flex items-center space-x-2 text-gray-500 text-sm">
-                  <Calendar size={14} />
-                  <span>{new Date(project.created_at).toLocaleDateString('fr-FR')}</span>
+                  <span>Créé le {new Date(project.created_at).toLocaleDateString('fr-FR')}</span>
                 </div>
               </div>
 
@@ -280,30 +348,30 @@ export default function ProjectsPage() {
           <div className="mt-8 md:mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             <div className="bg-gray-800 rounded-xl p-6 text-center border border-gray-700">
               <div className="text-2xl font-bold text-green-400 mb-1">
-                {projects.filter(p => p.status === 'active').length}
+                {projects.filter(p => p.statut === 'actif').length}
               </div>
               <div className="text-gray-400 text-sm">Projets Actifs</div>
             </div>
             
             <div className="bg-gray-800 rounded-xl p-6 text-center border border-gray-700">
               <div className="text-2xl font-bold text-yellow-400 mb-1">
-                {projects.filter(p => p.status === 'disabled').length}
+                {projects.filter(p => p.statut === 'inactif').length}
               </div>
-              <div className="text-gray-400 text-sm">Projets Suspendus</div>
+              <div className="text-gray-400 text-sm">Projets Inactifs</div>
             </div>
             
             <div className="bg-gray-800 rounded-xl p-6 text-center border border-gray-700">
               <div className="text-2xl font-bold text-blue-400 mb-1">
-                {projects.reduce((sum, p) => sum + p.squads_count, 0)}
+                {projects.reduce((sum, p) => sum + (p.agents_count || 0), 0)}
               </div>
-              <div className="text-gray-400 text-sm">Squads Assignées</div>
+              <div className="text-gray-400 text-sm">Agents Assignés</div>
             </div>
             
             <div className="bg-gray-800 rounded-xl p-6 text-center border border-gray-700">
               <div className="text-2xl font-bold text-purple-400 mb-1">
-                {projects.length}
+                {projects.filter(p => p.deadline_alert === 'proche' || p.deadline_alert === 'depassee').length}
               </div>
-              <div className="text-gray-400 text-sm">Total Projets</div>
+              <div className="text-gray-400 text-sm">Alertes Deadline</div>
             </div>
           </div>
         )}

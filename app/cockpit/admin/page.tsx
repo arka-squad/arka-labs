@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { 
   Users, Briefcase, Zap, Settings, TrendingUp, AlertCircle, 
-  CheckCircle, Clock, ArrowRight, BarChart3, Activity 
+  CheckCircle, Clock, ArrowRight, BarChart3, Activity, Building 
 } from 'lucide-react';
 import { getCurrentRole } from '../../../lib/auth/role';
 import ResponsiveWrapper from '../components/ResponsiveWrapper';
@@ -41,7 +41,32 @@ export default function AdminDashboard() {
 
   const loadDashboardStats = async () => {
     try {
-      // Load dashboard statistics
+      // Load dashboard statistics from new B23 v2.5 API
+      const response = await fetch('/api/admin/dashboard/stats', {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+          'X-Trace-Id': `trace-${Date.now()}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      } else {
+        throw new Error('Failed to load dashboard stats');
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard stats:', error);
+      // Fallback to legacy endpoints if new API not available
+      loadLegacyDashboardStats();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadLegacyDashboardStats = async () => {
+    try {
+      // Fallback to legacy endpoints
       const [squadsRes, projectsRes] = await Promise.all([
         fetch('/api/admin/squads?limit=1', {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
@@ -67,9 +92,7 @@ export default function AdminDashboard() {
         });
       }
     } catch (error) {
-      console.error('Failed to load dashboard stats:', error);
-    } finally {
-      setLoading(false);
+      console.error('Failed to load legacy dashboard stats:', error);
     }
   };
 
@@ -99,7 +122,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <ResponsiveWrapper currentPath="/cockpit/admin" userRole={userRole}>
+    <ResponsiveWrapper currentPath="/cockpit/admin" userRole={userRole} contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" innerClassName="max-w-none mx-0">
         {/* Header - Mobile Responsive */}
         <div className="mb-6 md:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
@@ -219,7 +242,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Action Cards - Mobile Responsive */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
           {/* Manage Squads */}
           {canManageSquads && (
             <div 
@@ -259,7 +282,47 @@ export default function AdminDashboard() {
             <div className="flex justify-between items-center">
               <span className="text-green-400 text-sm font-medium">Voir tout →</span>
               <div className="text-xs text-gray-500">
-                {stats.squads.total} squads disponibles
+                Architecture projet-centrée
+              </div>
+            </div>
+          </div>
+
+          {/* Manage Clients */}
+          <div 
+            className="bg-gradient-to-br from-blue-900/20 to-blue-800/10 rounded-xl p-6 border border-blue-700/30 cursor-pointer hover:border-blue-600/50 transition-all"
+            onClick={() => window.location.href = '/cockpit/clients'}
+          >
+            <div className="flex items-center space-x-3 mb-4">
+              <Building size={24} className="text-blue-400" />
+              <h3 className="text-lg font-semibold text-white">Référentiel Clients</h3>
+            </div>
+            <p className="text-gray-400 text-sm mb-4">
+              Gérer le portefeuille client et leurs contextes spécifiques
+            </p>
+            <div className="flex justify-between items-center">
+              <span className="text-blue-400 text-sm font-medium">Gérer →</span>
+              <div className="text-xs text-gray-500">
+                TPE • PME • ETI • GE
+              </div>
+            </div>
+          </div>
+
+          {/* Manage Agents */}
+          <div 
+            className="bg-gradient-to-br from-purple-900/20 to-purple-800/10 rounded-xl p-6 border border-purple-700/30 cursor-pointer hover:border-purple-600/50 transition-all"
+            onClick={() => window.location.href = '/cockpit/agents'}
+          >
+            <div className="flex items-center space-x-3 mb-4">
+              <Zap size={24} className="text-purple-400" />
+              <h3 className="text-lg font-semibold text-white">Nos Agents IA</h3>
+            </div>
+            <p className="text-gray-400 text-sm mb-4">
+              Bibliothèque d'agents, templates et performances
+            </p>
+            <div className="flex justify-between items-center">
+              <span className="text-purple-400 text-sm font-medium">Explorer →</span>
+              <div className="text-xs text-gray-500">
+                Templates • Versions • Scoring
               </div>
             </div>
           </div>
