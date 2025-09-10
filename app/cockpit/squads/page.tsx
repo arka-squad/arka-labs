@@ -145,7 +145,7 @@ export default function SquadsPage() {
             <div className="w-px h-6 bg-gray-600"></div>
             <div>
               <h1 className="text-3xl font-bold mb-2">🛡️ Gestion des Squads</h1>
-              <p className="text-gray-400">Orchestrez vos équipes d'agents IA spécialisés</p>
+              <p className="text-gray-400">Orchestrez vos équipes d&apos;agents IA spécialisés</p>
             </div>
           </div>
           <button
@@ -425,7 +425,7 @@ function CreateSquadModal({ onClose, onSubmit }: {
 
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-300">
-              Domaine d'expertise
+              Domaine d&apos;expertise
             </label>
             <select
               value={formData.domain}

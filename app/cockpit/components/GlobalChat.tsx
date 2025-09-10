@@ -165,7 +165,7 @@ export default function GlobalChat() {
                         <span className="text-gray-500 text-xs">09:41</span>
                       </div>
                       <div className="text-gray-300 text-sm">
-                        Élaboration d'un plan structuré
+                        Élaboration d&apos;un plan structuré
                       </div>
                     </div>
                   </div>
@@ -193,7 +193,7 @@ export default function GlobalChat() {
                         <span className="text-gray-500 text-xs">09:44</span>
                       </div>
                       <div className="text-gray-300 text-sm">
-                        On prépare l'ossature de la PR Vague 1 (répertoires + README), duplication des scripts CI sous infra/ci, + placeholders tests/docs. Un CR résumera les changements.
+                        On prépare l&apos;ossature de la PR Vague 1 (répertoires + README), duplication des scripts CI sous infra/ci, + placeholders tests/docs. Un CR résumera les changements.
                       </div>
                     </div>
                   </div>
@@ -207,7 +207,7 @@ export default function GlobalChat() {
                         <span className="text-gray-500 text-xs">09:46</span>
                       </div>
                       <div className="text-gray-300 text-sm">
-                        Je crée l'ossature cible non destructive (dossiers + README) et duplique les scripts CI sous infra/ci/ sans toucher aux imports.
+                        Je crée l&apos;ossature cible non destructive (dossiers + README) et duplique les scripts CI sous infra/ci/ sans toucher aux imports.
                       </div>
                     </div>
                   </div>
@@ -221,7 +221,7 @@ export default function GlobalChat() {
                         <span className="text-gray-500 text-xs">09:49</span>
                       </div>
                       <div className="text-gray-300 text-sm">
-                        Reco: prise de connaissance faite — 9 fichiers lus, contenu cohérent; quelques artefacts d'encodage FR mineurs visibles. Action: souhaitez-vous que je normalise l'UTF-8 (sans BOM) sur ces docs ou que je passe au lot suivant Socle OPS/Repo ?
+                        Reco: prise de connaissance faite — 9 fichiers lus, contenu cohérent; quelques artefacts d&apos;encodage FR mineurs visibles. Action: souhaitez-vous que je normalise l&apos;UTF-8 (sans BOM) sur ces docs ou que je passe au lot suivant Socle OPS/Repo ?
                       </div>
                     </div>
                   </div>
@@ -235,7 +235,7 @@ export default function GlobalChat() {
                         <span className="text-gray-500 text-xs">09:50</span>
                       </div>
                       <div className="text-gray-300 text-sm">
-                        Action: j'ouvre local/100-repo-map-audit.md pour poursuivre le lot OPS/Repo.
+                        Action: j&apos;ouvre local/100-repo-map-audit.md pour poursuivre le lot OPS/Repo.
                       </div>
                     </div>
                   </div>

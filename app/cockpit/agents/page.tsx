@@ -171,7 +171,7 @@ export default function AgentsPage() {
               <div className="w-px h-6 bg-gray-600 hidden sm:block"></div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold mb-2">🤖 Nos Agents IA</h1>
-                <p className="text-gray-400 text-sm sm:text-base">Bibliothèque d'agents spécialisés et leurs performances</p>
+                <p className="text-gray-400 text-sm sm:text-base">Bibliothèque d&apos;agents spécialisés et leurs performances</p>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
@@ -464,7 +464,7 @@ export default function AgentsPage() {
                 ⚡ Optimisez vos agents
               </h3>
               <p className="text-gray-400">
-                Créez des variations d'agents performants et assignez-les à vos projets clients
+                Créez des variations d&apos;agents performants et assignez-les à vos projets clients
               </p>
             </div>
             <button

@@ -78,15 +78,15 @@ export default function SquadDetailPage({ params }: { params: { id: string } }) 
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('Squad non trouvée');
+          throw new Error(&apos;Squad non trouvée&apos;);
         }
-        throw new Error('Erreur lors du chargement');
+        throw new Error(&apos;Erreur lors du chargement&apos;);
       }
       
       const data = await response.json();
       setSquad(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      setError(err instanceof Error ? err.message : &apos;Erreur inconnue&apos;);
     } finally {
       setLoading(false);
     }
@@ -530,7 +530,7 @@ export default function SquadDetailPage({ params }: { params: { id: string } }) 
               <div className="text-center py-12 text-gray-400">
                 <Zap size={48} className="mx-auto mb-4 opacity-50" />
                 <p className="text-lg mb-2">Aucun projet assigné</p>
-                <p>Cette squad n'est pas encore assignée à des projets</p>
+                <p>Cette squad n&apos;est pas encore assignée à des projets</p>
               </div>
             )}
           </div>
@@ -754,7 +754,7 @@ function CreateInstructionModal({ squadId, projects, onClose, onSuccess }: {
       <div className="bg-gray-800 rounded-xl p-6 w-full max-w-lg border border-gray-700">
         <h2 className="text-xl font-bold mb-4 text-white">Créer une Instruction</h2>
         <p className="text-gray-400 mb-4">
-          Interface de création d'instruction en cours de développement
+          Interface de création d&apos;instruction en cours de développement
         </p>
         <div className="flex justify-end space-x-3">
           <button
