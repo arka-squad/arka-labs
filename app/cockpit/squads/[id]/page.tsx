@@ -78,15 +78,15 @@ export default function SquadDetailPage({ params }: { params: { id: string } }) 
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error(&apos;Squad non trouvée&apos;);
+          throw new Error('Squad non trouvée');
         }
-        throw new Error(&apos;Erreur lors du chargement&apos;);
+        throw new Error('Erreur lors du chargement');
       }
       
       const data = await response.json();
       setSquad(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : &apos;Erreur inconnue&apos;);
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
     } finally {
       setLoading(false);
     }
