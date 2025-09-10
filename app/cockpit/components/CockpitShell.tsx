@@ -1,53 +1,45 @@
 "use client";
 
-import React, { ReactNode } from 'react';
-import Leftbar from '../../../components/leftbar';
+import React, { ReactNode, useState } from 'react';
+import Topbar from '../../../components/Topbar';
 import GlobalChat from './GlobalChat';
+import Leftbar from '../../../components/leftbar';
 
 type CockpitShellProps = {
   children: ReactNode;
-  leftbarValue?: 'dashboard'|'roadmap'|'builder'|'gouv'|'docdesk'|'docs'|'observa'|'obs'|'runs'|'roster';
-  onLeftbarChange?: (value: string) => void;
 };
 
-export default function CockpitShell({ 
-  children, 
-  leftbarValue = 'dashboard',
-  onLeftbarChange 
-}: CockpitShellProps) {
-  // Items de navigation pour le cockpit
-  const leftbarItems = [
-    { id: 'dashboard' as const, label: 'Admin' },
-    { id: 'roadmap' as const, label: 'Squads' },
-    { id: 'builder' as const, label: 'Projects' },
-    { id: 'gouv' as const, label: 'Agents' },
-    { id: 'docs' as const, label: 'Clients' },
-    { id: 'observa' as const, label: 'Analytics' },
-  ];
+export default function CockpitShell({ children }: CockpitShellProps) {
+  const [currentView, setCurrentView] = useState('dashboard');
 
   return (
-    <div className="flex h-full overflow-hidden">
-      {/* Sidebar fixe à gauche */}
-      <Leftbar 
-        items={leftbarItems}
-        value={leftbarValue}
-        onChange={onLeftbarChange}
-        unread={0}
-        presence="online"
-      />
-      
+    <div className="h-screen flex flex-col overflow-hidden">
+      <Topbar role="owner" />
       <div className="flex-1 flex overflow-hidden">
-        {/* Chat global à gauche avec largeur dynamique */}
+        {/* Sidebar navigation principale */}
+        <Leftbar 
+          value={currentView as any}
+          onChange={(view) => setCurrentView(view)}
+          items={[
+            { id: 'dashboard', label: 'Dashboard' },
+            { id: 'roadmap', label: 'Roadmap' },
+            { id: 'gouv', label: 'Gouvernance' },
+            { id: 'docs', label: 'DocDesk' },
+            { id: 'observa', label: 'Observabilité' },
+            { id: 'runs', label: 'Runs' },
+            { id: 'roster', label: 'Roster' },
+          ]}
+        />
+        
+        {/* Chat global */}
         <GlobalChat />
         
-        {/* Contenu principal avec padding calculé dynamiquement */}
-        <main 
-          className="flex-1 overflow-y-auto bg-gray-900"
-          style={{ paddingLeft: 'calc(var(--cockpit-chat-w, 0px) + 16px)' }}
-        >
+        {/* Contenu principal */}
+        <main className="flex-1 overflow-y-auto bg-gray-900 scroller">
           {children}
         </main>
       </div>
     </div>
   );
 }
+

@@ -137,19 +137,27 @@ export default function AgentsPage() {
 
   if (loading) {
     return (
-      <div className="console-theme min-h-screen text-white p-6">
+      <ResponsiveWrapper 
+        currentPath="/cockpit/agents"
+        contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
+        innerClassName="max-w-none mx-0"
+      >
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
             <p>Chargement des agents...</p>
           </div>
         </div>
-      </div>
+      </ResponsiveWrapper>
     );
   }
 
   return (
-    <ResponsiveWrapper currentPath="/cockpit/agents">
+    <ResponsiveWrapper 
+      currentPath="/cockpit/agents"
+      contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
+      innerClassName="max-w-none mx-0"
+    >
         {/* Header */}
         <div className="mb-6 md:mb-8">
           <div className="flex flex-col space-y-4">

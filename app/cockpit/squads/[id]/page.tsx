@@ -5,6 +5,7 @@ import {
   ArrowLeft, Users, Settings, Plus, X, AlertCircle, CheckCircle, Clock, 
   Zap, TrendingUp, Activity, Send, UserPlus, Trash2, Edit
 } from 'lucide-react';
+import ResponsiveWrapper from '../../components/ResponsiveWrapper';
 
 interface SquadDetail {
   id: string;
@@ -136,42 +137,51 @@ export default function SquadDetailPage({ params }: { params: { id: string } }) 
 
   if (loading) {
     return (
-      <div className="console-theme min-h-screen text-white p-6">
+      <ResponsiveWrapper 
+        currentPath="/cockpit/squads"
+        contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
+        innerClassName="max-w-none mx-0"
+      >
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
             <p>Chargement de la squad...</p>
           </div>
         </div>
-      </div>
+      </ResponsiveWrapper>
     );
   }
 
   if (error || !squad) {
     return (
-      <div className="console-theme min-h-screen text-white p-6">
-        <div className="max-w-7xl mx-auto">
-          <button
-            onClick={() => window.history.back()}
-            className="flex items-center space-x-2 text-gray-400 hover:text-white mb-6 transition-colors"
-          >
-            <ArrowLeft size={16} />
-            <span>Retour aux squads</span>
-          </button>
-          
-          <div className="bg-red-900/50 border border-red-500 rounded-lg p-8 text-center">
-            <AlertCircle size={48} className="text-red-400 mx-auto mb-4" />
-            <h2 className="text-xl font-bold mb-2">Erreur</h2>
-            <p className="text-gray-400">{error}</p>
-          </div>
+      <ResponsiveWrapper 
+        currentPath="/cockpit/squads"
+        contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
+        innerClassName="max-w-none mx-0"
+      >
+        <button
+          onClick={() => window.history.back()}
+          className="flex items-center space-x-2 text-gray-400 hover:text-white mb-6 transition-colors"
+        >
+          <ArrowLeft size={16} />
+          <span>Retour aux squads</span>
+        </button>
+        
+        <div className="bg-red-900/50 border border-red-500 rounded-lg p-8 text-center">
+          <AlertCircle size={48} className="text-red-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Erreur</h2>
+          <p className="text-gray-400">{error}</p>
         </div>
-      </div>
+      </ResponsiveWrapper>
     );
   }
 
   return (
-    <div className="console-theme min-h-screen text-white">
-      <div className="max-w-7xl mx-auto p-6">
+    <ResponsiveWrapper 
+      currentPath="/cockpit/squads"
+      contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
+      innerClassName="max-w-none mx-0"
+    >
         {/* Header amélioré */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
@@ -678,32 +688,31 @@ export default function SquadDetailPage({ params }: { params: { id: string } }) 
             </div>
           </div>
         )}
-      </div>
 
-      {/* Modals */}
-      {showAddMember && (
-        <AddMemberModal
-          squadId={squad.id}
-          onClose={() => setShowAddMember(false)}
-          onSuccess={() => {
-            setShowAddMember(false);
-            fetchSquadDetail();
-          }}
-        />
-      )}
+        {/* Modals */}
+        {showAddMember && (
+          <AddMemberModal
+            squadId={squad.id}
+            onClose={() => setShowAddMember(false)}
+            onSuccess={() => {
+              setShowAddMember(false);
+              fetchSquadDetail();
+            }}
+          />
+        )}
 
-      {showCreateInstruction && (
-        <CreateInstructionModal
-          squadId={squad.id}
-          projects={squad.attached_projects}
-          onClose={() => setShowCreateInstruction(false)}
-          onSuccess={() => {
-            setShowCreateInstruction(false);
-            fetchSquadDetail();
-          }}
-        />
-      )}
-    </div>
+        {showCreateInstruction && (
+          <CreateInstructionModal
+            squadId={squad.id}
+            projects={squad.attached_projects}
+            onClose={() => setShowCreateInstruction(false)}
+            onSuccess={() => {
+              setShowCreateInstruction(false);
+              fetchSquadDetail();
+            }}
+          />
+        )}
+    </ResponsiveWrapper>
   );
 }
 

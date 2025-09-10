@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Users, Settings, Zap, AlertCircle, Filter, Search } from 'lucide-react';
+import ResponsiveWrapper from '../components/ResponsiveWrapper';
 
 interface Squad {
   id: string;
@@ -111,20 +112,27 @@ export default function SquadsPage() {
 
   if (loading && squads.length === 0) {
     return (
-      <div className="console-theme min-h-screen text-white p-6">
+      <ResponsiveWrapper 
+        currentPath="/cockpit/squads"
+        contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
+        innerClassName="max-w-none mx-0"
+      >
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
             <p>Chargement des squads...</p>
           </div>
         </div>
-      </div>
+      </ResponsiveWrapper>
     );
   }
 
   return (
-    <div className="console-theme min-h-screen text-white">
-      <div className="max-w-7xl mx-auto p-6">
+    <ResponsiveWrapper 
+      currentPath="/cockpit/squads"
+      contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
+      innerClassName="max-w-none mx-0"
+    >
         {/* Header avec navigation */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
@@ -338,16 +346,15 @@ export default function SquadsPage() {
             </div>
           </div>
         )}
-      </div>
 
-      {/* Modal de création */}
-      {showCreateModal && (
-        <CreateSquadModal
-          onClose={() => setShowCreateModal(false)}
-          onSubmit={createSquad}
-        />
-      )}
-    </div>
+        {/* Modal de création */}
+        {showCreateModal && (
+          <CreateSquadModal
+            onClose={() => setShowCreateModal(false)}
+            onSubmit={createSquad}
+          />
+        )}
+    </ResponsiveWrapper>
   );
 }
 
