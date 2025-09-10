@@ -10,13 +10,17 @@ interface ResponsiveWrapperProps {
   currentPath?: string;
   userRole?: string;
   showMobileNav?: boolean;
+  contentClassName?: string; // Classes CSS pour le conteneur de contenu
+  innerClassName?: string;   // Classes CSS pour le conteneur intérieur (max-width, etc.)
 }
 
 export default function ResponsiveWrapper({ 
   children, 
   currentPath,
   userRole = 'viewer',
-  showMobileNav = true 
+  showMobileNav = true,
+  contentClassName = '',
+  innerClassName = ''
 }: ResponsiveWrapperProps) {
   // Set up real-time connection status monitoring
   const { status } = useRealTimeUpdates({
@@ -56,8 +60,9 @@ export default function ResponsiveWrapper({
         px-4 sm:px-6 lg:px-8
         pb-6
         pr-20 md:pr-8 lg:pr-8
+        ${contentClassName}
       `}>
-        <div className="max-w-7xl mx-auto">
+        <div className={`max-w-7xl mx-auto ${innerClassName}`}>
           {children}
         </div>
       </div>

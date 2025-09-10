@@ -11,6 +11,7 @@ import { useRealTimeUpdates, LiveDataBadge } from '../components/RealTimeUpdates
 
 // Dashboard principal B23 - Cockpit Admin
 export default function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState<'squads' | 'agents' | 'projets' | 'clients' | 'analytics'>('squads');
   const [stats, setStats] = useState({
     squads: { total: 0, active: 0, inactive: 0 },
     projects: { total: 0, active: 0, disabled: 0 },
@@ -121,29 +122,126 @@ export default function AdminDashboard() {
     );
   }
 
+  const tabs = [
+    { id: 'squads' as const, label: '🔷 Squads', count: stats.squads.total },
+    { id: 'agents' as const, label: '👤 Agents', count: 48 },
+    { id: 'projets' as const, label: '📋 Projets', count: stats.projects.total },
+    { id: 'clients' as const, label: '🏢 Clients', count: 12 },
+    { id: 'analytics' as const, label: '📊 Analytics' }
+  ];
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'squads':
+        return renderSquadsSection();
+      case 'agents':
+        return renderAgentsSection();
+      case 'projets':
+        return renderProjetsSection();
+      case 'clients':
+        return renderClientsSection();
+      case 'analytics':
+        return renderAnalyticsSection();
+      default:
+        return renderSquadsSection();
+    }
+  };
+
   return (
-    <ResponsiveWrapper currentPath="/cockpit/admin" userRole={userRole} contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" innerClassName="max-w-none mx-0">
-        {/* Header - Mobile Responsive */}
+    <ResponsiveWrapper 
+      currentPath="/cockpit/admin" 
+      userRole={userRole} 
+      contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
+      innerClassName="max-w-none mx-0"
+    >
+        {/* Header avec Tabs - Mobile Responsive */}
         <div className="mb-6 md:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-            <div className="pl-16 md:pl-0">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                🚀 Cockpit Admin B23
-              </h1>
-              <p className="text-gray-400 text-sm sm:text-base">
-                Console de pilotage - Squads d'agents IA & projets
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-lg">🏢</span>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                  ARKA Backoffice Admin
+                </h1>
+              </div>
+              <p className="text-gray-400 text-sm sm:text-base mt-1">
+                Gestion des squads, agents, projets et clients
               </p>
             </div>
-            <div className="flex items-center space-x-2 text-sm self-start sm:self-center">
-              <div className="px-3 py-1 bg-blue-900/30 text-blue-300 rounded-full">
-                {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
+            <div className="flex items-center space-x-6 self-start sm:self-center">
+              <div className="flex items-center space-x-4">
+                <div className="text-center">
+                  <div className="text-xs text-gray-400">SQUADS</div>
+                  <div className="text-lg font-bold text-green-400">{stats.squads.total || 12}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs text-gray-400">AGENTS</div>
+                  <div className="text-lg font-bold text-blue-400">48</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs text-gray-400">PROJETS</div>
+                  <div className="text-lg font-bold text-yellow-400">{stats.projects.total || 8}</div>
+                </div>
               </div>
-              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-gray-400 hidden sm:inline">En ligne</span>
+              <div className="flex items-center space-x-2 text-sm">
+                <div className="px-3 py-1 bg-blue-900/30 text-blue-300 rounded-full">
+                  {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
+                </div>
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-gray-400 hidden sm:inline">En ligne</span>
+              </div>
             </div>
+          </div>
+          
+          {/* Tabs Navigation */}
+          <div className="flex space-x-8">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 ${
+                  activeTab === tab.id
+                    ? 'border-blue-400 text-blue-400'
+                    : 'border-transparent text-gray-400 hover:text-white'
+                }`}
+              >
+                <span>{tab.label}</span>
+                {tab.count && (
+                  <span className={`px-2 py-0.5 rounded text-xs ${
+                    activeTab === tab.id 
+                      ? 'bg-blue-400 text-white' 
+                      : 'bg-gray-600 text-gray-300'
+                  }`}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
         </div>
 
+        {/* Tab Content */}
+        <div>
+          {renderTabContent()}
+        </div>
+
+        {/* Quick Access Footer */}
+        <div className="mt-8 flex justify-center">
+          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-500 text-center">
+            <span>B23 Console Admin v2.5</span>
+            <span className="hidden sm:inline">•</span>
+            <span>Architecture simplifiée</span>
+            <span className="hidden sm:inline">•</span>
+            <span>Performance optimisée</span>
+          </div>
+        </div>
+    </ResponsiveWrapper>
+  );
+
+  // Section renders
+  function renderSquadsSection() {
+    return (
+      <div className="space-y-6">
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Squads Stats */}
@@ -254,7 +352,7 @@ export default function AdminDashboard() {
                 <h3 className="text-lg font-semibold text-white">Gérer les Squads</h3>
               </div>
               <p className="text-gray-400 text-sm mb-4">
-                Créer, configurer et organiser vos squads d'agents IA spécialisés
+                Créer, configurer et organiser vos squads d&apos;agents IA spécialisés
               </p>
               <div className="flex justify-between items-center">
                 <span className="text-blue-400 text-sm font-medium">Accéder →</span>
@@ -317,7 +415,7 @@ export default function AdminDashboard() {
               <h3 className="text-lg font-semibold text-white">Nos Agents IA</h3>
             </div>
             <p className="text-gray-400 text-sm mb-4">
-              Bibliothèque d'agents, templates et performances
+              Bibliothèque d&apos;agents, templates et performances
             </p>
             <div className="flex justify-between items-center">
               <span className="text-purple-400 text-sm font-medium">Explorer →</span>
@@ -351,14 +449,13 @@ export default function AdminDashboard() {
         {/* Recent Activity */}
         <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-white">Activité récente</h2>
+            <h2 className="text-xl font-semibold text-white">🔄 Activité récente - Squads</h2>
             <button className="text-gray-400 hover:text-white text-sm">
               Voir tout →
             </button>
           </div>
           
           <div className="space-y-4">
-            {/* Mock recent activities */}
             <div className="flex items-center space-x-3 p-3 bg-gray-700/30 rounded-lg">
               <CheckCircle size={16} className="text-green-400" />
               <div className="flex-1">
@@ -374,27 +471,76 @@ export default function AdminDashboard() {
                 <div className="text-gray-500 text-xs">Agent: Developer Beta • Il y a 34 min</div>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-3 p-3 bg-gray-700/30 rounded-lg">
-              <AlertCircle size={16} className="text-yellow-400" />
-              <div className="flex-1">
-                <div className="text-white text-sm">Instruction haute priorité en attente</div>
-                <div className="text-gray-500 text-xs">Squad Marketing • Urgent • Il y a 1h</div>
-              </div>
-            </div>
           </div>
         </div>
+      </div>
+    );
+  }
 
-        {/* Quick Access Footer */}
-        <div className="mt-8 flex justify-center">
-          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-500 text-center">
-            <span>B23 Console Admin v2</span>
-            <span className="hidden sm:inline">•</span>
-            <span>Architecture simplifiée</span>
-            <span className="hidden sm:inline">•</span>
-            <span>Performance optimisée</span>
-          </div>
+  function renderAgentsSection() {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-white">👤 AGENTS - Création & Édition</h2>
+          <button className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg transition-colors text-sm text-white">
+            + Créer Agent
+          </button>
         </div>
-    </ResponsiveWrapper>
-  );
+        
+        <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+          <Users size={48} className="mx-auto text-gray-500 mb-4" />
+          <p className="text-gray-400">Section Agents en cours d&apos;implémentation selon les spécifications Codex...</p>
+        </div>
+      </div>
+    );
+  }
+
+  function renderProjetsSection() {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-white">📋 PROJETS - Gestion & Assignation</h2>
+          <button className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg transition-colors text-sm text-white">
+            + Créer Projet
+          </button>
+        </div>
+        
+        <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+          <Briefcase size={48} className="mx-auto text-gray-500 mb-4" />
+          <p className="text-gray-400">Section Projets en cours d&apos;implémentation selon les spécifications Codex...</p>
+        </div>
+      </div>
+    );
+  }
+
+  function renderClientsSection() {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-white">🏢 CLIENTS - Gestion & Contact</h2>
+          <button className="bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded-lg transition-colors text-sm text-white">
+            + Nouveau Client
+          </button>
+        </div>
+        
+        <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+          <Building size={48} className="mx-auto text-gray-500 mb-4" />
+          <p className="text-gray-400">Section Clients en cours d&apos;implémentation selon les spécifications Codex...</p>
+        </div>
+      </div>
+    );
+  }
+
+  function renderAnalyticsSection() {
+    return (
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold text-white">📊 ANALYTICS - Métriques & Rapports</h2>
+        
+        <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
+          <BarChart3 size={48} className="mx-auto text-gray-500 mb-4" />
+          <p className="text-gray-400">Section Analytics en cours d&apos;implémentation selon les spécifications Codex...</p>
+        </div>
+      </div>
+    );
+  }
 }
