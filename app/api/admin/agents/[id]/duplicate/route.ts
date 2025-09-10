@@ -186,7 +186,7 @@ export const POST = withAdminAuth(['agents:write'])(async (req, user, { params }
       route: '/api/admin/agents/[id]/duplicate',
       method: 'POST',
       status: 500,
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
