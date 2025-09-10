@@ -3,7 +3,13 @@
     "allow": [
       "Bash(npm run build:*)",
       "Bash(curl:*)",
-      "Bash(git merge:*)"
+      "Read(//c/Users/grimo/Pictures/Screenshots/**)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []
