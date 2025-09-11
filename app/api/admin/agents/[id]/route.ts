@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { withAdminAuth } from '../../../../../lib/rbac-admin';
-import { sql } from '../../../../../lib/db';
+import { sql, getDb } from '../../../../../lib/db';
 import { log } from '../../../../../lib/logger';
 import { TRACE_HEADER } from '../../../../../lib/trace';
 
@@ -266,7 +266,9 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
       RETURNING *
     `;
 
-    const [updatedAgent] = await sql.unsafe(updateQuery, [...updateValues, agentId]);
+    // Use direct db.query for dynamically built query with positional params
+    const updatedResult = (await getDb().query(updateQuery, [...updateValues, agentId])).rows;
+    const [updatedAgent] = updatedResult;
 
     // Get updated performance metrics
     const [performanceData] = await sql`
