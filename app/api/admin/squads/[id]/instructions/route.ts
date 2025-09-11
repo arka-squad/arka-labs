@@ -60,7 +60,7 @@ export const POST = withAdminAuth(['squads:create_instructions'], 'squad')(async
     }
 
     // Create instruction
-    const { rows } = await sql`
+    const rows = await sql`
       INSERT INTO squad_instructions (squad_id, project_id, content, priority, created_by)
       VALUES (${squadId}, ${project_id}, ${content}, ${priority}, ${user.sub})
       RETURNING id, squad_id, project_id, content, priority, status, created_by, created_at
@@ -125,11 +125,12 @@ export const POST = withAdminAuth(['squads:create_instructions'], 'squad')(async
     log('error', 'squad_instruction_creation_failed', {
       route: `/api/admin/squads/${squadId}/instructions`,
       method: 'POST',
+      status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
       squad_id: squadId,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
 
     if (error instanceof z.ZodError) {
@@ -172,5 +173,5 @@ function getProviderReasoning(content: string, provider: string): string {
     'gemini': 'Creative or content generation task detected'
   };
   
-  return reasoningMap[provider] || 'Default provider selection';
+  return reasoningMap[provider as keyof typeof reasoningMap] || 'Default provider selection';
 }

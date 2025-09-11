@@ -211,7 +211,8 @@ export const GET = withAdminAuth(['projects:read'])(async (req, user) => {
     log('error', 'projects_list_error', {
       route: '/api/admin/projects',
       method: 'GET',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub
@@ -337,7 +338,8 @@ export const POST = withAdminAuth(['projects:write'])(async (req, user) => {
     log('error', 'project_create_error', {
       route: '/api/admin/projects',
       method: 'POST',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub
@@ -429,6 +431,7 @@ export const PUT = withAdminAuth(['projects:write'])(async (req, user) => {
     log('info', 'projects_batch_operation_success', {
       route: '/api/admin/projects',
       method: 'PUT',
+      status: 200,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -446,7 +449,8 @@ export const PUT = withAdminAuth(['projects:write'])(async (req, user) => {
     log('error', 'projects_batch_operation_error', {
       route: '/api/admin/projects',
       method: 'PUT',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub
