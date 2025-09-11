@@ -228,25 +228,32 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
       }
     }
 
-    // Build update query dynamically
-    const updateFields: string[] = [];
-    const updateValues: any[] = [];
-    let paramIndex = 1;
+    // Build update query using direct sql template
+    const updateQueries = [];
+    
+    if (updates.nom !== undefined) {
+      updateQueries.push(sql`nom = ${updates.nom}`);
+    }
+    if (updates.specialite !== undefined) {
+      updateQueries.push(sql`specialite = ${updates.specialite}`);
+    }
+    if (updates.niveau !== undefined) {
+      updateQueries.push(sql`niveau = ${updates.niveau}`);
+    }
+    if (updates.status !== undefined) {
+      updateQueries.push(sql`status = ${updates.status}`);
+    }
+    if (updates.tags !== undefined) {
+      updateQueries.push(sql`tags = ${JSON.stringify(updates.tags)}`);
+    }
+    if (updates.description !== undefined) {
+      updateQueries.push(sql`description = ${updates.description}`);
+    }
+    if (updates.availability !== undefined) {
+      updateQueries.push(sql`availability = ${updates.availability}`);
+    }
 
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value !== undefined) {
-        if (key === 'tags') {
-          updateFields.push(`${key} = $${paramIndex}`);
-          updateValues.push(JSON.stringify(value));
-        } else {
-          updateFields.push(`${key} = $${paramIndex}`);
-          updateValues.push(value);
-        }
-        paramIndex++;
-      }
-    });
-
-    if (updateFields.length === 0) {
+    if (updateQueries.length === 0) {
       return NextResponse.json(
         { 
           error: 'Aucune donnée à mettre à jour',
@@ -257,17 +264,14 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
       );
     }
 
-    updateFields.push(`updated_at = NOW()`);
+    updateQueries.push(sql`updated_at = NOW()`);
     
-    const updateQuery = `
+    const [updatedAgent] = await sql`
       UPDATE agents 
-      SET ${updateFields.join(', ')}
-      WHERE id = $${paramIndex} AND deleted_at IS NULL
+      SET ${sql.join(updateQueries, sql`, `)}
+      WHERE id = ${agentId} AND deleted_at IS NULL
       RETURNING *
     `;
-
-    const params = [...updateValues, agentId];
-    const [updatedAgent] = await sql.unsafe(updateQuery, params);
 
     // Get updated performance metrics
     const [performanceData] = await sql`
