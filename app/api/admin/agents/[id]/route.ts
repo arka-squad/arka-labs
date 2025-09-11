@@ -229,8 +229,8 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
     }
 
     // Build update query dynamically
-    const updateFields = [];
-    const updateValues = [];
+    const updateFields: string[] = [];
+    const updateValues: any[] = [];
     let paramIndex = 1;
 
     Object.entries(updates).forEach(([key, value]) => {
