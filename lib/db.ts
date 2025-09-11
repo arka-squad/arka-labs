@@ -13,6 +13,7 @@ export function getDb() {
 interface SqlFunction {
   (strings: TemplateStringsArray, ...values: any[]): Promise<any[]>;
   raw: (rawString: string) => { toString: () => string; valueOf: () => string };
+  unsafe: (query: string, values?: any[]) => Promise<any[]>;
 }
 
 const sqlFunction = (strings: TemplateStringsArray, ...values: any[]) => {
@@ -26,10 +27,12 @@ const sqlFunction = (strings: TemplateStringsArray, ...values: any[]) => {
     const db = getDb();
     const result = await db.query(query, values);
     // Return just the rows array with additional properties
-    const rows = result.rows;
+    const rows: any = result.rows;
     rows.rowCount = result.rowCount;
     rows.command = result.command;
     rows.fields = result.fields;
+    // Provide .rows accessor for code paths expecting pg-like result
+    rows.rows = rows;
     return rows;
   })();
 };
@@ -43,3 +46,15 @@ sqlFunction.raw = (rawString: string) => {
 };
 
 export const sql = sqlFunction as SqlFunction;
+
+// Provide an unsafe method compatible with @vercel/postgres for dynamic queries
+(sql as SqlFunction).unsafe = async (query: string, values: any[] = []) => {
+  const db = getDb();
+  const result = await db.query(query, values);
+  const rows: any = result.rows;
+  rows.rowCount = result.rowCount;
+  rows.command = result.command;
+  rows.fields = result.fields;
+  rows.rows = rows;
+  return rows;
+};
