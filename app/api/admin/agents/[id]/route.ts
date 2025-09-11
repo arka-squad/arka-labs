@@ -266,7 +266,8 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
       RETURNING *
     `;
 
-    const [updatedAgent] = await sql.unsafe(updateQuery, [...updateValues, agentId]);
+    const params = [...updateValues, agentId];
+    const [updatedAgent] = await sql.unsafe(updateQuery, params);
 
     // Get updated performance metrics
     const [performanceData] = await sql`
