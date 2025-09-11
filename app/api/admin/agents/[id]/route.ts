@@ -231,14 +231,17 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
     // Build update query using direct sql template
     const updateQueries = [];
     
-    if (updates.nom !== undefined) {
-      updateQueries.push(sql`nom = ${updates.nom}`);
+    if (updates.name !== undefined) {
+      updateQueries.push(sql`name = ${updates.name}`);
     }
-    if (updates.specialite !== undefined) {
-      updateQueries.push(sql`specialite = ${updates.specialite}`);
+    if (updates.role !== undefined) {
+      updateQueries.push(sql`role = ${updates.role}`);
     }
-    if (updates.niveau !== undefined) {
-      updateQueries.push(sql`niveau = ${updates.niveau}`);
+    if (updates.domaine !== undefined) {
+      updateQueries.push(sql`domaine = ${updates.domaine}`);
+    }
+    if (updates.version !== undefined) {
+      updateQueries.push(sql`version = ${updates.version}`);
     }
     if (updates.status !== undefined) {
       updateQueries.push(sql`status = ${updates.status}`);
@@ -249,8 +252,14 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
     if (updates.description !== undefined) {
       updateQueries.push(sql`description = ${updates.description}`);
     }
-    if (updates.availability !== undefined) {
-      updateQueries.push(sql`availability = ${updates.availability}`);
+    if (updates.prompt_system !== undefined) {
+      updateQueries.push(sql`prompt_system = ${updates.prompt_system}`);
+    }
+    if (updates.temperature !== undefined) {
+      updateQueries.push(sql`temperature = ${updates.temperature}`);
+    }
+    if (updates.max_tokens !== undefined) {
+      updateQueries.push(sql`max_tokens = ${updates.max_tokens}`);
     }
 
     if (updateQueries.length === 0) {
