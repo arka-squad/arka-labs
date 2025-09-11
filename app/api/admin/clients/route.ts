@@ -143,7 +143,7 @@ export const POST = withAdminAuth(['manager'])(async (req: NextRequest, user) =>
       INSERT INTO clients (nom, email, metadata, created_by)
       VALUES ($1, $2, $3, $4)
       RETURNING *
-    `, [nom, contact_principal.email, JSON.stringify(metadata), user?.sub || 'system']);
+    `, [nom, contact_principal.email, JSON.stringify(metadata), user?.id || 'system']);
 
     const client = result.rows[0];
     
