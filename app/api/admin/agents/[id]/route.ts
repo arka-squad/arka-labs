@@ -162,7 +162,7 @@ export const GET = withAdminAuth(['agents:read'])(async (req, user, { params }) 
       route: '/api/admin/agents/[id]',
       status: 500,
       method: 'GET',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -324,7 +324,7 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
     log('error', 'agent_update_error', {
       route: '/api/admin/agents/[id]',
       method: 'PATCH',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -439,7 +439,7 @@ export const DELETE = withAdminAuth(['agents:delete'])(async (req, user, { param
     log('error', 'agent_delete_error', {
       route: '/api/admin/agents/[id]',
       method: 'DELETE',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
