@@ -76,7 +76,7 @@ export async function initCache(): Promise<void> {
       await redis.ping();
       log('info', 'cache_redis_connected', { route: 'cache', status: 200, redis_url: process.env.REDIS_URL });
     } catch (error) {
-      log('warn', 'cache_redis_failed_fallback_memory', { route: 'cache', status: 500, error: error.message });
+      log('warn', 'cache_redis_failed_fallback_memory', { route: 'cache', status: 500, error: error instanceof Error ? error.message : 'Unknown error' });
       redis = null;
     }
   }
@@ -94,7 +94,7 @@ export async function get(key: string): Promise<any | null> {
       return cacheInstance?.get(key) || null;
     }
   } catch (error) {
-    log('warn', 'cache_get_failed', { key, error: error.message });
+    log('warn', 'cache_get_failed', { route: 'cache', status: 500, key, error: error instanceof Error ? error.message : 'Unknown error' });
     return null;
   }
 }
@@ -109,9 +109,9 @@ export async function set(key: string, value: any, ttlSeconds: number = 300): Pr
       cacheInstance?.set(key, value, ttlSeconds);
     }
     
-    log('debug', 'cache_set', { key, ttl: ttlSeconds });
+    log('debug', 'cache_set', { route: 'cache', status: 200, key, ttl: ttlSeconds });
   } catch (error) {
-    log('warn', 'cache_set_failed', { key, error: error.message });
+    log('warn', 'cache_set_failed', { route: 'cache', status: 500, key, error: error instanceof Error ? error.message : 'Unknown error' });
   }
 }
 
@@ -123,27 +123,29 @@ export async function del(key: string): Promise<void> {
       cacheInstance?.del(key);
     }
     
-    log('debug', 'cache_del', { key });
+    log('debug', 'cache_del', { route: 'cache', status: 200, key });
   } catch (error) {
-    log('warn', 'cache_del_failed', { key, error: error.message });
+    log('warn', 'cache_del_failed', { route: 'cache', status: 500, key, error: error instanceof Error ? error.message : 'Unknown error' });
   }
 }
 
 export async function invalidatePattern(pattern: string): Promise<void> {
   try {
+    let keys: string[] = [];
+    
     if (redis) {
-      const keys = await redis.keys(pattern);
+      keys = await redis.keys(pattern);
       if (keys.length > 0) {
         await redis.del(...keys);
       }
     } else {
-      const keys = cacheInstance?.keys(pattern) || [];
+      keys = cacheInstance?.keys(pattern) || [];
       keys.forEach(key => cacheInstance?.del(key));
     }
     
-    log('debug', 'cache_pattern_invalidated', { pattern, keys_count: keys?.length || 0 });
+    log('debug', 'cache_pattern_invalidated', { route: 'cache', status: 200, pattern, keys_count: keys.length });
   } catch (error) {
-    log('warn', 'cache_pattern_invalidation_failed', { pattern, error: error.message });
+    log('warn', 'cache_pattern_invalidation_failed', { route: 'cache', status: 500, pattern, error: error instanceof Error ? error.message : 'Unknown error' });
   }
 }
 
@@ -232,7 +234,7 @@ export const InstructionCache = {
 // Cache warming functions
 export async function warmupCache(): Promise<void> {
   try {
-    log('info', 'cache_warmup_started', {});
+    log('info', 'cache_warmup_started', { route: 'cache', status: 200 });
     
     // Warm up commonly accessed data
     const start = Date.now();
@@ -242,9 +244,9 @@ export async function warmupCache(): Promise<void> {
     await initCache();
     
     const duration = Date.now() - start;
-    log('info', 'cache_warmup_completed', { duration_ms: duration });
+    log('info', 'cache_warmup_completed', { route: 'cache', status: 200, duration_ms: duration });
   } catch (error) {
-    log('error', 'cache_warmup_failed', { route: 'cache', status: 500, error: error.message });
+    log('error', 'cache_warmup_failed', { route: 'cache', status: 500, error: error instanceof Error ? error.message : 'Unknown error' });
   }
 }
 
@@ -280,15 +282,15 @@ export async function checkCacheHealth(): Promise<{ healthy: boolean; type: stri
       healthy: false,
       type: redis ? 'redis' : 'memory',
       latency: Date.now() - start,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 }
 
 // Initialize cache on module load
-if (typeof globalThis !== 'undefined' && !globalThis.__CACHE_INITIALIZED__) {
-  globalThis.__CACHE_INITIALIZED__ = true;
+if (typeof globalThis !== 'undefined' && !(globalThis as any).__CACHE_INITIALIZED__) {
+  (globalThis as any).__CACHE_INITIALIZED__ = true;
   initCache().catch(error => {
-    log('error', 'cache_init_failed', { route: 'cache', status: 500, error: error.message });
+    log('error', 'cache_init_failed', { route: 'cache', status: 500, error: error instanceof Error ? error.message : 'Unknown error' });
   });
 }

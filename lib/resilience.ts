@@ -43,7 +43,7 @@ export async function withResilience<T>(
   // Check circuit breaker
   if (!canExecute(serviceName, config)) {
     if (fallback && config.graceful_degradation) {
-      log('warn', 'circuit_breaker_open_using_fallback', { service: serviceName });
+      log('warn', 'circuit_breaker_open_using_fallback', { route: 'lib', status: 500, service: serviceName });
       return await fallback();
     }
     throw new Error(`Circuit breaker open for service: ${serviceName}`);
@@ -57,10 +57,8 @@ export async function withResilience<T>(
     recordFailure(serviceName, config);
     
     if (fallback && config.graceful_degradation) {
-      log('warn', 'operation_failed_using_fallback', { 
-        service: serviceName, 
-        error: error.message 
-      });
+      log('warn', 'operation_failed_using_fallback', { route: 'lib', status: 500, service: serviceName, 
+        error: error instanceof Error ? error.message : 'Unknown error' });
       return await fallback();
     }
     
@@ -117,11 +115,9 @@ function recordFailure(serviceName: string, config: ResilienceConfig) {
   });
   
   if (newState === 'open') {
-    log('warn', 'circuit_breaker_opened', { 
-      service: serviceName, 
+    log('warn', 'circuit_breaker_opened', { route: 'lib', status: 500, service: serviceName, 
       failures: newFailures,
-      threshold: config.circuit_breaker_threshold
-    });
+      threshold: config.circuit_breaker_threshold });
   }
 }
 
@@ -150,7 +146,7 @@ export async function processInstructionQueue() {
       await processInstruction(instruction, config);
     }
   } catch (error) {
-    log('error', 'queue_processing_failed', { route: 'resilience', status: 500, error: error.message });
+    log('error', 'queue_processing_failed', { route: 'resilience', status: 500, error: error instanceof Error ? error.message : 'Unknown error' });
   }
 }
 
@@ -179,10 +175,10 @@ async function processInstruction(instruction: any, config: ResilienceConfig) {
       WHERE id = ${instructionId}
     `;
     
-    log('info', 'instruction_completed', { instruction_id: instructionId });
+    log('info', 'instruction_completed', { route: 'lib', status: 200, instruction_id: instructionId });
     
   } catch (error) {
-    await handleInstructionFailure(instruction, error, config);
+    await handleInstructionFailure(instruction, error instanceof Error ? error : new Error('Unknown error'), config);
   }
 }
 
@@ -214,10 +210,8 @@ async function routeToProvider(instruction: any): Promise<void> {
 }
 
 async function routeToFallbackProvider(instruction: any, provider: string): Promise<void> {
-  log('info', 'using_fallback_provider', { 
-    instruction_id: instruction.id, 
-    provider 
-  });
+  log('info', 'using_fallback_provider', { route: 'lib', status: 200, instruction_id: instruction.id, 
+    provider });
   
   // Update metadata to indicate fallback was used
   await sql`
@@ -246,24 +240,22 @@ async function handleInstructionFailure(instruction: any, error: Error, config: 
       SET status = 'queued',
           metadata = metadata || ${JSON.stringify({ 
             retry_attempts: retryAttempts + 1,
-            last_error: error.message,
+            last_error: error instanceof Error ? error.message : 'Unknown error',
             retry_scheduled_at: new Date().toISOString()
           })}
       WHERE id = ${instructionId}
     `;
     
-    log('info', 'instruction_scheduled_retry', { 
-      instruction_id: instructionId,
+    log('info', 'instruction_scheduled_retry', { route: 'lib', status: 200, instruction_id: instructionId,
       attempt: retryAttempts + 1,
-      max_attempts: config.queue_retry_attempts
-    });
+      max_attempts: config.queue_retry_attempts });
   } else {
     // Mark as failed
     await sql`
       UPDATE squad_instructions 
       SET status = 'failed',
           metadata = metadata || ${JSON.stringify({ 
-            final_error: error.message,
+            final_error: error instanceof Error ? error.message : 'Unknown error',
             failed_at: new Date().toISOString()
           })}
       WHERE id = ${instructionId}
@@ -273,7 +265,7 @@ async function handleInstructionFailure(instruction: any, error: Error, config: 
       route: 'resilience',
       status: 500,
       instruction_id: instructionId,
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       attempts: retryAttempts + 1
     });
     
@@ -284,10 +276,8 @@ async function handleInstructionFailure(instruction: any, error: Error, config: 
 
 async function notifyAdminOfFailure(instruction: any, error: Error) {
   // This would integrate with notification system
-  log('warn', 'admin_notification_sent', { 
-    instruction_id: instruction.id,
+  log('warn', 'admin_notification_sent', { route: 'lib', status: 500, instruction_id: instruction.id,
     squad_id: instruction.squad_id,
     project_id: instruction.project_id,
-    error: error.message
-  });
+    error: error instanceof Error ? error.message : 'Unknown error' });
 }

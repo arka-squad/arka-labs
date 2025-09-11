@@ -42,19 +42,17 @@ const hooks: IntegrationHooks = {
 export async function executeHook<T>(hookName: keyof IntegrationHooks, data: T): Promise<void> {
   const hook = hooks[hookName] as ((data: T) => Promise<void>) | undefined;
   if (!hook) {
-    log('debug', 'hook_not_configured', { hook: hookName });
+    log('debug', 'hook_not_configured', { route: 'integration', status: 200, hook: hookName });
     return;
   }
   
   try {
     await hook(data);
-    log('debug', 'hook_executed', { hook: hookName });
+    log('debug', 'hook_executed', { route: 'integration', status: 200, hook: hookName });
   } catch (error) {
-    log('warn', 'hook_execution_failed', { 
-      hook: hookName, 
-      error: error.message,
-      data: typeof data === 'object' ? JSON.stringify(data) : String(data)
-    });
+    log('warn', 'hook_execution_failed', { route: 'integration', status: 500, hook: hookName, 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      data: typeof data === 'object' ? JSON.stringify(data) : String(data) });
     // Continue without blocking the main operation
   }
 }
@@ -146,7 +144,7 @@ async function callB22MemoryAPI(endpoint: string, data: any): Promise<void> {
     throw new Error(`B22 API call failed: ${response.status} ${response.statusText}`);
   }
   
-  log('debug', 'b22_memory_captured', { endpoint, status: response.status });
+  log('debug', 'b22_memory_captured', { route: 'integration', status: 200, endpoint, response_status: response.status });
 }
 
 // B21 Routing Integration Hooks
@@ -183,19 +181,15 @@ async function queueInstruction(instruction: Instruction): Promise<void> {
     throw new Error(`B21 routing failed: ${response.status} ${response.statusText}`);
   }
   
-  log('info', 'instruction_queued_b21', { 
-    instruction_id: instruction.id,
-    status: response.status 
-  });
+  log('info', 'instruction_queued_b21', { route: 'integration', status: 200, instruction_id: instruction.id,
+    response_status: response.status });
 }
 
 async function setFallbackProvider(instruction: Instruction): Promise<void> {
   const config = getConfig();
   
-  log('info', 'using_fallback_provider_for_instruction', { 
-    instruction_id: instruction.id,
-    fallback_provider: config.fallback_provider 
-  });
+  log('info', 'using_fallback_provider_for_instruction', { route: 'integration', status: 200, instruction_id: instruction.id,
+    fallback_provider: config.fallback_provider });
   
   // This would integrate with the fallback processing system
   // For now, we just log that fallback is being used
@@ -231,7 +225,7 @@ export async function checkB21Health(): Promise<{ healthy: boolean; latency?: nu
     return { 
       healthy: false, 
       latency: Date.now() - start,
-      error: error.message 
+      error: error instanceof Error ? error.message : 'Unknown error' 
     };
   }
 }
@@ -261,7 +255,7 @@ export async function checkB22Health(): Promise<{ healthy: boolean; latency?: nu
     return { 
       healthy: false, 
       latency: Date.now() - start,
-      error: error.message 
+      error: error instanceof Error ? error.message : 'Unknown error' 
     };
   }
 }

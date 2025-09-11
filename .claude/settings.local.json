@@ -10,7 +10,8 @@
       "Bash(git pull:*)",
       "Bash(git merge:*)",
       "Bash(git rm:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(sed:*)"
     ],
     "deny": [],
     "ask": []

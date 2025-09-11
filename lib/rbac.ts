@@ -96,8 +96,8 @@ export function withAuth(
     const actor = user?.sub || 'anonymous';
     const role = user?.role || 'public';
     const decision = res.status < 400 ? 'allow' : 'deny';
-    log('debug', 'rbac', { route, status: res.status, trace_id: traceId, method, role, decision });
-    log('info', 'api', { route, status: res.status, trace_id: traceId, actor, role });
+    log('debug', 'rbac', { route: 'lib', status: 200, pathname: route, response_status: res.status, trace_id: traceId, method, role, decision });
+    log('info', 'api', { route: 'lib', status: 200, pathname: route, response_status: res.status, trace_id: traceId, actor, role });
     try {
       if (process.env.POSTGRES_URL) {
         await sql`insert into metrics_raw (trace_id, route, status, duration_ms) values (${traceId}, ${route}, ${res.status}, ${duration_ms})`;

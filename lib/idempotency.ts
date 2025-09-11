@@ -88,7 +88,7 @@ export async function cleanupExpiredKeys(): Promise<number> {
       DELETE FROM idempotency_keys 
       WHERE expires_at <= NOW()
     `;
-    return result.count || 0;
+    return result[0]?.count || 0;
   } catch (error) {
     console.error('Failed to cleanup expired idempotency keys:', error);
     return 0;

@@ -30,7 +30,7 @@ export interface RBACContext {
 const PERMISSIONS_MATRIX: Record<AdminPermission, Role[]> = {
   // Squads permissions
   'squads:create': ['admin'],
-  'squads:read': ['admin', 'owner', 'operator', 'viewer'],
+  'squads:read': ['admin', 'owner', 'editor', 'viewer'],
   'squads:update': ['admin'], // owner only if assigned
   'squads:delete': ['admin'],
   'squads:add_members': ['admin'], // owner only if assigned
@@ -38,7 +38,7 @@ const PERMISSIONS_MATRIX: Record<AdminPermission, Role[]> = {
   
   // Projects permissions  
   'projects:create': ['admin', 'owner'],
-  'projects:read': ['admin', 'owner', 'operator', 'viewer'], // owner if created_by, operator if assigned
+  'projects:read': ['admin', 'owner', 'editor', 'viewer'], // owner if created_by, operator if assigned
   'projects:update': ['admin'], // owner if created_by
   'projects:delete': ['admin'], // owner if created_by
   'projects:write': ['admin', 'owner'], // owner if created_by
@@ -47,23 +47,23 @@ const PERMISSIONS_MATRIX: Record<AdminPermission, Role[]> = {
   
   // Agents permissions
   'agents:create': ['admin'],
-  'agents:read': ['admin', 'owner', 'operator', 'viewer'],
+  'agents:read': ['admin', 'owner', 'editor', 'viewer'],
   'agents:write': ['admin', 'owner'],
   'agents:delete': ['admin'],
   
   // Clients permissions
   'clients:create': ['admin'],
-  'clients:read': ['admin', 'owner', 'operator', 'viewer'],
+  'clients:read': ['admin', 'owner', 'editor', 'viewer'],
   'clients:write': ['admin', 'owner'],
   'clients:delete': ['admin'],
   
   // Dashboard permissions
-  'dashboard:read': ['admin', 'owner', 'operator', 'viewer'],
+  'dashboard:read': ['admin', 'owner', 'editor', 'viewer'],
   
   // Instructions permissions
   'instructions:create': ['admin'], // owner if project owner, operator if squad member
   'instructions:cancel': ['admin'], // owner if project owner
-  'instructions:view': ['admin', 'owner', 'operator', 'viewer'], // if assigned
+  'instructions:view': ['admin', 'owner', 'editor', 'viewer'], // if assigned
 };
 
 export async function checkResourceOwnership(
@@ -127,7 +127,7 @@ export async function checkResourceOwnership(
         return {};
     }
   } catch (error) {
-    log('warn', 'ownership_check_failed', { resourceType, resourceId, error: error.message });
+    log('warn', 'ownership_check_failed', { route: 'lib', status: 500, resourceType, resourceId, error: error instanceof Error ? error.message : 'Unknown error' });
     return {};
   }
 }
@@ -159,7 +159,7 @@ export function checkPermissionMatrix(
         if (permission.includes('instructions:') && ownership.created_by === userId) continue;
       }
       
-      if (userRole === 'operator') {
+      if (userRole === 'editor') {
         // Operator can act on assigned resources
         if (permission === 'squads:create_instructions' && ownership.squad_assignments?.length) continue;
         if (permission.includes('projects:') && ownership.project_assignments?.length) continue;
@@ -185,9 +185,7 @@ export function withAdminAuth(
       if (process.env.RBAC_BYPASS === 'true') {
         const mockUser: User = {
           sub: 'dev-user',
-          role: 'admin' as Role,
-          email: 'dev@arka.ai',
-          name: 'Dev User'
+          role: 'admin' as Role
         };
         return handler(req as AuthenticatedRequest, mockUser, context);
       }
@@ -196,7 +194,7 @@ export function withAdminAuth(
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
         const res = NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-        log('warn', 'rbac_auth_missing', { trace_id: traceId, route: req.nextUrl.pathname });
+        log('warn', 'rbac_auth_missing', { route: 'lib', status: 401, trace_id: traceId, pathname: req.nextUrl.pathname });
         return res;
       }
 
@@ -204,7 +202,7 @@ export function withAdminAuth(
       const user = verifyToken(token);
       if (!user) {
         const res = NextResponse.json({ error: 'invalid_token' }, { status: 401 });
-        log('warn', 'rbac_token_invalid', { trace_id: traceId, route: req.nextUrl.pathname });
+        log('warn', 'rbac_token_invalid', { route: 'lib', status: 500, trace_id: traceId, pathname: req.nextUrl.pathname });
         return res;
       }
 
@@ -214,14 +212,12 @@ export function withAdminAuth(
         const res = await handler(req as AuthenticatedRequest, user, context);
         
         const duration_ms = Date.now() - start;
-        log('debug', 'rbac_admin_access', { 
-          trace_id: traceId, 
-          route: req.nextUrl.pathname,
+        log('debug', 'rbac_admin_access', { route: 'lib', status: 200, trace_id: traceId, 
+          pathname: req.nextUrl.pathname,
           user_id: user.sub,
           role: user.role,
           decision: 'allow',
-          duration_ms 
-        });
+          duration_ms });
         
         return res;
       }
@@ -243,14 +239,12 @@ export function withAdminAuth(
           required_permissions: requiredPermissions 
         }, { status: 403 });
         
-        log('warn', 'rbac_permission_denied', {
-          trace_id: traceId,
-          route: req.nextUrl.pathname,
+        log('warn', 'rbac_permission_denied', { route: 'lib', status: 403, trace_id: traceId,
+          pathname: req.nextUrl.pathname,
           user_id: user.sub,
           role: user.role,
           required_permissions: requiredPermissions,
-          ownership
-        });
+          ownership });
         
         return res;
       }
@@ -260,15 +254,13 @@ export function withAdminAuth(
       const res = await handler(req as AuthenticatedRequest, user, context);
       
       const duration_ms = Date.now() - start;
-      log('debug', 'rbac_access_granted', { 
-        trace_id: traceId, 
-        route: req.nextUrl.pathname,
+      log('debug', 'rbac_access_granted', { route: 'lib', status: 200, trace_id: traceId, 
+        pathname: req.nextUrl.pathname,
         user_id: user.sub,
         role: user.role,
         permissions: requiredPermissions,
         decision: 'allow',
-        duration_ms 
-      });
+        duration_ms });
 
       return res;
     };
