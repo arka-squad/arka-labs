@@ -12,7 +12,7 @@ type CockpitShellProps = {
 
 export default function CockpitShell({ children }: CockpitShellProps) {
   const [currentView, setCurrentView] = useState('dashboard');
-  const [userRole, setUserRole] = useState<string>('viewer');
+  const [userRole, setUserRole] = useState<'admin' | 'manager' | 'operator' | 'viewer' | 'owner'>('viewer');
 
   useEffect(() => {
     setUserRole(getCurrentRole());

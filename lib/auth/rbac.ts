@@ -77,18 +77,21 @@ export async function checkPermission(
   // Mapper les méthodes HTTP aux actions CRUD
   const crudAction = mapHttpToCrud(action);
   
+  // Cast resourcePermissions to string array for type safety
+  const perms = resourcePermissions as string[];
+  
   // Vérifier les permissions basiques
-  if (resourcePermissions.includes(crudAction)) {
+  if (perms.includes(crudAction)) {
     return true;
   }
   
   // Vérifier les permissions avec conditions (own, assigned)
-  if (options.checkOwnership && resourcePermissions.includes(`${crudAction}:own`)) {
+  if (options.checkOwnership && perms.includes(`${crudAction}:own`)) {
     // Vérifier si l'utilisateur est propriétaire de la ressource
     return await checkResourceOwnership(user, resource, resourceType);
   }
   
-  if (options.checkProjectAssignment && resourcePermissions.includes(`${crudAction}:assigned`)) {
+  if (options.checkProjectAssignment && perms.includes(`${crudAction}:assigned`)) {
     // Vérifier si l'utilisateur est assigné au projet
     return await checkProjectAssignment(user, resource);
   }
@@ -174,7 +177,7 @@ export async function getUserAssignedProjects(userId: string): Promise<number[]>
       [userId]
     );
     
-    return result.rows.map(row => row.project_id);
+    return result.rows.map((row: any) => row.project_id);
   } catch (error) {
     console.error('Error getting user assigned projects:', error);
     return [];

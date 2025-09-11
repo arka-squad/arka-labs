@@ -116,8 +116,8 @@ export function withAdminAuth(
               req.url,
               req.method,
               {
-                checkOwnership: requiredPermissions.includes('own'),
-                checkProjectAssignment: requiredPermissions.includes('assigned')
+                checkOwnership: requiredPermissions.some(p => p.includes(':own')),
+                checkProjectAssignment: requiredPermissions.some(p => p.includes(':assigned'))
               }
             );
             

@@ -31,7 +31,7 @@ export async function ensureUniqueSlug(baseSlug: string): Promise<string> {
       counter++;
       attempts++;
     } catch (error) {
-      log('error', 'unique_slug_check_failed', { route: 'squad-utils', slug, error: error instanceof Error ? error.message : 'Unknown error' });
+      log('error', 'unique_slug_check_failed', { route: 'squad-utils', status: 500, slug, error: error instanceof Error ? error.message : 'Unknown error' });
       // If there's an error, return a timestamped slug as fallback
       return `${baseSlug}-${Date.now()}`;
     }
