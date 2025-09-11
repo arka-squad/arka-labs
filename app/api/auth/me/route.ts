@@ -102,7 +102,7 @@ export async function GET(req: NextRequest) {
         permissions,
         assigned_projects: assignedProjects
       },
-      token_expires_at: new Date(payload.exp * 1000).toISOString()
+      token_expires_at: payload.exp ? new Date(payload.exp * 1000).toISOString() : undefined
     });
     
   } catch (error) {
