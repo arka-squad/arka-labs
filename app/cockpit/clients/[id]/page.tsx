@@ -287,7 +287,7 @@ export default function ClientDetailPage() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-slate-400">Nom de l'entreprise</label>
+                  <label className="block text-sm font-medium mb-2 text-slate-400">Nom de l&apos;entreprise</label>
                   {editMode ? (
                     <input
                       type="text"

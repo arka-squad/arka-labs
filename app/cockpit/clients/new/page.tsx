@@ -135,7 +135,7 @@ export default function NewClientPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Nom de l'entreprise <span className="text-red-500">*</span>
+                    Nom de l&apos;entreprise <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -148,7 +148,7 @@ export default function NewClientPage() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Secteur d'activité <span className="text-red-500">*</span>
+                    Secteur d&apos;activité <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -161,7 +161,7 @@ export default function NewClientPage() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Taille de l'entreprise <span className="text-red-500">*</span>
+                    Taille de l&apos;entreprise <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={form.taille}
