@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-type Role = 'viewer' | 'editor' | 'admin' | 'owner' | 'operator';
+type Role = 'viewer' | 'editor' | 'admin' | 'owner' | 'operator' | 'manager';
 
 
 function b64urlToString(b64url: string): string {
@@ -39,7 +39,7 @@ function decodeRoleFromJWT(token: string | null): Role | null {
     if (!r) return null;
     const v = String(r).toLowerCase();
 
-    if (['viewer', 'editor', 'admin', 'owner', 'operator'].includes(v)) return v as Role;
+    if (['viewer', 'editor', 'admin', 'owner', 'operator', 'manager'].includes(v)) return v as Role;
     return null;
   } catch {
     return null;
@@ -51,14 +51,32 @@ export default function RoleBadge() {
 
   useEffect(() => {
     try {
+      // First check for B24 auth user info
+      if (typeof localStorage !== 'undefined') {
+        const userStr = localStorage.getItem('arka_user');
+        if (userStr) {
+          try {
+            const user = JSON.parse(userStr);
+            if (user.role) {
+              const r = String(user.role).toLowerCase();
+              if (['viewer', 'editor', 'admin', 'owner', 'operator', 'manager'].includes(r)) {
+                setRole(r as Role);
+                return;
+              }
+            }
+          } catch {}
+        }
+      }
 
+      // Then check for B24 auth token
       let tok: string | null = null;
       if (typeof document !== 'undefined') {
         const m = document.cookie.match(/\b(arka_auth|arka_access_token)=([^;]+)/);
         if (m) tok = decodeURIComponent(m[2]);
       }
       if (!tok && typeof localStorage !== 'undefined') {
-        tok = localStorage.getItem('RBAC_TOKEN') || localStorage.getItem('access_token');
+        // Check B24 auth token first, then legacy tokens
+        tok = localStorage.getItem('arka_token') || localStorage.getItem('RBAC_TOKEN') || localStorage.getItem('access_token');
       }
 
       const decoded = decodeRoleFromJWT(tok);
@@ -68,7 +86,7 @@ export default function RoleBadge() {
     }
   }, []);
 
-  const color = role === 'owner' || role === 'admin' ? 'bg-emerald-600' : role === 'editor' || role === 'operator' ? 'bg-indigo-600' : 'bg-slate-600';
+  const color = role === 'owner' || role === 'admin' ? 'bg-emerald-600' : role === 'manager' ? 'bg-blue-600' : role === 'editor' || role === 'operator' ? 'bg-indigo-600' : 'bg-slate-600';
 
   return (
     <span aria-label="Rôle courant" className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${color}`}>

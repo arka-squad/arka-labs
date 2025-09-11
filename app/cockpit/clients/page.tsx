@@ -148,7 +148,9 @@ export default function ClientsPage() {
                 <Briefcase size={16} />
                 <span>Voir Projets</span>
               </button>
-              <button className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors">
+              <button 
+                onClick={() => window.location.href = '/cockpit/clients/new'}
+                className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors">
                 <Plus size={16} />
                 <span>Nouveau Client</span>
               </button>

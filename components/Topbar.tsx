@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { Search, Share2, Play } from 'lucide-react';
 import RoleBadge from './RoleBadge';
 
-type Role = 'viewer' | 'operator' | 'owner';
+type Role = 'admin' | 'manager' | 'operator' | 'viewer' | 'owner';
 
 type Scope = 'safe' | 'owner-only';
 type TopbarProps = {

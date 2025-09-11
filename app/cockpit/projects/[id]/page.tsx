@@ -9,11 +9,17 @@ import {
 
 interface Project {
   id: number;
-  name: string;
+  nom: string;
   created_at: string;
   created_by: string;
   status: 'active' | 'disabled' | 'archived';
-  squads_count: number;
+  squads_count?: number;
+  client_name?: string;
+  client_secteur?: string;
+  budget?: number;
+  deadline?: string;
+  priority?: string;
+  description?: string;
   metadata?: {
     client?: string;
     priority?: string;
@@ -63,34 +69,43 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
   const loadProjectData = async () => {
     try {
       setLoading(true);
-      const [projectRes, squadsRes, instructionsRes] = await Promise.all([
-        fetch(`/api/projects/${params.id}`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
-        }),
-        fetch(`/api/projects/${params.id}/squads`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
-        }),
-        fetch(`/api/projects/${params.id}/instructions`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
-        })
-      ]);
+      
+      // Load project details first
+      const projectRes = await fetch(`/api/admin/projects/${params.id}`, {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+          'X-Trace-Id': `trace-${Date.now()}`
+        }
+      });
 
-      if (!projectRes.ok) throw new Error('Failed to load project');
+      if (!projectRes.ok) {
+        if (projectRes.status === 404) {
+          throw new Error('Projet non trouvé');
+        }
+        throw new Error('Échec du chargement du projet');
+      }
       
       const projectData = await projectRes.json();
       setProject(projectData);
+      
+      // Load squads in parallel (if project exists)
+      const squadsRes = await fetch(`/api/admin/projects/${params.id}/squads`, {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+          'X-Trace-Id': `trace-${Date.now()}`
+        }
+      });
       
       if (squadsRes.ok) {
         const squadsData = await squadsRes.json();
         setSquads(squadsData.items || []);
       }
       
-      if (instructionsRes.ok) {
-        const instructionsData = await instructionsRes.json();
-        setInstructions(instructionsData.items || []);
-      }
+      // Instructions endpoint doesn't exist yet, skip for now
+      setInstructions([]);
+      
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
     } finally {
       setLoading(false);
     }
@@ -112,7 +127,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
 
   const assignSquadToProject = async (squadId: number) => {
     try {
-      const response = await fetch(`/api/projects/${params.id}/squads`, {
+      const response = await fetch(`/api/admin/projects/${params.id}/squads`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -136,7 +151,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
     if (!confirm('Êtes-vous sûr de vouloir retirer cette squad du projet ?')) return;
     
     try {
-      const response = await fetch(`/api/projects/${params.id}/squads/${squadId}`, {
+      const response = await fetch(`/api/admin/projects/${params.id}/squads/${squadId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
       });
@@ -226,26 +241,26 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
             <div className="w-px h-6 bg-gray-600"></div>
             <div>
               <div className="flex items-center space-x-3 mb-2">
-                <h1 className="text-3xl font-bold">{project.name}</h1>
+                <h1 className="text-3xl font-bold">{project.nom}</h1>
                 <div
                   className="w-3 h-3 rounded-full animate-pulse"
                   style={{ backgroundColor: getStatusColor(project.status) }}
                 />
                 <span className="text-sm text-gray-400 capitalize">{project.status}</span>
-                {project.metadata?.priority && (
+                {project.priority && (
                   <span
                     className="px-2 py-1 rounded text-xs font-medium"
                     style={{ 
-                      backgroundColor: getPriorityColor(project.metadata.priority) + '20',
-                      color: getPriorityColor(project.metadata.priority)
+                      backgroundColor: getPriorityColor(project.priority) + '20',
+                      color: getPriorityColor(project.priority)
                     }}
                   >
-                    Priorité {project.metadata.priority}
+                    Priorité {project.priority}
                   </span>
                 )}
               </div>
               <p className="text-gray-400">
-                Projet #{project.id} • {project.metadata?.client || 'Client non spécifié'}
+                Projet #{project.id} • {project.client_name || 'Client non spécifié'}
               </p>
             </div>
           </div>
@@ -342,10 +357,10 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
             </div>
 
             {/* Project Description */}
-            {project.metadata?.description && (
+            {project.description && (
               <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
                 <h3 className="text-lg font-semibold text-white mb-3">Description</h3>
-                <p className="text-gray-300">{project.metadata.description}</p>
+                <p className="text-gray-300">{project.description}</p>
               </div>
             )}
 
@@ -363,7 +378,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 </div>
                 <div>
                   <label className="text-gray-400 text-sm">Client</label>
-                  <div className="text-white">{project.metadata?.client || 'Non spécifié'}</div>
+                  <div className="text-white">{project.client_name || 'Non spécifié'}</div>
                 </div>
                 <div>
                   <label className="text-gray-400 text-sm">Statut</label>

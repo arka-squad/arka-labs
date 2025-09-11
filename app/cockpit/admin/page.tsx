@@ -117,7 +117,7 @@ export default function AdminDashboard() {
     disabled: data.items?.filter((p: any) => p.status === 'disabled').length || 0
   });
 
-  const canManageSquads = ['admin', 'owner'].includes(userRole);
+  const canManageSquads = ['admin', 'manager'].includes(userRole);
 
   if (loading) {
     return (
