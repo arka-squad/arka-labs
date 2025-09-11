@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '../../../../lib/db';
-import { withAdminAuth } from '../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../lib/rbac-admin-b24';
 
-export const GET = withAdminAuth(['clients:read'])(async (req: NextRequest) => {
+export const GET = withAdminAuth(['viewer'])(async (req: NextRequest) => {
   try {
     const db = getDb();
     const searchParams = req.nextUrl.searchParams;
@@ -95,7 +95,7 @@ export const GET = withAdminAuth(['clients:read'])(async (req: NextRequest) => {
   }
 });
 
-export const POST = withAdminAuth(['clients:create'])(async (req: NextRequest, user) => {
+export const POST = withAdminAuth(['manager'])(async (req: NextRequest, user) => {
   try {
     const body = await req.json();
     const { 

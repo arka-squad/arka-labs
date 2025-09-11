@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { withAdminAuth } from '../../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../../lib/rbac-admin-b24';
 import { getDb } from '../../../../../lib/db';
 
 // GET /api/admin/clients/[id] - Get client details
-export const GET = withAdminAuth(['clients:read'])(async (req, user, { params }) => {
+export const GET = withAdminAuth(['viewer'])(async (req, user, { params }) => {
   const clientId = params.id;
   
   try {
@@ -68,7 +68,7 @@ export const GET = withAdminAuth(['clients:read'])(async (req, user, { params })
 });
 
 // PUT /api/admin/clients/[id] - Update client
-export const PUT = withAdminAuth(['clients:update'])(async (req, user, { params }) => {
+export const PUT = withAdminAuth(['operator'])(async (req, user, { params }) => {
   const clientId = params.id;
   
   try {
@@ -158,7 +158,7 @@ export const PUT = withAdminAuth(['clients:update'])(async (req, user, { params 
 });
 
 // DELETE /api/admin/clients/[id] - Delete client (soft delete)
-export const DELETE = withAdminAuth(['clients:delete'])(async (req, user, { params }) => {
+export const DELETE = withAdminAuth(['admin'])(async (req, user, { params }) => {
   const clientId = params.id;
   
   try {
