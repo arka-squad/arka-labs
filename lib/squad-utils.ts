@@ -13,19 +13,32 @@ export function generateSlug(name: string): string {
 export async function ensureUniqueSlug(baseSlug: string): Promise<string> {
   let slug = baseSlug;
   let counter = 1;
+  let attempts = 0;
+  const maxAttempts = 10; // Prevent infinite loops
   
-  while (true) {
-    const rows = await sql`
-      SELECT COUNT(*) as count FROM squads WHERE slug = ${slug} AND deleted_at IS NULL
-    `;
-    
-    if (rows[0].count === 0) {
-      return slug;
+  while (attempts < maxAttempts) {
+    try {
+      const rows = await sql`
+        SELECT COUNT(*) as count FROM squads WHERE slug = ${slug} AND deleted_at IS NULL
+      `;
+      
+      const count = parseInt(rows[0]?.count || '0');
+      if (count === 0) {
+        return slug;
+      }
+      
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+      attempts++;
+    } catch (error) {
+      log('error', 'unique_slug_check_failed', { route: 'squad-utils', status: 500, slug, error: error instanceof Error ? error.message : 'Unknown error' });
+      // If there's an error, return a timestamped slug as fallback
+      return `${baseSlug}-${Date.now()}`;
     }
-    
-    slug = `${baseSlug}-${counter}`;
-    counter++;
   }
+  
+  // If we've exhausted attempts, return a timestamped slug
+  return `${baseSlug}-${Date.now()}`;
 }
 
 export async function validateSquadState(squadId: string, requiredStates: string[] = ['active']): Promise<{

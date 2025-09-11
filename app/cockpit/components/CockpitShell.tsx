@@ -1,9 +1,10 @@
 "use client";
 
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import Topbar from '../../../components/Topbar';
 import GlobalChat from './GlobalChat';
 import Leftbar from '../../../components/leftbar';
+import { getCurrentRole } from '../../../lib/auth/role';
 
 type CockpitShellProps = {
   children: ReactNode;
@@ -11,10 +12,15 @@ type CockpitShellProps = {
 
 export default function CockpitShell({ children }: CockpitShellProps) {
   const [currentView, setCurrentView] = useState('dashboard');
+  const [userRole, setUserRole] = useState<'admin' | 'manager' | 'operator' | 'viewer' | 'owner'>('viewer');
+
+  useEffect(() => {
+    setUserRole(getCurrentRole());
+  }, []);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      <Topbar role="owner" />
+      <Topbar role={userRole} />
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar navigation principale */}
         <Leftbar 

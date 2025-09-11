@@ -1,168 +1,258 @@
-﻿'use client';
-import { FormEvent, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { uiLog } from '../../lib/ui-log';
-import { apiFetch } from '../../lib/http';
-import { useRole } from '../../src/role-context';
-import { generateTraceId, TRACE_HEADER } from '../../lib/trace';
-import { loginCopy, resolveLoginError } from './messages';
+'use client';
 
-export default function Page() {
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2 } from 'lucide-react';
+
+export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [remember, setRemember] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [toast, setToast] = useState<string | null>(null);
-  const { role } = useRole();
-  const [tokenPaste, setTokenPaste] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
 
-  useEffect(() => {
-    uiLog('mount', { role });
-    const saved = localStorage.getItem('remember-email');
-    if (saved) setEmail(saved);
-    const hasToken =
-      localStorage.getItem('RBAC_TOKEN') ||
-      localStorage.getItem('token') ||
-      /(arka_access_token|arka_auth)=/.test(document.cookie);
-    if (hasToken) router.replace('/cockpit');
-  }, [role, router]);
-
-  async function submit(e: FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    const trace_id = generateTraceId();
     try {
-      const res = await apiFetch('/api/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'content-type': 'application/json', [TRACE_HEADER]: trace_id },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Trace-Id': crypto.randomUUID(),
+        },
         body: JSON.stringify({ email, password }),
       });
-      if (res.ok) {
-        if (remember) localStorage.setItem('remember-email', email);
-        uiLog('login_success', { role, trace_id });
-        router.push('/cockpit');
-      } else {
-        uiLog('login_fail', { status: res.status, role, trace_id });
-        let code: string | undefined;
-        if (res.headers.get('content-type')?.includes('application/json')) {
-          const data = await res.json().catch(() => null);
-          code = data?.code;
-        }
-        setError(resolveLoginError(code));
-      }
-    } catch {
-      setError(resolveLoginError(undefined, true));
-    }
-  }
 
-  async function sso() {
-    const trace_id = generateTraceId();
-    const response = await apiFetch('/api/auth/sso/start', { headers: { [TRACE_HEADER]: trace_id } });
-      const res = await response.json();
-    uiLog('sso_click', { status: res.status, role, trace_id });
-    alert('501 Indisponible');
-  }
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          setError(data.message || 'Trop de tentatives. Veuillez réessayer plus tard.');
+        } else if (response.status === 401) {
+          setError('Email ou mot de passe incorrect');
+        } else {
+          setError(data.message || 'Une erreur est survenue');
+        }
+        return;
+      }
+
+      // Stocker le token dans localStorage si "Se souvenir de moi" est coché
+      if (rememberMe && data.token) {
+        localStorage.setItem('arka_token', data.token);
+        if (data.refresh_token) {
+          localStorage.setItem('arka_refresh_token', data.refresh_token);
+        }
+      }
+
+      // Stocker les informations utilisateur
+      if (data.user) {
+        localStorage.setItem('arka_user', JSON.stringify(data.user));
+      }
+
+      // Rediriger vers le cockpit
+      router.push('/cockpit');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Erreur de connexion au serveur');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Pré-remplir avec des credentials de démo pour faciliter les tests
+  const fillDemoCredentials = (role: string) => {
+    const credentials = {
+      admin: { email: 'admin@arka.com', password: 'demo123' },
+      manager: { email: 'manager@arka.com', password: 'demo123' },
+      operator: { email: 'operator@arka.com', password: 'demo123' },
+      viewer: { email: 'viewer@arka.com', password: 'demo123' }
+    };
+
+    const creds = credentials[role as keyof typeof credentials];
+    if (creds) {
+      setEmail(creds.email);
+      setPassword(creds.password);
+      setError('');
+    }
+  };
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-4 text-white">
-      <div
-        className="w-full max-w-sm rounded-xl border p-6"
-        style={{ backgroundColor: 'var(--arka-card)', borderColor: 'var(--arka-border)' }}
-      >
-        <h1 className="mb-6 text-center text-2xl font-bold">Connexion</h1>
-        <form onSubmit={submit} className="grid gap-4">
-          <label className="grid gap-1">
-            <span className="text-sm">{loginCopy.email}</span>
-            <input
-              className="rounded-md px-3 py-2 text-black focus-visible:ring-2 focus-visible:ring-slate-700/60"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              data-codex-id="login_email"
-            />
-          </label>
-          <label className="grid gap-1">
-            <span className="text-sm">{loginCopy.password}</span>
-            <input
-              className="rounded-md px-3 py-2 text-black focus-visible:ring-2 focus-visible:ring-slate-700/60"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              data-codex-id="login_password"
-            />
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-            />
-            Se souvenir de moi
-          </label>
+    <div className="min-h-screen bg-gradient-to-br from-[#0F1621] via-[#1A2332] to-[#0F1621] flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Logo et titre */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-xl mb-4">
+            <Lock className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Arka Console</h1>
+          <p className="text-slate-400">Connectez-vous à votre espace</p>
+        </div>
 
-          {error && <p className="text-sm text-red-400">{error}</p>}
-          {!error && (
-            <a href="/reset" data-codex-id="link_reset" className="text-sm underline">
-              {loginCopy.forgot}
-            </a>
+        {/* Formulaire */}
+        <div className="bg-[#1A2332] rounded-2xl shadow-xl p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Message d'erreur */}
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <span className="text-red-400 text-sm">{error}</span>
+              </div>
+            )}
 
-          )}
-          <button
-            type="submit"
-            className="rounded-xl px-4 py-2 font-medium text-white focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
-            style={{ background: 'var(--arka-grad-cta)' }}
-            data-codex-id="login_submit"
-          >
-            {loginCopy.submit}
-          </button>
-          <a
-            href="/reset"
-            className="text-center text-sm text-slate-300 hover:text-white"
-            data-codex-id="link_reset"
-          >
-            Mot de passe oublié ?
-          </a>
-          <button
-            type="button"
-            onClick={sso}
-            className="rounded-xl bg-slate-700 px-4 py-2 text-sm font-medium text-white focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arka-bg)]"
-          >
-            SSO
-          </button>
-        </form>
-        <div className="mt-6 border-t border-slate-700/50 pt-4">
-          <h2 className="mb-2 text-sm font-semibold">Coller un token (RBAC JWT)</h2>
-          <textarea
-            className="mb-2 h-20 w-full rounded-md px-3 py-2 text-black"
-            placeholder="RBAC_TOKEN..."
-            value={tokenPaste}
-            onChange={(e) => setTokenPaste(e.target.value)}
-          />
-          <button
-            type="button"
-            className="rounded-xl bg-slate-700 px-4 py-2 text-sm font-medium text-white"
-            onClick={() => {
-              try {
-                if (tokenPaste.trim()) {
-                  localStorage.setItem('RBAC_TOKEN', tokenPaste.trim());
-                  // compat: ancien wrapper
-                  localStorage.setItem('access_token', tokenPaste.trim());
-                  uiLog('login_token_paste');
-                  router.push('/cockpit');
-                }
-              } catch {}
-            }}
-          >
-            Se connecter avec un token
-          </button>
+            {/* Email */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+                Email
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-[#0F1621] border border-[#2A3441] rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-colors"
+                  placeholder="vous@exemple.com"
+                  required
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            {/* Mot de passe */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
+                Mot de passe
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-12 py-3 bg-[#0F1621] border border-[#2A3441] rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-colors"
+                  placeholder="••••••••"
+                  required
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Options */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 bg-[#0F1621] border-[#2A3441] rounded text-blue-600 focus:ring-blue-500"
+                  disabled={loading}
+                />
+                <span className="text-sm text-slate-400">Se souvenir de moi</span>
+              </label>
+
+              <button
+                type="button"
+                className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                disabled={loading}
+              >
+                Mot de passe oublié ?
+              </button>
+            </div>
+
+            {/* Bouton de connexion */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Connexion...
+                </>
+              ) : (
+                'Se connecter'
+              )}
+            </button>
+          </form>
+
+          {/* Séparateur */}
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[#2A3441]"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-[#1A2332] text-slate-500">Comptes de démonstration</span>
+            </div>
+          </div>
+
+          {/* Boutons de démo */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => fillDemoCredentials('admin')}
+              className="px-3 py-2 bg-[#0F1621] hover:bg-[#2A3441] border border-[#2A3441] text-slate-300 text-sm rounded-lg transition-colors"
+              disabled={loading}
+            >
+              Admin
+            </button>
+            <button
+              type="button"
+              onClick={() => fillDemoCredentials('manager')}
+              className="px-3 py-2 bg-[#0F1621] hover:bg-[#2A3441] border border-[#2A3441] text-slate-300 text-sm rounded-lg transition-colors"
+              disabled={loading}
+            >
+              Manager
+            </button>
+            <button
+              type="button"
+              onClick={() => fillDemoCredentials('operator')}
+              className="px-3 py-2 bg-[#0F1621] hover:bg-[#2A3441] border border-[#2A3441] text-slate-300 text-sm rounded-lg transition-colors"
+              disabled={loading}
+            >
+              Operator
+            </button>
+            <button
+              type="button"
+              onClick={() => fillDemoCredentials('viewer')}
+              className="px-3 py-2 bg-[#0F1621] hover:bg-[#2A3441] border border-[#2A3441] text-slate-300 text-sm rounded-lg transition-colors"
+              disabled={loading}
+            >
+              Viewer
+            </button>
+          </div>
+
+          <p className="text-xs text-slate-500 text-center mt-4">
+            Mot de passe pour tous : <code className="text-slate-400">demo123</code>
+          </p>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-8">
+          <p className="text-sm text-slate-500">
+            © 2025 Arka Labs. Tous droits réservés.
+          </p>
         </div>
       </div>
-      {toast && <div className="fixed bottom-4 right-4 rounded bg-black px-4 py-2 text-sm">{toast}</div>}
-    </main>
+    </div>
   );
 }
-
