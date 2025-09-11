@@ -32,7 +32,7 @@ export const POST = withAuth(['public'], async (req) => {
     return bad();
 
   const { email, password } = body;
-  const { rows } = await sql`select id, email, role, password_hash from users where email=${email}`;
+  const rows = await sql`select id, email, role, password_hash from users where email=${email}`;
   const user = rows[0];
   if (!user) {
     log('info', 'invalid credentials', { route, status: 401, duration_ms: Date.now() - start });

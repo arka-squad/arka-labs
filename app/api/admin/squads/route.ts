@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { withAdminAuth } from '../../../../lib/rbac-admin';
 import { sql } from '../../../../lib/db';
@@ -72,7 +72,7 @@ export const GET = withAdminAuth(['squads:read'])(async (req, user) => {
     const whereClause = whereConditions.join(' AND ');
 
     // Get squads with counts
-    const { rows } = await sql`
+    const rows = await sql`
       SELECT 
         s.id, s.name, s.slug, s.mission, s.domain, s.status,
         s.created_by, s.created_at, s.updated_at,
@@ -95,7 +95,7 @@ export const GET = withAdminAuth(['squads:read'])(async (req, user) => {
     `;
 
     // Get total count for pagination
-    const { rows: countRows } = await sql`
+    const countRows = await sql`
       SELECT COUNT(*) as count FROM squads s WHERE ${whereClause}
     `;
 
@@ -125,7 +125,7 @@ export const GET = withAdminAuth(['squads:read'])(async (req, user) => {
     };
 
     // Cache the response for 5 minutes (300s)
-    await SquadCache.setList(cacheKey, response, 300);
+    await SquadCache.setList(cacheKey, response.items, 300);
 
     const res = NextResponse.json(response);
     
@@ -145,10 +145,11 @@ export const GET = withAdminAuth(['squads:read'])(async (req, user) => {
     log('error', 'squads_list_failed', {
       route: '/api/admin/squads',
       method: 'GET',
+      status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
 
     if (error instanceof z.ZodError) {
@@ -178,7 +179,7 @@ export const POST = withAdminAuth(['squads:create'])(async (req, user) => {
     const slug = await ensureUniqueSlug(baseSlug);
     
     // Create squad
-    const { rows } = await sql`
+    const rows = await sql`
       INSERT INTO squads (name, slug, mission, domain, created_by)
       VALUES (${name}, ${slug}, ${mission || ''}, ${domain}, ${user.sub})
       RETURNING id, name, slug, mission, domain, status, created_by, created_at
@@ -227,7 +228,8 @@ export const POST = withAdminAuth(['squads:create'])(async (req, user) => {
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
-      error: error.message
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
 
     if (error instanceof z.ZodError) {
@@ -238,7 +240,8 @@ export const POST = withAdminAuth(['squads:create'])(async (req, user) => {
     }
 
     // Handle unique constraint violations (slug conflicts)
-    if (error.message?.includes('unique') || error.code === '23505') {
+    if ((error instanceof Error && error.message?.includes('unique')) || 
+        (error as any)?.code === '23505') {
       return NextResponse.json({ 
         error: 'squad_name_taken',
         message: 'A squad with this name already exists' 

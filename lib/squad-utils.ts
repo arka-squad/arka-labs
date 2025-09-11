@@ -15,7 +15,7 @@ export async function ensureUniqueSlug(baseSlug: string): Promise<string> {
   let counter = 1;
   
   while (true) {
-    const { rows } = await sql`
+    const rows = await sql`
       SELECT COUNT(*) as count FROM squads WHERE slug = ${slug} AND deleted_at IS NULL
     `;
     
@@ -34,7 +34,7 @@ export async function validateSquadState(squadId: string, requiredStates: string
   error?: string;
 }> {
   try {
-    const { rows } = await sql`
+    const rows = await sql`
       SELECT status FROM squads WHERE id = ${squadId} AND deleted_at IS NULL
     `;
     
@@ -64,7 +64,7 @@ export async function validateProjectState(projectId: number, requiredStates: st
   error?: string;
 }> {
   try {
-    const { rows } = await sql`
+    const rows = await sql`
       SELECT status FROM projects WHERE id = ${projectId}
     `;
     
@@ -94,7 +94,7 @@ export async function checkSquadProjectAttachment(squadId: string, projectId: nu
   error?: string;
 }> {
   try {
-    const { rows } = await sql`
+    const rows = await sql`
       SELECT status FROM project_squads 
       WHERE squad_id = ${squadId} AND project_id = ${projectId}
     `;
@@ -126,7 +126,7 @@ export interface SquadPerformanceMetrics {
 
 export async function getSquadPerformance(squadId: string, days: number = 30): Promise<SquadPerformanceMetrics> {
   try {
-    const { rows: totals } = await sql`
+    const totals = await sql`
       SELECT 
         COUNT(*) as total,
         COUNT(*) FILTER (WHERE status = 'completed') as completed,
@@ -139,7 +139,7 @@ export async function getSquadPerformance(squadId: string, days: number = 30): P
         AND created_at >= NOW() - INTERVAL '${days} days'
     `;
     
-    const { rows: daily } = await sql`
+    const daily = await sql`
       SELECT 
         DATE(completed_at) as date,
         COUNT(*) FILTER (WHERE status = 'completed') as completed,

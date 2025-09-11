@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { createApiError, errorResponse } from '@/lib/error-model';
@@ -78,10 +78,13 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
 
     // Build dynamic query with filters
     let whereConditions = [`mb.project_id = ${resolved_project_id}`];
+    let fromDate: Date | null = null;
+    let toDate: Date | null = null;
+    let blockTypeFilter: string | null = null;
     
     if (from) {
       try {
-        const fromDate = new Date(from);
+        fromDate = new Date(from);
         whereConditions.push(`mb.created_at >= '${fromDate.toISOString()}'`);
         filters_applied.push(`from:${from}`);
       } catch {
@@ -92,7 +95,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     
     if (to) {
       try {
-        const toDate = new Date(to);
+        toDate = new Date(to);
         whereConditions.push(`mb.created_at <= '${toDate.toISOString()}'`);
         filters_applied.push(`to:${to}`);
       } catch {
@@ -104,6 +107,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     if (type) {
       const valid_types = ['vision', 'context_evolution', 'agents_interaction', 'decision', 'blocker', 'insight', 'governance'];
       if (valid_types.includes(type)) {
+        blockTypeFilter = type;
         whereConditions.push(`mb.block_type = '${type}'`);
         filters_applied.push(`type:${type}`);
       } else {
@@ -127,15 +131,25 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
 
     const whereClause = whereConditions.join(' AND ');
 
+    // Build query conditions dynamically
+    let queryConditions = [sql`mb.project_id = ${project_id}`];
+    if (fromDate) queryConditions.push(sql`mb.created_at >= ${fromDate}`);
+    if (toDate) queryConditions.push(sql`mb.created_at <= ${toDate}`);
+    if (blockTypeFilter) queryConditions.push(sql`mb.block_type = ${blockTypeFilter}`);
+    
+    const whereClauseQuery = queryConditions.reduce((acc, condition, index) => 
+      index === 0 ? condition : sql`${acc} AND ${condition}`, sql``);
+
     // Get total count for pagination
     const countResult = await sql`
       SELECT COUNT(*) as total
       FROM memory_blocks mb
-      WHERE ${sql.unsafe(whereClause)}
+      WHERE ${whereClauseQuery}
     `;
     const total = parseInt(countResult[0].total);
 
-    // Get timeline entries
+    // Get timeline entries  
+    const orderByQuery = orderBy === 'created_at ASC' ? sql`mb.created_at ASC` : sql`mb.created_at DESC`;
     const timeline_blocks = await sql`
       SELECT 
         mb.id,
@@ -145,8 +159,8 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
         mb.importance,
         mb.created_at
       FROM memory_blocks mb
-      WHERE ${sql.unsafe(whereClause)}
-      ORDER BY ${sql.unsafe(orderBy)}
+      WHERE ${whereClauseQuery}
+      ORDER BY ${orderByQuery}
       LIMIT ${limit} OFFSET ${offset}
     `;
 
@@ -237,7 +251,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     const ifNoneMatch = req.headers.get('if-none-match');
     
     if (ifNoneMatch === etag) {
-      return new Response(null, { 
+      return new NextResponse(null, { 
         status: 304,
         headers: {
           'ETag': etag,

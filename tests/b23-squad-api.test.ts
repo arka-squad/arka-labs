@@ -21,7 +21,7 @@ beforeAll(async () => {
   // Setup test database
   try {
     // Create test agent
-    const { rows: agentRows } = await sql`
+    const agentRows = await sql`
       INSERT INTO agents (name, role) 
       VALUES ('Test Agent', 'specialist')
       RETURNING id
@@ -29,7 +29,7 @@ beforeAll(async () => {
     testAgentId = agentRows[0].id;
 
     // Create test project
-    const { rows: projectRows } = await sql`
+    const projectRows = await sql`
       INSERT INTO projects (name, status, created_by) 
       VALUES ('Test Project', 'active', 'admin@arka.com')
       RETURNING id
@@ -467,7 +467,7 @@ describe('B23 State Machine Validation', () => {
     });
 
     // Check that project attachment was detached
-    const { rows } = await sql`
+    const rows = await sql`
       SELECT status FROM project_squads 
       WHERE squad_id = ${testSquadId} AND project_id = ${testProjectId}
     `;

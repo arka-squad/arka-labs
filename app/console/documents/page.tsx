@@ -39,7 +39,8 @@ export default function DocumentsPage() {
       try {
         setLoading(true);
         const trace_id = generateTraceId();
-        const res = await apiFetch(`/api/documents?page=${page}&page_size=${pageSize}`, { headers: { [TRACE_HEADER]: trace_id } });
+        const response = await apiFetch(`/api/documents?page=${page}&page_size=${pageSize}`, { headers: { [TRACE_HEADER]: trace_id } });
+      const res = await response.json();
         const duration_ms = Math.round(performance.now() - start);
         uiLog('docs_fetch', { status: res.status, duration_ms, role, trace_id, page, page_size: pageSize });
         if (!res.ok) throw new Error('fail');
@@ -81,11 +82,12 @@ export default function DocumentsPage() {
       try {
         setLoading(true);
         const trace_id = generateTraceId();
-        const res = await apiFetch('/api/documents', {
+        const response = await apiFetch('/api/documents', {
           method: 'POST',
           body: form,
           headers: { [TRACE_HEADER]: trace_id },
         });
+      const res = await response.json();
         const duration_ms = Math.round(performance.now() - start);
         uiLog('doc_upload', { status: res.status, duration_ms, role, trace_id });
         if (!res.ok) {
@@ -120,7 +122,8 @@ export default function DocumentsPage() {
     try {
       setLoading(true);
       const trace_id = generateTraceId();
-      const res = await apiFetch(`/api/documents/${id}`, { method: 'DELETE', headers: { [TRACE_HEADER]: trace_id } });
+      const response = await apiFetch(`/api/documents/${id}`, { method: 'DELETE', headers: { [TRACE_HEADER]: trace_id } });
+      const res = await response.json();
       const duration_ms = Math.round(performance.now() - start);
       uiLog('doc_delete', { status: res.status, duration_ms, role, trace_id });
       if (!res.ok) {

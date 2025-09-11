@@ -86,6 +86,6 @@ export async function GET(req: Request) {
   };
   ttft();
 
-  return new Response(stream, { headers });
+  return new NextResponse(stream, { headers });
 }
 

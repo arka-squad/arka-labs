@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { errorResponse, createApiError } from '@/lib/error-model';
@@ -70,7 +70,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
       LIMIT ${limit} OFFSET ${offset}
     `;
     
-    return Response.json({
+    return NextResponse.json({
       items: documents,
       page,
       limit,
@@ -78,6 +78,6 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     });
   } catch (error) {
     console.error('GET /api/folders/:id/documents error:', error);
-    return Response.json({ error: 'internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'internal server error' }, { status: 500 });
   }
 });

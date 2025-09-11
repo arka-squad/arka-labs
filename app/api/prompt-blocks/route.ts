@@ -13,7 +13,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req: 
   const start = Date.now();
   const route = '/api/prompt-blocks';
   const trace = req.headers.get('x-trace-id') || randomUUID();
-  const { rows } = await sql`select id, project_id, title, value, trigger, version, created_at, updated_at from prompt_blocks order by id`;
+  const rows = await sql`select id, project_id, title, value, trigger, version, created_at, updated_at from prompt_blocks order by id`;
   log('info', 'prompt_blocks_list', { route, status: 200, duration_ms: Date.now() - start, trace_id: trace });
   return NextResponse.json(rows);
 });
@@ -27,7 +27,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextReque
     return NextResponse.json({ error: 'invalid' }, { status: 400 });
   }
   const { title, value, trigger } = body;
-  const { rows } = await sql`
+  const rows = await sql`
     insert into prompt_blocks (project_id, title, value, trigger)
     values ('arka', ${title}, ${value}, ${trigger ?? null})
     returning id, project_id, title, value, trigger, version, created_at, updated_at

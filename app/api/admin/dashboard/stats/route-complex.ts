@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { withAdminAuth } from '../../../../../lib/rbac-admin';
 import { sql } from '../../../../../lib/db';

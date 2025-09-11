@@ -132,9 +132,9 @@ export default function AdminDashboard() {
 
   const tabs = [
     { id: 'squads' as const, label: '🔷 Squads', count: stats?.squads?.total || 0 },
-    { id: 'agents' as const, label: '👤 Agents', count: stats?.agents?.total || 0 },
+    { id: 'agents' as const, label: '👤 Agents', count: 0 },
     { id: 'projets' as const, label: '📋 Projets', count: stats?.projects?.total || 0 },
-    { id: 'clients' as const, label: '🏢 Clients', count: stats?.clients?.total || 0 },
+    { id: 'clients' as const, label: '🏢 Clients', count: 0 },
     { id: 'analytics' as const, label: '📊 Analytics' }
   ];
 
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-gray-400">AGENTS</div>
-                  <div className="text-lg font-bold text-blue-400">{stats?.agents?.total || 0}</div>
+                  <div className="text-lg font-bold text-blue-400">0</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-gray-400">PROJETS</div>

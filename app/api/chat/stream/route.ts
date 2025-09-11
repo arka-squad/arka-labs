@@ -109,5 +109,5 @@ export async function GET(req: Request) {
     } catch {}
   })();
 
-  return new Response(stream, { headers });
+  return new NextResponse(stream, { headers });
 }

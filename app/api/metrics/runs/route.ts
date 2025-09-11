@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '../../../../lib/db';
 import { parsePagination, formatRuns } from '../../../../lib/metrics-api';
 import { log } from '../../../../lib/logger';
@@ -14,7 +14,7 @@ export const GET = withAuth(['admin', 'owner'], async (req: NextRequest) => {
   const { page, page_size } = parsePagination(searchParams);
   const offset = (page - 1) * page_size;
   try {
-    const { rows } = await sql`
+    const rows = await sql`
       select ts,
              (payload_json->>'run_id') as run_id,
              (payload_json->>'trace_id') as trace_id,
@@ -26,8 +26,7 @@ export const GET = withAuth(['admin', 'owner'], async (req: NextRequest) => {
       order by ts desc, id asc
       limit ${page_size} offset ${offset}
     `;
-    const { rows: c } =
-      await sql`select count(*)::int as count from agent_events where event='metrics_run'`;
+    const c = await sql`select count(*)::int as count from agent_events where event='metrics_run'`;
     const body = formatRuns(rows, page, page_size, c[0].count);
     const res = NextResponse.json(body);
     res.headers.set('x-trace-id', trace_id);

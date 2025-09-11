@@ -59,7 +59,8 @@ export default function Page() {
 
   async function sso() {
     const trace_id = generateTraceId();
-    const res = await apiFetch('/api/auth/sso/start', { headers: { [TRACE_HEADER]: trace_id } });
+    const response = await apiFetch('/api/auth/sso/start', { headers: { [TRACE_HEADER]: trace_id } });
+      const res = await response.json();
     uiLog('sso_click', { status: res.status, role, trace_id });
     alert('501 Indisponible');
   }

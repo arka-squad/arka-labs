@@ -10,7 +10,7 @@ export const GET = async (
 ) => {
   const route = `/api/documents/${params.id}/preview`;
   const trace = req.headers.get('x-trace-id') || undefined;
-  const { rows } =
+  const rows =
     await sql`select name, mime, storage_url from documents where id=${params.id}::int`;
   if (!rows[0])
     return NextResponse.json({ error: 'not_found' }, { status: 404 });

@@ -23,7 +23,9 @@ class MemoryCache {
     // Implement LRU eviction if cache is full
     if (this.cache.size >= this.maxSize) {
       const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
+      if (firstKey !== undefined) {
+        this.cache.delete(firstKey);
+      }
     }
     
     this.cache.set(key, {
@@ -72,9 +74,9 @@ export async function initCache(): Promise<void> {
       });
       
       await redis.ping();
-      log('info', 'cache_redis_connected', { redis_url: process.env.REDIS_URL });
+      log('info', 'cache_redis_connected', { route: 'cache', status: 200, redis_url: process.env.REDIS_URL });
     } catch (error) {
-      log('warn', 'cache_redis_failed_fallback_memory', { error: error.message });
+      log('warn', 'cache_redis_failed_fallback_memory', { route: 'cache', status: 500, error: error.message });
       redis = null;
     }
   }

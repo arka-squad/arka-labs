@@ -78,7 +78,7 @@ export async function checkResourceOwnership(
   try {
     switch (resourceType) {
       case 'squad': {
-        const { rows } = await sql`
+        const rows = await sql`
           SELECT s.created_by,
                  array_agg(DISTINCT ps.project_id) FILTER (WHERE ps.project_id IS NOT NULL) as project_assignments
           FROM squads s
@@ -93,7 +93,7 @@ export async function checkResourceOwnership(
       }
       
       case 'project': {
-        const { rows } = await sql`
+        const rows = await sql`
           SELECT p.created_by,
                  array_agg(DISTINCT ps.squad_id) FILTER (WHERE ps.squad_id IS NOT NULL) as squad_assignments
           FROM projects p
@@ -108,7 +108,7 @@ export async function checkResourceOwnership(
       }
       
       case 'instruction': {
-        const { rows } = await sql`
+        const rows = await sql`
           SELECT si.created_by, si.project_id, si.squad_id,
                  p.created_by as project_owner
           FROM squad_instructions si

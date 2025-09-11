@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { createApiError, errorResponse } from '@/lib/error-model';
 import { generateTraceId, TRACE_HEADER } from '@/lib/trace';
 import { calculateContextCompletion } from '@/lib/memory-extractor';
-import { validateIdempotencyKey, createIdempotencyConflictError } from '@/lib/idempotency';
+import { validateIdempotencyKey, createIdempotencyConflictError, checkIdempotencyKey, generateRequestHash } from '@/lib/idempotency';
 import crypto from 'crypto';
 
 interface SnapshotRequest {
@@ -47,17 +47,22 @@ export const POST = withAuth(['owner'], async (req, user, { params }) => {
   try {
     // Validate idempotency key
     if (!idempotencyKey) {
-      const error = createApiError('ERR_IDEMPOTENCY_KEY_MISSING', 'Idempotency-Key header is required', {}, traceId);
+      const error = createApiError('ERR_VALIDATION_FAILED', 'Idempotency-Key header is required', {}, traceId);
       return errorResponse(error, 400);
     }
 
-    const idempotencyCheck = await validateIdempotencyKey(idempotencyKey, req.url, user?.sub || 'anonymous');
-    if (idempotencyCheck.conflict) {
-      const error = createIdempotencyConflictError(idempotencyKey, traceId);
-      return errorResponse(error, 409);
+    if (!validateIdempotencyKey(idempotencyKey)) {
+      const error = createApiError('ERR_VALIDATION_FAILED', 'Invalid idempotency key format', {}, traceId);
+      return errorResponse(error, 400);
     }
     
     const body: SnapshotRequest = await req.json();
+    const requestHash = generateRequestHash(body);
+    const idempotencyCheck = await checkIdempotencyKey(idempotencyKey, requestHash);
+    if (idempotencyCheck) {
+      const error = createIdempotencyConflictError(idempotencyKey, traceId);
+      return errorResponse(error, 409);
+    }
     
     // Validate required fields
     if (!body.project_id || !body.snapshot_type) {

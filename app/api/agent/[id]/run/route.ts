@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '../../../../../lib/rbac';
 import { sql } from '../../../../../lib/db';
 import { memRuns, nextRunId } from '../../../../../lib/mem-store';
@@ -17,7 +17,7 @@ export const POST = withAuth(
       );
     }
     try {
-      const { rows } = await sql`
+      const rows = await sql`
       insert into action_queue (kind, payload, status, dedupe_key)
       values ('agent_run', ${JSON.stringify({ agent_id: params.id })}, 'queued', ${key})
       on conflict (dedupe_key) do update set dedupe_key = ${key}

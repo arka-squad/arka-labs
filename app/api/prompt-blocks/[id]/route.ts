@@ -16,7 +16,7 @@ export const PATCH = withAuth(['editor', 'admin', 'owner'], async (req: NextRequ
   if (!validatePromptBlock(body)) {
     return NextResponse.json({ error: 'invalid' }, { status: 400 });
   }
-  const { rows } = await sql`select id, project_id, title, value, trigger, version from prompt_blocks where id=${params.id}`;
+  const rows = await sql`select id, project_id, title, value, trigger, version from prompt_blocks where id=${params.id}`;
   if (!rows.length) {
     return NextResponse.json({ error: 'not_found' }, { status: 404 });
   }
@@ -34,7 +34,7 @@ export const PATCH = withAuth(['editor', 'admin', 'owner'], async (req: NextRequ
       values (${params.id}, ${ver}, ${title}, ${value}, ${trigger ?? null})
     `;
   }
-  const { rows: updated } = await sql`select id, project_id, title, value, trigger, version, created_at, updated_at from prompt_blocks where id=${params.id}`;
+  const updated = await sql`select id, project_id, title, value, trigger, version, created_at, updated_at from prompt_blocks where id=${params.id}`;
   log('info', 'prompt_blocks_update', { route, status: 200, duration_ms: Date.now() - start, trace_id: trace });
   return NextResponse.json(updated[0]);
 });
@@ -45,7 +45,7 @@ export const DELETE = withAuth(['editor', 'admin', 'owner'], async (req: NextReq
   const trace = req.headers.get('x-trace-id') || randomUUID();
   const u = user!;
   if (shouldSaveSnapshot(u.role)) {
-    const { rows } = await sql`select title, value, trigger, version from prompt_blocks where id=${params.id}`;
+    const rows = await sql`select title, value, trigger, version from prompt_blocks where id=${params.id}`;
     if (rows.length) {
       const b = rows[0];
       await sql`

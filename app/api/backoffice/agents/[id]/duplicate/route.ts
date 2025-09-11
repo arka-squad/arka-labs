@@ -216,7 +216,7 @@ export async function POST(
         version: newVersion,
         prompt_system: updatedPrompt,
         is_template: false, // Les duplications ne sont pas des templates par défaut
-        original_agent_id: originalAgentId,
+        original_agent_id: null,
         // Appliquer les config updates s'il y en a
         ...(data.changes.config_updates || {}),
         created_by: 'current_user@arka.com', // TODO: récupérer depuis JWT
@@ -267,7 +267,7 @@ export async function POST(
       
     } catch (versionError) {
       return NextResponse.json(
-        { error: 'Erreur lors du calcul de version', details: versionError.message },
+        { error: 'Erreur lors du calcul de version', details: versionError instanceof Error ? versionError.message : 'Unknown error' },
         { status: 422 }
       );
     }

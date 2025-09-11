@@ -10,7 +10,7 @@ export const GET = async (req: NextRequest) => {
   const start = Date.now();
   const trace_id = req.headers.get('x-trace-id') ?? crypto.randomUUID();
   try {
-    const { rows } = await sql`
+    const rows = await sql`
       select (payload_json->>'ttft_ms')::int as ttft_ms,
              (payload_json->>'rtt_ms')::int as rtt_ms,
              (payload_json->>'status') as status

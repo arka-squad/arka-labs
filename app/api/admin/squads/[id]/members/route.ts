@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { withAdminAuth } from '../../../../../../lib/rbac-admin';
 import { sql } from '../../../../../../lib/db';
@@ -36,7 +36,7 @@ export const POST = withAdminAuth(['squads:add_members'], 'squad')(async (req, u
     }
 
     // Check if agent exists
-    const { rows: agentRows } = await sql`
+    const agentRows = await sql`
       SELECT id, name FROM agents WHERE id = ${agent_id}
     `;
     
@@ -49,7 +49,7 @@ export const POST = withAdminAuth(['squads:add_members'], 'squad')(async (req, u
     const agent = agentRows[0];
 
     // Check if agent is already a member
-    const { rows: existingRows } = await sql`
+    const existingRows = await sql`
       SELECT status FROM squad_members 
       WHERE squad_id = ${squadId} AND agent_id = ${agent_id}
     `;
@@ -63,7 +63,7 @@ export const POST = withAdminAuth(['squads:add_members'], 'squad')(async (req, u
       }
       
       // Reactivate if previously inactive
-      const { rows } = await sql`
+      const rows = await sql`
         UPDATE squad_members 
         SET status = 'active', role = ${role}, 
             specializations = ${specializations}, permissions = ${JSON.stringify(permissions)},
@@ -102,7 +102,7 @@ export const POST = withAdminAuth(['squads:add_members'], 'squad')(async (req, u
     }
 
     // Check squad member limits (max 20 per B23 spec)
-    const { rows: countRows } = await sql`
+    const countRows = await sql`
       SELECT COUNT(*) as count FROM squad_members 
       WHERE squad_id = ${squadId} AND status = 'active'
     `;
@@ -115,7 +115,7 @@ export const POST = withAdminAuth(['squads:add_members'], 'squad')(async (req, u
     }
 
     // Add new member
-    const { rows } = await sql`
+    const rows = await sql`
       INSERT INTO squad_members (squad_id, agent_id, role, specializations, permissions)
       VALUES (${squadId}, ${agent_id}, ${role}, ${specializations}, ${JSON.stringify(permissions)})
       RETURNING id, squad_id, agent_id, role, specializations, permissions, status, created_at
@@ -156,11 +156,12 @@ export const POST = withAdminAuth(['squads:add_members'], 'squad')(async (req, u
     log('error', 'squad_member_add_failed', {
       route: `/api/admin/squads/${squadId}/members`,
       method: 'POST',
+      status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
       squad_id: squadId,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
 
     if (error instanceof z.ZodError) {

@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '../../../lib/rbac';
 import { sql } from '../../../lib/db';
 import { memAgents, nextAgentId } from '../../../lib/mem-store';
@@ -13,7 +13,7 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest) => {
     return NextResponse.json({ error: 'invalid' }, { status: 400 });
   }
   try {
-    const { rows } = await sql`insert into agents (name, role) values (${body.name}, 'default') returning id, name, created_at`;
+    const rows = await sql`insert into agents (name, role) values (${body.name}, 'default') returning id, name, created_at`;
     return NextResponse.json(rows[0], { status: 201 });
   } catch {
     const agent = { id: nextAgentId(), name: body.name, created_at: new Date().toISOString() };

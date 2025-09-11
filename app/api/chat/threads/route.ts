@@ -9,7 +9,7 @@ export const GET = async (req: Request) => {
   const start = Date.now();
   const trace_id = req.headers.get('x-trace-id') || undefined;
   try {
-    const { rows } = await sql`
+    const rows = await sql`
       select t.id,
              t.title,
              coalesce(max(m.created_at), t.created_at) as last_msg_at

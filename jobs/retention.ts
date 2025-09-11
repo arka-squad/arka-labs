@@ -1,7 +1,7 @@
 import { sql } from '../lib/db';
 
 export async function run({ apply = false } = {}) {
-  const { rows } = await sql`
+  const rows = await sql`
     select count(*)::int as count
     from agent_events
     where ts < now() - interval '30 days'

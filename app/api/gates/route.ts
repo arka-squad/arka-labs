@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '../../../lib/rbac';
 import { getGates } from '../../../lib/gates/catalog';
 import { TRACE_HEADER, generateTraceId } from '../../../lib/trace';

@@ -9,7 +9,7 @@ export const GET = async (req: Request) => {
   const start = Date.now();
   const trace_id = req.headers.get('x-trace-id') || undefined;
   try {
-    const { rows } = await sql`
+    const rows = await sql`
       select 
         p.id, p.name, p.created_at, p.created_by,
         p.status, p.metadata,
@@ -19,7 +19,7 @@ export const GET = async (req: Request) => {
       group by p.id, p.name, p.created_at, p.created_by, p.status, p.metadata
       order by p.created_at desc, p.id asc
     `;
-    const { rows: c } = await sql`select count(*)::int as count from projects`;
+    const c = await sql`select count(*)::int as count from projects`;
     const items = rows.map(row => ({
       id: row.id,
       name: row.name,

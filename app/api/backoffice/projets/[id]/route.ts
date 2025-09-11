@@ -137,7 +137,7 @@ function calculateAlerts(projet: any, totalAgents: number): any {
   const budgetEstime = totalAgents * 400;
   
   return {
-    deadline_status: !deadline ? 'ok' : 
+    deadline_status: !deadline || daysToDeadline === null ? 'ok' : 
                     daysToDeadline < 0 ? 'depassee' :
                     daysToDeadline <= 7 ? 'proche' : 'ok',
     budget_status: !projet.budget ? 'ok' :
@@ -302,7 +302,7 @@ export async function PATCH(
       priorite: updatedProjet.priorite,
       budget: updatedProjet.budget,
       deadline: updatedProjet.deadline,
-      updated_at: updatedProjet.updated_at
+      updated_at: new Date().toISOString()
     });
     
   } catch (error) {
@@ -355,9 +355,10 @@ export async function DELETE(
     }
     
     // Supprimer le projet (soft delete en ajoutant deleted_at)
+    // Marquer comme supprimé en changeant le statut
     mockProjets[projetIndex] = {
       ...mockProjets[projetIndex],
-      deleted_at: new Date().toISOString()
+      statut: 'supprime'
     };
     
     // Nettoyer les assignations associées

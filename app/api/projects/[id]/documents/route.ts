@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { errorResponse, createApiError } from '@/lib/error-model';
@@ -83,7 +83,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
       FROM project_docs pd
       LEFT JOIN project_assignments pa ON pa.project_id = pd.project_id AND pa.document_id = pd.id
       WHERE pd.project_id = ${projectId}
-      ORDER BY pd.created_at ${sql.unsafe(orderDirection)}
+      ORDER BY pd.created_at ${orderDirection}
       LIMIT ${limit} OFFSET ${offset}
     `;
     
@@ -109,7 +109,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
     const ifNoneMatch = req.headers.get('if-none-match');
     
     if (ifNoneMatch === etag) {
-      return new Response(null, { 
+      return new NextResponse(null, { 
         status: 304,
         headers: {
           'ETag': etag,
@@ -118,7 +118,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
       });
     }
     
-    return Response.json({
+    return NextResponse.json({
       items: transformedDocs,
       page,
       limit,

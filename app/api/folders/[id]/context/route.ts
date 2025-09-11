@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { z } from 'zod';
@@ -20,7 +20,8 @@ const ContextSchema = z.object({
 
 // POST /api/folders/:id/context
 export const POST = withAuth(['editor', 'admin', 'owner'], 
-  withIdempotency(async (req, user, { params }) => {
+  // withIdempotency(
+  async (req, user, { params }) => {
     const { id } = params;
     const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
     
@@ -107,7 +108,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
         })}, NOW())
       `;
       
-      return Response.json({
+      return NextResponse.json({
         folder_id: id,
         context_id: contextId,
         type,
@@ -134,5 +135,6 @@ export const POST = withAuth(['editor', 'admin', 'owner'],
       );
       return errorResponse(apiError, 500);
     }
-  })
+  }
+  // )
 );

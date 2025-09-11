@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withAuth } from '@/lib/rbac';
 import { sql } from '@/lib/db';
 import { createApiError, errorResponse } from '@/lib/error-model';
 import { generateTraceId, TRACE_HEADER } from '@/lib/trace';
 import { calculateContextCompletion } from '@/lib/memory-extractor';
-import { validateIdempotencyKey, createIdempotencyConflictError } from '@/lib/idempotency';
+import { validateIdempotencyKey, createIdempotencyConflictError, checkIdempotencyKey, generateRequestHash } from '@/lib/idempotency';
 import crypto from 'crypto';
 
 interface ContextRequest {
@@ -39,24 +39,29 @@ interface ContextResponse {
 }
 
 // POST /api/memory/context (operator+)
-export const POST = withAuth(['operator', 'admin', 'owner'], async (req, user, { params }) => {
+export const POST = withAuth(['editor', 'admin', 'owner'], async (req, user, { params }) => {
   const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
   const idempotencyKey = req.headers.get('idempotency-key');
   
   try {
     // Validate idempotency key
     if (!idempotencyKey) {
-      const error = createApiError('ERR_IDEMPOTENCY_KEY_MISSING', 'Idempotency-Key header is required', {}, traceId);
+      const error = createApiError('ERR_VALIDATION_FAILED', 'Idempotency-Key header is required', {}, traceId);
       return errorResponse(error, 400);
     }
 
-    const idempotencyCheck = await validateIdempotencyKey(idempotencyKey, req.url, user?.sub || 'anonymous');
-    if (idempotencyCheck.conflict) {
-      const error = createIdempotencyConflictError(idempotencyKey, traceId);
-      return errorResponse(error, 409);
+    if (!validateIdempotencyKey(idempotencyKey)) {
+      const error = createApiError('ERR_VALIDATION_FAILED', 'Invalid idempotency key format', {}, traceId);
+      return errorResponse(error, 400);
     }
     
     const body: ContextRequest = await req.json();
+    const requestHash = generateRequestHash(body);
+    const idempotencyCheck = await checkIdempotencyKey(idempotencyKey, requestHash);
+    if (idempotencyCheck) {
+      const error = createIdempotencyConflictError(idempotencyKey, traceId);
+      return errorResponse(error, 409);
+    }
     
     // Validate required fields
     if (!body.project_id || !body.type || !body.content) {
@@ -156,59 +161,57 @@ export const POST = withAuth(['operator', 'admin', 'owner'], async (req, user, {
     const importance = body.importance || getDefaultImportance(body.type);
     const tags = generateContextTags(body.type, body.content);
 
-    let saved_block;
-    const context_links = [];
+    let saved_block: any;
+    const context_links: Array<{ target: string; relation: string }> = [];
 
-    await sql.begin(async (sql) => {
-      // Insert memory block
-      const [block] = await sql`
-        INSERT INTO memory_blocks (project_id, block_type, content, agent_source, importance, tags, hash)
-        VALUES (${project_id}, ${memory_block_type}, ${JSON.stringify(structured_content)}, 
-                ${body.source_agent || user?.sub}, ${importance}, ${tags}, ${'sha256:' + hash})
-        RETURNING id, block_type, hash
+    // Insert memory block
+    const [block] = await sql`
+      INSERT INTO memory_blocks (project_id, block_type, content, agent_source, importance, tags, hash)
+      VALUES (${project_id}, ${memory_block_type}, ${JSON.stringify(structured_content)}, 
+              ${body.source_agent || user?.sub}, ${importance}, ${tags}, ${'sha256:' + hash})
+      RETURNING id, block_type, hash
+    `;
+    
+    saved_block = block;
+
+    // Create context links to related blocks
+    if (body.type === 'decision') {
+      // Link decisions to vision blocks
+      const vision_blocks = await sql`
+        SELECT id FROM memory_blocks 
+        WHERE project_id = ${project_id} AND block_type = 'vision'
+        ORDER BY created_at DESC
+        LIMIT 3
       `;
       
-      saved_block = block;
-
-      // Create context links to related blocks
-      if (body.type === 'decision') {
-        // Link decisions to vision blocks
-        const vision_blocks = await sql`
-          SELECT id FROM memory_blocks 
-          WHERE project_id = ${project_id} AND block_type = 'vision'
-          ORDER BY created_at DESC
-          LIMIT 3
+      for (const vision of vision_blocks) {
+        const [link] = await sql`
+          INSERT INTO memory_context_links (source_block_id, target_block_id, relation_type, strength)
+          VALUES (${block.id}, ${vision.id}, 'relates_to', 0.8)
+          RETURNING target_block_id
         `;
-        
-        for (const vision of vision_blocks) {
-          const [link] = await sql`
-            INSERT INTO memory_context_links (source_block_id, target_block_id, relation_type, strength)
-            VALUES (${block.id}, ${vision.id}, 'relates_to', 0.8)
-            RETURNING target_block_id
-          `;
-          context_links.push({ target: link.target_block_id, relation: 'relates_to' });
-        }
+        context_links.push({ target: link.target_block_id, relation: 'relates_to' });
       }
+    }
 
-      if (body.type === 'constraint') {
-        // Link constraints to context evolution blocks
-        const context_blocks = await sql`
-          SELECT id FROM memory_blocks 
-          WHERE project_id = ${project_id} AND block_type = 'context_evolution'
-          ORDER BY created_at DESC
-          LIMIT 2
+    if (body.type === 'constraint') {
+      // Link constraints to context evolution blocks
+      const context_blocks = await sql`
+        SELECT id FROM memory_blocks 
+        WHERE project_id = ${project_id} AND block_type = 'context_evolution'
+        ORDER BY created_at DESC
+        LIMIT 2
+      `;
+      
+      for (const context of context_blocks) {
+        const [link] = await sql`
+          INSERT INTO memory_context_links (source_block_id, target_block_id, relation_type, strength)
+          VALUES (${block.id}, ${context.id}, 'relates_to', 0.7)
+          RETURNING target_block_id
         `;
-        
-        for (const context of context_blocks) {
-          const [link] = await sql`
-            INSERT INTO memory_context_links (source_block_id, target_block_id, relation_type, strength)
-            VALUES (${block.id}, ${context.id}, 'relates_to', 0.7)
-            RETURNING target_block_id
-          `;
-          context_links.push({ target: link.target_block_id, relation: 'relates_to' });
-        }
+        context_links.push({ target: link.target_block_id, relation: 'relates_to' });
       }
-    });
+    }
 
     // Calculate new completion and delta
     const new_blocks = await sql`

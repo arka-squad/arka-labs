@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { withAdminAuth } from '../../../../../lib/rbac-admin';
 import { sql } from '../../../../../lib/db';
@@ -43,7 +43,7 @@ export const GET = withAdminAuth(['squads:read'], 'squad')(async (req, user, { p
     }
 
     // Get squad details with members
-    const { rows: squadRows } = await sql`
+    const squadRows = await sql`
       SELECT 
         s.id, s.name, s.slug, s.mission, s.domain, s.status,
         s.created_by, s.created_at, s.updated_at
@@ -58,7 +58,7 @@ export const GET = withAdminAuth(['squads:read'], 'squad')(async (req, user, { p
     const squad = squadRows[0];
 
     // Get squad members with agent details
-    const { rows: memberRows } = await sql`
+    const memberRows = await sql`
       SELECT 
         sm.agent_id, sm.role, sm.specializations, sm.status,
         sm.created_at as joined_at,
@@ -72,7 +72,7 @@ export const GET = withAdminAuth(['squads:read'], 'squad')(async (req, user, { p
     `;
 
     // Get attached projects
-    const { rows: projectRows } = await sql`
+    const projectRows = await sql`
       SELECT 
         ps.project_id, ps.status, ps.attached_at,
         p.name as project_name, p.status as project_status
@@ -83,7 +83,7 @@ export const GET = withAdminAuth(['squads:read'], 'squad')(async (req, user, { p
     `;
 
     // Get recent instructions
-    const { rows: instructionRows } = await sql`
+    const instructionRows = await sql`
       SELECT 
         si.id, si.content, si.status, si.priority,
         si.created_at, si.completed_at,
@@ -170,7 +170,7 @@ export const GET = withAdminAuth(['squads:read'], 'squad')(async (req, user, { p
       trace_id: traceId,
       user_id: user.sub,
       squad_id: squadId,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
 
     return NextResponse.json({ 
@@ -202,13 +202,13 @@ export const PATCH = withAdminAuth(['squads:update'], 'squad')(async (req, user,
       const currentStatus = validation.currentState;
       
       // Validate state transitions
-      const validTransitions = {
+      const validTransitions: Record<string, string[]> = {
         'active': ['inactive', 'archived'],
         'inactive': ['active', 'archived'],
         'archived': [] // No transitions from archived
       };
       
-      if (!validTransitions[currentStatus]?.includes(updates.status)) {
+      if (!validTransitions[currentStatus as keyof typeof validTransitions]?.includes(updates.status as string)) {
         return NextResponse.json({ 
           error: 'invalid_status_transition',
           message: `Cannot transition from ${currentStatus} to ${updates.status}`
@@ -259,7 +259,7 @@ export const PATCH = withAdminAuth(['squads:update'], 'squad')(async (req, user,
       }, { status: 400 });
     }
 
-    const { rows } = await sql`
+    const rows = await sql`
       UPDATE squads 
       SET ${updateFields.join(', ')}
       WHERE id = $${paramIndex} AND deleted_at IS NULL
@@ -310,7 +310,7 @@ export const PATCH = withAdminAuth(['squads:update'], 'squad')(async (req, user,
       trace_id: traceId,
       user_id: user.sub,
       squad_id: squadId,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
 
     if (error instanceof z.ZodError) {
@@ -334,7 +334,7 @@ export const DELETE = withAdminAuth(['squads:delete'], 'squad')(async (req, user
   
   try {
     // Check if squad has active attachments or instructions
-    const { rows: activityCheck } = await sql`
+    const activityCheck = await sql`
       SELECT 
         COUNT(*) FILTER (WHERE ps.status = 'active') as active_projects,
         COUNT(*) FILTER (WHERE si.status IN ('pending', 'queued', 'processing')) as active_instructions
@@ -358,7 +358,7 @@ export const DELETE = withAdminAuth(['squads:delete'], 'squad')(async (req, user
     }
 
     // Soft delete squad
-    const { rows } = await sql`
+    const rows = await sql`
       UPDATE squads 
       SET deleted_at = NOW(), updated_at = NOW()
       WHERE id = ${squadId} AND deleted_at IS NULL
@@ -386,11 +386,12 @@ export const DELETE = withAdminAuth(['squads:delete'], 'squad')(async (req, user
     log('error', 'squad_deletion_failed', {
       route: `/api/admin/squads/${squadId}`,
       method: 'DELETE',
+      status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
       squad_id: squadId,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
 
     return NextResponse.json({ 

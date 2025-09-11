@@ -25,7 +25,7 @@ beforeAll(async () => {
     // Create test agents for the squad
     const agentNames = ['Agent Alpha', 'Agent Beta', 'Agent Gamma'];
     for (const name of agentNames) {
-      const { rows } = await sql`
+      const rows = await sql`
         INSERT INTO agents (name, role) 
         VALUES (${name}, 'specialist')
         RETURNING id
@@ -34,7 +34,7 @@ beforeAll(async () => {
     }
 
     // Create test project
-    const { rows: projectRows } = await sql`
+    const projectRows = await sql`
       INSERT INTO projects (name, status, created_by, metadata) 
       VALUES (
         'E2E Test Project', 
@@ -441,7 +441,7 @@ describe('B23 E2E Squad Workflow - Complete Lifecycle', () => {
     });
 
     // Verify project attachment was automatically detached per B23 spec
-    const { rows } = await sql`
+    const rows = await sql`
       SELECT status, detached_at FROM project_squads 
       WHERE squad_id = ${workflowData.squadId} AND project_id = ${workflowData.projectId}
     `;
@@ -457,7 +457,7 @@ describe('B23 E2E Squad Workflow - Complete Lifecycle', () => {
   // Step 9: Verify complete audit trail
   test('Step 9: Verify complete audit trail and data consistency', async () => {
     // Verify squad instructions are preserved
-    const { rows: instructions } = await sql`
+    const instructions = await sql`
       SELECT id, status, priority, content, created_at, metadata
       FROM squad_instructions 
       WHERE squad_id = ${workflowData.squadId}
@@ -473,7 +473,7 @@ describe('B23 E2E Squad Workflow - Complete Lifecycle', () => {
     );
 
     // Verify squad members are preserved
-    const { rows: members } = await sql`
+    const members = await sql`
       SELECT agent_id, role, specializations, status
       FROM squad_members 
       WHERE squad_id = ${workflowData.squadId}

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withAdminAuth } from '../../../../../../../lib/rbac-admin';
 import { sql } from '../../../../../../../lib/db';
 import { log } from '../../../../../../../lib/logger';
@@ -16,7 +16,7 @@ export const DELETE = withAdminAuth(['squads:add_members'], 'squad')(async (req,
   
   try {
     // Check if membership exists and is active
-    const { rows: memberRows } = await sql`
+    const memberRows = await sql`
       SELECT sm.id, sm.status, sm.role, a.name as agent_name
       FROM squad_members sm
       LEFT JOIN agents a ON sm.agent_id = a.id
@@ -39,7 +39,7 @@ export const DELETE = withAdminAuth(['squads:add_members'], 'squad')(async (req,
 
     // Check if this is the last lead member
     if (member.role === 'lead') {
-      const { rows: leadCountRows } = await sql`
+      const leadCountRows = await sql`
         SELECT COUNT(*) as count FROM squad_members 
         WHERE squad_id = ${squadId} AND role = 'lead' AND status = 'active'
       `;
@@ -53,7 +53,7 @@ export const DELETE = withAdminAuth(['squads:add_members'], 'squad')(async (req,
     }
 
     // Check for active instructions assigned to this member
-    const { rows: instructionRows } = await sql`
+    const instructionRows = await sql`
       SELECT COUNT(*) as count FROM squad_instructions si
       WHERE si.squad_id = ${squadId} 
         AND si.status IN ('pending', 'queued', 'processing')
@@ -68,7 +68,7 @@ export const DELETE = withAdminAuth(['squads:add_members'], 'squad')(async (req,
     }
 
     // Deactivate membership (soft delete)
-    const { rows } = await sql`
+    const rows = await sql`
       UPDATE squad_members 
       SET status = 'inactive'
       WHERE squad_id = ${squadId} AND agent_id = ${agentId}
@@ -101,12 +101,13 @@ export const DELETE = withAdminAuth(['squads:add_members'], 'squad')(async (req,
     log('error', 'squad_member_removal_failed', {
       route: `/api/admin/squads/${squadId}/members/${agentId}`,
       method: 'DELETE',
+      status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
       squad_id: squadId,
       agent_id: agentId,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
 
     return NextResponse.json({ 

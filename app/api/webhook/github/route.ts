@@ -1,7 +1,7 @@
+import { NextRequest, NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-import { NextRequest, NextResponse } from 'next/server';
 import { verifySignature, isReplay } from '../../../../lib/webhook';
 import { log } from '../../../../lib/logger';
 

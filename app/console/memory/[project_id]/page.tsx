@@ -78,7 +78,8 @@ export default function MemoryDashboardPage() {
     setError(null);
     
     try {
-      const data = await apiFetch(`/api/memory/project/${project_id}`);
+      const response = await apiFetch(`/api/memory/project/${project_id}`);
+      const data = await response.json();
       setMemoryData(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de chargement');

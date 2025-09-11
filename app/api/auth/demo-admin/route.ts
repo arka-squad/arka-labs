@@ -33,7 +33,7 @@ export async function GET() {
     log('error', 'demo_admin_token_error', {
       route: '/api/auth/demo-admin',
       method: 'GET',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       status: 500,
       duration_ms: Date.now() - start
     });

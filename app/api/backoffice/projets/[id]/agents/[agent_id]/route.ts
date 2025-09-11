@@ -271,8 +271,7 @@ export async function DELETE(
     mockProjetAgents[assignmentIndex] = {
       ...mockProjetAgents[assignmentIndex],
       statut: 'inactif',
-      removed_at: new Date().toISOString(),
-      removed_by: 'current_user@arka.com'
+      updated_at: new Date().toISOString()
     };
     
     return NextResponse.json(null, { status: 204 });

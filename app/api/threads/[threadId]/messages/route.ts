@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '../../../../../lib/db';
 import { withAuth } from '../../../../../lib/rbac';
 import { validateMessage, MessageInput } from './schema';
@@ -14,7 +14,7 @@ export const POST = withAuth(['editor', 'admin', 'owner'], async (req: NextReque
   }
   const msg = body as MessageInput;
   try {
-    const { rows } = await sql`
+    const rows = await sql`
       insert into messages (thread_id, role, content, tokens, meta)
       values (${params.threadId}, ${msg.role}, ${msg.content}, ${msg.tokens ?? null}, ${msg.meta ? JSON.stringify(msg.meta) : null})
       returning id

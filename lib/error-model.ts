@@ -1,5 +1,7 @@
 // Uniform error model for B15 API responses
 
+import { NextResponse } from 'next/server';
+
 export interface ApiError {
   code: string;
   message: string;
@@ -19,7 +21,19 @@ export type ErrorCode =
   | 'ERR_FORBIDDEN'
   | 'ERR_INTERNAL_SERVER'
   | 'ERR_IDEMPOTENCY_CONFLICT'
-  | 'ERR_CONTEXT_EMPTY';
+  | 'ERR_CONTEXT_EMPTY'
+  | 'ERR_INVALID_CONTENT_BLOCKS'
+  | 'ERR_PROJECT_NOT_FOUND'
+  | 'ERR_THREAD_NOT_FOUND'
+  | 'ERR_PROJECT_ID_REQUIRED'
+  | 'ERR_NO_CONTENT'
+  | 'ERR_NO_MEMORY_BLOCKS_EXTRACTED'
+  | 'ERR_MISSING_REQUIRED_FIELDS'
+  | 'ERR_INVALID_SNAPSHOT_TYPE'
+  | 'ERR_NO_MEMORY_BLOCKS'
+  | 'ERR_INVALID_CONTEXT_TYPE'
+  | 'ERR_INVALID_DATE_FORMAT'
+  | 'ERR_INVALID_BLOCK_TYPE';
 
 export function createApiError(
   code: ErrorCode,
@@ -38,13 +52,10 @@ export function createApiError(
 export function errorResponse(
   error: ApiError,
   status: number
-): Response {
-  return Response.json(error, { 
-    status,
-    headers: {
-      'X-Trace-Id': error.trace_id
-    }
-  });
+): NextResponse {
+  const response = NextResponse.json(error, { status });
+  response.headers.set('X-Trace-Id', error.trace_id);
+  return response;
 }
 
 // Helper functions for common error types

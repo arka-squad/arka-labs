@@ -130,7 +130,7 @@ export async function processInstructionQueue() {
   const config = getConfig();
   
   try {
-    const { rows: instructions } = await sql`
+    const instructions = await sql`
       SELECT id, squad_id, project_id, content, priority, 
              metadata, created_at, created_by
       FROM squad_instructions 
