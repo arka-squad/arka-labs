@@ -16,7 +16,7 @@ export const DELETE = withAdminAuth(['projects:attach_squads'], 'project')(async
   
   try {
     // Check if attachment exists and is active
-    const { rows: attachmentRows } = await sql`
+    const attachmentRows = await sql`
       SELECT ps.id, ps.status, s.name as squad_name
       FROM project_squads ps
       JOIN squads s ON ps.squad_id = s.id
@@ -39,7 +39,7 @@ export const DELETE = withAdminAuth(['projects:attach_squads'], 'project')(async
     }
 
     // Check for active instructions tied to this project-squad combination
-    const { rows: instructionRows } = await sql`
+    const instructionRows = await sql`
       SELECT COUNT(*) as count FROM squad_instructions 
       WHERE squad_id = ${squadId} 
         AND project_id = ${projectId}
@@ -54,7 +54,7 @@ export const DELETE = withAdminAuth(['projects:attach_squads'], 'project')(async
     }
 
     // Detach squad (soft detachment)
-    const { rows } = await sql`
+    const rows = await sql`
       UPDATE project_squads 
       SET status = 'detached', detached_at = NOW()
       WHERE project_id = ${projectId} AND squad_id = ${squadId}
@@ -86,12 +86,13 @@ export const DELETE = withAdminAuth(['projects:attach_squads'], 'project')(async
     log('error', 'squad_detachment_failed', {
       route: `/api/admin/projects/${projectId}/squads/${squadId}`,
       method: 'DELETE',
+      status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
       project_id: projectId,
       squad_id: squadId,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
 
     return NextResponse.json({ 

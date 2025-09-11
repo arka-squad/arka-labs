@@ -41,7 +41,7 @@ export const POST = withAdminAuth(['projects:attach_squads'], 'project')(async (
     }
 
     // Get squad details
-    const { rows: squadRows } = await sql`
+    const squadRows = await sql`
       SELECT id, name, domain FROM squads 
       WHERE id = ${squad_id} AND deleted_at IS NULL
     `;
@@ -49,7 +49,7 @@ export const POST = withAdminAuth(['projects:attach_squads'], 'project')(async (
     const squad = squadRows[0];
 
     // Check if already attached
-    const { rows: existingRows } = await sql`
+    const existingRows = await sql`
       SELECT status FROM project_squads 
       WHERE project_id = ${projectId} AND squad_id = ${squad_id}
     `;
@@ -63,7 +63,7 @@ export const POST = withAdminAuth(['projects:attach_squads'], 'project')(async (
       }
       
       // Reactivate if previously detached
-      const { rows } = await sql`
+      const rows = await sql`
         UPDATE project_squads 
         SET status = 'active', attached_by = ${user.sub}, 
             attached_at = NOW(), detached_at = NULL
@@ -105,7 +105,7 @@ export const POST = withAdminAuth(['projects:attach_squads'], 'project')(async (
     }
 
     // Check project squad limits (reasonable limit for performance)
-    const { rows: countRows } = await sql`
+    const countRows = await sql`
       SELECT COUNT(*) as count FROM project_squads 
       WHERE project_id = ${projectId} AND status = 'active'
     `;
@@ -118,7 +118,7 @@ export const POST = withAdminAuth(['projects:attach_squads'], 'project')(async (
     }
 
     // Create new attachment
-    const { rows } = await sql`
+    const rows = await sql`
       INSERT INTO project_squads (project_id, squad_id, attached_by)
       VALUES (${projectId}, ${squad_id}, ${user.sub})
       RETURNING project_id, squad_id, status, attached_by, attached_at
@@ -163,11 +163,12 @@ export const POST = withAdminAuth(['projects:attach_squads'], 'project')(async (
     log('error', 'squad_attachment_failed', {
       route: `/api/admin/projects/${projectId}/squads`,
       method: 'POST',
+      status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
       project_id: projectId,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
 
     if (error instanceof z.ZodError) {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { withAdminAuth } from '../../../../../lib/rbac-admin';
-import { sql } from '../../../../../lib/db';
+import { sql, getDb } from '../../../../../lib/db';
 import { log } from '../../../../../lib/logger';
 import { TRACE_HEADER } from '../../../../../lib/trace';
 
@@ -221,7 +221,8 @@ export const GET = withAdminAuth(['projects:read'])(async (req, user, { params }
     log('error', 'project_detail_error', {
       route: '/api/admin/projects/[id]',
       method: 'GET',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -289,15 +290,15 @@ export const PATCH = withAdminAuth(['projects:write'])(async (req, user, { param
     }
 
     // Build update query dynamically
-    const updateFields = [];
-    const updateValues = [];
+    const updateFields: string[] = [];
+    const updateValues: any[] = [];
     let paramIndex = 1;
 
     Object.entries(updates).forEach(([key, value]) => {
       if (value !== undefined) {
         if (key === 'deadline') {
           updateFields.push(`${key} = $${paramIndex}`);
-          updateValues.push(value ? new Date(value) : null);
+          updateValues.push(value ? new Date(value as string) : null);
         } else if (key === 'tags' || key === 'requirements') {
           updateFields.push(`${key} = $${paramIndex}`);
           updateValues.push(JSON.stringify(value));
@@ -329,7 +330,8 @@ export const PATCH = withAdminAuth(['projects:write'])(async (req, user, { param
       RETURNING *
     `;
 
-    const [updatedProject] = await sql.unsafe(updateQuery, [...updateValues, projectId]);
+    const updatedResult = (await getDb().query(updateQuery, [...updateValues, projectId])).rows;
+    const [updatedProject] = updatedResult;
 
     // Get updated metrics
     const [projectMetrics] = await sql`
@@ -380,7 +382,8 @@ export const PATCH = withAdminAuth(['projects:write'])(async (req, user, { param
     log('error', 'project_update_error', {
       route: '/api/admin/projects/[id]',
       method: 'PATCH',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -481,6 +484,7 @@ export const DELETE = withAdminAuth(['projects:delete'])(async (req, user, { par
     log('info', 'project_delete_success', {
       route: '/api/admin/projects/[id]',
       method: 'DELETE',
+      status: 200,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -500,7 +504,8 @@ export const DELETE = withAdminAuth(['projects:delete'])(async (req, user, { par
     log('error', 'project_delete_error', {
       route: '/api/admin/projects/[id]',
       method: 'DELETE',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
