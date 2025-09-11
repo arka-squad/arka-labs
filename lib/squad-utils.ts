@@ -53,7 +53,7 @@ export async function validateSquadState(squadId: string, requiredStates: string
     
     return { valid: true, currentState };
   } catch (error) {
-    log('error', 'squad_state_validation_failed', { route: 'squad-utils', status: 500, squadId, error: error.message });
+    log('error', 'squad_state_validation_failed', { route: 'squad-utils', status: 500, squadId, error: error instanceof Error ? error.message : 'Unknown error' });
     return { valid: false, error: 'Validation failed' };
   }
 }
@@ -83,7 +83,7 @@ export async function validateProjectState(projectId: number, requiredStates: st
     
     return { valid: true, currentState };
   } catch (error) {
-    log('error', 'project_state_validation_failed', { route: 'squad-utils', status: 500, projectId, error: error.message });
+    log('error', 'project_state_validation_failed', { route: 'squad-utils', status: 500, projectId, error: error instanceof Error ? error.message : 'Unknown error' });
     return { valid: false, error: 'Validation failed' };
   }
 }
@@ -106,7 +106,7 @@ export async function checkSquadProjectAttachment(squadId: string, projectId: nu
     const status = rows[0].status;
     return { attached: status === 'active', status };
   } catch (error) {
-    log('error', 'squad_project_check_failed', { route: 'squad-utils', status: 500, squadId, projectId, error: error.message });
+    log('error', 'squad_project_check_failed', { route: 'squad-utils', status: 500, squadId, projectId, error: error instanceof Error ? error.message : 'Unknown error' });
     return { attached: false, error: 'Check failed' };
   }
 }
@@ -170,7 +170,7 @@ export async function getSquadPerformance(squadId: string, days: number = 30): P
       }))
     };
   } catch (error) {
-    log('error', 'squad_performance_calculation_failed', { route: 'squad-utils', status: 500, squadId, error: error.message });
+    log('error', 'squad_performance_calculation_failed', { route: 'squad-utils', status: 500, squadId, error: error instanceof Error ? error.message : 'Unknown error' });
     return {
       instructions_total: 0,
       instructions_completed: 0,
