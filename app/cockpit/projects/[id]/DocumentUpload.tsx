@@ -306,7 +306,7 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
                 className="w-full border-2 border-dashed border-gray-600 hover:border-gray-500 rounded-lg p-4 text-gray-400 hover:text-gray-300 transition-colors"
                 disabled={isUploading}
               >
-                + Ajouter d'autres fichiers
+                + Ajouter d’autres fichiers
               </button>
               <input
                 ref={fileInputRef}
