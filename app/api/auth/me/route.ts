@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       );
     }
     
-    // Vérifier et décoder le token
+    // Verifier et decoder le token
     let payload;
     try {
       payload = jwtManager.verifyToken(token);
@@ -33,29 +33,29 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'unauthorized',
-          message: 'Token invalide ou expiré',
+          message: 'Token invalide ou expire',
           trace_id: traceId
         },
         { status: 401 }
       );
     }
     
-    // Vérifier si le token est révoqué
+    // Verifier si le token est revoque
     if (payload.jti && await isTokenRevoked(payload.jti)) {
       return NextResponse.json(
         {
           error: 'unauthorized',
-          message: 'Token révoqué',
+          message: 'Token revoque',
           trace_id: traceId
         },
         { status: 401 }
       );
     }
     
-    // Récupérer les informations complètes de l'utilisateur
+    // Recuperer les informations utilisateur de la base de donnees
     const db = getDb();
     const result = await db.query(
-      `SELECT id, email, role, full_name, is_active, last_login_at, created_at
+      `SELECT id, email, role, full_name, is_active, created_at, last_login_at
        FROM users 
        WHERE id = $1`,
       [payload.sub]
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'user_not_found',
-          message: 'Utilisateur non trouvé',
+          message: 'Utilisateur non trouve',
           trace_id: traceId
         },
         { status: 404 }
@@ -74,43 +74,35 @@ export async function GET(req: NextRequest) {
     
     const user = result.rows[0];
     
-    // Vérifier si l'utilisateur est actif
+    // Verifier si l'utilisateur est actif
     if (!user.is_active) {
       return NextResponse.json(
         {
           error: 'account_disabled',
-          message: 'Compte désactivé',
+          message: 'Compte desactive',
           trace_id: traceId
         },
         { status: 401 }
       );
     }
     
-    // Récupérer les permissions
+    // Recuperer les permissions et projets assignes
     const permissions = getUserPermissions(user.role);
+    const assignedProjects = await getUserAssignedProjects(user.id);
     
-    // Récupérer les projets assignés (pour manager et operator)
-    let assignedProjects: number[] = [];
-    if (user.role === 'manager' || user.role === 'operator') {
-      assignedProjects = await getUserAssignedProjects(user.id);
-    }
-    
-    // Calculer l'expiration du token
-    const tokenExpiry = payload.exp ? new Date(payload.exp * 1000) : null;
-    
+    // Retourner les informations utilisateur
     return NextResponse.json({
       user: {
         id: user.id,
         email: user.email,
         role: user.role,
         full_name: user.full_name,
-        is_active: user.is_active,
+        created_at: user.created_at,
         last_login_at: user.last_login_at,
-        created_at: user.created_at
+        permissions,
+        assigned_projects: assignedProjects
       },
-      permissions,
-      assigned_projects: assignedProjects,
-      token_expires_at: tokenExpiry?.toISOString()
+      token_expires_at: new Date(payload.exp * 1000).toISOString()
     });
     
   } catch (error) {
@@ -119,7 +111,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         error: 'internal_error',
-        message: 'Erreur lors de la récupération des informations',
+        message: 'Erreur lors de la recuperation des informations',
         trace_id: traceId
       },
       { status: 500 }
