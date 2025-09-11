@@ -46,7 +46,7 @@ export const GET = withAdminAuth(['dashboard:read'])(async (req, user) => {
     log('error', 'admin_health_error', {
       route: '/api/admin/health',
       method: 'GET',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,

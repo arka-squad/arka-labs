@@ -147,7 +147,8 @@ export const GET = withAdminAuth(['clients:read'])(async (req, user) => {
     log('error', 'clients_list_error', {
       route: '/api/admin/clients',
       method: 'GET',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub
@@ -245,7 +246,8 @@ export const POST = withAdminAuth(['clients:write'])(async (req, user) => {
     log('error', 'client_create_error', {
       route: '/api/admin/clients',
       method: 'POST',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub
@@ -335,6 +337,7 @@ export const DELETE = withAdminAuth(['clients:delete'])(async (req, user) => {
     log('info', 'clients_bulk_delete_success', {
       route: '/api/admin/clients',
       method: 'DELETE',
+      status: 200,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -352,7 +355,8 @@ export const DELETE = withAdminAuth(['clients:delete'])(async (req, user) => {
     log('error', 'clients_bulk_delete_error', {
       route: '/api/admin/clients',
       method: 'DELETE',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub

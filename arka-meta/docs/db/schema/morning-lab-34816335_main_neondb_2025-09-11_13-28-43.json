@@ -1,0 +1,616 @@
+[{
+  "table_schema": "neon_auth",
+  "table_name": "users_sync",
+  "column_name": "raw_json",
+  "data_type": "jsonb"
+}, {
+  "table_schema": "neon_auth",
+  "table_name": "users_sync",
+  "column_name": "id",
+  "data_type": "text"
+}, {
+  "table_schema": "neon_auth",
+  "table_name": "users_sync",
+  "column_name": "name",
+  "data_type": "text"
+}, {
+  "table_schema": "neon_auth",
+  "table_name": "users_sync",
+  "column_name": "email",
+  "data_type": "text"
+}, {
+  "table_schema": "neon_auth",
+  "table_name": "users_sync",
+  "column_name": "created_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "neon_auth",
+  "table_name": "users_sync",
+  "column_name": "updated_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "neon_auth",
+  "table_name": "users_sync",
+  "column_name": "deleted_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "action_queue",
+  "column_name": "id",
+  "data_type": "bigint"
+}, {
+  "table_schema": "public",
+  "table_name": "action_queue",
+  "column_name": "created_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "action_queue",
+  "column_name": "scheduled_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "action_queue",
+  "column_name": "kind",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "action_queue",
+  "column_name": "payload",
+  "data_type": "jsonb"
+}, {
+  "table_schema": "public",
+  "table_name": "action_queue",
+  "column_name": "status",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "action_queue",
+  "column_name": "attempts",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "action_queue",
+  "column_name": "dedupe_key",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_credentials",
+  "column_name": "agent_id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_credentials",
+  "column_name": "kind",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_credentials",
+  "column_name": "ref_key",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "ts",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "project_id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "agent",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "event",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "title",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "summary",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "labels",
+  "data_type": "ARRAY"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "links",
+  "data_type": "ARRAY"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "kpis",
+  "data_type": "jsonb"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "decisions",
+  "data_type": "ARRAY"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "author",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "source",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "repo",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "issue_ref",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "pr_ref",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "delivery_id",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "hash",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "agent_id",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "type",
+  "data_type": "character varying"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "payload_json",
+  "data_type": "jsonb"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_events",
+  "column_name": "created_at",
+  "data_type": "timestamp without time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_runs",
+  "column_name": "id",
+  "data_type": "bigint"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_runs",
+  "column_name": "agent_id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_runs",
+  "column_name": "started_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_runs",
+  "column_name": "ended_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_runs",
+  "column_name": "trigger",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_runs",
+  "column_name": "input_ref",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_runs",
+  "column_name": "outcome",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agent_runs",
+  "column_name": "error",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agents",
+  "column_name": "id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "agents",
+  "column_name": "name",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agents",
+  "column_name": "role",
+  "data_type": "USER-DEFINED"
+}, {
+  "table_schema": "public",
+  "table_name": "agents",
+  "column_name": "mode",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agents",
+  "column_name": "prompt_system",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "agents",
+  "column_name": "policies",
+  "data_type": "jsonb"
+}, {
+  "table_schema": "public",
+  "table_name": "agents",
+  "column_name": "tools",
+  "data_type": "jsonb"
+}, {
+  "table_schema": "public",
+  "table_name": "agents",
+  "column_name": "repos_allow",
+  "data_type": "ARRAY"
+}, {
+  "table_schema": "public",
+  "table_name": "agents",
+  "column_name": "created_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "agents",
+  "column_name": "updated_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "agents",
+  "column_name": "status",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "documents",
+  "column_name": "id",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "documents",
+  "column_name": "project_id",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "documents",
+  "column_name": "name",
+  "data_type": "character varying"
+}, {
+  "table_schema": "public",
+  "table_name": "documents",
+  "column_name": "size",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "documents",
+  "column_name": "mime",
+  "data_type": "character varying"
+}, {
+  "table_schema": "public",
+  "table_name": "documents",
+  "column_name": "storage_url",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "documents",
+  "column_name": "created_at",
+  "data_type": "timestamp without time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "lots_history",
+  "column_name": "id",
+  "data_type": "bigint"
+}, {
+  "table_schema": "public",
+  "table_name": "lots_history",
+  "column_name": "lot_key",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "lots_history",
+  "column_name": "from_status",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "lots_history",
+  "column_name": "to_status",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "lots_history",
+  "column_name": "changed_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "lots_history",
+  "column_name": "by_event_id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "lots_state",
+  "column_name": "lot_key",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "lots_state",
+  "column_name": "status",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "lots_state",
+  "column_name": "kpis",
+  "data_type": "jsonb"
+}, {
+  "table_schema": "public",
+  "table_name": "lots_state",
+  "column_name": "last_event_id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "lots_state",
+  "column_name": "updated_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "messages",
+  "column_name": "id",
+  "data_type": "bigint"
+}, {
+  "table_schema": "public",
+  "table_name": "messages",
+  "column_name": "thread_id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "messages",
+  "column_name": "ts",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "messages",
+  "column_name": "role",
+  "data_type": "USER-DEFINED"
+}, {
+  "table_schema": "public",
+  "table_name": "messages",
+  "column_name": "content",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "messages",
+  "column_name": "tokens_in",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "messages",
+  "column_name": "tokens_out",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "messages",
+  "column_name": "tokens",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "messages",
+  "column_name": "meta",
+  "data_type": "jsonb"
+}, {
+  "table_schema": "public",
+  "table_name": "messages",
+  "column_name": "created_at",
+  "data_type": "timestamp without time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "project_docs",
+  "column_name": "id",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "project_docs",
+  "column_name": "project_id",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "project_docs",
+  "column_name": "name",
+  "data_type": "character varying"
+}, {
+  "table_schema": "public",
+  "table_name": "project_docs",
+  "column_name": "size",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "project_docs",
+  "column_name": "mime",
+  "data_type": "character varying"
+}, {
+  "table_schema": "public",
+  "table_name": "project_docs",
+  "column_name": "storage_url",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "project_docs",
+  "column_name": "created_at",
+  "data_type": "timestamp without time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "projects",
+  "column_name": "id",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "projects",
+  "column_name": "name",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "projects",
+  "column_name": "created_by",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "projects",
+  "column_name": "created_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "thread_pins",
+  "column_name": "thread_id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "thread_pins",
+  "column_name": "kind",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "thread_pins",
+  "column_name": "ref",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "thread_pins",
+  "column_name": "meta",
+  "data_type": "jsonb"
+}, {
+  "table_schema": "public",
+  "table_name": "thread_state",
+  "column_name": "thread_id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "thread_state",
+  "column_name": "last_event_id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "thread_state",
+  "column_name": "lot_key",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "thread_state",
+  "column_name": "context_hint",
+  "data_type": "jsonb"
+}, {
+  "table_schema": "public",
+  "table_name": "thread_state",
+  "column_name": "updated_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "threads",
+  "column_name": "id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "threads",
+  "column_name": "agent_id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "threads",
+  "column_name": "title",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "threads",
+  "column_name": "created_by",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "threads",
+  "column_name": "created_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "threads",
+  "column_name": "last_msg_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "threads",
+  "column_name": "project_id",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "users",
+  "column_name": "id",
+  "data_type": "uuid"
+}, {
+  "table_schema": "public",
+  "table_name": "users",
+  "column_name": "email",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "users",
+  "column_name": "role",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "users",
+  "column_name": "password_hash",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "webhook_dedup",
+  "column_name": "delivery_id",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "webhook_dedup",
+  "column_name": "received_at",
+  "data_type": "timestamp with time zone"
+}, {
+  "table_schema": "public",
+  "table_name": "webhook_dedup",
+  "column_name": "payload_hash",
+  "data_type": "text"
+}, {
+  "table_schema": "public",
+  "table_name": "zz_proof",
+  "column_name": "id",
+  "data_type": "integer"
+}, {
+  "table_schema": "public",
+  "table_name": "zz_proof",
+  "column_name": "created_at",
+  "data_type": "timestamp with time zone"
+}]

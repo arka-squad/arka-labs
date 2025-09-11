@@ -175,7 +175,8 @@ export const GET = withAdminAuth(['agents:read'])(async (req, user) => {
     log('error', 'agents_list_error', {
       route: '/api/admin/agents',
       method: 'GET',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub
@@ -297,7 +298,8 @@ export const POST = withAdminAuth(['agents:write'])(async (req, user) => {
     log('error', 'agent_create_error', {
       route: '/api/admin/agents',
       method: 'POST',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub
@@ -377,6 +379,7 @@ export const PUT = withAdminAuth(['agents:write'])(async (req, user) => {
     log('info', 'agents_batch_operation_success', {
       route: '/api/admin/agents',
       method: 'PUT',
+      status: 200,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -394,7 +397,8 @@ export const PUT = withAdminAuth(['agents:write'])(async (req, user) => {
     log('error', 'agents_batch_operation_error', {
       route: '/api/admin/agents',
       method: 'PUT',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub

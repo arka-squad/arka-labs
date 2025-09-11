@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { withAdminAuth } from '../../../../../lib/rbac-admin';
-import { sql } from '../../../../../lib/db';
+import { sql, getDb } from '../../../../../lib/db';
 import { log } from '../../../../../lib/logger';
 import { TRACE_HEADER } from '../../../../../lib/trace';
 
@@ -148,7 +148,8 @@ export const GET = withAdminAuth(['clients:read'])(async (req, user, { params })
     log('error', 'client_detail_error', {
       route: '/api/admin/clients/[id]',
       method: 'GET',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -216,8 +217,8 @@ export const PATCH = withAdminAuth(['clients:write'])(async (req, user, { params
     }
 
     // Build update query dynamically
-    const updateFields = [];
-    const updateValues = [];
+    const updateFields: string[] = [];
+    const updateValues: any[] = [];
     let paramIndex = 1;
 
     Object.entries(updates).forEach(([key, value]) => {
@@ -253,7 +254,8 @@ export const PATCH = withAdminAuth(['clients:write'])(async (req, user, { params
       RETURNING *
     `;
 
-    const [updatedClient] = await sql.unsafe(updateQuery, [...updateValues, clientId]);
+    const updatedResult = (await getDb().query(updateQuery, [...updateValues, clientId])).rows;
+    const [updatedClient] = updatedResult;
 
     const response = NextResponse.json(updatedClient);
 
@@ -286,7 +288,8 @@ export const PATCH = withAdminAuth(['clients:write'])(async (req, user, { params
     log('error', 'client_update_error', {
       route: '/api/admin/clients/[id]',
       method: 'PATCH',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -365,6 +368,7 @@ export const DELETE = withAdminAuth(['clients:delete'])(async (req, user, { para
     log('info', 'client_delete_success', {
       route: '/api/admin/clients/[id]',
       method: 'DELETE',
+      status: 200,
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -384,7 +388,8 @@ export const DELETE = withAdminAuth(['clients:delete'])(async (req, user, { para
     log('error', 'client_delete_error', {
       route: '/api/admin/clients/[id]',
       method: 'DELETE',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,

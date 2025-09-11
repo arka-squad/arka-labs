@@ -246,7 +246,8 @@ export const GET = withAdminAuth(['dashboard:read'])(async (req, user) => {
     log('error', 'dashboard_stats_error', {
       route: '/api/admin/dashboard/stats',
       method: 'GET',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub
@@ -288,7 +289,8 @@ export const POST = withAdminAuth(['dashboard:read'])(async (req, user) => {
     log('error', 'dashboard_subscription_error', {
       route: '/api/admin/dashboard/stats',
       method: 'POST',
-      error: error.message,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error',
       trace_id: traceId,
       user_id: user.sub
     });
