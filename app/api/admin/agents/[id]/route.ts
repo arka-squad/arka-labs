@@ -228,41 +228,53 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
       }
     }
 
-    // Build update query using direct sql template
-    const updateQueries = [];
+    // Build update clauses conditionally
+    const updateParts = [];
+    const updateValues = [];
+    let paramIndex = 1;
     
     if (updates.name !== undefined) {
-      updateQueries.push(sql`name = ${updates.name}`);
+      updateParts.push(`name = $${paramIndex++}`);
+      updateValues.push(updates.name);
     }
     if (updates.role !== undefined) {
-      updateQueries.push(sql`role = ${updates.role}`);
+      updateParts.push(`role = $${paramIndex++}`);
+      updateValues.push(updates.role);
     }
     if (updates.domaine !== undefined) {
-      updateQueries.push(sql`domaine = ${updates.domaine}`);
+      updateParts.push(`domaine = $${paramIndex++}`);
+      updateValues.push(updates.domaine);
     }
     if (updates.version !== undefined) {
-      updateQueries.push(sql`version = ${updates.version}`);
+      updateParts.push(`version = $${paramIndex++}`);
+      updateValues.push(updates.version);
     }
     if (updates.status !== undefined) {
-      updateQueries.push(sql`status = ${updates.status}`);
+      updateParts.push(`status = $${paramIndex++}`);
+      updateValues.push(updates.status);
     }
     if (updates.tags !== undefined) {
-      updateQueries.push(sql`tags = ${JSON.stringify(updates.tags)}`);
+      updateParts.push(`tags = $${paramIndex++}`);
+      updateValues.push(JSON.stringify(updates.tags));
     }
     if (updates.description !== undefined) {
-      updateQueries.push(sql`description = ${updates.description}`);
+      updateParts.push(`description = $${paramIndex++}`);
+      updateValues.push(updates.description);
     }
     if (updates.prompt_system !== undefined) {
-      updateQueries.push(sql`prompt_system = ${updates.prompt_system}`);
+      updateParts.push(`prompt_system = $${paramIndex++}`);
+      updateValues.push(updates.prompt_system);
     }
     if (updates.temperature !== undefined) {
-      updateQueries.push(sql`temperature = ${updates.temperature}`);
+      updateParts.push(`temperature = $${paramIndex++}`);
+      updateValues.push(updates.temperature);
     }
     if (updates.max_tokens !== undefined) {
-      updateQueries.push(sql`max_tokens = ${updates.max_tokens}`);
+      updateParts.push(`max_tokens = $${paramIndex++}`);
+      updateValues.push(updates.max_tokens);
     }
 
-    if (updateQueries.length === 0) {
+    if (updateParts.length === 0) {
       return NextResponse.json(
         { 
           error: 'Aucune donnée à mettre à jour',
@@ -273,14 +285,18 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
       );
     }
 
-    updateQueries.push(sql`updated_at = NOW()`);
+    updateParts.push(`updated_at = NOW()`);
+    updateValues.push(agentId);
     
-    const [updatedAgent] = await sql`
+    const updateQuery = `
       UPDATE agents 
-      SET ${sql.join(updateQueries, sql`, `)}
-      WHERE id = ${agentId} AND deleted_at IS NULL
+      SET ${updateParts.join(', ')}
+      WHERE id = $${paramIndex} AND deleted_at IS NULL
       RETURNING *
     `;
+    
+    const updatedResult = await sql(updateQuery, updateValues);
+    const [updatedAgent] = updatedResult;
 
     // Get updated performance metrics
     const [performanceData] = await sql`
