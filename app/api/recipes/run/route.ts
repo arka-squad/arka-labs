@@ -50,8 +50,7 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: 
     status: 'running',
     started_at: new Date().toISOString(),
     progress: { total: 2, done: 0 },
-    trace_id: traceId,
-  };
+    trace_id: traceId};
   jobs.set(jobId, job);
   logs.set(jobId, []);
   appendLog(jobId, { t: 'open', job_id: jobId });
@@ -80,8 +79,7 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: 
       recipe_id: recipeId,
       status: 'pass',
       summary: { pass: total, fail: 0, warn: 0 },
-      steps: steps.map((s: any) => ({ id: s.id, status: 'pass' })),
-    });
+      steps: steps.map((s: any) => ({ id: s.id, status: 'pass' }))});
     appendLog(jobId, { t: 'done', status: 'pass' });
   })();
 

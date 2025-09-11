@@ -8,8 +8,7 @@ import {
   GitCommit,
   Users,
   AlertTriangle,
-  Settings,
-} from "lucide-react";
+  Settings} from "lucide-react";
 import ResponsiveWrapper from "./components/ResponsiveWrapper";
 
 export default function CockpitPage() {
@@ -18,8 +17,7 @@ export default function CockpitPage() {
   const [metrics] = useState({
     ttft: { value: 1.5, unit: "ms", color: "#F59E0B" },
     rtt: { value: 3.2, unit: "ms", color: "#8B5CF6" },
-    errors: { value: 0.8, unit: "%", color: "#A16207" },
-  });
+    errors: { value: 0.8, unit: "%", color: "#A16207" }});
 
   const [roadmapData] = useState({
     months: [
@@ -35,8 +33,7 @@ export default function CockpitPage() {
       "Oct",
       "Nov",
       "Déc",
-    ],
-  });
+    ]});
 
   const [runs] = useState([
     {
@@ -45,48 +42,42 @@ export default function CockpitPage() {
       p95_ms: 1480,
       error_percent: 0.8,
       sprint: "S-15",
-      trace_id: "ygy8r70",
-    },
+      trace_id: "ygy8r70"},
     {
       run_id: "R-1834",
       statut: "FAIL",
       p95_ms: 3100,
       error_percent: 2.1,
       sprint: "S-14",
-      trace_id: "adm14x7",
-    },
+      trace_id: "adm14x7"},
     {
       run_id: "R-1833",
       statut: "PASS",
       p95_ms: 1570,
       error_percent: 0.8,
       sprint: "S-15",
-      trace_id: "ttotzms",
-    },
+      trace_id: "ttotzms"},
     {
       run_id: "R-1832",
       statut: "PASS",
       p95_ms: 1540,
       error_percent: 0.8,
       sprint: "S-14",
-      trace_id: "l9ntf0b",
-    },
+      trace_id: "l9ntf0b"},
     {
       run_id: "R-1831",
       statut: "FAIL",
       p95_ms: 3100,
       error_percent: 2.1,
       sprint: "S-15",
-      trace_id: "06a2qcc1",
-    },
+      trace_id: "06a2qcc1"},
     {
       run_id: "R-1830",
       statut: "PASS",
       p95_ms: 1480,
       error_percent: 0.8,
       sprint: "S-14",
-      trace_id: "sg4via9y",
-    },
+      trace_id: "sg4via9y"},
   ]);
 
   const [agents] = useState([
@@ -100,8 +91,7 @@ export default function CockpitPage() {
       ttft: "1.2j",
       gaia: "92%",
       bream: "Bream",
-      progress: 78,
-    },
+      progress: 78},
     {
       id: "2",
       name: "QA-ARC — R2.5",
@@ -112,8 +102,7 @@ export default function CockpitPage() {
       ttft: "1.2j",
       gaia: "92%",
       bream: "Bream",
-      progress: 45,
-    },
+      progress: 45},
     {
       id: "3",
       name: "PMO — Console",
@@ -124,8 +113,7 @@ export default function CockpitPage() {
       ttft: "1.2j",
       gaia: "92%",
       bream: "Bream",
-      progress: 92,
-    },
+      progress: 92},
     {
       id: "4",
       name: "UX/UI — v12",
@@ -136,8 +124,7 @@ export default function CockpitPage() {
       ttft: "1.2j",
       gaia: "92%",
       bream: "Bream",
-      progress: 23,
-    },
+      progress: 23},
   ]);
 
   useEffect(() => {
@@ -483,8 +470,7 @@ export default function CockpitPage() {
                         className="w-2 h-2 rounded-full"
                         style={{
                           backgroundColor:
-                            agent.status === "actif" ? "#10B981" : "#6B7280",
-                        }}
+                            agent.status === "actif" ? "#10B981" : "#6B7280"}}
                       />
                     </div>
 
@@ -510,8 +496,7 @@ export default function CockpitPage() {
                                 ? "#EF4444"
                                 : agent.charge >= 60
                                 ? "#F59E0B"
-                                : "#10B981",
-                          }}
+                                : "#10B981"}}
                         >
                           {agent.charge}%
                         </span>
@@ -528,15 +513,13 @@ export default function CockpitPage() {
                             className="h-full rounded-full transition-all duration-1000 ease-out relative"
                             style={{
                               width: `${agent.progress}%`,
-                              background: `linear-gradient(90deg, #3B82F6 0%, #60A5FA 50%, #93C5FD 100%)`,
-                            }}
+                              background: `linear-gradient(90deg, #3B82F6 0%, #60A5FA 50%, #93C5FD 100%)`}}
                           >
                             <div
                               className="absolute inset-0 rounded-full opacity-75 animate-pulse"
                               style={{
                                 background:
-                                  "linear-gradient(90deg, transparent 0%, #3B82F680 50%, transparent 100%)",
-                              }}
+                                  "linear-gradient(90deg, transparent 0%, #3B82F680 50%, transparent 100%)"}}
                             />
                           </div>
                         </div>

@@ -70,9 +70,7 @@ export default function SquadDetailPage({ params }: { params: { id: string } }) 
     try {
       setLoading(true);
       const response = await fetch(`/api/admin/squads/${params.id}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include'
         }
       });
 

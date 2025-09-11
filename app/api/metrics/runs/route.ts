@@ -34,8 +34,7 @@ export const GET = withAuth(['admin', 'owner'], async (req: NextRequest) => {
       route: '/api/metrics/runs',
       status: res.status,
       duration_ms: Date.now() - start,
-      trace_id,
-    });
+      trace_id});
     return res;
   } catch {
     const res = NextResponse.json({ error: 'db_unavailable' }, { status: 503 });
@@ -44,8 +43,7 @@ export const GET = withAuth(['admin', 'owner'], async (req: NextRequest) => {
       route: '/api/metrics/runs',
       status: res.status,
       duration_ms: Date.now() - start,
-      trace_id,
-    });
+      trace_id});
     return res;
   }
 });

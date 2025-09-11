@@ -43,9 +43,7 @@ export default function SquadsPage() {
       if (filter.status) params.append('status', filter.status);
       
       const response = await fetch(`/api/admin/squads?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include'
         }
       });
 
@@ -66,7 +64,6 @@ export default function SquadsPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
           'X-Trace-Id': `trace-${Date.now()}`
         },
         body: JSON.stringify(squadData)

@@ -24,9 +24,8 @@ export default function LoginPage() {
         headers: {
           'Content-Type': 'application/json',
           'X-Trace-Id': crypto.randomUUID(),
-        },
-        body: JSON.stringify({ email, password }),
-      });
+        credentials: 'include'},
+        body: JSON.stringify({ email, password })});
 
       const data = await response.json();
 

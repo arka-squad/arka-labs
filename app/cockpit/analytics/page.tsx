@@ -72,10 +72,10 @@ export default function AnalyticsPage() {
       
       const [metricsRes, chartsRes] = await Promise.all([
         fetch(`/api/analytics/metrics?range=${timeRange}`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
+          credentials: 'include'
         }),
         fetch(`/api/analytics/charts?range=${timeRange}&type=${selectedChart}`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
+          credentials: 'include'
         })
       ]);
 

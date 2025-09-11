@@ -21,8 +21,7 @@ const STATUS: Record<ExampleItem['status'], {label:string; classes:string}> = {
   WARN: { label: 'Attention', classes: 'bg-amber-500/10 text-amber-700 ring-amber-500/20' },
   FAIL: { label: 'Bloquant', classes: 'bg-rose-500/10 text-rose-700 ring-rose-500/20' },
   A_FAIRE: { label: 'À faire', classes: 'bg-indigo-500/10 text-indigo-700 ring-indigo-500/20' },
-  A_RISQUE: { label: 'À risque', classes: 'bg-rose-500/10 text-rose-700 ring-rose-500/20' },
-};
+  A_RISQUE: { label: 'À risque', classes: 'bg-rose-500/10 text-rose-700 ring-rose-500/20' }};
 
 function Pill({ status }: { status: ExampleItem['status'] }) {
   const cfg = STATUS[status] ?? STATUS.A_FAIRE;

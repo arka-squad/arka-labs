@@ -144,8 +144,7 @@ export default function SectionPreuve() {
     results: ['OK', 'À faire', 'Décision validée'],
     digest: { algo: 'sha256', value: '9f8c1a0b9e4d3c2f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f' },
     status: 'VALIDATED',
-    issuer: 'Arka Cockpit',
-  };
+    issuer: 'Arka Cockpit'};
 
   return (
     <section id="evidence" aria-labelledby="evidence-title" className="py-16">

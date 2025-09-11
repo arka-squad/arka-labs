@@ -82,14 +82,12 @@ export async function GET(req: Request) {
         controller.enqueue(new TextEncoder().encode(sse({ t: 'error', code, msg })));
         controller.close();
       }
-    },
-  });
+    }});
 
   const headers: Record<string, string> = {
     'x-trace-id': traceId,
     'cache-control': 'no-store',
-    'content-type': 'text/event-stream; charset=utf-8',
-  };
+    'content-type': 'text/event-stream; charset=utf-8'};
 
   // Log NDJSON (stdout default)
   (async () => {
@@ -102,8 +100,7 @@ export async function GET(req: Request) {
       provider,
       model,
       has_session: !!providerSession,
-      trace_id: traceId,
-    };
+      trace_id: traceId};
     try {
       console.log('chat_gateway', JSON.stringify(rec));
     } catch {}

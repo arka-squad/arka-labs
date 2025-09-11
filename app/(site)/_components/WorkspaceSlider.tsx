@@ -14,8 +14,7 @@ export type WorkspaceCardData = {
 
 export default function WorkspaceSlider({
   items = [] as WorkspaceCardData[],
-  initialIndex = 0,
-}: { items?: WorkspaceCardData[]; initialIndex?: number }) {
+  initialIndex = 0}: { items?: WorkspaceCardData[]; initialIndex?: number }) {
   const railRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<HTMLElement[]>([]);
   const [active, setActive] = useState(initialIndex);

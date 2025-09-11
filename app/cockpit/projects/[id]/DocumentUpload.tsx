@@ -81,9 +81,7 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
 
       const response = await fetch(`/api/admin/projects/${projectId}/documents`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include'
         },
         body: formData
       });

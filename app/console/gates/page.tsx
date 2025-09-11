@@ -52,10 +52,9 @@ export default function GatesPage() {
           'content-type': 'application/json',
           'x-idempotency-key': crypto.randomUUID(),
           [TRACE_HEADER]: trace_id,
-          authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-        },
-        body: JSON.stringify({ gate_id: selected.id, inputs: {} }),
-      });
+          authorization: `Bearer ${localStorage.getItem('token') || '',
+        credentials: 'include'}`},
+        body: JSON.stringify({ gate_id: selected.id, inputs: {} })});
       uiLog('gate_run', { id: selected.id, status: res.status, trace_id });
       if (!res.ok) throw new Error(String(res.status));
       const data = await res.json();
@@ -69,9 +68,9 @@ export default function GatesPage() {
 
   async function streamJob(jobId: string) {
     try {
-      const res = await fetch(`/api/gates/stream?job_id=${encodeURIComponent(jobId)}`, {
-        headers: { authorization: `Bearer ${localStorage.getItem('token') || ''}` },
-      });
+      const res = await fetch(`/api/gates/stream?job_id=${encodeURIComponent(jobId),
+        credentials: 'include'}`, {
+        headers: { authorization: `Bearer ${localStorage.getItem('token') || ''}` }});
       if (!res.ok || !res.body) return;
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -106,7 +105,8 @@ export default function GatesPage() {
 
   async function pollStatus(jobId: string) {
     try {
-      const res = await fetch(`/api/gates/jobs/${jobId}`, { headers: { authorization: `Bearer ${localStorage.getItem('token') || ''}` } });
+      const res = await fetch(`/api/gates/jobs/${jobId}`, { headers: { authorization: `Bearer ${localStorage.getItem('token') || '',
+        credentials: 'include'}` } });
       if (!res.ok) return;
       const data = await res.json();
       setRuns((rs) => rs.map((j) => (j.job_id === jobId ? { ...j, status: data.job.status } : j)));

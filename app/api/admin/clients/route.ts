@@ -95,7 +95,7 @@ export const GET = withAdminAuth(['viewer'])(async (req: NextRequest) => {
   }
 });
 
-export const POST = withAdminAuth(['manager'])(async (req: NextRequest, user) => {
+export const POST = withAdminAuth(['admin', 'manager'])(async (req: NextRequest, user) => {
   try {
     const body = await req.json();
     const { 

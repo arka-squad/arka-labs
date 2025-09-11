@@ -44,8 +44,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
       stats: typeof projectData.stats === 'string' ? JSON.parse(projectData.stats) : (projectData.stats || {}),
       created_by: projectData.created_by,
       created_at: projectData.created_at,
-      updated_at: projectData.updated_at || projectData.created_at,
-    };
+      updated_at: projectData.updated_at || projectData.created_at};
     
     // Generate ETag based on updated_at
     const etag = `"${Buffer.from((result.updated_at || result.created_at).toString()).toString('base64')}"`;

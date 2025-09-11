@@ -5,8 +5,7 @@ import { verifyToken } from '../../../lib/auth';
 
 const exchangeSchema = z.object({
   provider: z.enum(['openai', 'anthropic', 'openrouter', 'vercel_ai']),
-  key: z.string().min(1),
-});
+  key: z.string().min(1)});
 
 export async function POST(request: Request) {
 

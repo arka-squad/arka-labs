@@ -31,8 +31,7 @@ const DEFAULT_IMAGE = {
   alt: 'Aperçu du cockpit Arka – board et actions visibles',
   srcset:
     '/assets/hero/arkabox-board.png?w=480 480w, /assets/hero/arkabox-board.png?w=768 768w, /assets/hero/arkabox-board.png?w=1200 1200w, /assets/hero/arkabox-board.png?w=1600 1600w',
-  sizes: '(max-width: 768px) 90vw, (max-width: 1200px) 40vw, 560px',
-};
+  sizes: '(max-width: 768px) 90vw, (max-width: 1200px) 40vw, 560px'};
 
 export default function Hero({
   badge = DEFAULT_BADGE,
@@ -40,8 +39,7 @@ export default function Hero({
   subtitle = DEFAULT_SUBTITLE,
   chips = DEFAULT_CHIPS,
   ctas = DEFAULT_CTAS,
-  image = DEFAULT_IMAGE,
-}: HeroProps) {
+  image = DEFAULT_IMAGE}: HeroProps) {
   return (
     <section id="hero" aria-label="Section de tête" className="py-16 md:py-20 lg:py-24 text-white">
       <div className="mx-auto max-w-[1440px] px-6 grid grid-cols-12 gap-x-6">

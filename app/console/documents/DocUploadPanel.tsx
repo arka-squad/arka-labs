@@ -16,8 +16,7 @@ export function DocUploadPanel({
   onUpload,
   onDelete,
   state,
-  readOnly = false,
-}: {
+  readOnly = false}: {
   docs: Doc[];
   onUpload: (files: File[], tags: string[]) => void;
   onDelete: (id: number) => void;

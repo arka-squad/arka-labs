@@ -28,6 +28,7 @@ export default function CockpitShell({ children }: CockpitShellProps) {
           onChange={(view) => setCurrentView(view)}
           items={[
             { id: 'dashboard', label: 'Dashboard' },
+            { id: 'agents', label: 'Agents' },
             { id: 'roadmap', label: 'Roadmap' },
             { id: 'gouv', label: 'Gouvernance' },
             { id: 'docs', label: 'DocDesk' },

@@ -7,8 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
-  type KeyboardEvent as ReactKeyboardEvent,
-} from 'react';
+  type KeyboardEvent as ReactKeyboardEvent} from 'react';
 import { uiLog } from '../../../lib/ui-log';
 
 export type AgentCardData = {
@@ -34,8 +33,7 @@ export default function AgentsSlider({
   initialIndex = 0,
   onSlide,
   onExpand,
-  onReset,
-}: AgentsSliderProps) {
+  onReset}: AgentsSliderProps) {
   const railRef = useRef<HTMLDivElement>(null);
 
   // Use HTMLElement because <article> is HTMLArticleElement, not HTMLDivElement
@@ -53,8 +51,7 @@ export default function AgentsSlider({
     const max = rail.scrollWidth - rail.clientWidth;
     rail.scrollTo({
       left: Math.max(0, Math.min(target, max)),
-      behavior: smooth ? 'smooth' : 'auto',
-    });
+      behavior: smooth ? 'smooth' : 'auto'});
     if (shouldFocus) try { (card as HTMLElement).focus({ preventScroll: true } as any); } catch {}
   }, []);
 
@@ -149,48 +146,42 @@ export default function AgentsSlider({
               role: 'RH',
               image: '/assets/hero/arkabox.png',
               summary: 'Prépare dossiers, contrats, onboarding.',
-              skills: ['Dossiers RH', 'Contrats', 'Onboarding'],
-            },
+              skills: ['Dossiers RH', 'Contrats', 'Onboarding']},
             {
               id: 'edu',
               title: 'Formateur',
               role: 'ÉDU',
               image: '/assets/hero/arkabox.png',
               summary: 'Parcours, évaluations, ateliers.',
-              skills: ['Parcours', 'Évaluations', 'Ateliers'],
-            },
+              skills: ['Parcours', 'Évaluations', 'Ateliers']},
             {
               id: 'qual',
               title: 'Qualité',
               role: 'QUAL',
               image: '/assets/hero/arkabox.png',
               summary: 'Processus, audits, conformité.',
-              skills: ['Processus', 'Audits', 'Conformité'],
-            },
+              skills: ['Processus', 'Audits', 'Conformité']},
             {
               id: 'org',
               title: 'Organisation',
               role: 'ORG',
               image: '/assets/hero/arkabox.png',
               summary: 'Roadmaps, risques, arbitrages.',
-              skills: ['Roadmaps', 'Risques', 'Arbitrages'],
-            },
+              skills: ['Roadmaps', 'Risques', 'Arbitrages']},
             {
               id: 'support',
               title: 'Support',
               role: 'SUP',
               image: '/assets/hero/arkabox.png',
               summary: 'Tickets, réponses, satisfaction.',
-              skills: ['Tickets', 'Réponses', 'Satisfaction'],
-            },
+              skills: ['Tickets', 'Réponses', 'Satisfaction']},
             {
               id: 'marketing',
               title: 'Marketing',
               role: 'MKT',
               image: '/assets/hero/arkabox.png',
               summary: 'Campagnes, contenus, analytics.',
-              skills: ['Campagnes', 'Contenus', 'Analytics'],
-            },
+              skills: ['Campagnes', 'Contenus', 'Analytics']},
           ],
     [items],
   );
@@ -277,8 +268,7 @@ export default function AgentsSlider({
             scrollBehavior: 'smooth',
             msOverflowStyle: 'none',
             scrollbarWidth: 'none',
-            scrollbarGutter: 'stable both-edges',
-          }}
+            scrollbarGutter: 'stable both-edges'}}
         >
           {data.map((a, i) => (
             <article

@@ -26,8 +26,7 @@ export default function DashboardPage() {
     const fakeTrend = {
       ttft: [1.6, 1.5, 1.7, 1.55, 1.48, 1.52, 1.5],
       rtt: [3.4, 3.2, 3.5, 3.3, 3.1, 3.25, 3.2],
-      err: [0.9, 0.8, 1.0, 0.7, 0.8, 0.9, 0.8],
-    };
+      err: [0.9, 0.8, 1.0, 0.7, 0.8, 0.9, 0.8]};
     const fakeRoadmap = [
       { id: 'R1-1', label: 'Console core', from: 1, to: 3, color: '#6EE7B7' },
       { id: 'OBS-2', label: 'Observabilité', from: 2, to: 4, color: '#93C5FD' },

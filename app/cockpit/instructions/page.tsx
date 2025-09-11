@@ -75,7 +75,7 @@ export default function InstructionsPage() {
     try {
       setLoading(true);
       const response = await fetch('/api/admin/instructions', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
+  , headers: {  }
       });
 
       if (!response.ok) throw new Error('Failed to fetch instructions');
@@ -92,7 +92,7 @@ export default function InstructionsPage() {
   const loadSquads = async () => {
     try {
       const response = await fetch('/api/admin/squads?status=active', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
+  , headers: {  }
       });
       if (response.ok) {
         const data = await response.json();
@@ -106,7 +106,7 @@ export default function InstructionsPage() {
   const loadProjects = async () => {
     try {
       const response = await fetch('/api/projects?status=active', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
+  , headers: {  }
       });
       if (response.ok) {
         const data = await response.json();
@@ -122,13 +122,12 @@ export default function InstructionsPage() {
       const response = await fetch('/api/admin/instructions', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`
-        },
+          'Content-Type': 'application/json'},
         body: JSON.stringify({
           ...newInstruction,
           project_id: newInstruction.project_id || undefined
-        })
+        ,
+        credentials: 'include'})
       });
 
       if (response.ok) {
@@ -155,10 +154,9 @@ export default function InstructionsPage() {
       const response = await fetch(`/api/admin/instructions/${instructionId}`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`
-        },
-        body: JSON.stringify({ status: newStatus })
+          'Content-Type': 'application/json'},
+        body: JSON.stringify({ status: newStatus ,
+        credentials: 'include'})
       });
 
       if (response.ok) {
@@ -176,8 +174,9 @@ export default function InstructionsPage() {
 
     try {
       const response = await fetch(`/api/admin/instructions/${instructionId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
+  ,
+        credentials: 'include'      method: 'DELETE',
+        headers: {  }
       });
 
       if (response.ok) {

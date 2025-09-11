@@ -36,9 +36,9 @@ export function useRealTimeUpdates<T>({
     try {
       const response = await fetch(endpoint, {
         headers: { 
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
           'X-Real-Time': 'true'
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {

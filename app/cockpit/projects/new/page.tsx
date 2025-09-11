@@ -51,9 +51,7 @@ export default function NewProjectPage() {
     try {
       setClientsLoading(true);
       const response = await fetch('/api/admin/clients', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include'
         }
       });
 
@@ -88,9 +86,7 @@ export default function NewProjectPage() {
 
       const response = await fetch('/api/admin/projects', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`,
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(submitData)

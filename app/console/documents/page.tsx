@@ -58,8 +58,7 @@ export default function DocumentsPage() {
           role,
           page,
           page_size: pageSize,
-          trace_id,
-        });
+          trace_id});
       } finally {
         setLoading(false);
       }
@@ -85,8 +84,7 @@ export default function DocumentsPage() {
         const response = await apiFetch('/api/documents', {
           method: 'POST',
           body: form,
-          headers: { [TRACE_HEADER]: trace_id },
-        });
+          headers: { [TRACE_HEADER]: trace_id }});
       const res = await response.json();
         const duration_ms = Math.round(performance.now() - start);
         uiLog('doc_upload', { status: res.status, duration_ms, role, trace_id });
@@ -108,8 +106,7 @@ export default function DocumentsPage() {
           status: 'error',
           duration_ms,
           role,
-          trace_id,
-        });
+          trace_id});
       } finally {
         setLoading(false);
       }
@@ -140,8 +137,7 @@ export default function DocumentsPage() {
         status: 'error',
         duration_ms,
         role,
-        trace_id,
-      });
+        trace_id});
     } finally {
       setLoading(false);
     }

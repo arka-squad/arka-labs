@@ -65,9 +65,7 @@ export default function NewSquadPage() {
     try {
       setProjectsLoading(true);
       const response = await fetch('/api/admin/projects', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include'
         }
       });
 
@@ -101,9 +99,7 @@ export default function NewSquadPage() {
     try {
       const response = await fetch('/api/admin/squads', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`,
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(form)

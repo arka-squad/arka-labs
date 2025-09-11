@@ -5,8 +5,7 @@ import { testProviderKey } from '../../../../lib/providers/router';
 const BodySchema = z.object({
   provider: z.string(),
   model: z.string(),
-  apiKey: z.string().min(1),
-});
+  apiKey: z.string().min(1)});
 
 export async function POST(request: Request) {
   const json = await request.json();

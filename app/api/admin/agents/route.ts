@@ -1,416 +1,286 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireManager, requireViewer } from '@/lib/rbac-admin-b24';
+import { sql, getDb } from '@/lib/db';
+import { log } from '@/lib/logger';
 import { z } from 'zod';
-import { withAdminAuth } from '../../../../lib/rbac-admin';
-import { sql } from '../../../../lib/db';
-import { log } from '../../../../lib/logger';
-import { TRACE_HEADER } from '../../../../lib/trace';
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
-
-// Validation schemas for agents management
-const CreateAgentSchema = z.object({
-  name: z.string().min(2).max(100),
-  role: z.string().min(3).max(100),
-  domaine: z.enum(['RH', 'Tech', 'Marketing', 'Finance', 'Ops']),
-  version: z.string().regex(/^\d+\.\d+$/).optional().default('1.0'),
-  description: z.string().max(1000).optional(),
-  tags: z.array(z.string()).optional().default([]),
-  prompt_system: z.string().min(10).max(5000),
-  temperature: z.number().min(0).max(2).optional().default(0.7),
-  max_tokens: z.number().min(100).max(8000).optional().default(2048),
-  is_template: z.boolean().optional().default(false),
-  original_agent_id: z.string().uuid().optional()
+// Schema validation for agent creation
+const createAgentSchema = z.object({
+  name: z.string().min(1).max(255),
+  template_id: z.string().uuid().optional(),
+  project_id: z.number().int().positive(),
+  role: z.string().min(1).max(50),
+  domaine: z.enum(['RH', 'Finance', 'Marketing', 'Operations', 'Support']),
+  configuration: z.object({
+    temperature: z.number().min(0).max(1).optional(),
+    max_tokens: z.number().min(1).max(10000).optional(),
+    tools: z.array(z.string()).optional(),
+    policies: z.array(z.string()).optional(),
+    provider_preference: z.enum(['claude', 'gpt', 'gemini']).optional()
+  }).optional(),
+  wake_prompt: z.string().optional()
 });
 
-const ListAgentsSchema = z.object({
-  page: z.string().optional().default('1'),
-  limit: z.string().optional().default('20'),
-  domaine: z.enum(['RH', 'Tech', 'Marketing', 'Finance', 'Ops']).optional(),
-  is_template: z.enum(['true', 'false']).optional(),
-  min_performance: z.string().optional(),
-  search: z.string().optional(),
-  status: z.enum(['active', 'inactive', 'archived']).optional()
-});
+// GET /api/admin/agents - List all agents
+export const GET = requireViewer()(
+  async (req: NextRequest, user: any) => {
+    try {
+      const url = new URL(req.url);
+      const project_id = url.searchParams.get('project_id');
+      const client_id = url.searchParams.get('client_id');
+      const status = url.searchParams.get('status') || 'active';
+      const page = parseInt(url.searchParams.get('page') || '1');
+      const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 100);
+      const offset = (page - 1) * limit;
 
-// GET /api/admin/agents - List agents with performance metrics
-export const GET = withAdminAuth(['agents:read'])(async (req, user) => {
-  const start = Date.now();
-  const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
-  const url = new URL(req.url);
-  const searchParams = Object.fromEntries(url.searchParams.entries());
-  
-  try {
-    const { page, limit, domaine, is_template, min_performance, search, status } = ListAgentsSchema.parse(searchParams);
-    const pageNum = Math.max(1, parseInt(page));
-    const limitNum = Math.min(50, Math.max(1, parseInt(limit)));
-    const offset = (pageNum - 1) * limitNum;
+      let query = `
+        SELECT 
+          ai.*,
+          at.name as template_name,
+          at.category as template_category,
+          p.name as project_name,
+          c.name as client_name,
+          COUNT(*) OVER() as total_count
+        FROM agent_instances ai
+        LEFT JOIN agent_templates at ON ai.template_id = at.id
+        LEFT JOIN projects p ON ai.project_id = p.id
+        LEFT JOIN clients c ON ai.client_id = c.id
+        WHERE ai.deleted_at IS NULL
+      `;
 
-    // Build dynamic WHERE clause
-    const whereConditions = ['a.deleted_at IS NULL'];
-    const whereParams = [];
+      const params: any[] = [];
+      let paramIndex = 1;
 
-    if (domaine) {
-      whereConditions.push(`a.domaine = $${whereParams.length + 1}`);
-      whereParams.push(domaine);
+      if (project_id) {
+        query += ` AND ai.project_id = $${paramIndex++}`;
+        params.push(parseInt(project_id));
+      }
+
+      if (client_id) {
+        query += ` AND ai.client_id = $${paramIndex++}`;
+        params.push(client_id);
+      }
+
+      if (status && status !== 'all') {
+        query += ` AND ai.status = $${paramIndex++}`;
+        params.push(status);
+      }
+
+      // Apply RBAC filters for non-admin users
+      if (user.role === 'manager') {
+        query += ` AND ai.created_by = $${paramIndex++}`;
+        params.push(user.email);
+      } else if (user.role === 'operator') {
+        // Operators can only see agents from their assigned projects
+        query += ` AND ai.project_id IN (
+          SELECT project_id FROM user_project_assignments 
+          WHERE user_id = $${paramIndex++}
+        )`;
+        params.push(user.id);
+      }
+
+      query += ` ORDER BY ai.created_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex}`;
+      params.push(limit, offset);
+
+      // Use direct database query for dynamic SQL
+      const db = getDb();
+      const result = await db.query(query, params);
+      const rows = result.rows;
+      
+      const total = rows[0]?.total_count || 0;
+      const agents = rows.map((row: any) => {
+        const { total_count, ...agent } = row;
+        return agent;
+      });
+
+      log('info', 'agents_listed', { 
+        route: '/api/admin/agents', 
+        status: 200,
+        user: user.email,
+        count: agents.length,
+        filters: { project_id, client_id, status }
+      });
+
+      return NextResponse.json({
+        agents,
+        pagination: {
+          page,
+          limit,
+          total: parseInt(total),
+          pages: Math.ceil(parseInt(total) / limit)
+        }
+      });
+
+    } catch (error) {
+      log('error', 'agents_list_failed', { 
+        route: '/api/admin/agents', 
+        status: 500,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      
+      return NextResponse.json(
+        { error: 'Failed to fetch agents' },
+        { status: 500 }
+      );
     }
-
-    if (is_template) {
-      whereConditions.push(`a.is_template = $${whereParams.length + 1}`);
-      whereParams.push(is_template === 'true');
-    }
-
-    if (status) {
-      whereConditions.push(`a.status = $${whereParams.length + 1}`);
-      whereParams.push(status);
-    } else {
-      whereConditions.push(`a.status = 'active'`); // Default to active
-    }
-
-    if (search) {
-      whereConditions.push(`(a.name ILIKE $${whereParams.length + 1} OR a.role ILIKE $${whereParams.length + 1} OR a.description ILIKE $${whereParams.length + 1})`);
-      whereParams.push(`%${search}%`);
-    }
-
-    const whereClause = whereConditions.join(' AND ');
-
-    // Query agents with performance statistics
-    const agentsQuery = sql`
-      SELECT 
-        a.id,
-        a.name,
-        a.role,
-        a.domaine,
-        a.version,
-        a.description,
-        a.tags,
-        a.is_template,
-        a.original_agent_id,
-        a.temperature,
-        a.max_tokens,
-        a.status,
-        a.created_at,
-        a.updated_at,
-        -- Performance metrics
-        COUNT(DISTINCT pa.project_id) FILTER (WHERE pa.status = 'active' AND p.status = 'active') as projets_actifs,
-        COUNT(DISTINCT pa.project_id) as projets_total,
-        -- Calculate performance score based on activity and version
-        CASE 
-          WHEN COUNT(DISTINCT pa.project_id) = 0 THEN 0
-          ELSE LEAST(
-            (CAST(SUBSTRING(a.version FROM '^([0-9]+)') AS INTEGER) * 20) +
-            (COUNT(DISTINCT pa.project_id) FILTER (WHERE pa.status = 'active') * 15) +
-            (COUNT(DISTINCT pa.project_id) * 8),
-            100
-          )
-        END as performance_score,
-        -- Original agent info for duplicates
-        orig.name as original_agent_name,
-        orig.version as original_agent_version
-      FROM agents a
-      LEFT JOIN project_assignments pa ON a.id = pa.agent_id
-      LEFT JOIN projects p ON pa.project_id = p.id AND p.deleted_at IS NULL
-      LEFT JOIN agents orig ON a.original_agent_id = orig.id
-      WHERE ${sql.raw(whereClause)}
-      GROUP BY a.id, orig.name, orig.version
-      ORDER BY a.created_at DESC
-      LIMIT ${limitNum} OFFSET ${offset}
-    `;
-
-    // Count total for pagination
-    const countQuery = sql`
-      SELECT COUNT(*) as total
-      FROM agents a
-      WHERE ${sql.raw(whereClause)}
-    `;
-
-    const [agents, totalResult] = await Promise.all([
-      agentsQuery,
-      countQuery
-    ]);
-
-    // Filter by performance if specified
-    let filteredAgents = agents;
-    if (min_performance) {
-      const minPerf = parseInt(min_performance);
-      filteredAgents = agents.filter(agent => parseInt(agent.performance_score) >= minPerf);
-    }
-
-    const total = parseInt(totalResult[0]?.total || '0');
-    const totalPages = Math.ceil(total / limitNum);
-
-    const response = NextResponse.json({
-      items: filteredAgents.map(agent => ({
-        ...agent,
-        projets_actifs: parseInt(agent.projets_actifs),
-        projets_total: parseInt(agent.projets_total),
-        performance_score: parseInt(agent.performance_score)
-      })),
-      pagination: {
-        page: pageNum,
-        limit: limitNum,
-        total: filteredAgents.length,
-        total_pages: totalPages,
-        has_next: pageNum < totalPages,
-        has_prev: pageNum > 1
-      },
-      filters_applied: { domaine, is_template, min_performance, search, status }
-    });
-
-    log('info', 'agents_list_success', {
-      route: '/api/admin/agents',
-      method: 'GET',
-      status: response.status,
-      duration_ms: Date.now() - start,
-      trace_id: traceId,
-      user_id: user.sub,
-      page: pageNum,
-      results: filteredAgents.length,
-      total
-    });
-
-    return response;
-
-  } catch (error) {
-    log('error', 'agents_list_error', {
-      route: '/api/admin/agents',
-      method: 'GET',
-      status: 500,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      duration_ms: Date.now() - start,
-      trace_id: traceId,
-      user_id: user.sub
-    });
-
-    return NextResponse.json(
-      { 
-        error: 'Failed to list agents',
-        code: 'AGENTS_LIST_ERROR',
-        trace_id: traceId
-      },
-      { status: 500 }
-    );
   }
-});
+);
 
 // POST /api/admin/agents - Create new agent
-export const POST = withAdminAuth(['agents:write'])(async (req, user) => {
-  const start = Date.now();
-  const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
-  
-  try {
-    const body = await req.json();
-    const data = CreateAgentSchema.parse(body);
-
-    // Check for duplicate names among templates
-    if (data.is_template) {
-      const existingAgent = await sql`
-        SELECT id FROM agents 
-        WHERE LOWER(name) = LOWER(${data.name}) 
-        AND is_template = true
-        AND status = 'active'
-        AND deleted_at IS NULL
+export const POST = requireManager()(
+  async (req: NextRequest, user: any) => {
+    try {
+      const body = await req.json();
+      
+      // Validate input
+      const validatedData = createAgentSchema.parse(body);
+      
+      // Check if project exists and user has access
+      const project = await sql`
+        SELECT id, client_id FROM projects 
+        WHERE id = ${validatedData.project_id}
       `;
-
-      if (existingAgent.length > 0) {
+      
+      if (project.length === 0) {
         return NextResponse.json(
-          { 
-            error: 'Un agent template avec ce nom existe déjà',
-            code: 'AGENT_NAME_CONFLICT',
-            trace_id: traceId
-          },
-          { status: 409 }
-        );
-      }
-    }
-
-    // Validate original agent exists if specified
-    if (data.original_agent_id) {
-      const [originalAgent] = await sql`
-        SELECT id, name, version FROM agents 
-        WHERE id = ${data.original_agent_id} 
-        AND deleted_at IS NULL
-      `;
-
-      if (!originalAgent) {
-        return NextResponse.json(
-          { 
-            error: 'Agent original introuvable',
-            code: 'ORIGINAL_AGENT_NOT_FOUND',
-            trace_id: traceId
-          },
+          { error: 'Project not found' },
           { status: 404 }
         );
       }
-    }
 
-    // Create new agent
-    const [newAgent] = await sql`
-      INSERT INTO agents (
-        name, role, domaine, version, description, tags,
-        prompt_system, temperature, max_tokens, is_template,
-        original_agent_id, status, created_by
-      ) VALUES (
-        ${data.name}, ${data.role}, ${data.domaine}, ${data.version},
-        ${data.description || ''}, ${JSON.stringify(data.tags)},
-        ${data.prompt_system}, ${data.temperature}, ${data.max_tokens},
-        ${data.is_template}, ${data.original_agent_id}, 'active', ${user.sub}
-      )
-      RETURNING *
-    `;
+      // If template_id provided, fetch template config
+      let templateConfig = {};
+      let templateData = null;
+      if (validatedData.template_id) {
+        const template = await sql`
+          SELECT * FROM agent_templates 
+          WHERE id = ${validatedData.template_id} AND is_active = true
+        `;
+        
+        if (template.length === 0) {
+          return NextResponse.json(
+            { error: 'Template not found or inactive' },
+            { status: 404 }
+          );
+        }
+        
+        templateData = template[0];
+        templateConfig = templateData.default_config;
+      }
 
-    const response = NextResponse.json({
-      ...newAgent,
-      projets_actifs: 0,
-      projets_total: 0,
-      performance_score: 0,
-      tags: JSON.parse(newAgent.tags || '[]')
-    }, { status: 201 });
+      // Merge configurations (template -> custom)
+      const finalConfig = {
+        ...templateConfig,
+        ...validatedData.configuration
+      };
 
-    log('info', 'agent_create_success', {
-      route: '/api/admin/agents',
-      method: 'POST',
-      status: response.status,
-      duration_ms: Date.now() - start,
-      trace_id: traceId,
-      user_id: user.sub,
-      agent_id: newAgent.id,
-      agent_name: newAgent.name,
-      is_template: newAgent.is_template,
-      is_duplicate: !!newAgent.original_agent_id
-    });
-
-    return response;
-
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          error: 'Données invalides',
-          code: 'VALIDATION_ERROR',
-          details: error.errors,
-          trace_id: traceId
-        },
-        { status: 400 }
+      // Get or create context for this agent
+      const contextHierarchy = await getEffectiveContext(
+        project[0].client_id,
+        validatedData.project_id
       );
-    }
 
-    log('error', 'agent_create_error', {
-      route: '/api/admin/agents',
-      method: 'POST',
-      status: 500,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      duration_ms: Date.now() - start,
-      trace_id: traceId,
-      user_id: user.sub
-    });
+      // Create agent instance
+      const [newAgent] = await sql`
+        INSERT INTO agent_instances (
+          template_id,
+          project_id,
+          client_id,
+          name,
+          role,
+          domaine,
+          configuration,
+          context_config,
+          wake_prompt,
+          status,
+          created_by
+        ) VALUES (
+          ${validatedData.template_id || null},
+          ${validatedData.project_id},
+          ${project[0].client_id},
+          ${validatedData.name},
+          ${validatedData.role},
+          ${validatedData.domaine},
+          ${JSON.stringify(finalConfig)},
+          ${JSON.stringify(contextHierarchy)},
+          ${validatedData.wake_prompt || templateData?.base_prompt || ''},
+          'configuring',
+          ${user.email}
+        ) RETURNING *
+      `;
 
-    return NextResponse.json(
-      { 
-        error: 'Failed to create agent',
-        code: 'AGENT_CREATE_ERROR',
-        trace_id: traceId
-      },
-      { status: 500 }
-    );
-  }
-});
+      // Initialize agent context in hierarchy
+      await sql`
+        INSERT INTO context_hierarchy (
+          level, entity_id, configuration, parent_level, parent_entity_id
+        ) VALUES (
+          'agent',
+          ${newAgent.id},
+          ${JSON.stringify(finalConfig)},
+          'project',
+          ${validatedData.project_id.toString()}
+        ) ON CONFLICT (level, entity_id) DO UPDATE
+        SET configuration = EXCLUDED.configuration,
+            updated_at = NOW()
+      `;
 
-// PUT /api/admin/agents - Batch operations
-export const PUT = withAdminAuth(['agents:write'])(async (req, user) => {
-  const start = Date.now();
-  const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
-  
-  try {
-    const body = await req.json();
-    const { action, agent_ids } = body;
+      log('info', 'agent_created', { 
+        route: '/api/admin/agents', 
+        status: 201,
+        user: user.email,
+        agent_id: newAgent.id,
+        project_id: validatedData.project_id
+      });
 
-    if (!Array.isArray(agent_ids) || agent_ids.length === 0) {
-      return NextResponse.json(
-        { 
-          error: 'Agent IDs array required',
-          code: 'MISSING_AGENT_IDS',
-          trace_id: traceId
-        },
-        { status: 400 }
-      );
-    }
+      return NextResponse.json(newAgent, { status: 201 });
 
-    let result;
-    switch (action) {
-      case 'activate':
-        result = await sql`
-          UPDATE agents 
-          SET status = 'active', updated_at = NOW()
-          WHERE id = ANY(${agent_ids}) AND deleted_at IS NULL
-          RETURNING id, name, status
-        `;
-        break;
-      
-      case 'deactivate':
-        result = await sql`
-          UPDATE agents 
-          SET status = 'inactive', updated_at = NOW()
-          WHERE id = ANY(${agent_ids}) AND deleted_at IS NULL
-          RETURNING id, name, status
-        `;
-        break;
-      
-      case 'archive':
-        result = await sql`
-          UPDATE agents 
-          SET status = 'archived', updated_at = NOW()
-          WHERE id = ANY(${agent_ids}) AND deleted_at IS NULL
-          RETURNING id, name, status
-        `;
-        break;
-      
-      default:
+    } catch (error) {
+      if (error instanceof z.ZodError) {
         return NextResponse.json(
-          { 
-            error: 'Action invalide. Actions supportées: activate, deactivate, archive',
-            code: 'INVALID_ACTION',
-            trace_id: traceId
-          },
+          { error: 'Invalid input', details: error.errors },
           { status: 400 }
         );
+      }
+
+      log('error', 'agent_creation_failed', { 
+        route: '/api/admin/agents', 
+        status: 500,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      
+      return NextResponse.json(
+        { error: 'Failed to create agent' },
+        { status: 500 }
+      );
     }
-
-    log('info', 'agents_batch_operation_success', {
-      route: '/api/admin/agents',
-      method: 'PUT',
-      status: 200,
-      duration_ms: Date.now() - start,
-      trace_id: traceId,
-      user_id: user.sub,
-      action,
-      affected_count: result.length
-    });
-
-    return NextResponse.json({
-      action,
-      affected_count: result.length,
-      affected_agents: result
-    });
-
-  } catch (error) {
-    log('error', 'agents_batch_operation_error', {
-      route: '/api/admin/agents',
-      method: 'PUT',
-      status: 500,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      duration_ms: Date.now() - start,
-      trace_id: traceId,
-      user_id: user.sub
-    });
-
-    return NextResponse.json(
-      { 
-        error: 'Failed to perform batch operation',
-        code: 'AGENTS_BATCH_ERROR',
-        trace_id: traceId
-      },
-      { status: 500 }
-    );
   }
-});
+);
+
+// Helper function to get effective context hierarchy
+async function getEffectiveContext(clientId: string, projectId: number) {
+  const contexts = await sql`
+    SELECT level, configuration, overrides
+    FROM context_hierarchy
+    WHERE (level = 'arka' AND entity_id = 'global')
+       OR (level = 'client' AND entity_id = ${clientId})
+       OR (level = 'project' AND entity_id = ${projectId.toString()})
+    ORDER BY 
+      CASE level 
+        WHEN 'arka' THEN 1
+        WHEN 'client' THEN 2
+        WHEN 'project' THEN 3
+      END
+  `;
+
+  // Merge contexts hierarchically
+  let effectiveConfig = {};
+  for (const context of contexts) {
+    effectiveConfig = {
+      ...effectiveConfig,
+      ...context.configuration,
+      ...(context.overrides || {})
+    };
+  }
+
+  return effectiveConfig;
+}

@@ -7,8 +7,7 @@ import '../design-system/tokens.css';
 
 
 export default function RootLayout({
-  children,
-}: {
+  children}: {
   children: React.ReactNode;
 }) {
   return (

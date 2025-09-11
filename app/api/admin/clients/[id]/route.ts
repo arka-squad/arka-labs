@@ -68,7 +68,7 @@ export const GET = withAdminAuth(['viewer'])(async (req, user, { params }) => {
 });
 
 // PUT /api/admin/clients/[id] - Update client
-export const PUT = withAdminAuth(['operator'])(async (req, user, { params }) => {
+export const PUT = withAdminAuth(['admin', 'manager', 'operator'])(async (req, user, { params }) => {
   const clientId = params.id;
   
   try {

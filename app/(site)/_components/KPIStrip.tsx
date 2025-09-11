@@ -3,8 +3,7 @@ import KpiBlock from './KpiBlock';
 export default function KPIStrip({
   ttft_ms = 1.5,
   rtt_ms = 3.2,
-  error_rate_percent = 0.8,
-}: { ttft_ms?: number; rtt_ms?: number; error_rate_percent?: number }) {
+  error_rate_percent = 0.8}: { ttft_ms?: number; rtt_ms?: number; error_rate_percent?: number }) {
   return (
     <section aria-label="Indicateurs clés" className="mx-auto mt-10 max-w-[1440px] px-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -53,9 +53,10 @@ export default function ProjectsPage() {
       if (priorityFilter) params.append('priorite', priorityFilter);
       if (searchTerm) params.append('search', searchTerm);
       
-      const response = await fetch(`/api/admin/projects?${params.toString()}`, {
+      const response = await fetch(`/api/admin/projects?${params.toString(),
+        credentials: 'include'}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+          ,
           'X-Trace-Id': `trace-${Date.now()}`
         }
       });

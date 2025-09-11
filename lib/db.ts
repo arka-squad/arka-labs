@@ -4,7 +4,21 @@ let pool: any = null;
 
 export function getDb() {
   if (!pool) {
-    pool = new Pool({ connectionString: process.env.POSTGRES_URL });
+    // Use DATABASE_URL from .env.local or fallback to POSTGRES_URL for Vercel
+    const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+    
+    if (!connectionString) {
+      console.warn('No database connection string found, using default localhost:5433');
+      pool = new Pool({
+        host: 'localhost',
+        port: 5433,
+        database: 'postgres',
+        user: 'postgres',
+        password: 'postgres'
+      });
+    } else {
+      pool = new Pool({ connectionString });
+    }
   }
   return pool;
 }

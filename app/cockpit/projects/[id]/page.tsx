@@ -72,9 +72,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
       
       // Load project details first
       const projectRes = await fetch(`/api/admin/projects/${params.id}`, {
-        headers: { 
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include'
         }
       });
 
@@ -90,9 +88,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
       
       // Load squads in parallel (if project exists)
       const squadsRes = await fetch(`/api/admin/projects/${params.id}/squads`, {
-        headers: { 
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include'
         }
       });
       
@@ -114,7 +110,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
   const loadAvailableSquads = async () => {
     try {
       const response = await fetch('/api/admin/squads?available_for_project=true', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
+  , headers: {  }
       });
       if (response.ok) {
         const data = await response.json();
@@ -130,10 +126,9 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
       const response = await fetch(`/api/admin/projects/${params.id}/squads`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`
-        },
-        body: JSON.stringify({ squad_id: squadId })
+          'Content-Type': 'application/json'},
+        body: JSON.stringify({ squad_id: squadId ,
+        credentials: 'include'})
       });
 
       if (response.ok) {
@@ -152,8 +147,9 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
     
     try {
       const response = await fetch(`/api/admin/projects/${params.id}/squads/${squadId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
+  ,
+        credentials: 'include'      method: 'DELETE',
+        headers: {  }
       });
 
       if (response.ok) {
