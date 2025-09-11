@@ -88,11 +88,13 @@ export async function POST(req: NextRequest) {
     }
     
     // Révoquer l'ancien refresh token
-    if (refreshPayload.jti && refreshPayload.exp) {
+    if (refreshPayload.jti) {
+      // Use a default expiry of 7 days for refresh tokens
+      const expiryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       await revokeToken(
         refreshPayload.jti,
         refreshPayload.sub,
-        new Date(refreshPayload.exp * 1000),
+        expiryDate,
         'refresh'
       );
     }
