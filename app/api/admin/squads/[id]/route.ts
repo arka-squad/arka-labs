@@ -164,6 +164,7 @@ export const GET = withAdminAuth(['squads:read'], 'squad')(async (req, user, { p
   } catch (error) {
     log('error', 'squad_detail_failed', {
       route: `/api/admin/squads/${squadId}`,
+      status: 500,
       method: 'GET',
       duration_ms: Date.now() - start,
       trace_id: traceId,
@@ -303,6 +304,7 @@ export const PATCH = withAdminAuth(['squads:update'], 'squad')(async (req, user,
   } catch (error) {
     log('error', 'squad_update_failed', {
       route: `/api/admin/squads/${squadId}`,
+      status: 500,
       method: 'PATCH',
       duration_ms: Date.now() - start,
       trace_id: traceId,

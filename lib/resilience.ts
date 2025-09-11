@@ -150,7 +150,7 @@ export async function processInstructionQueue() {
       await processInstruction(instruction, config);
     }
   } catch (error) {
-    log('error', 'queue_processing_failed', { error: error.message });
+    log('error', 'queue_processing_failed', { route: 'resilience', status: 500, error: error.message });
   }
 }
 
@@ -270,6 +270,8 @@ async function handleInstructionFailure(instruction: any, error: Error, config: 
     `;
     
     log('error', 'instruction_failed_permanently', { 
+      route: 'resilience',
+      status: 500,
       instruction_id: instructionId,
       error: error.message,
       attempts: retryAttempts + 1

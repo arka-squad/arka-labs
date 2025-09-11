@@ -242,7 +242,7 @@ export async function warmupCache(): Promise<void> {
     const duration = Date.now() - start;
     log('info', 'cache_warmup_completed', { duration_ms: duration });
   } catch (error) {
-    log('error', 'cache_warmup_failed', { error: error.message });
+    log('error', 'cache_warmup_failed', { route: 'cache', status: 500, error: error.message });
   }
 }
 
@@ -287,6 +287,6 @@ export async function checkCacheHealth(): Promise<{ healthy: boolean; type: stri
 if (typeof globalThis !== 'undefined' && !globalThis.__CACHE_INITIALIZED__) {
   globalThis.__CACHE_INITIALIZED__ = true;
   initCache().catch(error => {
-    log('error', 'cache_init_failed', { error: error.message });
+    log('error', 'cache_init_failed', { route: 'cache', status: 500, error: error.message });
   });
 }
