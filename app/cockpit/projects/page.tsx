@@ -157,7 +157,10 @@ export default function ProjectsPage() {
                 <Users size={16} />
                 <span>Gérer Squads</span>
               </button>
-              <button className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors">
+              <button 
+                onClick={() => window.location.href = '/admin/projects/new'}
+                className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
+              >
                 <Plus size={16} />
                 <span>Nouveau Projet</span>
               </button>

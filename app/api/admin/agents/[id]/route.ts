@@ -160,6 +160,7 @@ export const GET = withAdminAuth(['agents:read'])(async (req, user, { params }) 
   } catch (error) {
     log('error', 'agent_detail_error', {
       route: '/api/admin/agents/[id]',
+      status: 500,
       method: 'GET',
       error: error.message,
       duration_ms: Date.now() - start,

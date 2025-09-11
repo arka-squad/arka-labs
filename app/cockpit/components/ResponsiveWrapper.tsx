@@ -59,7 +59,7 @@ export default function ResponsiveWrapper({
         ${showMobileNav ? 'pt-4 md:pt-6' : 'pt-6'}
         px-4 sm:px-6 lg:px-8
         pb-6
-        pr-20 md:pr-8 lg:pr-8
+        pr-0 md:pr-0 lg:pr-0
         ${contentClassName}
       `}>
         <div className={`max-w-7xl mx-auto ${innerClassName}`}>

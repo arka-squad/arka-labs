@@ -265,7 +265,7 @@ export type HeaderProps = {
 
 
 
-# Qection 2 - Hero (bloc sombre #0b1015) — Spécification ultra‑détaillée (v1.0)
+# Section 2 - Hero (bloc sombre #0b1015) — Spécification ultra‑détaillée (v1.0)
 
 > **Concerne** : premier bloc de la landing (visuel fort + promesse + CTAs). Thème **sombre** local, page **claire** (`#e3e0db`). **Sans radius**, « gros bloc » plein‑largeur du container.
 

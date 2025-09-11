@@ -28,7 +28,11 @@ export default function AdminDashboard() {
     enabled: true,
     onUpdate: (data) => {
       if (data) {
-        setStats(data);
+        if (data.success && data.stats) {
+          setStats(data.stats);
+        } else {
+          setStats(data);
+        }
       }
     }
   });
@@ -52,7 +56,11 @@ export default function AdminDashboard() {
 
       if (response.ok) {
         const data = await response.json();
-        setStats(data);
+        if (data.success && data.stats) {
+          setStats(data.stats);
+        } else {
+          setStats(data);
+        }
       } else {
         throw new Error('Failed to load dashboard stats');
       }
@@ -123,10 +131,10 @@ export default function AdminDashboard() {
   }
 
   const tabs = [
-    { id: 'squads' as const, label: '🔷 Squads', count: stats.squads.total },
-    { id: 'agents' as const, label: '👤 Agents', count: 48 },
-    { id: 'projets' as const, label: '📋 Projets', count: stats.projects.total },
-    { id: 'clients' as const, label: '🏢 Clients', count: 12 },
+    { id: 'squads' as const, label: '🔷 Squads', count: stats?.squads?.total || 0 },
+    { id: 'agents' as const, label: '👤 Agents', count: stats?.agents?.total || 0 },
+    { id: 'projets' as const, label: '📋 Projets', count: stats?.projects?.total || 0 },
+    { id: 'clients' as const, label: '🏢 Clients', count: stats?.clients?.total || 0 },
     { id: 'analytics' as const, label: '📊 Analytics' }
   ];
 
@@ -172,15 +180,15 @@ export default function AdminDashboard() {
               <div className="flex items-center space-x-4">
                 <div className="text-center">
                   <div className="text-xs text-gray-400">SQUADS</div>
-                  <div className="text-lg font-bold text-green-400">{stats.squads.total || 12}</div>
+                  <div className="text-lg font-bold text-green-400">{stats?.squads?.total || 0}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-gray-400">AGENTS</div>
-                  <div className="text-lg font-bold text-blue-400">48</div>
+                  <div className="text-lg font-bold text-blue-400">{stats?.agents?.total || 0}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-gray-400">PROJETS</div>
-                  <div className="text-lg font-bold text-yellow-400">{stats.projects.total || 8}</div>
+                  <div className="text-lg font-bold text-yellow-400">{stats?.projects?.total || 0}</div>
                 </div>
               </div>
               <div className="flex items-center space-x-2 text-sm">
@@ -258,12 +266,12 @@ export default function AdminDashboard() {
                 />
               </div>
               <div className="mb-2">
-                <div className="text-2xl font-bold text-white mb-1">{stats.squads.total}</div>
+                <div className="text-2xl font-bold text-white mb-1">{stats?.squads?.total || 0}</div>
                 <div className="text-gray-400 text-sm">Squads totales</div>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-green-400">{stats.squads.active} actives</span>
-                <span className="text-yellow-400">{stats.squads.inactive} inactives</span>
+                <span className="text-green-400">{stats?.squads?.active || 0} actives</span>
+                <span className="text-yellow-400">{stats?.squads?.inactive || 0} inactives</span>
               </div>
             </div>
           </LiveDataBadge>
@@ -282,12 +290,12 @@ export default function AdminDashboard() {
                 />
               </div>
               <div className="mb-2">
-                <div className="text-2xl font-bold text-white mb-1">{stats.projects.total}</div>
+                <div className="text-2xl font-bold text-white mb-1">{stats?.projects?.total || 0}</div>
                 <div className="text-gray-400 text-sm">Projets</div>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-green-400">{stats.projects.active} actifs</span>
-                <span className="text-red-400">{stats.projects.disabled} désactivés</span>
+                <span className="text-green-400">{stats?.projects?.active || 0} actifs</span>
+                <span className="text-red-400">{stats?.projects?.disabled || 0} désactivés</span>
               </div>
             </div>
           </LiveDataBadge>
@@ -306,13 +314,13 @@ export default function AdminDashboard() {
                 />
               </div>
               <div className="mb-2">
-                <div className="text-2xl font-bold text-white mb-1">{stats.instructions.total}</div>
+                <div className="text-2xl font-bold text-white mb-1">{stats?.instructions?.total || 0}</div>
                 <div className="text-gray-400 text-sm">Instructions</div>
               </div>
               <div className="grid grid-cols-3 gap-1 text-xs">
-                <span className="text-yellow-400">{stats.instructions.pending} en cours</span>
-                <span className="text-green-400">{stats.instructions.completed} OK</span>
-                <span className="text-red-400">{stats.instructions.failed} KO</span>
+                <span className="text-yellow-400">{stats?.instructions?.pending || 0} en cours</span>
+                <span className="text-green-400">{stats?.instructions?.completed || 0} OK</span>
+                <span className="text-red-400">{stats?.instructions?.failed || 0} KO</span>
               </div>
             </div>
           </LiveDataBadge>
@@ -328,12 +336,12 @@ export default function AdminDashboard() {
               </div>
               <div className="mb-2">
                 <div className="text-2xl font-bold text-white mb-1">
-                  {(stats.performance.success_rate * 100).toFixed(1)}%
+                  {((stats?.performance?.success_rate || 0) * 100).toFixed(1)}%
                 </div>
                 <div className="text-gray-400 text-sm">Taux de succès</div>
               </div>
               <div className="text-xs text-orange-400">
-                Moy: {stats.performance.avg_completion_hours.toFixed(1)}h
+                Moy: {(stats?.performance?.avg_completion_hours || 0).toFixed(1)}h
               </div>
             </div>
           </LiveDataBadge>

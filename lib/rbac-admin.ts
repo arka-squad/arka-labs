@@ -181,6 +181,17 @@ export function withAdminAuth(
       const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
       const start = Date.now();
 
+      // Bypass RBAC for development testing
+      if (process.env.RBAC_BYPASS === 'true') {
+        const mockUser: User = {
+          sub: 'dev-user',
+          role: 'admin' as Role,
+          email: 'dev@arka.ai',
+          name: 'Dev User'
+        };
+        return handler(req as AuthenticatedRequest, mockUser, context);
+      }
+
       // 1. Authentication
       const auth = req.headers.get('authorization');
       if (!auth || !auth.startsWith('Bearer ')) {
