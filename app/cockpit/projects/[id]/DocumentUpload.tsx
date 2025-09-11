@@ -90,7 +90,7 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Upload failed');
+        throw new Error(error.error || 'Échec du téléchargement');
       }
 
       updateFile(index, { status: 'success', progress: 100 });
@@ -98,7 +98,7 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
     } catch (error) {
       updateFile(index, { 
         status: 'error', 
-        error: error instanceof Error ? error.message : 'Upload failed',
+        error: error instanceof Error ? error.message : 'Échec du téléchargement',
         progress: 0 
       });
     }
@@ -123,8 +123,8 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
   };
 
   const formatFileSize = (bytes: number) => {
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    if (bytes === 0) return '0 Bytes';
+    const sizes = ['Octets', 'Ko', 'Mo', 'Go'];
+    if (bytes === 0) return '0 Octets';
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
   };
@@ -157,8 +157,8 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-700">
           <div>
-            <h2 className="text-xl font-semibold text-white">Upload Documents</h2>
-            <p className="text-gray-400 text-sm">Add documents to provide context for squad agents</p>
+            <h2 className="text-xl font-semibold text-white">Télécharger des documents</h2>
+            <p className="text-gray-400 text-sm">Ajoutez des documents pour fournir du contexte aux agents de l'équipe</p>
           </div>
           <button
             onClick={onClose}
@@ -184,16 +184,16 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
             >
               <Upload size={48} className="text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-white mb-2">
-                Drop files here or click to browse
+                Glissez-déposez les fichiers ici ou cliquez pour parcourir
               </h3>
               <p className="text-gray-400 mb-4">
-                Supports PDF, DOC, XLS, PPT, images and more (max 50MB each)
+                Compatible avec PDF, DOC, XLS, PPT, images et plus (50 Mo max chacun)
               </p>
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white font-medium"
               >
-                Select Files
+                Sélectionner des fichiers
               </button>
               <input
                 ref={fileInputRef}
@@ -245,26 +245,26 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm text-gray-300 mb-1">
-                          Document Name
+                          Nom du document
                         </label>
                         <input
                           type="text"
                           value={fileData.name}
                           onChange={(e) => updateFile(index, { name: e.target.value })}
                           className="w-full bg-gray-600 border border-gray-500 rounded px-3 py-2 text-white text-sm"
-                          placeholder="Document name"
+                          placeholder="Nom du document"
                         />
                       </div>
                       <div>
                         <label className="block text-sm text-gray-300 mb-1">
-                          Tags (comma-separated)
+                          Tags (séparés par des virgules)
                         </label>
                         <input
                           type="text"
                           value={fileData.tags}
                           onChange={(e) => updateFile(index, { tags: e.target.value })}
                           className="w-full bg-gray-600 border border-gray-500 rounded px-3 py-2 text-white text-sm"
-                          placeholder="spec, requirements, design"
+                          placeholder="spec, exigences, design"
                         />
                       </div>
                     </div>
@@ -273,7 +273,7 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
                   {fileData.status === 'uploading' && (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-300">Uploading...</span>
+                        <span className="text-gray-300">Téléchargement en cours...</span>
                         <span className="text-gray-300">{fileData.progress}%</span>
                       </div>
                       <div className="w-full bg-gray-600 rounded-full h-2">
@@ -287,13 +287,13 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
 
                   {fileData.status === 'error' && (
                     <div className="text-red-400 text-sm">
-                      Error: {fileData.error}
+                      Erreur : {fileData.error}
                     </div>
                   )}
 
                   {fileData.status === 'success' && (
                     <div className="text-green-400 text-sm">
-                      ✓ Upload completed successfully
+                      ✓ Téléchargement terminé avec succès
                     </div>
                   )}
                 </div>
@@ -305,7 +305,7 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
                 className="w-full border-2 border-dashed border-gray-600 hover:border-gray-500 rounded-lg p-4 text-gray-400 hover:text-gray-300 transition-colors"
                 disabled={isUploading}
               >
-                + Add More Files
+                + Ajouter d'autres fichiers
               </button>
               <input
                 ref={fileInputRef}
@@ -323,8 +323,8 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
         {files.length > 0 && (
           <div className="p-6 border-t border-gray-700 flex justify-between items-center">
             <div className="text-sm text-gray-400">
-              {files.length} file(s) selected
-              {hasErrors && <span className="text-red-400 ml-2">• Some uploads failed</span>}
+              {files.length} fichier(s) sélectionné(s)
+              {hasErrors && <span className="text-red-400 ml-2">• Certains téléchargements ont échoué</span>}
             </div>
             <div className="flex space-x-3">
               <button
@@ -332,7 +332,7 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
                 className="px-4 py-2 text-gray-400 hover:text-white"
                 disabled={isUploading}
               >
-                {allUploaded ? 'Close' : 'Cancel'}
+                {allUploaded ? 'Fermer' : 'Annuler'}
               </button>
               {!allUploaded && (
                 <button
@@ -340,7 +340,7 @@ export default function DocumentUpload({ projectId, onUploadSuccess, onClose }: 
                   disabled={isUploading || files.every(f => f.status !== 'pending')}
                   className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium"
                 >
-                  {isUploading ? 'Uploading...' : 'Upload All'}
+                  {isUploading ? 'Téléchargement...' : 'Tout télécharger'}
                 </button>
               )}
             </div>

@@ -158,7 +158,7 @@ export default function ProjectsPage() {
                 <span>Gérer Squads</span>
               </button>
               <button 
-                onClick={() => window.location.href = '/admin/projects/new'}
+                onClick={() => window.location.href = '/cockpit/projects/new'}
                 className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
               >
                 <Plus size={16} />
