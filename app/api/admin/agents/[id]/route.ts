@@ -162,7 +162,7 @@ export const GET = withAdminAuth(['agents:read'])(async (req, user, { params }) 
       route: '/api/admin/agents/[id]',
       status: 500,
       method: 'GET',
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -229,8 +229,8 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
     }
 
     // Build update query dynamically
-    const updateFields = [];
-    const updateValues = [];
+    const updateFields: string[] = [];
+    const updateValues: any[] = [];
     let paramIndex = 1;
 
     Object.entries(updates).forEach(([key, value]) => {
@@ -325,8 +325,9 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
 
     log('error', 'agent_update_error', {
       route: '/api/admin/agents/[id]',
+      status: 500,
       method: 'PATCH',
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
@@ -421,6 +422,7 @@ export const DELETE = withAdminAuth(['agents:delete'])(async (req, user, { param
 
     log('info', 'agent_delete_success', {
       route: '/api/admin/agents/[id]',
+      status: 200,
       method: 'DELETE',
       duration_ms: Date.now() - start,
       trace_id: traceId,
@@ -440,8 +442,9 @@ export const DELETE = withAdminAuth(['agents:delete'])(async (req, user, { param
   } catch (error) {
     log('error', 'agent_delete_error', {
       route: '/api/admin/agents/[id]',
+      status: 500,
       method: 'DELETE',
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
       duration_ms: Date.now() - start,
       trace_id: traceId,
       user_id: user.sub,
