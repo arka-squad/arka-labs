@@ -28,7 +28,7 @@ export default function GatesPage() {
       setError(null);
       const trace_id = generateTraceId();
       try {
-        const data = await fetchJson('/api/gates', { headers: { [TRACE_HEADER]: trace_id, authorization: `Bearer ${localStorage.getItem('token') || ''}` } });
+        const data = await fetchJson('/api/gates', { headers: { [TRACE_HEADER]: trace_id }, credentials: 'include' });
         setGates(data.items || []);
         uiLog('gates_fetch', { count: data.items?.length || 0, trace_id, role });
       } catch (e: any) {
@@ -51,8 +51,7 @@ export default function GatesPage() {
         headers: {
           'content-type': 'application/json',
           'x-idempotency-key': crypto.randomUUID(),
-          [TRACE_HEADER]: trace_id,
-          authorization: `Bearer ${localStorage.getItem('token') || ''}`
+          [TRACE_HEADER]: trace_id
         },
         credentials: 'include',
         body: JSON.stringify({ gate_id: selected.id, inputs: {} })
@@ -71,7 +70,6 @@ export default function GatesPage() {
   async function streamJob(jobId: string) {
     try {
       const res = await fetch(`/api/gates/stream?job_id=${encodeURIComponent(jobId)}`, {
-        headers: { authorization: `Bearer ${localStorage.getItem('token') || ''}` },
         credentials: 'include'
       });
       if (!res.ok || !res.body) return;
@@ -109,7 +107,6 @@ export default function GatesPage() {
   async function pollStatus(jobId: string) {
     try {
       const res = await fetch(`/api/gates/jobs/${jobId}`, { 
-        headers: { authorization: `Bearer ${localStorage.getItem('token') || ''}` },
         credentials: 'include'
       });
       if (!res.ok) return;

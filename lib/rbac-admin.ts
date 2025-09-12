@@ -190,15 +190,19 @@ export function withAdminAuth(
         return handler(req as AuthenticatedRequest, mockUser, context);
       }
 
-      // 1. Authentication
-      const auth = req.headers.get('authorization');
-      if (!auth || !auth.startsWith('Bearer ')) {
+      // 1. Authentication - read from cookies first, fallback to authorization header
+      const token = req.cookies.get('arka_access_token')?.value || 
+                   req.cookies.get('arka_token')?.value ||
+                   (() => {
+                     const auth = req.headers.get('authorization');
+                     return auth?.startsWith('Bearer ') ? auth.slice(7) : null;
+                   })();
+
+      if (!token) {
         const res = NextResponse.json({ error: 'unauthorized' }, { status: 401 });
         log('warn', 'rbac_auth_missing', { route: 'lib', status: 401, trace_id: traceId, pathname: req.nextUrl.pathname });
         return res;
       }
-
-      const token = auth.slice(7);
       const user = verifyToken(token);
       if (!user) {
         const res = NextResponse.json({ error: 'invalid_token' }, { status: 401 });
