@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { withAdminAuth } from '../../../../../lib/rbac-admin-b24';
 import { getDb } from '../../../../../lib/db';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // GET /api/admin/clients/[id] - Get client details
 export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req, user, { params }) => {
 
