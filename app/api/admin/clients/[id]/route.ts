@@ -11,6 +11,16 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
   const clientId = params.id as string;
   
   try {
+    // Debug logging
+    console.log(`[API DEBUG] Fetching client with ID: ${clientId}`);
+    console.log(`[API DEBUG] Client ID type: ${typeof clientId}, length: ${clientId.length}`);
+    
+    // First, check if client exists at all
+    const existsCheck = await sql`
+      SELECT id, nom, deleted_at FROM clients WHERE id = ${clientId}
+    `;
+    console.log(`[API DEBUG] Existence check result:`, existsCheck);
+    
     // Get client with project counts using postgres.js native
     const result = await sql`
       SELECT 
@@ -32,9 +42,19 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       GROUP BY c.id
     `;
     
+    console.log(`[API DEBUG] Main query result length:`, result.length);
+    console.log(`[API DEBUG] Main query result:`, result);
+    
     if (result.length === 0) {
       return NextResponse.json(
-        { error: 'Client non trouvé' },
+        { 
+          error: 'Client non trouvé',
+          debug: {
+            clientId,
+            existsCheck: existsCheck.length,
+            searchedId: clientId
+          }
+        },
         { status: 404 }
       );
     }
