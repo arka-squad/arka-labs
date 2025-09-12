@@ -181,7 +181,7 @@ export default function AdminClientDetailPage() {
                 <Briefcase className="w-8 h-8 text-yellow-400" />
               </div>
               <p className="text-sm text-gray-400 mt-4">
-                {client.projets_count} projet{client.projets_count > 1 ? &apos;s&apos; : &apos;&apos;} total
+                {client.projets_count} projet{client.projets_count > 1 ? 's' : ''} total
               </p>
             </div>
 
@@ -262,8 +262,8 @@ export default function AdminClientDetailPage() {
                     <div className="text-center py-8">
                       <Briefcase className="w-12 h-12 text-gray-600 mx-auto mb-4" />
                       <p className="text-gray-400 mb-4">
-                        Ce client a {client.projets_count} projet{client.projets_count > 1 ? &apos;s&apos; : &apos;&apos;} 
-                        {client.projets_actifs > 0 && ` dont ${client.projets_actifs} actif${client.projets_actifs > 1 ? &apos;s&apos; : &apos;&apos;}`}
+                        Ce client a {client.projets_count} projet{client.projets_count > 1 ? 's' : ''} 
+                        {client.projets_actifs > 0 && ` dont ${client.projets_actifs} actif${client.projets_actifs > 1 ? 's' : ''}`}
                       </p>
                       <Link
                         href={`/cockpit/admin/projects?client=${client.id}`}
