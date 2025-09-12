@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { withAdminAuth } from '../../../../../lib/rbac-admin-b24';
-import { getDb } from '../../../../../lib/db';
+import { sql } from '../../../../../lib/db';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -11,10 +11,8 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
   const clientId = params.id as string;
   
   try {
-    const db = getDb();
-    
-    // Get client with project counts using Neon structure
-    const result = await db.query(`
+    // Get client with project counts using postgres.js native
+    const result = await sql`
       SELECT 
         c.id,
         c.nom,
@@ -30,18 +28,18 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
         COUNT(DISTINCT p.id) FILTER (WHERE p.status = 'active') as projets_actifs
       FROM clients c
       LEFT JOIN projects p ON p.client_id = c.id
-      WHERE c.id = $1 AND c.deleted_at IS NULL
+      WHERE c.id = ${clientId} AND c.deleted_at IS NULL
       GROUP BY c.id
-    `, [clientId]);
+    `;
     
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       return NextResponse.json(
         { error: 'Client non trouvé' },
         { status: 404 }
       );
     }
     
-    const row = result.rows[0];
+    const row = result[0];
     
     // Format the client data
     const client = {
@@ -100,45 +98,34 @@ export const PUT = withAdminAuth(['admin', 'manager', 'operator'])(async (req, u
       );
     }
 
-    const db = getDb();
-    
     // Check if client exists
-    const checkResult = await db.query(
-      'SELECT id FROM clients WHERE id = $1 AND deleted_at IS NULL',
-      [clientId]
-    );
+    const checkResult = await sql`
+      SELECT id FROM clients WHERE id = ${clientId} AND deleted_at IS NULL
+    `;
     
-    if (checkResult.rows.length === 0) {
+    if (checkResult.length === 0) {
       return NextResponse.json(
         { error: 'Client non trouvé' },
         { status: 404 }
       );
     }
     
-    // Update client with Neon structure
-    const result = await db.query(`
+    // Update client with postgres.js native
+    const result = await sql`
       UPDATE clients 
       SET 
-        nom = $2,
-        secteur = $3,
-        taille = $4,
-        contact_principal = $5,
-        contexte_specifique = $6,
-        statut = $7,
+        nom = ${nom},
+        secteur = ${secteur},
+        taille = ${taille || 'PME'},
+        contact_principal = ${JSON.stringify(contact_principal)},
+        contexte_specifique = ${contexte_specifique || ''},
+        statut = ${statut || 'actif'},
         updated_at = CURRENT_TIMESTAMP
-      WHERE id = $1 AND deleted_at IS NULL
+      WHERE id = ${clientId} AND deleted_at IS NULL
       RETURNING id, nom, secteur, taille, contact_principal, contexte_specifique, statut, updated_at
-    `, [
-      clientId, 
-      nom, 
-      secteur,
-      taille || 'PME',
-      JSON.stringify(contact_principal),
-      contexte_specifique || '',
-      statut || 'actif'
-    ]);
+    `;
     
-    const client = result.rows[0];
+    const client = result[0];
     
     return NextResponse.json({
       success: true,
@@ -166,17 +153,15 @@ export const DELETE = withAdminAuth(['admin'])(async (req, user, { params }) => 
   const clientId = params.id as string;
   
   try {
-    const db = getDb();
-    
     // Soft delete the client
-    const result = await db.query(`
+    const result = await sql`
       UPDATE clients 
       SET deleted_at = CURRENT_TIMESTAMP
-      WHERE id = $1 AND deleted_at IS NULL
+      WHERE id = ${clientId} AND deleted_at IS NULL
       RETURNING id
-    `, [clientId]);
+    `;
     
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       return NextResponse.json(
         { error: 'Client non trouvé' },
         { status: 404 }

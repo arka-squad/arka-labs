@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '../../../../lib/db';
+import { sql } from '../../../../lib/db';
 import { withAdminAuth } from '../../../../lib/rbac-admin-b24';
 
 export const dynamic = 'force-dynamic';
@@ -13,10 +13,9 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
     const taille = searchParams.get('taille') || '';
     const secteur = searchParams.get('secteur') || '';
     
-    const db = getDb();
-    
-    // Build dynamic query with filters for Neon structure
-    let query = `
+    // For complex queries with dynamic filters, use simple approach
+    // Get all clients first, then filter in memory for now (optimize later)
+    const result = await sql`
       SELECT 
         c.id,
         c.nom,
@@ -33,41 +32,39 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       FROM clients c
       LEFT JOIN projects p ON p.client_id = c.id
       WHERE c.deleted_at IS NULL
+      GROUP BY c.id
+      ORDER BY c.nom ASC 
+      LIMIT 100
     `;
     
-    const params: any[] = [];
-    let paramCount = 0;
+    // Apply filters in memory for now
+    let filteredResult = result;
     
     if (search) {
-      paramCount++;
-      query += ` AND (LOWER(c.nom) LIKE LOWER($${paramCount}) OR LOWER((c.contact_principal->>'email')::text) LIKE LOWER($${paramCount}))`;
-      params.push(`%${search}%`);
+      const searchLower = search.toLowerCase();
+      filteredResult = filteredResult.filter((row: any) => 
+        row.nom?.toLowerCase().includes(searchLower) ||
+        row.contact_principal?.email?.toLowerCase().includes(searchLower)
+      );
     }
     
     if (statut && statut !== '') {
-      paramCount++;
-      query += ` AND c.statut = $${paramCount}`;
-      params.push(statut);
+      filteredResult = filteredResult.filter((row: any) => row.statut === statut);
     }
     
     if (taille && taille !== '') {
-      paramCount++;
-      query += ` AND c.taille = $${paramCount}`;
-      params.push(taille);
+      filteredResult = filteredResult.filter((row: any) => row.taille === taille);
     }
     
     if (secteur && secteur !== '') {
-      paramCount++;
-      query += ` AND LOWER(c.secteur) LIKE LOWER($${paramCount})`;
-      params.push(`%${secteur}%`);
+      const secteurLower = secteur.toLowerCase();
+      filteredResult = filteredResult.filter((row: any) => 
+        row.secteur?.toLowerCase().includes(secteurLower)
+      );
     }
     
-    query += ` GROUP BY c.id ORDER BY c.nom ASC LIMIT 100`;
-    
-    const result = await db.query(query, params);
-    
     // Transform the data to match the expected format
-    const items = result.rows.map((row: any) => ({
+    const items = filteredResult.map((row: any) => ({
       id: row.id,
       nom: row.nom,
       email: row.contact_principal?.email || '',
@@ -127,13 +124,11 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req: NextRequest,
       );
     }
 
-    const db = getDb();
-    
     // Generate UUID for the client
     const clientId = crypto.randomUUID();
     
-    // Insert client with Neon structure
-    const result = await db.query(`
+    // Insert client with postgres.js native
+    const result = await sql`
       INSERT INTO clients (
         id,
         nom,
@@ -146,20 +141,22 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req: NextRequest,
         created_at,
         updated_at
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      VALUES (
+        ${clientId},
+        ${nom},
+        ${secteur},
+        ${taille || 'PME'},
+        ${JSON.stringify(contact_principal)},
+        ${contexte_specifique || ''},
+        ${statut || 'actif'},
+        ${user?.id || 'system'},
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+      )
       RETURNING id, nom, secteur, taille, contact_principal, contexte_specifique, statut, created_at, created_by
-    `, [
-      clientId,
-      nom,
-      secteur,
-      taille || 'PME',
-      JSON.stringify(contact_principal),
-      contexte_specifique || '',
-      statut || 'actif',
-      user?.id || 'system'
-    ]);
+    `;
 
-    const client = result.rows[0];
+    const client = result[0];
     
     return NextResponse.json({
       success: true,

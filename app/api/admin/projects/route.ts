@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '../../../../lib/db';
+import { sql } from '../../../../lib/db';
 import { withAdminAuth } from '../../../../lib/rbac-admin-b24';
 
 export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req: NextRequest) => {
   try {
-    const db = getDb();
-    
-    // Simple query without complex joins
-    const result = await db.query(`
+    // Simple query without complex joins using postgres.js
+    const result = await sql`
       SELECT 
         p.id,
         p.nom,
@@ -26,12 +24,12 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       JOIN clients c ON p.client_id = c.id
       ORDER BY p.created_at DESC
       LIMIT 50
-    `);
+    `;
     
     return NextResponse.json({
       success: true,
-      items: result.rows,
-      total: result.rows.length,
+      items: result,
+      total: result.length,
       page: 1,
       limit: 50,
       totalPages: 1
@@ -58,17 +56,26 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req: NextRequest)
       );
     }
 
-    const db = getDb();
-    
-    const result = await db.query(`
+    const result = await sql`
       INSERT INTO projects (nom, description, client_id, budget, deadline, priority, status, tags, requirements, created_by)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      VALUES (
+        ${nom}, 
+        ${description}, 
+        ${parseInt(client_id)}, 
+        ${budget || null}, 
+        ${deadline || null}, 
+        ${priority}, 
+        ${status}, 
+        ${JSON.stringify(tags)}, 
+        ${JSON.stringify(requirements)}, 
+        ${'dev-user'}
+      )
       RETURNING *
-    `, [nom, description, parseInt(client_id), budget || null, deadline || null, priority, status, JSON.stringify(tags), JSON.stringify(requirements), 'dev-user']);
+    `;
 
     return NextResponse.json({
       success: true,
-      project: result.rows[0]
+      project: result[0]
     });
 
   } catch (error) {
