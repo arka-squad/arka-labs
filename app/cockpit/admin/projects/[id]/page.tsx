@@ -134,15 +134,15 @@ export default function AdminProjectDetailPage() {
   return (
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-900 border-b border-gray-800">
         <div className="px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link
                 href="/cockpit/admin/projects"
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-5 h-5 text-gray-400" />
               </Link>
               <div>
                 <h1 className="text-2xl font-bold text-white">{project.nom}</h1>
