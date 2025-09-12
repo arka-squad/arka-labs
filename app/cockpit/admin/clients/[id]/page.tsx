@@ -181,7 +181,7 @@ export default function AdminClientDetailPage() {
                 <Briefcase className="w-8 h-8 text-yellow-400" />
               </div>
               <p className="text-sm text-gray-400 mt-4">
-                {client.projets_count} projet{client.projets_count > 1 ? 's' : ''} total
+                {client.projets_count} projet{client.projets_count > 1 ? &apos;s&apos; : &apos;&apos;} total
               </p>
             </div>
 
@@ -213,11 +213,11 @@ export default function AdminClientDetailPage() {
                 <div className="p-6 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-400 mb-2">Nom de l'entreprise</h3>
+                      <h3 className="text-sm font-medium text-gray-400 mb-2">Nom de l&apos;entreprise</h3>
                       <p className="text-white font-medium">{client.nom}</p>
                     </div>
                     <div>
-                      <h3 className="text-sm font-medium text-gray-400 mb-2">Secteur d'activité</h3>
+                      <h3 className="text-sm font-medium text-gray-400 mb-2">Secteur d&apos;activité</h3>
                       <p className="text-white">{client.secteur}</p>
                     </div>
                     <div>
@@ -262,8 +262,8 @@ export default function AdminClientDetailPage() {
                     <div className="text-center py-8">
                       <Briefcase className="w-12 h-12 text-gray-600 mx-auto mb-4" />
                       <p className="text-gray-400 mb-4">
-                        Ce client a {client.projets_count} projet{client.projets_count > 1 ? 's' : ''} 
-                        {client.projets_actifs > 0 && ` dont ${client.projets_actifs} actif${client.projets_actifs > 1 ? 's' : ''}`}
+                        Ce client a {client.projets_count} projet{client.projets_count > 1 ? &apos;s&apos; : &apos;&apos;} 
+                        {client.projets_actifs > 0 && ` dont ${client.projets_actifs} actif${client.projets_actifs > 1 ? &apos;s&apos; : &apos;&apos;}`}
                       </p>
                       <Link
                         href={`/cockpit/admin/projects?client=${client.id}`}
