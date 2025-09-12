@@ -15,13 +15,13 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
     console.log(`[API DEBUG] Fetching client with ID: ${clientId}`);
     console.log(`[API DEBUG] Client ID type: ${typeof clientId}, length: ${clientId.length}`);
     
-    // First, check if client exists at all
+    // First, check if client exists at all (try with explicit UUID cast)
     const existsCheck = await sql`
-      SELECT id, nom, deleted_at FROM clients WHERE id = ${clientId}
+      SELECT id, nom, deleted_at FROM clients WHERE id = ${clientId}::uuid
     `;
     console.log(`[API DEBUG] Existence check result:`, existsCheck);
     
-    // Get client with project counts using postgres.js native
+    // Use IDENTICAL query structure as listing, just add ID filter
     const result = await sql`
       SELECT 
         c.id,
@@ -38,8 +38,10 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
         COUNT(DISTINCT p.id) FILTER (WHERE p.status = 'active') as projets_actifs
       FROM clients c
       LEFT JOIN projects p ON p.client_id = c.id
-      WHERE c.id = ${clientId} AND c.deleted_at IS NULL
+      WHERE c.deleted_at IS NULL AND c.id = ${clientId}::uuid
       GROUP BY c.id
+      ORDER BY c.nom ASC 
+      LIMIT 1
     `;
     
     console.log(`[API DEBUG] Main query result length:`, result.length);
