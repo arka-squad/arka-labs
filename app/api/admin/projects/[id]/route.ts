@@ -21,7 +21,7 @@ const UpdateProjectSchema = z.object({
 });
 
 // GET /api/admin/projects/[id] - Get project details with assignments
-export const GET = withAdminAuth(['projects:read'])(async (req, user, { params }) => {
+export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const projectId = params.id;
@@ -241,7 +241,7 @@ export const GET = withAdminAuth(['projects:read'])(async (req, user, { params }
 });
 
 // PATCH /api/admin/projects/[id] - Update project
-export const PATCH = withAdminAuth(['projects:write'])(async (req, user, { params }) => {
+export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const projectId = params.id;
@@ -402,7 +402,7 @@ export const PATCH = withAdminAuth(['projects:write'])(async (req, user, { param
 });
 
 // DELETE /api/admin/projects/[id] - Delete project (soft delete)
-export const DELETE = withAdminAuth(['projects:delete'])(async (req, user, { params }) => {
+export const DELETE = withAdminAuth(['admin'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const projectId = params.id;

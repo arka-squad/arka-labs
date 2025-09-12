@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 // GET /api/admin/projects/[id]/documents - List project documents
-export const GET = withAdminAuth(['projects:read'])(async (req, user, { params }) => {
+export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const { id } = params;
@@ -119,7 +119,7 @@ export const GET = withAdminAuth(['projects:read'])(async (req, user, { params }
 });
 
 // POST /api/admin/projects/[id]/documents - Upload document to project
-export const POST = withAdminAuth(['projects:write'])(async (req, user, { params }) => {
+export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const { id } = params;

@@ -25,7 +25,7 @@ const ListSquadsSchema = z.object({
 });
 
 // GET /api/admin/squads - List squads with pagination
-export const GET = withAdminAuth(['squads:read'])(async (req, user) => {
+export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req, user) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const url = new URL(req.url);
@@ -166,7 +166,7 @@ export const GET = withAdminAuth(['squads:read'])(async (req, user) => {
 });
 
 // POST /api/admin/squads - Create new squad
-export const POST = withAdminAuth(['squads:create'])(async (req, user) => {
+export const POST = withAdminAuth(['admin', 'manager'])(async (req, user) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   

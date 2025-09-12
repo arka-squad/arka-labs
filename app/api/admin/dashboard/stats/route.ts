@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '../../../../../lib/db';
 import { withAdminAuth } from '../../../../../lib/rbac-admin';
 
-export const GET = withAdminAuth(['dashboard:read'])(async (req: NextRequest) => {
+export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req: NextRequest) => {
   try {
     const db = getDb();
     

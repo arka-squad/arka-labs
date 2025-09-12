@@ -18,7 +18,7 @@ const DuplicateAgentSchema = z.object({
 });
 
 // POST /api/admin/agents/[id]/duplicate - Duplicate agent with version increment
-export const POST = withAdminAuth(['agents:write'])(async (req, user, { params }) => {
+export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const agentId = params.id;

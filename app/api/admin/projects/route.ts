@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '../../../../lib/db';
 import { withAdminAuth } from '../../../../lib/rbac-admin';
 
-export const GET = withAdminAuth(['projects:read'])(async (req: NextRequest) => {
+export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req: NextRequest) => {
   try {
     const db = getDb();
     
@@ -46,7 +46,7 @@ export const GET = withAdminAuth(['projects:read'])(async (req: NextRequest) => 
   }
 });
 
-export const POST = withAdminAuth(['projects:create'])(async (req: NextRequest) => {
+export const POST = withAdminAuth(['admin', 'manager'])(async (req: NextRequest) => {
   try {
     const body = await req.json();
     const { nom, description, client_id, budget, deadline, priority = 'normal', status = 'active', tags = [], requirements = [] } = body;

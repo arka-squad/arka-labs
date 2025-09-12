@@ -15,7 +15,7 @@ const AttachSquadSchema = z.object({
 });
 
 // POST /api/admin/projects/[id]/squads - Attach squad to project
-export const POST = withAdminAuth(['projects:attach_squads'], 'project')(async (req, user, { params }) => {
+export const POST = withAdminAuth(['admin', 'manager'], 'project')(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const projectId = parseInt(params.id);

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 // DELETE /api/admin/projects/[id]/squads/[squadId] - Detach squad from project
-export const DELETE = withAdminAuth(['projects:attach_squads'], 'project')(async (req, user, { params }) => {
+export const DELETE = withAdminAuth(['admin', 'manager'], 'project')(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const projectId = parseInt(params.id);

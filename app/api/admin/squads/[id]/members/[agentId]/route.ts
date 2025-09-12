@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 // DELETE /api/admin/squads/[id]/members/[agentId] - Remove member from squad
-export const DELETE = withAdminAuth(['squads:add_members'], 'squad')(async (req, user, { params }) => {
+export const DELETE = withAdminAuth(['admin', 'manager'], 'squad')(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const squadId = params.id;

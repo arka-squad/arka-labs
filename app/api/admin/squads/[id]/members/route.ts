@@ -18,7 +18,7 @@ const AddMemberSchema = z.object({
 });
 
 // POST /api/admin/squads/[id]/members - Add member to squad
-export const POST = withAdminAuth(['squads:add_members'], 'squad')(async (req, user, { params }) => {
+export const POST = withAdminAuth(['admin', 'manager'], 'squad')(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const squadId = params.id;

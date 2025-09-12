@@ -23,7 +23,7 @@ const UpdateAgentSchema = z.object({
 });
 
 // GET /api/admin/agents/[id] - Get agent details with assignments
-export const GET = withAdminAuth(['agents:read'])(async (req, user, { params }) => {
+export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const agentId = params.id;
@@ -181,7 +181,7 @@ export const GET = withAdminAuth(['agents:read'])(async (req, user, { params }) 
 });
 
 // PATCH /api/admin/agents/[id] - Update agent
-export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params }) => {
+export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const agentId = params.id;
@@ -375,7 +375,7 @@ export const PATCH = withAdminAuth(['agents:write'])(async (req, user, { params 
 });
 
 // DELETE /api/admin/agents/[id] - Delete agent (soft delete)
-export const DELETE = withAdminAuth(['agents:delete'])(async (req, user, { params }) => {
+export const DELETE = withAdminAuth(['admin'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const agentId = params.id;

@@ -19,7 +19,7 @@ const UpdateSquadSchema = z.object({
 });
 
 // GET /api/admin/squads/[id] - Get squad details with members and performance
-export const GET = withAdminAuth(['squads:read'], 'squad')(async (req, user, { params }) => {
+export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'], 'squad')(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const squadId = params.id;
@@ -180,7 +180,7 @@ export const GET = withAdminAuth(['squads:read'], 'squad')(async (req, user, { p
 });
 
 // PATCH /api/admin/squads/[id] - Update squad
-export const PATCH = withAdminAuth(['squads:update'], 'squad')(async (req, user, { params }) => {
+export const PATCH = withAdminAuth(['admin', 'manager', 'operator'], 'squad')(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const squadId = params.id;
@@ -327,7 +327,7 @@ export const PATCH = withAdminAuth(['squads:update'], 'squad')(async (req, user,
 });
 
 // DELETE /api/admin/squads/[id] - Soft delete squad
-export const DELETE = withAdminAuth(['squads:delete'], 'squad')(async (req, user, { params }) => {
+export const DELETE = withAdminAuth(['admin'], 'squad')(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const squadId = params.id;

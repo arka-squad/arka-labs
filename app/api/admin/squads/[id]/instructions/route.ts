@@ -17,7 +17,7 @@ const CreateInstructionSchema = z.object({
 });
 
 // POST /api/admin/squads/[id]/instructions - Create instruction for squad
-export const POST = withAdminAuth(['squads:create_instructions'], 'squad')(async (req, user, { params }) => {
+export const POST = withAdminAuth(['admin', 'manager'], 'squad')(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const squadId = params.id;
