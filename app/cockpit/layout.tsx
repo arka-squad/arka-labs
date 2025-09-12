@@ -1,5 +1,6 @@
 'use client';
 
+import '../../styles/base.css';
 import '../../design-system/tokens.css';
 import { Inter } from 'next/font/google';
 import '../../styles/console.css';
