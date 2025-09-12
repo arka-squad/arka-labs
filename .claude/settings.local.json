@@ -26,7 +26,8 @@
       "Bash(do if [ ! -f \"$dir/page.tsx\" ])",
       "Bash(then echo \"MANQUANT: $dir\")",
       "Bash(fi)",
-      "Bash(while IFS= read -r dir)"
+      "Bash(while IFS= read -r dir)",
+      "Bash(npm run type-check:*)"
     ],
     "deny": [],
     "ask": []
