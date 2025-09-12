@@ -18,7 +18,15 @@
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_NgHpnVad4xP9@ep-tiny-king-a292mq2e-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require\" node scripts/init-neon-database.js)",
       "Bash(python:*)",
       "Bash(find:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(while read dir)",
+      "Bash(do echo \"===== $dir =====\")",
+      "Bash(ls:*)",
+      "Bash(done)",
+      "Bash(do if [ ! -f \"$dir/page.tsx\" ])",
+      "Bash(then echo \"MANQUANT: $dir\")",
+      "Bash(fi)",
+      "Bash(while IFS= read -r dir)"
     ],
     "deny": [],
     "ask": []
