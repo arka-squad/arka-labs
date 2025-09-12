@@ -80,7 +80,7 @@ export default function AdminClientsPage() {
       case 'actif': return 'bg-green-100 text-green-800';
       case 'inactif': return 'bg-gray-100 text-gray-800';
       case 'prospect': return 'bg-blue-100 text-blue-800';
-      case 'archive': return 'bg-red-100 text-red-800';
+      case 'archive': return 'bg-red-100 text-red-300';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -97,21 +97,21 @@ export default function AdminClientsPage() {
 
   if (loading && clients.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Gestion des Clients</h1>
-              <p className="mt-1 text-sm text-gray-500">
+              <h1 className="text-2xl font-bold text-white">Gestion des Clients</h1>
+              <p className="mt-1 text-sm text-gray-300">
                 {clients.length} client{clients.length !== 1 ? 's' : ''} au total
               </p>
             </div>
@@ -127,7 +127,7 @@ export default function AdminClientsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Search */}
@@ -175,8 +175,8 @@ export default function AdminClientsPage() {
       {/* Content */}
       <div className="px-4 sm:px-6 lg:px-8 py-6">
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{error}</p>
+          <div className="mb-6 p-4 bg-red-900/20 border border-red-200 rounded-lg">
+            <p className="text-red-300">{error}</p>
           </div>
         )}
 
@@ -190,8 +190,8 @@ export default function AdminClientsPage() {
         {clients.length === 0 && !loading ? (
           <div className="text-center py-12">
             <Building size={48} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucun client trouvé</h3>
-            <p className="text-gray-500 mb-6">Commencez par créer votre premier client</p>
+            <h3 className="text-lg font-semibold text-white mb-2">Aucun client trouvé</h3>
+            <p className="text-gray-300 mb-6">Commencez par créer votre premier client</p>
             <Link
               href="/cockpit/admin/clients/new"
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 inline-flex items-center gap-2"
@@ -205,17 +205,17 @@ export default function AdminClientsPage() {
             {clients.map((client) => (
               <div
                 key={client.id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+                className="bg-gray-800 rounded-lg shadow-sm border border-gray-700 hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => router.push(`/cockpit/admin/clients/${client.id}`)}
               >
                 <div className="p-6">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-gray-900 truncate">
+                      <h3 className="text-lg font-semibold text-white truncate">
                         {client.nom}
                       </h3>
-                      <p className="text-sm text-gray-500 truncate">
+                      <p className="text-sm text-gray-300 truncate">
                         {client.secteur}
                       </p>
                     </div>
@@ -249,7 +249,7 @@ export default function AdminClientsPage() {
                   {/* Stats */}
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     <div className="text-sm text-gray-600">
-                      <span className="font-medium text-gray-900">{client.projets_actifs}</span> projets actifs
+                      <span className="font-medium text-white">{client.projets_actifs}</span> projets actifs
                     </div>
                     <ArrowRight size={16} className="text-gray-400" />
                   </div>

@@ -284,7 +284,7 @@ export default function ProjectsPage() {
                   <Briefcase size={14} />
                   <span>{project.client.nom}</span>
                   {project.client.secteur && (
-                    <span className="text-gray-500">• {project.client.secteur}</span>
+                    <span className="text-gray-300">• {project.client.secteur}</span>
                   )}
                 </div>
               )}
@@ -308,22 +308,22 @@ export default function ProjectsPage() {
                   <div className="flex items-center space-x-2">
                     <Users size={14} className="text-green-400" />
                     <span className="text-green-400 font-medium">{project.agents_count}</span>
-                    <span className="text-gray-500 text-sm">agents</span>
+                    <span className="text-gray-300 text-sm">agents</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-blue-400 font-medium">{project.squads_count}</span>
-                    <span className="text-gray-500 text-sm">squads</span>
+                    <span className="text-gray-300 text-sm">squads</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-2 text-gray-500 text-sm">
+                <div className="flex items-center space-x-2 text-gray-300 text-sm">
                   <span>Créé le {new Date(project.created_at).toLocaleDateString('fr-FR')}</span>
                 </div>
               </div>
 
               <div className="pt-4 border-t border-gray-700">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-500">
+                  <span className="text-gray-300">
                     Par {project.created_by?.split('@')[0] || 'System'}
                   </span>
                   <button className="text-blue-400 hover:text-blue-300 transition-colors">
@@ -341,7 +341,7 @@ export default function ProjectsPage() {
             <p className="text-gray-400 text-lg mb-2">
               {searchTerm ? 'Aucun projet trouvé' : 'Aucun projet'}
             </p>
-            <p className="text-gray-500 mb-6">
+            <p className="text-gray-300 mb-6">
               {searchTerm 
                 ? 'Essayez avec d\'autres termes de recherche' 
                 : 'Créez votre premier projet pour commencer'}

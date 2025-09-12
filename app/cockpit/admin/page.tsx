@@ -233,7 +233,7 @@ export default function AdminDashboard() {
 
         {/* Quick Access Footer */}
         <div className="mt-8 flex justify-center">
-          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-500 text-center">
+          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-300 text-center">
             <span>B23 Console Admin v2.5</span>
             <span className="hidden sm:inline">•</span>
             <span>Architecture simplifiée</span>
@@ -259,7 +259,7 @@ export default function AdminDashboard() {
                 </div>
                 <ArrowRight 
                   size={16} 
-                  className="text-gray-500 cursor-pointer hover:text-blue-400" 
+                  className="text-gray-300 cursor-pointer hover:text-blue-400" 
                   onClick={() => window.location.href = '/cockpit/admin/squads'}
                 />
               </div>
@@ -283,7 +283,7 @@ export default function AdminDashboard() {
                 </div>
                 <ArrowRight 
                   size={16} 
-                  className="text-gray-500 cursor-pointer hover:text-green-400"
+                  className="text-gray-300 cursor-pointer hover:text-green-400"
                   onClick={() => window.location.href = '/cockpit/admin/projects'}
                 />
               </div>
@@ -307,7 +307,7 @@ export default function AdminDashboard() {
                 </div>
                 <ArrowRight 
                   size={16} 
-                  className="text-gray-500 cursor-pointer hover:text-purple-400"
+                  className="text-gray-300 cursor-pointer hover:text-purple-400"
                   onClick={() => window.location.href = '/cockpit/admin/instructions'}
                 />
               </div>
@@ -330,7 +330,7 @@ export default function AdminDashboard() {
                 <div className="p-2 bg-orange-900/30 rounded-lg">
                   <TrendingUp size={24} className="text-orange-400" />
                 </div>
-                <Activity size={16} className="text-gray-500" />
+                <Activity size={16} className="text-gray-300" />
               </div>
               <div className="mb-2">
                 <div className="text-2xl font-bold text-white mb-1">
@@ -385,7 +385,7 @@ export default function AdminDashboard() {
             </p>
             <div className="flex justify-between items-center">
               <span className="text-green-400 text-sm font-medium">Voir tout →</span>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-gray-300">
                 Architecture projet-centrée
               </div>
             </div>
@@ -405,7 +405,7 @@ export default function AdminDashboard() {
             </p>
             <div className="flex justify-between items-center">
               <span className="text-blue-400 text-sm font-medium">Gérer →</span>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-gray-300">
                 TPE • PME • ETI • GE
               </div>
             </div>
@@ -425,7 +425,7 @@ export default function AdminDashboard() {
             </p>
             <div className="flex justify-between items-center">
               <span className="text-purple-400 text-sm font-medium">Explorer →</span>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-gray-300">
                 Templates • Versions • Scoring
               </div>
             </div>
@@ -445,7 +445,7 @@ export default function AdminDashboard() {
             </p>
             <div className="flex justify-between items-center">
               <span className="text-purple-400 text-sm font-medium">Dashboard →</span>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-gray-300">
                 Temps réel
               </div>
             </div>
@@ -466,7 +466,7 @@ export default function AdminDashboard() {
               <CheckCircle size={16} className="text-green-400" />
               <div className="flex-1">
                 <div className="text-white text-sm">Squad RH Alpha a complété une instruction</div>
-                <div className="text-gray-500 text-xs">Projet: Journée Coworking Q4 • Il y a 12 min</div>
+                <div className="text-gray-300 text-xs">Projet: Journée Coworking Q4 • Il y a 12 min</div>
               </div>
             </div>
             
@@ -474,7 +474,7 @@ export default function AdminDashboard() {
               <Users size={16} className="text-blue-400" />
               <div className="flex-1">
                 <div className="text-white text-sm">Nouvel agent ajouté à Squad Tech Core</div>
-                <div className="text-gray-500 text-xs">Agent: Developer Beta • Il y a 34 min</div>
+                <div className="text-gray-300 text-xs">Agent: Developer Beta • Il y a 34 min</div>
               </div>
             </div>
           </div>
@@ -494,7 +494,7 @@ export default function AdminDashboard() {
         </div>
         
         <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
-          <Users size={48} className="mx-auto text-gray-500 mb-4" />
+          <Users size={48} className="mx-auto text-gray-300 mb-4" />
           <p className="text-gray-400">Section Agents en cours d&apos;implémentation selon les spécifications Codex...</p>
         </div>
       </div>
@@ -512,7 +512,7 @@ export default function AdminDashboard() {
         </div>
         
         <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
-          <Briefcase size={48} className="mx-auto text-gray-500 mb-4" />
+          <Briefcase size={48} className="mx-auto text-gray-300 mb-4" />
           <p className="text-gray-400">Section Projets en cours d&apos;implémentation selon les spécifications Codex...</p>
         </div>
       </div>
@@ -530,7 +530,7 @@ export default function AdminDashboard() {
         </div>
         
         <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
-          <Building size={48} className="mx-auto text-gray-500 mb-4" />
+          <Building size={48} className="mx-auto text-gray-300 mb-4" />
           <p className="text-gray-400">Section Clients en cours d&apos;implémentation selon les spécifications Codex...</p>
         </div>
       </div>
@@ -543,7 +543,7 @@ export default function AdminDashboard() {
         <h2 className="text-2xl font-bold text-white">📊 ANALYTICS - Métriques & Rapports</h2>
         
         <div className="bg-gray-800 rounded-xl p-8 text-center border border-gray-700">
-          <BarChart3 size={48} className="mx-auto text-gray-500 mb-4" />
+          <BarChart3 size={48} className="mx-auto text-gray-300 mb-4" />
           <p className="text-gray-400">Section Analytics en cours d&apos;implémentation selon les spécifications Codex...</p>
         </div>
       </div>

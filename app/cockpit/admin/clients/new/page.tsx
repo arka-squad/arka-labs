@@ -80,7 +80,7 @@ export default function AdminNewClientPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="px-4 sm:px-6 lg:px-8 py-4">
@@ -93,8 +93,8 @@ export default function AdminNewClientPage() {
                 <ArrowLeft className="w-5 h-5" />
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Nouveau Client</h1>
-                <p className="text-sm text-gray-500 mt-1">
+                <h1 className="text-2xl font-bold text-white">Nouveau Client</h1>
+                <p className="text-sm text-gray-300 mt-1">
                   Administration - Création d&apos;un nouveau client
                 </p>
               </div>
@@ -107,13 +107,13 @@ export default function AdminNewClientPage() {
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+            <div className="mb-6 p-4 bg-red-900/20 border border-red-200 rounded-lg flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
-              <div className="text-sm text-red-800">{error}</div>
+              <div className="text-sm text-red-300">{error}</div>
             </div>
           )}
 
-          <div className="bg-white rounded-lg shadow-sm">
+          <div className="bg-gray-800 rounded-lg shadow-sm border border-gray-700">
             {/* Informations générales */}
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -281,7 +281,7 @@ export default function AdminNewClientPage() {
           <div className="mt-6 flex items-center justify-end gap-4">
             <Link
               href="/cockpit/admin/clients"
-              className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+              className="px-4 py-2 text-gray-700 hover:text-white transition-colors"
             >
               Annuler
             </Link>

@@ -155,7 +155,7 @@ export default function NewAgentPage() {
   const templateCategories = [...new Set(templates.map(t => t.category))];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="px-4 sm:px-6 lg:px-8 py-4">
@@ -167,8 +167,8 @@ export default function NewAgentPage() {
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Créer un nouvel agent</h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <h1 className="text-2xl font-bold text-white">Créer un nouvel agent</h1>
+              <p className="text-sm text-gray-300 mt-1">
                 Configurez un agent intelligent pour automatiser vos processus
               </p>
             </div>
@@ -203,8 +203,8 @@ export default function NewAgentPage() {
                               : 'border-gray-200 hover:border-gray-300'
                           }`}
                         >
-                          <h4 className="font-medium text-gray-900">{template.name}</h4>
-                          <p className="text-sm text-gray-500 mt-1">{template.description}</p>
+                          <h4 className="font-medium text-white">{template.name}</h4>
+                          <p className="text-sm text-gray-300 mt-1">{template.description}</p>
                           {template.capabilities && (
                             <div className="flex flex-wrap gap-1 mt-2">
                               {template.capabilities.slice(0, 3).map((cap, idx) => (
@@ -349,7 +349,7 @@ export default function NewAgentPage() {
               
               <div className="space-y-3">
                 <div className="pl-0">
-                  <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                  <div className="flex items-center gap-2 p-2 bg-gray-900 rounded">
                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                     <span className="text-sm font-medium">Arka Global</span>
                   </div>
@@ -402,15 +402,15 @@ export default function NewAgentPage() {
                 <h3 className="text-lg font-semibold mb-3">Template sélectionné</h3>
                 <div className="space-y-3">
                   <div>
-                    <p className="text-sm text-gray-500">Nom</p>
+                    <p className="text-sm text-gray-300">Nom</p>
                     <p className="font-medium">{selectedTemplate.name}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Catégorie</p>
+                    <p className="text-sm text-gray-300">Catégorie</p>
                     <p className="font-medium">{selectedTemplate.category}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Capacités</p>
+                    <p className="text-sm text-gray-300">Capacités</p>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {selectedTemplate.capabilities?.map((cap, idx) => (
                         <span key={idx} className="text-xs bg-gray-100 px-2 py-1 rounded">
@@ -429,7 +429,7 @@ export default function NewAgentPage() {
         <div className="max-w-6xl mx-auto mt-6 flex justify-end gap-3">
           <Link
             href="/cockpit/admin/agents"
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-900"
           >
             Annuler
           </Link>

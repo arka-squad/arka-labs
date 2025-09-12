@@ -254,14 +254,14 @@ export default function SquadsPage() {
                     <Users size={14} />
                     <span className="text-lg font-bold">{squad.members_count}</span>
                   </div>
-                  <div className="text-xs text-gray-500">Agents</div>
+                  <div className="text-xs text-gray-300">Agents</div>
                 </div>
                 <div>
                   <div className="flex items-center justify-center space-x-1 text-green-400">
                     <Zap size={14} />
                     <span className="text-lg font-bold">{squad.projects_count}</span>
                   </div>
-                  <div className="text-xs text-gray-500">Projets</div>
+                  <div className="text-xs text-gray-300">Projets</div>
                 </div>
                 <div>
                   <div className="text-lg font-bold text-yellow-400">
@@ -269,16 +269,16 @@ export default function SquadsPage() {
                       ? `${squad.avg_completion_hours.toFixed(1)}h` 
                       : '—'}
                   </div>
-                  <div className="text-xs text-gray-500">Moy.</div>
+                  <div className="text-xs text-gray-300">Moy.</div>
                 </div>
               </div>
 
               <div className="pt-4 border-t border-gray-700">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-500">
+                  <span className="text-gray-300">
                     Par {squad.created_by.split('@')[0]}
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-gray-300">
                     {new Date(squad.created_at).toLocaleDateString('fr-FR')}
                   </span>
                 </div>
@@ -293,7 +293,7 @@ export default function SquadsPage() {
             <p className="text-gray-400 text-lg mb-2">
               {searchTerm ? 'Aucune squad trouvée' : 'Aucune squad'}
             </p>
-            <p className="text-gray-500 mb-6">
+            <p className="text-gray-300 mb-6">
               {searchTerm 
                 ? 'Essayez avec d\'autres termes de recherche' 
                 : 'Créez votre première squad pour commencer'}
@@ -399,7 +399,7 @@ function CreateSquadModal({ onClose, onSubmit }: {
               minLength={3}
               maxLength={100}
             />
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-gray-300 mt-1">
               {formData.name.length}/100 caractères
             </div>
           </div>
@@ -415,7 +415,7 @@ function CreateSquadModal({ onClose, onSubmit }: {
               placeholder="Décrivez la mission de cette squad..."
               maxLength={800}
             />
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-gray-300 mt-1">
               {formData.mission.length}/800 caractères
             </div>
           </div>

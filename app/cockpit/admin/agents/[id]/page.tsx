@@ -177,7 +177,7 @@ export default function AgentDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -195,7 +195,7 @@ export default function AgentDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="px-4 sm:px-6 lg:px-8 py-4">
@@ -209,12 +209,12 @@ export default function AgentDetailPage() {
               </Link>
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold text-gray-900">{agent.name}</h1>
+                  <h1 className="text-2xl font-bold text-white">{agent.name}</h1>
                   <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(agent.status)}`}>
                     {agent.status === 'active' ? 'Actif' : agent.status === 'paused' ? 'En pause' : 'Archivé'}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-300 mt-1">
                   {agent.role} • {agent.domaine} • Créé le {new Date(agent.created_at).toLocaleDateString()}
                 </p>
               </div>
@@ -224,7 +224,7 @@ export default function AgentDetailPage() {
               {agent.status === 'active' ? (
                 <button
                   onClick={() => handleStatusChange('paused')}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-900 flex items-center gap-2"
                 >
                   <Pause className="w-4 h-4" />
                   Pause
@@ -232,7 +232,7 @@ export default function AgentDetailPage() {
               ) : agent.status === 'paused' ? (
                 <button
                   onClick={() => handleStatusChange('active')}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-900 flex items-center gap-2"
                 >
                   <Play className="w-4 h-4" />
                   Activer
@@ -241,7 +241,7 @@ export default function AgentDetailPage() {
               
               <button
                 onClick={handleDuplicate}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-900 flex items-center gap-2"
               >
                 <Copy className="w-4 h-4" />
                 Dupliquer
@@ -250,7 +250,7 @@ export default function AgentDetailPage() {
               {agent.status !== 'archived' && (
                 <button
                   onClick={() => handleStatusChange('archived')}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-900 flex items-center gap-2"
                 >
                   <Archive className="w-4 h-4" />
                   Archiver
@@ -259,7 +259,7 @@ export default function AgentDetailPage() {
               
               <button
                 onClick={handleDelete}
-                className="px-3 py-1.5 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 flex items-center gap-2"
+                className="px-3 py-1.5 border border-red-300 text-red-600 rounded-lg hover:bg-red-900/20 flex items-center gap-2"
               >
                 <Trash2 className="w-4 h-4" />
                 Supprimer
@@ -280,7 +280,7 @@ export default function AgentDetailPage() {
                 className={`py-3 px-1 border-b-2 font-medium text-sm ${
                   activeTab === tab
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-300 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 {tab === 'config' && 'Configuration'}
@@ -394,10 +394,10 @@ export default function AgentDetailPage() {
               <div className="space-y-4">
                 {contexts.map((ctx, idx) => (
                   <div key={idx} className={`pl-${idx * 4} border-l-2 border-gray-200 ml-1`}>
-                    <div className="p-4 bg-gray-50 rounded-lg">
+                    <div className="p-4 bg-gray-900 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-medium">{ctx.level.charAt(0).toUpperCase() + ctx.level.slice(1)}</h3>
-                        <span className="text-sm text-gray-500">ID: {ctx.entity_id}</span>
+                        <span className="text-sm text-gray-300">ID: {ctx.entity_id}</span>
                       </div>
                       <pre className="text-xs bg-white p-2 rounded border border-gray-200 overflow-x-auto">
                         {JSON.stringify(ctx.configuration, null, 2)}
@@ -430,21 +430,21 @@ export default function AgentDetailPage() {
 
               {agent.performance_metrics ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-500 mb-1">Tâches complétées</p>
+                  <div className="p-4 bg-gray-900 rounded-lg">
+                    <p className="text-sm text-gray-300 mb-1">Tâches complétées</p>
                     <p className="text-2xl font-bold">{agent.performance_metrics.tasks_completed || 0}</p>
                   </div>
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-500 mb-1">Taux de succès</p>
+                  <div className="p-4 bg-gray-900 rounded-lg">
+                    <p className="text-sm text-gray-300 mb-1">Taux de succès</p>
                     <p className="text-2xl font-bold">{agent.performance_metrics.success_rate || 0}%</p>
                   </div>
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-500 mb-1">Temps de réponse moyen</p>
+                  <div className="p-4 bg-gray-900 rounded-lg">
+                    <p className="text-sm text-gray-300 mb-1">Temps de réponse moyen</p>
                     <p className="text-2xl font-bold">{agent.performance_metrics.avg_response_time || 0}s</p>
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-gray-300">
                   <Activity className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                   <p>Aucune métrique disponible pour le moment</p>
                 </div>

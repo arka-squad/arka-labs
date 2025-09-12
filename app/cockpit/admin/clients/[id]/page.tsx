@@ -79,7 +79,7 @@ export default function AdminClientDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -87,8 +87,8 @@ export default function AdminClientDetailPage() {
 
   if (error || !client) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b border-gray-200">
+      <div className="min-h-screen bg-gray-900">
+        <div className="bg-gray-800 border-b border-gray-700">
           <div className="px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <Link
@@ -97,13 +97,13 @@ export default function AdminClientDetailPage() {
               >
                 <ArrowLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">Client introuvable</h1>
+              <h1 className="text-2xl font-bold text-white">Client introuvable</h1>
             </div>
           </div>
         </div>
         <div className="px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800">{error || 'Le client demandé n\'existe pas.'}</p>
+          <div className="bg-red-900/20 border border-red-200 rounded-lg p-4">
+            <p className="text-red-300">{error || 'Le client demandé n\'existe pas.'}</p>
           </div>
         </div>
       </div>
@@ -115,7 +115,7 @@ export default function AdminClientDetailPage() {
       case 'actif': return 'bg-green-100 text-green-800';
       case 'inactif': return 'bg-gray-100 text-gray-800';
       case 'prospect': return 'bg-blue-100 text-blue-800';
-      case 'archive': return 'bg-red-100 text-red-800';
+      case 'archive': return 'bg-red-100 text-red-300';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -131,9 +131,9 @@ export default function AdminClientDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -145,12 +145,12 @@ export default function AdminClientDetailPage() {
               </Link>
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold text-gray-900">{client.nom}</h1>
+                  <h1 className="text-2xl font-bold text-white">{client.nom}</h1>
                   <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(client.statut)}`}>
                     {client.statut}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-300 mt-1">
                   {client.secteur} • {getTailleLabel(client.taille)}
                 </p>
               </div>
@@ -158,13 +158,13 @@ export default function AdminClientDetailPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => router.push(`/cockpit/admin/clients/${params.id}/edit`)}
-                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <Edit className="w-5 h-5" />
               </button>
               <button
                 onClick={handleDelete}
-                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-2 text-red-600 hover:bg-red-900/20 rounded-lg transition-colors"
               >
                 <Trash2 className="w-5 h-5" />
               </button>
@@ -179,26 +179,26 @@ export default function AdminClientDetailPage() {
           {/* Main Info */}
           <div className="lg:col-span-2 space-y-6">
             {/* Informations générales */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-gray-800 rounded-lg shadow-sm p-6">
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Building className="w-5 h-5 text-gray-400" />
                 Informations générales
               </h2>
               <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Nom</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{client.nom}</dd>
+                  <dt className="text-sm font-medium text-gray-300">Nom</dt>
+                  <dd className="mt-1 text-sm text-white">{client.nom}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Secteur</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{client.secteur}</dd>
+                  <dt className="text-sm font-medium text-gray-300">Secteur</dt>
+                  <dd className="mt-1 text-sm text-white">{client.secteur}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Taille</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{getTailleLabel(client.taille)}</dd>
+                  <dt className="text-sm font-medium text-gray-300">Taille</dt>
+                  <dd className="mt-1 text-sm text-white">{getTailleLabel(client.taille)}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Statut</dt>
+                  <dt className="text-sm font-medium text-gray-300">Statut</dt>
                   <dd className="mt-1">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(client.statut)}`}>
                       {client.statut}
@@ -207,18 +207,18 @@ export default function AdminClientDetailPage() {
                 </div>
                 {client.budget_annuel && (
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 flex items-center gap-1">
+                    <dt className="text-sm font-medium text-gray-300 flex items-center gap-1">
                       <DollarSign className="w-4 h-4" />
                       Budget annuel
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-900">
+                    <dd className="mt-1 text-sm text-white">
                       {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(client.budget_annuel)}
                     </dd>
                   </div>
                 )}
                 {client.site_web && (
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 flex items-center gap-1">
+                    <dt className="text-sm font-medium text-gray-300 flex items-center gap-1">
                       <Globe className="w-4 h-4" />
                       Site web
                     </dt>
@@ -231,23 +231,23 @@ export default function AdminClientDetailPage() {
                 )}
               </dl>
               {client.description && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <dt className="text-sm font-medium text-gray-500 mb-2">Description</dt>
-                  <dd className="text-sm text-gray-900">{client.description}</dd>
+                <div className="mt-4 pt-4 border-t border-gray-700">
+                  <dt className="text-sm font-medium text-gray-300 mb-2">Description</dt>
+                  <dd className="text-sm text-white">{client.description}</dd>
                 </div>
               )}
             </div>
 
             {/* Contact */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-gray-800 rounded-lg shadow-sm p-6">
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <User className="w-5 h-5 text-gray-400" />
                 Contact principal
               </h2>
               <dl className="space-y-3">
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Nom</dt>
-                  <dd className="mt-1 text-sm text-gray-900">
+                  <dt className="text-sm font-medium text-gray-300">Nom</dt>
+                  <dd className="mt-1 text-sm text-white">
                     {typeof client.contact_principal === 'string' 
                       ? client.contact_principal 
                       : client.contact_principal?.nom || 'Non défini'
@@ -256,7 +256,7 @@ export default function AdminClientDetailPage() {
                 </div>
                 {client.email && (
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 flex items-center gap-1">
+                    <dt className="text-sm font-medium text-gray-300 flex items-center gap-1">
                       <Mail className="w-4 h-4" />
                       Email
                     </dt>
@@ -269,7 +269,7 @@ export default function AdminClientDetailPage() {
                 )}
                 {client.telephone && (
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 flex items-center gap-1">
+                    <dt className="text-sm font-medium text-gray-300 flex items-center gap-1">
                       <Phone className="w-4 h-4" />
                       Téléphone
                     </dt>
@@ -287,30 +287,30 @@ export default function AdminClientDetailPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Stats */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Statistiques</h3>
+            <div className="bg-gray-800 rounded-lg shadow-sm p-6">
+              <h3 className="text-sm font-semibold text-white mb-4">Statistiques</h3>
               <dl className="space-y-3">
                 <div className="flex justify-between">
-                  <dt className="text-sm text-gray-500">Projets totaux</dt>
-                  <dd className="text-sm font-medium text-gray-900">{client.projets_count || 0}</dd>
+                  <dt className="text-sm text-gray-300">Projets totaux</dt>
+                  <dd className="text-sm font-medium text-white">{client.projets_count || 0}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-sm text-gray-500">Projets actifs</dt>
-                  <dd className="text-sm font-medium text-gray-900">{client.projets_actifs || 0}</dd>
+                  <dt className="text-sm text-gray-300">Projets actifs</dt>
+                  <dd className="text-sm font-medium text-white">{client.projets_actifs || 0}</dd>
                 </div>
               </dl>
             </div>
 
             {/* Dates */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="bg-gray-800 rounded-lg shadow-sm p-6">
+              <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-gray-400" />
                 Dates
               </h3>
               <dl className="space-y-3">
                 <div>
-                  <dt className="text-sm text-gray-500">Créé le</dt>
-                  <dd className="text-sm text-gray-900">
+                  <dt className="text-sm text-gray-300">Créé le</dt>
+                  <dd className="text-sm text-white">
                     {new Date(client.created_at).toLocaleDateString('fr-FR', {
                       day: 'numeric',
                       month: 'long',
@@ -319,8 +319,8 @@ export default function AdminClientDetailPage() {
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-gray-500">Mis à jour le</dt>
-                  <dd className="text-sm text-gray-900">
+                  <dt className="text-sm text-gray-300">Mis à jour le</dt>
+                  <dd className="text-sm text-white">
                     {new Date(client.updated_at).toLocaleDateString('fr-FR', {
                       day: 'numeric',
                       month: 'long',
@@ -333,8 +333,8 @@ export default function AdminClientDetailPage() {
 
             {/* Tags */}
             {client.tags && client.tags.length > 0 && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <div className="bg-gray-800 rounded-lg shadow-sm p-6">
+                <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
                   <Tag className="w-4 h-4 text-gray-400" />
                   Tags
                 </h3>
@@ -352,8 +352,8 @@ export default function AdminClientDetailPage() {
             )}
 
             {/* Actions */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Actions</h3>
+            <div className="bg-gray-800 rounded-lg shadow-sm p-6">
+              <h3 className="text-sm font-semibold text-white mb-4">Actions</h3>
               <div className="space-y-2">
                 <Link
                   href={`/cockpit/admin/projects/new?client_id=${client.id}`}
@@ -363,7 +363,7 @@ export default function AdminClientDetailPage() {
                 </Link>
                 <button
                   onClick={() => router.push(`/cockpit/admin/clients/${params.id}/edit`)}
-                  className="w-full px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                  className="w-full px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-900 transition-colors"
                 >
                   Modifier le client
                 </button>

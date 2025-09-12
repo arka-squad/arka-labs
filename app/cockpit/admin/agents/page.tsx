@@ -103,14 +103,14 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Gestion des Agents</h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <h1 className="text-2xl font-bold text-white">Gestion des Agents</h1>
+              <p className="text-sm text-gray-300 mt-1">
                 {agents.length} agents configurés • {templates.length} templates disponibles
               </p>
             </div>
@@ -127,7 +127,7 @@ export default function AgentsPage() {
 
       {/* Filters */}
       <div className="px-4 sm:px-6 lg:px-8 py-4">
-        <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="bg-gray-800 rounded-lg shadow-sm p-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -164,7 +164,7 @@ export default function AgentsPage() {
               ))}
             </select>
 
-            <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center justify-center gap-2">
+            <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-900 flex items-center justify-center gap-2">
               <Filter className="w-4 h-4" />
               Plus de filtres
             </button>
@@ -179,10 +179,10 @@ export default function AgentsPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         ) : filteredAgents.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+          <div className="bg-gray-800 rounded-lg shadow-sm p-12 text-center">
             <Bot className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun agent trouvé</h3>
-            <p className="text-gray-500 mb-4">
+            <h3 className="text-lg font-medium text-white mb-2">Aucun agent trouvé</h3>
+            <p className="text-gray-300 mb-4">
               {searchTerm || selectedDomain || selectedStatus
                 ? 'Aucun agent ne correspond à vos critères de recherche.'
                 : 'Commencez par créer votre premier agent.'}
@@ -203,7 +203,7 @@ export default function AgentsPage() {
               <div
                 key={agent.id}
                 onClick={() => router.push(`/cockpit/admin/agents/${agent.id}`)}
-                className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
+                className="bg-gray-800 rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -211,8 +211,8 @@ export default function AgentsPage() {
                       {getDomainIcon(agent.domaine)}
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">{agent.name}</h3>
-                      <p className="text-sm text-gray-500">{agent.role}</p>
+                      <h3 className="font-medium text-white">{agent.name}</h3>
+                      <p className="text-sm text-gray-300">{agent.role}</p>
                     </div>
                   </div>
                   <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(agent.status)}`}>
@@ -245,15 +245,15 @@ export default function AgentsPage() {
                   <div className="mt-3 pt-3 border-t border-gray-100">
                     <div className="grid grid-cols-3 gap-2 text-center">
                       <div>
-                        <p className="text-xs text-gray-500">Tâches</p>
+                        <p className="text-xs text-gray-300">Tâches</p>
                         <p className="text-sm font-semibold">{agent.performance_metrics.tasks_completed || 0}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">Succès</p>
+                        <p className="text-xs text-gray-300">Succès</p>
                         <p className="text-sm font-semibold">{agent.performance_metrics.success_rate || 0}%</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">Temps moy.</p>
+                        <p className="text-xs text-gray-300">Temps moy.</p>
                         <p className="text-sm font-semibold">{agent.performance_metrics.avg_response_time || 0}s</p>
                       </div>
                     </div>
