@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Users, Settings, Zap, AlertCircle, Filter, Search } from 'lucide-react';
-import ResponsiveWrapper from '../components/ResponsiveWrapper';
+import ResponsiveWrapper from '../../components/ResponsiveWrapper';
 
 interface Squad {
   id: string;

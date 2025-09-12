@@ -214,7 +214,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
           <AlertCircle size={64} className="text-red-400 mx-auto mb-4" />
           <p className="text-xl text-red-400 mb-2">Projet non trouvé</p>
           <button 
-            onClick={() => window.location.href = '/cockpit/projects'}
+            onClick={() => window.location.href = '/cockpit/admin/projects'}
             className="text-blue-400 hover:text-blue-300"
           >
             ← Retour aux projets
@@ -231,7 +231,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => window.location.href = '/cockpit/projects'}
+              onClick={() => window.location.href = '/cockpit/admin/projects'}
               className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft size={16} />
@@ -477,7 +477,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
 
                   <div className="mt-4 pt-4 border-t border-gray-700">
                     <button
-                      onClick={() => window.location.href = `/cockpit/squads/${squad.id}`}
+                      onClick={() => window.location.href = `/cockpit/admin/squads/${squad.id}`}
                       className="text-blue-400 hover:text-blue-300 text-sm"
                     >
                       Voir détails →

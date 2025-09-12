@@ -104,7 +104,7 @@ export default function NewProjectPage() {
       
       // Redirect after 2 seconds
       setTimeout(() => {
-        window.location.href = '/cockpit/projects';
+        window.location.href = '/cockpit/admin/projects';
       }, 2000);
 
     } catch (err) {
@@ -148,7 +148,7 @@ export default function NewProjectPage() {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => window.location.href = '/cockpit/projects'}
+                onClick={() => window.location.href = '/cockpit/admin/projects'}
                 className="flex items-center space-x-2 text-gray-400 hover:text-white"
               >
                 <ArrowLeft size={16} />
@@ -368,7 +368,7 @@ export default function NewProjectPage() {
             <div className="flex justify-end space-x-4">
               <button
                 type="button"
-                onClick={() => window.location.href = '/cockpit/projects'}
+                onClick={() => window.location.href = '/cockpit/admin/projects'}
                 className="px-6 py-2 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
                 disabled={loading}
               >

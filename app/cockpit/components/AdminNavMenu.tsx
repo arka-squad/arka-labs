@@ -20,25 +20,25 @@ export default function AdminNavMenu({ className = '' }: AdminNavMenuProps) {
     { 
       id: 'projects', 
       label: '📋 Projets', 
-      href: '/cockpit/projects',
+      href: '/cockpit/admin/projects',
       icon: Briefcase
     },
     { 
       id: 'squads', 
       label: '🔷 Squads', 
-      href: '/cockpit/squads',
+      href: '/cockpit/admin/squads',
       icon: Users
     },
     { 
       id: 'agents', 
       label: '👤 Agents', 
-      href: '/cockpit/agents',
+      href: '/cockpit/admin/agents',
       icon: Zap
     },
     { 
       id: 'clients', 
       label: '🏢 Clients', 
-      href: '/cockpit/clients',
+      href: '/cockpit/admin/clients',
       icon: Building
     },
     { 

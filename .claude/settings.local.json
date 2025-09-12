@@ -27,7 +27,8 @@
       "Bash(then echo \"MANQUANT: $dir\")",
       "Bash(fi)",
       "Bash(while IFS= read -r dir)",
-      "Bash(npm run type-check:*)"
+      "Bash(npm run type-check:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

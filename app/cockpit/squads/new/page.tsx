@@ -113,7 +113,7 @@ export default function NewSquadPage() {
         throw new Error(data.error || 'Échec de la création de la squad');
       }
 
-      router.push(`/cockpit/squads/${data.id}`);
+      router.push(`/cockpit/admin/squads/${data.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la création');
     } finally {
@@ -162,7 +162,7 @@ export default function NewSquadPage() {
         <div className="flex items-center justify-between p-6 border-b border-[#2A3441]">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => router.push('/cockpit/squads')}
+              onClick={() => router.push('/cockpit/admin/squads')}
               className="p-2 hover:bg-[#1A2332] rounded-lg transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -436,7 +436,7 @@ export default function NewSquadPage() {
             <div className="flex justify-end gap-3">
               <button
                 type="button"
-                onClick={() => router.push('/cockpit/squads')}
+                onClick={() => router.push('/cockpit/admin/squads')}
                 className="px-6 py-2 border border-[#2A3441] rounded-lg hover:bg-[#1A2332] transition-colors"
               >
                 Annuler

@@ -136,7 +136,7 @@ export default function SquadDetailPage({ params }: { params: { id: string } }) 
   if (loading) {
     return (
       <ResponsiveWrapper 
-        currentPath="/cockpit/squads"
+        currentPath="/cockpit/admin/squads"
         contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
         innerClassName="max-w-none mx-0"
       >
@@ -153,7 +153,7 @@ export default function SquadDetailPage({ params }: { params: { id: string } }) 
   if (error || !squad) {
     return (
       <ResponsiveWrapper 
-        currentPath="/cockpit/squads"
+        currentPath="/cockpit/admin/squads"
         contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
         innerClassName="max-w-none mx-0"
       >
@@ -176,7 +176,7 @@ export default function SquadDetailPage({ params }: { params: { id: string } }) 
 
   return (
     <ResponsiveWrapper 
-      currentPath="/cockpit/squads"
+      currentPath="/cockpit/admin/squads"
       contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
       innerClassName="max-w-none mx-0"
     >
@@ -184,7 +184,7 @@ export default function SquadDetailPage({ params }: { params: { id: string } }) 
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => window.location.href = '/cockpit/squads'}
+              onClick={() => window.location.href = '/cockpit/admin/squads'}
               className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft size={16} />

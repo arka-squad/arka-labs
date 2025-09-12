@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Users, Settings, AlertCircle, Calendar, Briefcase, Search, Filter, ArrowRight } from 'lucide-react';
-import ResponsiveWrapper from '../components/ResponsiveWrapper';
+import ResponsiveWrapper from '../../components/ResponsiveWrapper';
 
 interface Project {
   id: number;

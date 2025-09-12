@@ -23,13 +23,13 @@ export default function MobileNav({ currentPath, userRole = 'viewer' }: MobileNa
       roles: ['admin', 'manager', 'operator', 'viewer'] 
     },
     { 
-      path: '/cockpit/squads', 
+      path: '/cockpit/admin/squads', 
       label: 'Squads', 
       icon: Users,
       roles: ['admin', 'manager', 'operator'] 
     },
     { 
-      path: '/cockpit/projects', 
+      path: '/cockpit/admin/projects', 
       label: 'Projets', 
       icon: Briefcase,
       roles: ['admin', 'manager', 'operator', 'viewer'] 

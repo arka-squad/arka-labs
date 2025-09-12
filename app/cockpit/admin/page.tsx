@@ -260,7 +260,7 @@ export default function AdminDashboard() {
                 <ArrowRight 
                   size={16} 
                   className="text-gray-500 cursor-pointer hover:text-blue-400" 
-                  onClick={() => window.location.href = '/cockpit/squads'}
+                  onClick={() => window.location.href = '/cockpit/admin/squads'}
                 />
               </div>
               <div className="mb-2">
@@ -284,7 +284,7 @@ export default function AdminDashboard() {
                 <ArrowRight 
                   size={16} 
                   className="text-gray-500 cursor-pointer hover:text-green-400"
-                  onClick={() => window.location.href = '/cockpit/projects'}
+                  onClick={() => window.location.href = '/cockpit/admin/projects'}
                 />
               </div>
               <div className="mb-2">
@@ -308,7 +308,7 @@ export default function AdminDashboard() {
                 <ArrowRight 
                   size={16} 
                   className="text-gray-500 cursor-pointer hover:text-purple-400"
-                  onClick={() => window.location.href = '/cockpit/instructions'}
+                  onClick={() => window.location.href = '/cockpit/admin/instructions'}
                 />
               </div>
               <div className="mb-2">
@@ -351,7 +351,7 @@ export default function AdminDashboard() {
           {canManageSquads && (
             <div 
               className="bg-gradient-to-br from-blue-900/20 to-blue-800/10 rounded-xl p-6 border border-blue-700/30 cursor-pointer hover:border-blue-600/50 transition-all"
-              onClick={() => window.location.href = '/cockpit/squads'}
+              onClick={() => window.location.href = '/cockpit/admin/squads'}
             >
               <div className="flex items-center space-x-3 mb-4">
                 <Users size={24} className="text-blue-400" />
@@ -374,7 +374,7 @@ export default function AdminDashboard() {
           {/* Manage Projects */}
           <div 
             className="bg-gradient-to-br from-green-900/20 to-green-800/10 rounded-xl p-6 border border-green-700/30 cursor-pointer hover:border-green-600/50 transition-all"
-            onClick={() => window.location.href = '/cockpit/projects'}
+            onClick={() => window.location.href = '/cockpit/admin/projects'}
           >
             <div className="flex items-center space-x-3 mb-4">
               <Briefcase size={24} className="text-green-400" />
@@ -394,7 +394,7 @@ export default function AdminDashboard() {
           {/* Manage Clients */}
           <div 
             className="bg-gradient-to-br from-blue-900/20 to-blue-800/10 rounded-xl p-6 border border-blue-700/30 cursor-pointer hover:border-blue-600/50 transition-all"
-            onClick={() => window.location.href = '/cockpit/clients'}
+            onClick={() => window.location.href = '/cockpit/admin/clients'}
           >
             <div className="flex items-center space-x-3 mb-4">
               <Building size={24} className="text-blue-400" />
@@ -414,7 +414,7 @@ export default function AdminDashboard() {
           {/* Manage Agents */}
           <div 
             className="bg-gradient-to-br from-purple-900/20 to-purple-800/10 rounded-xl p-6 border border-purple-700/30 cursor-pointer hover:border-purple-600/50 transition-all"
-            onClick={() => window.location.href = '/cockpit/agents'}
+            onClick={() => window.location.href = '/cockpit/admin/agents'}
           >
             <div className="flex items-center space-x-3 mb-4">
               <Zap size={24} className="text-purple-400" />
