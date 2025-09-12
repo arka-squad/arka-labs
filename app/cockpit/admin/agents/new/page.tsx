@@ -2,456 +2,415 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Bot, Info, Settings, Layers, Save, Search } from 'lucide-react';
+import { ArrowLeft, Bot, Info, Settings, Layers, Save, Search, User, Building, Briefcase, Zap, Cpu } from 'lucide-react';
 import Link from 'next/link';
 
-interface AgentTemplate {
-  id: number;
-  name: string;
-  slug: string;
-  category: string;
-  description: string;
-  capabilities: string[];
-  default_config: any;
-  base_prompt: string;
-}
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 interface Client {
-  id: number;
+  id: string;
   nom: string;
 }
 
 interface Project {
-  id: number;
+  id: string;
   nom: string;
-  client_id: number;
+  client_id: string;
 }
+
+interface AgentForm {
+  name: string;
+  role: string;
+  domaine: string;
+  client_id: string;
+  project_id: string;
+  instructions_personnalisees: string;
+  temperature: number;
+  max_tokens: number;
+}
+
+const initialForm: AgentForm = {
+  name: '',
+  role: '',
+  domaine: 'Tech',
+  client_id: '',
+  project_id: '',
+  instructions_personnalisees: '',
+  temperature: 0.7,
+  max_tokens: 2000
+};
+
+const domaines = [
+  { value: 'Tech', label: '🚀 Tech - Développement & Innovation', color: 'border-blue-500/50 bg-blue-500/10' },
+  { value: 'RH', label: '👥 RH - Ressources Humaines', color: 'border-green-500/50 bg-green-500/10' },
+  { value: 'Marketing', label: '📈 Marketing - Communication & Growth', color: 'border-purple-500/50 bg-purple-500/10' },
+  { value: 'Finance', label: '💰 Finance - Gestion & Comptabilité', color: 'border-yellow-500/50 bg-yellow-500/10' },
+  { value: 'Ops', label: '⚙️ Ops - Opérations & Support', color: 'border-gray-500/50 bg-gray-500/10' },
+  { value: 'Autre', label: '🔧 Autre - Domaine spécialisé', color: 'border-orange-500/50 bg-orange-500/10' }
+];
 
 export default function NewAgentPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [templates, setTemplates] = useState<AgentTemplate[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
-  
-  const [selectedTemplate, setSelectedTemplate] = useState<AgentTemplate | null>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    role: '',
-    domaine: '',
-    client_id: '',
-    project_id: '',
-    wake_prompt: '',
-    configuration: {
-      temperature: 0.7,
-      max_tokens: 2000,
-      response_format: 'text',
-      custom_instructions: ''
-    }
-  });
+  const [error, setError] = useState<string | null>(null);
+  const [form, setForm] = useState<AgentForm>(initialForm);
 
   useEffect(() => {
-    fetchTemplates();
     fetchClients();
     fetchProjects();
   }, []);
 
   useEffect(() => {
-    if (formData.client_id) {
-      const filtered = projects.filter(p => p.client_id === parseInt(formData.client_id));
-      setFilteredProjects(filtered);
-    } else {
-      setFilteredProjects(projects);
-    }
-  }, [formData.client_id, projects]);
-
-  const fetchTemplates = async () => {
-    try {
-      const res = await fetch('/api/admin/agents/templates');
-      if (res.ok) {
-        const data = await res.json();
-        setTemplates(data.items || []);
+    if (form.client_id) {
+      const clientProjects = projects.filter(p => p.client_id === form.client_id);
+      setFilteredProjects(clientProjects);
+      // Reset project selection when client changes
+      if (!clientProjects.find(p => p.id === form.project_id)) {
+        setForm(prev => ({ ...prev, project_id: '' }));
       }
-    } catch (error) {
-      console.error('Error fetching templates:', error);
+    } else {
+      setFilteredProjects([]);
+      setForm(prev => ({ ...prev, project_id: '' }));
     }
-  };
+  }, [form.client_id, projects]);
 
   const fetchClients = async () => {
     try {
-      const res = await fetch('/api/admin/clients');
-      if (res.ok) {
-        const data = await res.json();
+      const response = await fetch('/api/admin/clients');
+      if (response.ok) {
+        const data = await response.json();
         setClients(data.items || []);
       }
-    } catch (error) {
-      console.error('Error fetching clients:', error);
+    } catch (err) {
+      console.error('Error fetching clients:', err);
     }
   };
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch('/api/admin/projects');
-      if (res.ok) {
-        const data = await res.json();
+      const response = await fetch('/api/admin/projects');
+      if (response.ok) {
+        const data = await response.json();
         setProjects(data.items || []);
       }
-    } catch (error) {
-      console.error('Error fetching projects:', error);
+    } catch (err) {
+      console.error('Error fetching projects:', err);
     }
-  };
-
-  const handleTemplateSelect = (template: AgentTemplate) => {
-    setSelectedTemplate(template);
-    setFormData(prev => ({
-      ...prev,
-      name: `Agent ${template.name}`,
-      role: template.slug,
-      domaine: template.category,
-      wake_prompt: template.base_prompt,
-      configuration: {
-        ...prev.configuration,
-        ...template.default_config
-      }
-    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation
+    if (!form.name || !form.role || !form.domaine) {
+      setError('Veuillez remplir tous les champs obligatoires (nom, rôle et domaine)');
+      return;
+    }
+
     setLoading(true);
+    setError(null);
 
     try {
-      const payload = {
-        ...formData,
-        template_id: selectedTemplate?.id,
-        client_id: formData.client_id ? parseInt(formData.client_id) : null,
-        project_id: formData.project_id ? parseInt(formData.project_id) : null,
-        status: 'active'
-      };
-
-      const res = await fetch('/api/admin/agents', {
+      const response = await fetch('/api/admin/agents', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(payload)
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        router.push(`/cockpit/admin/agents/${data.id}`);
-      } else {
-        const error = await res.json();
-        alert(error.message || 'Erreur lors de la création');
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Erreur lors de la création');
       }
-    } catch (error) {
-      console.error('Error creating agent:', error);
-      alert('Erreur lors de la création de l\'agent');
+
+      const newAgent = await response.json();
+      router.push(`/cockpit/admin/agents/${newAgent.id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
       setLoading(false);
     }
   };
 
-  const templateCategories = [...new Set(templates.map(t => t.category))];
+  const getSelectedDomaine = () => domaines.find(d => d.value === form.domaine) || domaines[0];
 
   return (
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-4">
-            <Link
-              href="/cockpit/admin/agents"
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Créer un nouvel agent</h1>
-              <p className="text-sm text-gray-300 mt-1">
-                Configurez un agent intelligent pour automatiser vos processus
-              </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link
+                href="/cockpit/admin/agents"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Nouvel Agent IA</h1>
+                <p className="text-sm text-gray-300 mt-1">
+                  Administration - Création d&apos;un nouvel agent intelligent
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="px-4 sm:px-6 lg:px-8 py-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* Template Selection */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Bot className="w-5 h-5" />
-                Sélectionner un template
-              </h2>
-              
-              {templateCategories.map(category => (
-                <div key={category} className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">{category}</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {templates
-                      .filter(t => t.category === category)
-                      .map(template => (
-                        <div
-                          key={template.id}
-                          onClick={() => handleTemplateSelect(template)}
-                          className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                            selectedTemplate?.id === template.id
-                              ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <h4 className="font-medium text-white">{template.name}</h4>
-                          <p className="text-sm text-gray-300 mt-1">{template.description}</p>
-                          {template.capabilities && (
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {template.capabilities.slice(0, 3).map((cap, idx) => (
-                                <span key={idx} className="text-xs bg-gray-100 px-2 py-1 rounded">
-                                  {cap}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))}
+      {/* Form */}
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
+          {error && (
+            <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-lg flex items-start gap-3">
+              <Info className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-red-300">{error}</div>
+            </div>
+          )}
+
+          <div className="space-y-8">
+            {/* Agent Identity */}
+            <div className="bg-gray-800 rounded-lg shadow-sm border border-gray-700">
+              <div className="p-6 border-b border-gray-700">
+                <h2 className="text-lg font-semibold mb-2 flex items-center gap-2 text-white">
+                  <User className="w-5 h-5 text-gray-400" />
+                  Identité de l&apos;agent
+                </h2>
+                <p className="text-sm text-gray-400">
+                  Définissez qui est cet agent et quel sera son rôle principal
+                </p>
+              </div>
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Nom de l&apos;agent *
+                    </label>
+                    <input
+                      type="text"
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                      placeholder="Ex: Assistant RH Principal, Dev Lead Bot..."
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Rôle spécialisé *
+                    </label>
+                    <input
+                      type="text"
+                      value={form.role}
+                      onChange={(e) => setForm({ ...form, role: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                      placeholder="Ex: Développeur React, Recruteur Senior..."
+                      required
+                    />
                   </div>
                 </div>
-              ))}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-3">
+                    Domaine d&apos;expertise *
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {domaines.map((domaine) => (
+                      <div key={domaine.value} className="relative">
+                        <input
+                          type="radio"
+                          id={domaine.value}
+                          name="domaine"
+                          value={domaine.value}
+                          checked={form.domaine === domaine.value}
+                          onChange={(e) => setForm({ ...form, domaine: e.target.value })}
+                          className="sr-only peer"
+                        />
+                        <label
+                          htmlFor={domaine.value}
+                          className={`block p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                            form.domaine === domaine.value
+                              ? `${domaine.color} border-opacity-100`
+                              : 'border-gray-600 bg-gray-800 hover:bg-gray-750'
+                          } peer-focus:ring-2 peer-focus:ring-blue-500`}
+                        >
+                          <div className="text-sm font-medium text-white">
+                            {domaine.label}
+                          </div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Configuration */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Settings className="w-5 h-5" />
-                Configuration de l&apos;agent
-              </h2>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nom de l&apos;agent *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Ex: Assistant RH Principal"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
+            {/* Project Assignment */}
+            <div className="bg-gray-800 rounded-lg shadow-sm border border-gray-700">
+              <div className="p-6 border-b border-gray-700">
+                <h2 className="text-lg font-semibold mb-2 flex items-center gap-2 text-white">
+                  <Briefcase className="w-5 h-5 text-gray-400" />
+                  Affectation projet
+                </h2>
+                <p className="text-sm text-gray-400">
+                  Optionnel - Assignez cet agent à un client et un projet spécifique
+                </p>
+              </div>
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <Building className="w-4 h-4 inline mr-1" />
                       Client
                     </label>
                     <select
-                      value={formData.client_id}
-                      onChange={(e) => setFormData({...formData, client_id: e.target.value, project_id: ''})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={form.client_id}
+                      onChange={(e) => setForm({ ...form, client_id: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
                     >
-                      <option value="">Sélectionner un client</option>
-                      {clients.map(client => (
-                        <option key={client.id} value={client.id}>{client.nom}</option>
+                      <option value="">Aucun client spécifique</option>
+                      {clients.map((client) => (
+                        <option key={client.id} value={client.id}>
+                          {client.nom}
+                        </option>
                       ))}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <Briefcase className="w-4 h-4 inline mr-1" />
                       Projet
                     </label>
                     <select
-                      value={formData.project_id}
-                      onChange={(e) => setFormData({...formData, project_id: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      disabled={!formData.client_id}
+                      value={form.project_id}
+                      onChange={(e) => setForm({ ...form, project_id: e.target.value })}
+                      disabled={!form.client_id}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <option value="">Sélectionner un projet</option>
-                      {filteredProjects.map(project => (
-                        <option key={project.id} value={project.id}>{project.nom}</option>
+                      <option value="">
+                        {!form.client_id ? 'Sélectionnez d\'abord un client' : 'Aucun projet spécifique'}
+                      </option>
+                      {filteredProjects.map((project) => (
+                        <option key={project.id} value={project.id}>
+                          {project.nom}
+                        </option>
                       ))}
                     </select>
                   </div>
                 </div>
+              </div>
+            </div>
 
+            {/* Configuration */}
+            <div className="bg-gray-800 rounded-lg shadow-sm border border-gray-700">
+              <div className="p-6 border-b border-gray-700">
+                <h2 className="text-lg font-semibold mb-2 flex items-center gap-2 text-white">
+                  <Settings className="w-5 h-5 text-gray-400" />
+                  Configuration avancée
+                </h2>
+                <p className="text-sm text-gray-400">
+                  Personnalisez le comportement et les instructions spécifiques de l&apos;agent
+                </p>
+              </div>
+              <div className="p-6 space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Instructions personnalisées
                   </label>
                   <textarea
-                    value={formData.wake_prompt}
-                    onChange={(e) => setFormData({...formData, wake_prompt: e.target.value})}
-                    rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={form.instructions_personnalisees}
+                    onChange={(e) => setForm({ ...form, instructions_personnalisees: e.target.value })}
+                    rows={5}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Instructions spécifiques pour cet agent..."
                   />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Ces instructions seront ajoutées au prompt de base de l&apos;agent
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <Zap className="w-4 h-4 inline mr-1" />
                       Température (créativité)
                     </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="1"
-                      step="0.1"
-                      value={formData.configuration.temperature}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        configuration: {
-                          ...formData.configuration,
-                          temperature: parseFloat(e.target.value)
-                        }
-                      })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+                    <div className="space-y-2">
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value={form.temperature}
+                        onChange={(e) => setForm({ ...form, temperature: parseFloat(e.target.value) })}
+                        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                      <div className="flex justify-between text-xs text-gray-400">
+                        <span>Précis (0)</span>
+                        <span className="text-white font-medium">{form.temperature}</span>
+                        <span>Créatif (1)</span>
+                      </div>
+                    </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <Cpu className="w-4 h-4 inline mr-1" />
                       Tokens maximum
                     </label>
                     <input
                       type="number"
                       min="100"
-                      max="8000"
+                      max="4000"
                       step="100"
-                      value={formData.configuration.max_tokens}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        configuration: {
-                          ...formData.configuration,
-                          max_tokens: parseInt(e.target.value)
-                        }
-                      })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={form.max_tokens}
+                      onChange={(e) => setForm({ ...form, max_tokens: parseInt(e.target.value) })}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
                     />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Limite de longueur pour les réponses de l&apos;agent
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            {/* Context Hierarchy */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Layers className="w-5 h-5" />
-                Hiérarchie de contexte
-              </h3>
-              
-              <div className="space-y-3">
-                <div className="pl-0">
-                  <div className="flex items-center gap-2 p-2 bg-gray-900 rounded">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                    <span className="text-sm font-medium">Arka Global</span>
-                  </div>
-                </div>
-                
-                {formData.client_id && (
-                  <div className="pl-4 border-l-2 border-gray-200 ml-1">
-                    <div className="flex items-center gap-2 p-2 bg-blue-50 rounded">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium">
-                        Client: {clients.find(c => c.id === parseInt(formData.client_id))?.nom}
-                      </span>
-                    </div>
-                  </div>
-                )}
-                
-                {formData.project_id && (
-                  <div className="pl-8 border-l-2 border-gray-200 ml-1">
-                    <div className="flex items-center gap-2 p-2 bg-green-50 rounded">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium">
-                        Projet: {projects.find(p => p.id === parseInt(formData.project_id))?.nom}
-                      </span>
-                    </div>
-                  </div>
-                )}
-                
-                <div className={formData.project_id ? 'pl-12 border-l-2 border-gray-200 ml-1' : formData.client_id ? 'pl-8 border-l-2 border-gray-200 ml-1' : 'pl-4 border-l-2 border-gray-200 ml-1'}>
-                  <div className="flex items-center gap-2 p-2 bg-yellow-50 rounded">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                    <span className="text-sm font-medium">Agent: {formData.name || 'Nouvel Agent'}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <Info className="w-4 h-4 text-blue-600 mt-0.5" />
-                  <div className="text-xs text-blue-800">
-                    <p className="font-medium mb-1">Propagation de contexte</p>
-                    <p>Les configurations héritent automatiquement des niveaux supérieurs et peuvent être surchargées.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Selected Template Info */}
-            {selectedTemplate && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold mb-3">Template sélectionné</h3>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-gray-300">Nom</p>
-                    <p className="font-medium">{selectedTemplate.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-300">Catégorie</p>
-                    <p className="font-medium">{selectedTemplate.category}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-300">Capacités</p>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {selectedTemplate.capabilities?.map((cap, idx) => (
-                        <span key={idx} className="text-xs bg-gray-100 px-2 py-1 rounded">
-                          {cap}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+          {/* Actions */}
+          <div className="mt-8 flex items-center justify-end gap-4">
+            <Link
+              href="/cockpit/admin/agents"
+              className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+            >
+              Annuler
+            </Link>
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Création...
+                </>
+              ) : (
+                <>
+                  <Bot className="w-4 h-4" />
+                  Créer l&apos;agent
+                </>
+              )}
+            </button>
           </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="max-w-6xl mx-auto mt-6 flex justify-end gap-3">
-          <Link
-            href="/cockpit/admin/agents"
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-900"
-          >
-            Annuler
-          </Link>
-          <button
-            type="submit"
-            disabled={loading || !selectedTemplate || !formData.name}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {loading ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Création...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4" />
-                Créer l&apos;agent
-              </>
-            )}
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

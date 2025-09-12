@@ -12,12 +12,16 @@ interface ClientForm {
   nom: string;
   secteur: string;
   taille: 'TPE' | 'PME' | 'ETI' | 'GE';
-  contact_principal: string;
-  email?: string;
-  telephone?: string;
+  contact_principal: {
+    nom: string;
+    email: string;
+    telephone?: string;
+    fonction?: string;
+  };
   adresse?: string;
   site_web?: string;
   description?: string;
+  contexte_specifique?: string;
   tags?: string[];
   budget_annuel?: number;
   statut: 'actif' | 'inactif' | 'prospect' | 'archive';
@@ -27,12 +31,16 @@ const initialForm: ClientForm = {
   nom: '',
   secteur: '',
   taille: 'PME',
-  contact_principal: '',
-  email: '',
-  telephone: '',
+  contact_principal: {
+    nom: '',
+    email: '',
+    telephone: '',
+    fonction: ''
+  },
   adresse: '',
   site_web: '',
   description: '',
+  contexte_specifique: '',
   tags: [],
   budget_annuel: undefined,
   statut: 'actif'
@@ -48,8 +56,8 @@ export default function AdminNewClientPage() {
     e.preventDefault();
     
     // Validation
-    if (!form.nom || !form.secteur || !form.contact_principal) {
-      setError('Veuillez remplir tous les champs obligatoires');
+    if (!form.nom || !form.secteur || !form.contact_principal.nom || !form.contact_principal.email) {
+      setError('Veuillez remplir tous les champs obligatoires (nom, secteur, nom du contact et email)');
       return;
     }
 
@@ -115,47 +123,47 @@ export default function AdminNewClientPage() {
 
           <div className="bg-gray-800 rounded-lg shadow-sm border border-gray-700">
             {/* Informations générales */}
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <div className="p-6 border-b border-gray-700">
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
                 <Building className="w-5 h-5 text-gray-400" />
                 Informations générales
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Nom de l&apos;entreprise *
                   </label>
                   <input
                     type="text"
                     value={form.nom}
                     onChange={(e) => setForm({ ...form, nom: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Secteur d&apos;activité *
                   </label>
                   <input
                     type="text"
                     value={form.secteur}
                     onChange={(e) => setForm({ ...form, secteur: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Ex: Finance, Santé, E-commerce..."
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Taille de l&apos;entreprise *
                   </label>
                   <select
                     value={form.taille}
                     onChange={(e) => setForm({ ...form, taille: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                   >
                     <option value="TPE">TPE (1-10 employés)</option>
                     <option value="PME">PME (10-250 employés)</option>
@@ -165,13 +173,13 @@ export default function AdminNewClientPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Statut
                   </label>
                   <select
                     value={form.statut}
                     onChange={(e) => setForm({ ...form, statut: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                   >
                     <option value="prospect">Prospect</option>
                     <option value="actif">Actif</option>
@@ -183,62 +191,74 @@ export default function AdminNewClientPage() {
             </div>
 
             {/* Contact principal */}
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <div className="p-6 border-b border-gray-700">
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
                 <User className="w-5 h-5 text-gray-400" />
                 Contact principal
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Nom du contact *
                   </label>
                   <input
                     type="text"
-                    value={form.contact_principal}
-                    onChange={(e) => setForm({ ...form, contact_principal: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={form.contact_principal.nom}
+                    onChange={(e) => setForm({ 
+                      ...form, 
+                      contact_principal: { ...form.contact_principal, nom: e.target.value }
+                    })}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     <Mail className="w-4 h-4 inline mr-1" />
-                    Email
+                    Email du contact *
                   </label>
                   <input
                     type="email"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={form.contact_principal.email}
+                    onChange={(e) => setForm({ 
+                      ...form, 
+                      contact_principal: { ...form.contact_principal, email: e.target.value }
+                    })}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                    required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     <Phone className="w-4 h-4 inline mr-1" />
-                    Téléphone
+                    Téléphone du contact
                   </label>
                   <input
                     type="tel"
-                    value={form.telephone}
-                    onChange={(e) => setForm({ ...form, telephone: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={form.contact_principal.telephone || ''}
+                    onChange={(e) => setForm({ 
+                      ...form, 
+                      contact_principal: { ...form.contact_principal, telephone: e.target.value }
+                    })}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Globe className="w-4 h-4 inline mr-1" />
-                    Site web
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Fonction du contact
                   </label>
                   <input
-                    type="url"
-                    value={form.site_web}
-                    onChange={(e) => setForm({ ...form, site_web: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="https://..."
+                    type="text"
+                    value={form.contact_principal.fonction || ''}
+                    onChange={(e) => setForm({ 
+                      ...form, 
+                      contact_principal: { ...form.contact_principal, fonction: e.target.value }
+                    })}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                    placeholder="Ex: Directeur, Manager, etc."
                   />
                 </div>
               </div>
@@ -246,30 +266,72 @@ export default function AdminNewClientPage() {
 
             {/* Informations complémentaires */}
             <div className="p-6">
-              <h2 className="text-lg font-semibold mb-4">Informations complémentaires</h2>
+              <h2 className="text-lg font-semibold mb-4 text-white">Informations complémentaires</h2>
               <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Adresse
+                    </label>
+                    <input
+                      type="text"
+                      value={form.adresse || ''}
+                      onChange={(e) => setForm({ ...form, adresse: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                      placeholder="Adresse complète de l'entreprise"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <Globe className="w-4 h-4 inline mr-1" />
+                      Site web
+                    </label>
+                    <input
+                      type="url"
+                      value={form.site_web || ''}
+                      onChange={(e) => setForm({ ...form, site_web: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                      placeholder="https://..."
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Description / Notes
                   </label>
                   <textarea
-                    value={form.description}
+                    value={form.description || ''}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Informations supplémentaires sur le client..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Contexte spécifique
+                  </label>
+                  <textarea
+                    value={form.contexte_specifique || ''}
+                    onChange={(e) => setForm({ ...form, contexte_specifique: e.target.value })}
+                    rows={3}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                    placeholder="Contexte spécifique au client, besoins particuliers..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Budget annuel (€)
                   </label>
                   <input
                     type="number"
                     value={form.budget_annuel || ''}
                     onChange={(e) => setForm({ ...form, budget_annuel: parseInt(e.target.value) || undefined })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Ex: 50000"
                   />
                 </div>
