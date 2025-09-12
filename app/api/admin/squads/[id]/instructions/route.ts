@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { withAdminAuth } from '../../../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../../../lib/rbac-admin-b24';
 import { sql } from '../../../../../../lib/db';
 import { log } from '../../../../../../lib/logger';
 import { validateSquadState, validateProjectState, checkSquadProjectAttachment } from '../../../../../../lib/squad-utils';
@@ -17,7 +17,7 @@ const CreateInstructionSchema = z.object({
 });
 
 // POST /api/admin/squads/[id]/instructions - Create instruction for squad
-export const POST = withAdminAuth(['admin', 'manager'], 'squad')(async (req, user, { params }) => {
+export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const squadId = params.id;
@@ -62,7 +62,7 @@ export const POST = withAdminAuth(['admin', 'manager'], 'squad')(async (req, use
     // Create instruction
     const rows = await sql`
       INSERT INTO squad_instructions (squad_id, project_id, content, priority, created_by)
-      VALUES (${squadId}, ${project_id}, ${content}, ${priority}, ${user.sub})
+      VALUES (${squadId}, ${project_id}, ${content}, ${priority}, ${user.id})
       RETURNING id, squad_id, project_id, content, priority, status, created_by, created_at
     `;
 
@@ -111,7 +111,7 @@ export const POST = withAdminAuth(['admin', 'manager'], 'squad')(async (req, use
       status: res.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       squad_id: squadId,
       project_id,
       instruction_id: instruction.id,
@@ -128,7 +128,7 @@ export const POST = withAdminAuth(['admin', 'manager'], 'squad')(async (req, use
       status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       squad_id: squadId,
       error: error instanceof Error ? error.message : 'Unknown error'
     });

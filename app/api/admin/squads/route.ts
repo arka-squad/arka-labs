@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { withAdminAuth } from '../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../lib/rbac-admin-b24';
 import { sql } from '../../../../lib/db';
 import { log } from '../../../../lib/logger';
 import { generateSlug, ensureUniqueSlug, getSquadPerformance } from '../../../../lib/squad-utils';
@@ -48,7 +48,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
         status: res.status,
         duration_ms: Date.now() - start,
         trace_id: traceId,
-        user_id: user.sub,
+        user_id: user.id,
         cache_hit: true
       });
       return res;
@@ -135,7 +135,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       status: res.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       count: items.length,
       filters: { domain, status }
     });
@@ -148,7 +148,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       error: error instanceof Error ? error.message : 'Unknown error'
     });
 
@@ -181,7 +181,7 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user) => {
     // Create squad
     const rows = await sql`
       INSERT INTO squads (name, slug, mission, domain, created_by)
-      VALUES (${name}, ${slug}, ${mission || ''}, ${domain}, ${user.sub})
+      VALUES (${name}, ${slug}, ${mission || ''}, ${domain}, ${user.id})
       RETURNING id, name, slug, mission, domain, status, created_by, created_at
     `;
 
@@ -214,7 +214,7 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user) => {
       status: res.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       squad_id: squad.id,
       squad_name: name,
       domain
@@ -227,7 +227,7 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user) => {
       method: 'POST',
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown error'
     });

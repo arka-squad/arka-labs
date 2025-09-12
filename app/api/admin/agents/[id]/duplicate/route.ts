@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { withAdminAuth } from '../../../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../../../lib/rbac-admin-b24';
 import { sql } from '../../../../../../lib/db';
 import { log } from '../../../../../../lib/logger';
 import { TRACE_HEADER } from '../../../../../../lib/trace';
@@ -97,7 +97,7 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { para
         ${newVersion}, ${newDescription}, ${JSON.stringify(tags)},
         ${originalAgent.prompt_system}, ${originalAgent.temperature}, 
         ${originalAgent.max_tokens}, ${originalAgent.is_template},
-        ${agentId}, ${data.auto_activate ? 'active' : 'inactive'}, ${user.sub}
+        ${agentId}, ${data.auto_activate ? 'active' : 'inactive'}, ${user.id}
       )
       RETURNING *
     `;
@@ -107,7 +107,7 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { para
     if (data.keep_assignments) {
       const assignments = await sql`
         INSERT INTO project_assignments (project_id, agent_id, status, created_by)
-        SELECT pa.project_id, ${duplicatedAgent.id}, 'active', ${user.sub}
+        SELECT pa.project_id, ${duplicatedAgent.id}, 'active', ${user.id}
         FROM project_assignments pa
         JOIN projects p ON pa.project_id = p.id
         WHERE pa.agent_id = ${agentId} 
@@ -159,7 +159,7 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { para
       status: response.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       original_agent_id: agentId,
       new_agent_id: duplicatedAgent.id,
       new_agent_name: duplicatedAgent.name,
@@ -189,7 +189,7 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { para
       error: error instanceof Error ? error.message : String(error),
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       agent_id: agentId
     });
 

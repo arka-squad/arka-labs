@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { withAdminAuth } from '../../../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../../../lib/rbac-admin-b24';
 import { sql } from '../../../../../../lib/db';
 import { log } from '../../../../../../lib/logger';
 import { validateSquadState, validateProjectState } from '../../../../../../lib/squad-utils';
@@ -15,7 +15,7 @@ const AttachSquadSchema = z.object({
 });
 
 // POST /api/admin/projects/[id]/squads - Attach squad to project
-export const POST = withAdminAuth(['admin', 'manager'], 'project')(async (req, user, { params }) => {
+export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const projectId = parseInt(params.id);
@@ -65,7 +65,7 @@ export const POST = withAdminAuth(['admin', 'manager'], 'project')(async (req, u
       // Reactivate if previously detached
       const rows = await sql`
         UPDATE project_squads 
-        SET status = 'active', attached_by = ${user.sub}, 
+        SET status = 'active', attached_by = ${user.id}, 
             attached_at = NOW(), detached_at = NULL
         WHERE project_id = ${projectId} AND squad_id = ${squad_id}
         RETURNING project_id, squad_id, status, attached_by, attached_at
@@ -95,7 +95,7 @@ export const POST = withAdminAuth(['admin', 'manager'], 'project')(async (req, u
         status: res.status,
         duration_ms: Date.now() - start,
         trace_id: traceId,
-        user_id: user.sub,
+        user_id: user.id,
         project_id: projectId,
         squad_id,
         squad_name: squad.name
@@ -120,7 +120,7 @@ export const POST = withAdminAuth(['admin', 'manager'], 'project')(async (req, u
     // Create new attachment
     const rows = await sql`
       INSERT INTO project_squads (project_id, squad_id, attached_by)
-      VALUES (${projectId}, ${squad_id}, ${user.sub})
+      VALUES (${projectId}, ${squad_id}, ${user.id})
       RETURNING project_id, squad_id, status, attached_by, attached_at
     `;
 
@@ -151,7 +151,7 @@ export const POST = withAdminAuth(['admin', 'manager'], 'project')(async (req, u
       status: res.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId,
       squad_id,
       squad_name: squad.name,
@@ -166,7 +166,7 @@ export const POST = withAdminAuth(['admin', 'manager'], 'project')(async (req, u
       status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId,
       error: error instanceof Error ? error.message : 'Unknown error'
     });

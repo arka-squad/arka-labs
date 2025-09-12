@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { withAdminAuth } from '../../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../../lib/rbac-admin-b24';
 import { sql, getDb } from '../../../../../lib/db';
 import { log } from '../../../../../lib/logger';
 import { TRACE_HEADER } from '../../../../../lib/trace';
@@ -209,7 +209,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       status: response.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId,
       agents_count: formattedProject.agents_assigned,
       squads_count: formattedProject.squads_assigned
@@ -225,7 +225,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId
     });
 
@@ -359,7 +359,7 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
       status: response.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId,
       updated_fields: Object.keys(updates)
     });
@@ -386,7 +386,7 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
       error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId
     });
 
@@ -487,7 +487,7 @@ export const DELETE = withAdminAuth(['admin'])(async (req, user, { params }) => 
       status: 200,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId,
       project_name: deletedProject.nom,
       force_used: force
@@ -508,7 +508,7 @@ export const DELETE = withAdminAuth(['admin'])(async (req, user, { params }) => 
       error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId
     });
 

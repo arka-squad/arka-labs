@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { withAdminAuth } from '../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../lib/rbac-admin-b24';
 import { log } from '../../../../lib/logger';
 import { TRACE_HEADER } from '../../../../lib/trace';
 
@@ -16,7 +16,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       status: 'healthy',
       timestamp: new Date().toISOString(),
       user: {
-        sub: user.sub,
+        sub: user.id,
         role: user.role
       },
       apis: {
@@ -37,7 +37,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       status: 200,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub
+      user_id: user.id
     });
 
     return response;
@@ -50,7 +50,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub
+      user_id: user.id
     });
 
     return NextResponse.json(

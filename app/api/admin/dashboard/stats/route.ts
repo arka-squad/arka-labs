@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '../../../../../lib/db';
-import { withAdminAuth } from '../../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../../lib/rbac-admin-b24';
 
 export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req: NextRequest) => {
   try {

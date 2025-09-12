@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { withAdminAuth } from '../../../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../../../lib/rbac-admin-b24';
 import { sql } from '../../../../../../lib/db';
 import { log } from '../../../../../../lib/logger';
 import { TRACE_HEADER } from '../../../../../../lib/trace';
@@ -88,7 +88,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       method: 'GET',
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId,
       documents_count: transformedDocs.length
     });
@@ -103,7 +103,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: id
     });
 
@@ -237,7 +237,7 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { para
       method: 'POST',
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId,
       document_id: document.id,
       document_name: document.name,
@@ -254,7 +254,7 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { para
       error: error instanceof Error ? error.message : 'Unknown error',
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: id
     });
 

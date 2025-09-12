@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { withAdminAuth } from '../../../../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../../../../lib/rbac-admin-b24';
 import { sql } from '../../../../../../../lib/db';
 import { log } from '../../../../../../../lib/logger';
 import { TRACE_HEADER } from '../../../../../../../lib/trace';
@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 // DELETE /api/admin/projects/[id]/squads/[squadId] - Detach squad from project
-export const DELETE = withAdminAuth(['admin', 'manager'], 'project')(async (req, user, { params }) => {
+export const DELETE = withAdminAuth(['admin', 'manager'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const projectId = parseInt(params.id);
@@ -75,7 +75,7 @@ export const DELETE = withAdminAuth(['admin', 'manager'], 'project')(async (req,
       status: res.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId,
       squad_id: squadId,
       squad_name: attachment.squad_name
@@ -89,7 +89,7 @@ export const DELETE = withAdminAuth(['admin', 'manager'], 'project')(async (req,
       status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       project_id: projectId,
       squad_id: squadId,
       error: error instanceof Error ? error.message : 'Unknown error'

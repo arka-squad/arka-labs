@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { withAdminAuth } from '../../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../../lib/rbac-admin-b24';
 import { sql } from '../../../../../lib/db';
 import { log } from '../../../../../lib/logger';
 import { validateSquadState, getSquadPerformance } from '../../../../../lib/squad-utils';
@@ -19,7 +19,7 @@ const UpdateSquadSchema = z.object({
 });
 
 // GET /api/admin/squads/[id] - Get squad details with members and performance
-export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'], 'squad')(async (req, user, { params }) => {
+export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const squadId = params.id;
@@ -35,7 +35,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'], 'sq
         status: res.status,
         duration_ms: Date.now() - start,
         trace_id: traceId,
-        user_id: user.sub,
+        user_id: user.id,
         squad_id: squadId,
         cache_hit: true
       });
@@ -154,7 +154,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'], 'sq
       status: res.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       squad_id: squadId,
       members_count: response.members.length,
       projects_count: response.attached_projects.length
@@ -168,7 +168,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'], 'sq
       method: 'GET',
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       squad_id: squadId,
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -180,7 +180,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'], 'sq
 });
 
 // PATCH /api/admin/squads/[id] - Update squad
-export const PATCH = withAdminAuth(['admin', 'manager', 'operator'], 'squad')(async (req, user, { params }) => {
+export const PATCH = withAdminAuth(['admin', 'manager', 'operator'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const squadId = params.id;
@@ -295,7 +295,7 @@ export const PATCH = withAdminAuth(['admin', 'manager', 'operator'], 'squad')(as
       status: res.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       squad_id: squadId,
       updates: Object.keys(updates)
     });
@@ -308,7 +308,7 @@ export const PATCH = withAdminAuth(['admin', 'manager', 'operator'], 'squad')(as
       method: 'PATCH',
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       squad_id: squadId,
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -327,7 +327,7 @@ export const PATCH = withAdminAuth(['admin', 'manager', 'operator'], 'squad')(as
 });
 
 // DELETE /api/admin/squads/[id] - Soft delete squad
-export const DELETE = withAdminAuth(['admin'], 'squad')(async (req, user, { params }) => {
+export const DELETE = withAdminAuth(['admin'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const squadId = params.id;
@@ -377,7 +377,7 @@ export const DELETE = withAdminAuth(['admin'], 'squad')(async (req, user, { para
       status: res.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       squad_id: squadId
     });
 
@@ -389,7 +389,7 @@ export const DELETE = withAdminAuth(['admin'], 'squad')(async (req, user, { para
       status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       squad_id: squadId,
       error: error instanceof Error ? error.message : 'Unknown error'
     });

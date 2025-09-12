@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { withAdminAuth } from '../../../../../../lib/rbac-admin';
+import { withAdminAuth } from '../../../../../../lib/rbac-admin-b24';
 import { sql } from '../../../../../../lib/db';
 import { log } from '../../../../../../lib/logger';
 import { validateSquadState } from '../../../../../../lib/squad-utils';
@@ -18,7 +18,7 @@ const AddMemberSchema = z.object({
 });
 
 // POST /api/admin/squads/[id]/members - Add member to squad
-export const POST = withAdminAuth(['admin', 'manager'], 'squad')(async (req, user, { params }) => {
+export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const squadId = params.id;
@@ -92,7 +92,7 @@ export const POST = withAdminAuth(['admin', 'manager'], 'squad')(async (req, use
         status: res.status,
         duration_ms: Date.now() - start,
         trace_id: traceId,
-        user_id: user.sub,
+        user_id: user.id,
         squad_id: squadId,
         agent_id,
         role
@@ -144,7 +144,7 @@ export const POST = withAdminAuth(['admin', 'manager'], 'squad')(async (req, use
       status: res.status,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       squad_id: squadId,
       agent_id,
       agent_name: agent.name,
@@ -159,7 +159,7 @@ export const POST = withAdminAuth(['admin', 'manager'], 'squad')(async (req, use
       status: 500,
       duration_ms: Date.now() - start,
       trace_id: traceId,
-      user_id: user.sub,
+      user_id: user.id,
       squad_id: squadId,
       error: error instanceof Error ? error.message : 'Unknown error'
     });

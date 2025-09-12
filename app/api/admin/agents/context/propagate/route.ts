@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/rbac-admin-b24';
+import { requireAdmin } from '../../../../../../lib/rbac-admin-b24';
 import { sql } from '@/lib/db';
 import { log } from '@/lib/logger';
 import { z } from 'zod';
