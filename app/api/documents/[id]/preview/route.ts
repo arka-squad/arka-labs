@@ -25,15 +25,13 @@ export const GET = async (
       route,
       status: 403,
       trace_id: trace,
-      storage_url: doc.storage_url,
-    });
+      storage_url: doc.storage_url});
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
   const buf = await readFile(p);
   const res = new NextResponse(buf as any, {
     status: 200,
-    headers: { 'Content-Type': doc.mime },
-  });
+    headers: { 'Content-Type': doc.mime }});
   if (trace) res.headers.set('x-trace-id', trace);
   return res;
 };

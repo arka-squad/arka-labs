@@ -9,11 +9,9 @@ export const promptBlockSchema = {
   properties: {
     title: { type: 'string' },
     value: { type: 'string' },
-    trigger: { type: 'string' },
-  },
+    trigger: { type: 'string' }},
   required: ['title', 'value'],
-  additionalProperties: false,
-} as const;
+  additionalProperties: false} as const;
 
 export function validatePromptBlock(data: unknown): data is PromptBlockInput {
   if (!data || typeof data !== 'object' || Array.isArray(data)) return false;

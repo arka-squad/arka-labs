@@ -65,10 +65,10 @@ export default function NewClientPage() {
       const response = await fetch('/api/admin/clients', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
           'X-Trace-Id': `trace-${Date.now()}`,
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(form)
       });
 

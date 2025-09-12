@@ -13,8 +13,7 @@ export const demoRoadmap = {
     { id: 'RM-4', name: 'ADR set', tags: ['ADR-9'], start: 'Jun', end: 'Jul', owner: 'AGP' },
     { id: 'RM-5', name: 'Process lib', tags: ['PRC-7'], start: 'May', end: 'Sep', owner: 'QA-ARC' },
     { id: 'RM-6', name: 'Observabilité', tags: ['OBS-2'], start: 'Mar', end: 'Aug', owner: 'AGP' },
-  ],
-};
+  ]};
 
 export type Run = { run_id: string; status: 'PASS'|'FAIL'|'WARN'; p95_ms: number; error_pct: number; sprint: string; trace_id: string };
 
@@ -71,6 +70,5 @@ export const demoMessages: Record<string, { id: string; from: 'owner'|'agent'; t
     { id: 'm4', from: 'agent', at: '09:46', text: "Je crée l’ossature cible non destructive (dossiers + README) et duplique les scripts CI sous infra/ci/ sans toucher aux imports." },
     { id: 'm5', from: 'agent', at: '09:49', text: 'Reco: prise de connaissance faite — 9 fichiers lus, contenu cohérent; quelques artefacts d’encodage FR mineurs visibles. Action: souhaitez-vous que je normalise l’UTF‑8 (sans BOM) sur ces docs ou que je passe au lot suivant Socle OPS/Repo ?' },
     { id: 'm6', from: 'agent', at: '09:50', text: "Action: j’ouvre local/100-repo-map-audit.md pour poursuivre le lot OPS/Repo." },
-  ],
-};
+  ]};
 

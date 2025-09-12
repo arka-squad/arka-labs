@@ -28,7 +28,7 @@ export default function GatesPage() {
       setError(null);
       const trace_id = generateTraceId();
       try {
-        const data = await fetchJson('/api/gates', { headers: { [TRACE_HEADER]: trace_id, authorization: `Bearer ${localStorage.getItem('token') || ''}` } });
+        const data = await fetchJson('/api/gates', { headers: { [TRACE_HEADER]: trace_id }, credentials: 'include' });
         setGates(data.items || []);
         uiLog('gates_fetch', { count: data.items?.length || 0, trace_id, role });
       } catch (e: any) {
@@ -51,10 +51,10 @@ export default function GatesPage() {
         headers: {
           'content-type': 'application/json',
           'x-idempotency-key': crypto.randomUUID(),
-          [TRACE_HEADER]: trace_id,
-          authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+          [TRACE_HEADER]: trace_id
         },
-        body: JSON.stringify({ gate_id: selected.id, inputs: {} }),
+        credentials: 'include',
+        body: JSON.stringify({ gate_id: selected.id, inputs: {} })
       });
       uiLog('gate_run', { id: selected.id, status: res.status, trace_id });
       if (!res.ok) throw new Error(String(res.status));
@@ -70,7 +70,7 @@ export default function GatesPage() {
   async function streamJob(jobId: string) {
     try {
       const res = await fetch(`/api/gates/stream?job_id=${encodeURIComponent(jobId)}`, {
-        headers: { authorization: `Bearer ${localStorage.getItem('token') || ''}` },
+        credentials: 'include'
       });
       if (!res.ok || !res.body) return;
       const reader = res.body.getReader();
@@ -106,7 +106,9 @@ export default function GatesPage() {
 
   async function pollStatus(jobId: string) {
     try {
-      const res = await fetch(`/api/gates/jobs/${jobId}`, { headers: { authorization: `Bearer ${localStorage.getItem('token') || ''}` } });
+      const res = await fetch(`/api/gates/jobs/${jobId}`, { 
+        credentials: 'include'
+      });
       if (!res.ok) return;
       const data = await res.json();
       setRuns((rs) => rs.map((j) => (j.job_id === jobId ? { ...j, status: data.job.status } : j)));

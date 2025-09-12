@@ -51,10 +51,8 @@ export default function NewProjectPage() {
     try {
       setClientsLoading(true);
       const response = await fetch('/api/admin/clients', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`
-        }
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` },
+        credentials: 'include'
       });
 
       if (!response.ok) throw new Error('Échec du chargement des clients');
@@ -89,10 +87,10 @@ export default function NewProjectPage() {
       const response = await fetch('/api/admin/projects', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
           'X-Trace-Id': `trace-${Date.now()}`,
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(submitData)
       });
 

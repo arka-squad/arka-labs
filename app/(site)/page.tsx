@@ -27,24 +27,21 @@ export default function MarketingLanding() {
             status: 'A_FAIRE',
             resultTitle: 'Onboarding',
             resultDesc:
-              'Le Conseiller RH prépare le kit, le Coach organisation vérifie les étapes, le Qualité valide la conformité. Résultat : checklist complète J‑7 → J+7.',
-          },
+              'Le Conseiller RH prépare le kit, le Coach organisation vérifie les étapes, le Qualité valide la conformité. Résultat : checklist complète J‑7 → J+7.'},
           {
             title: 'Mettre une procédure à jour',
             command: '/assign Proc-23',
             status: 'A_FAIRE',
             resultTitle: 'Procédure mise à jour',
             resultDesc:
-              'Le Coach prend la tâche, le Qualité revoit la cohérence, le Support la publie. Résultat : procédure à jour, validée.',
-          },
+              'Le Coach prend la tâche, le Qualité revoit la cohérence, le Support la publie. Résultat : procédure à jour, validée.'},
           {
             title: 'Signaler un risque conformité',
             command: '/gate conformité',
             status: 'A_RISQUE',
             resultTitle: 'Conformité',
             resultDesc:
-              'Le Qualité évalue, l’Analyste propose des correctifs, le Coach les intègre. Résultat : livrable marqué à risque avec actions proposées.',
-          },
+              'Le Qualité évalue, l’Analyste propose des correctifs, le Coach les intègre. Résultat : livrable marqué à risque avec actions proposées.'},
         ]}
       />
       <SectionFonctionnalites />

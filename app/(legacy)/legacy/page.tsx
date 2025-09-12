@@ -16,16 +16,14 @@ const TOKENS = {
   bgBody: '#0C1319',
   ringSoft: 'ring-slate-700/60',
   gradCTA: 'linear-gradient(135deg,#FAB652 0%,#F25636 35%,#E0026D 100%)',
-  gradTextClass: 'bg-gradient-to-r from-amber-400 via-rose-500 to-fuchsia-600',
-};
+  gradTextClass: 'bg-gradient-to-r from-amber-400 via-rose-500 to-fuchsia-600'};
 
 const ASSETS = {
   LOGO_WHITE: '/assets/logo/arka-logo-blanc.svg',
   LOGO_GRAD: '/assets/logo/arka-logo-blanc-radient.svg',
   HERO_VISUAL: '/assets/hero/arkabox-board.png?v=20250904',
   SCREENSHOT_CONSOLE: '/assets/hero/arkabox-board.png?v=20250904',
-  SCHEMA_AGENTS: '/assets/hero/schema-agents.png',
-};
+  SCHEMA_AGENTS: '/assets/hero/schema-agents.png'};
 
 export default function LegacyLanding() {
   return (

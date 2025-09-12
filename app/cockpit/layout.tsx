@@ -8,8 +8,7 @@ import CockpitShell from './components/CockpitShell';
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 export default function CockpitLayout({
-  children,
-}: {
+  children}: {
   children: React.ReactNode;
 }) {
   return (

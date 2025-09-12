@@ -48,10 +48,8 @@ export default function AdminDashboard() {
     try {
       // Load dashboard statistics from new B23 v2.5 API
       const response = await fetch('/api/admin/dashboard/stats', {
-        headers: { 
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`
-        }
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` },
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -78,10 +76,10 @@ export default function AdminDashboard() {
       // Fallback to legacy endpoints
       const [squadsRes, projectsRes] = await Promise.all([
         fetch('/api/admin/squads?limit=1', {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
+          credentials: 'include'
         }),
         fetch('/api/projects', {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
+          credentials: 'include'
         })
       ]);
 

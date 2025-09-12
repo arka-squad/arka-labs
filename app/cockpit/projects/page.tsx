@@ -55,9 +55,9 @@ export default function ProjectsPage() {
       
       const response = await fetch(`/api/admin/projects?${params.toString()}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
           'X-Trace-Id': `trace-${Date.now()}`
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) throw new Error('Failed to fetch projects');

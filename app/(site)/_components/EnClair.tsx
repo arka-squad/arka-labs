@@ -21,14 +21,12 @@ const DEFAULT_ITEMS: EnClairItem[] = [
     icon: 'Command',
     title: 'Un poste de commande',
     text:
-      'Vous donnez la direction. Les agents experts s’organisent entre eux : assignations, validations, corrections.',
-  },
+      'Vous donnez la direction. Les agents experts s’organisent entre eux : assignations, validations, corrections.'},
   {
     icon: 'AlertTriangle',
     title: 'Retour d’état immédiat',
     text:
-      'La squad vous répond : OK ou À risque. Et si besoin, propose déjà une alternative.',
-  },
+      'La squad vous répond : OK ou À risque. Et si besoin, propose déjà une alternative.'},
 ];
 
 function Icon({ name }: { name: string }) {

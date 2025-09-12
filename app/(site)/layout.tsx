@@ -13,16 +13,13 @@ export const metadata: Metadata = {
     'Pilotez vos projets avec des assistants IA : chat multi‑agents, recettes de gouvernance, observabilité et preuves partageables.',
   openGraph: {
     type: 'website',
-    images: ['/assets/hero/arkabox-board.png'],
-  },
-  twitter: { card: 'summary_large_image' },
-};
+    images: ['/assets/hero/arkabox-board.png']},
+  twitter: { card: 'summary_large_image' }};
 
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700', '900'],
-  display: 'swap',
-});
+  display: 'swap'});
 
 const siteTheme = {
   '--bg': '#e3e0db',
@@ -35,8 +32,7 @@ const siteTheme = {
   '--site-border': 'rgba(0,0,0,0.06)',
   '--site-section': '#ffffff',
   background: '#e3e0db',
-  color: '#0F172A',
-} as CSSProperties;
+  color: '#0F172A'} as CSSProperties;
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (

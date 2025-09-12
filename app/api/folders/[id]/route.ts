@@ -37,8 +37,7 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req, 
       vision: typeof folderData.vision === 'string' ? JSON.parse(folderData.vision) : folderData.vision,
       context: typeof folderData.context === 'string' ? JSON.parse(folderData.context) : folderData.context,
       agents: typeof folderData.agents === 'string' ? JSON.parse(folderData.agents) : folderData.agents,
-      stats: typeof folderData.stats === 'string' ? JSON.parse(folderData.stats) : folderData.stats,
-    };
+      stats: typeof folderData.stats === 'string' ? JSON.parse(folderData.stats) : folderData.stats};
     
     // Generate ETag based on updated_at
     const etag = `"${Buffer.from(folderData.updated_at.toString()).toString('base64')}"`;

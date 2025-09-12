@@ -4,18 +4,21 @@ import { getDb } from '../../../../../lib/db';
 
 // GET /api/admin/clients/[id] - Get client details
 export const GET = withAdminAuth(['viewer'])(async (req, user, { params }) => {
-  const clientId = params.id;
+  const clientId = params.id as string;
   
   try {
     const db = getDb();
     
-    // Get client with project counts
+    // Get client with project counts using Neon structure
     const result = await db.query(`
       SELECT 
         c.id,
         c.nom,
-        c.email,
-        c.metadata,
+        c.secteur,
+        c.taille,
+        c.contact_principal,
+        c.contexte_specifique,
+        c.statut,
         c.created_at,
         c.updated_at,
         c.created_by,
@@ -40,15 +43,12 @@ export const GET = withAdminAuth(['viewer'])(async (req, user, { params }) => {
     const client = {
       id: row.id,
       nom: row.nom,
-      email: row.email,
-      secteur: row.metadata?.secteur || '',
-      taille: row.metadata?.taille || 'PME',
-      contact_principal: row.metadata?.contact_principal || null,
-      contexte_specifique: row.metadata?.contexte_specifique || '',
-      statut: row.metadata?.statut || 'actif',
-      site_web: row.metadata?.site_web || '',
-      effectifs: row.metadata?.effectifs || null,
-      chiffre_affaires: row.metadata?.chiffre_affaires || null,
+      email: row.contact_principal?.email || '',
+      secteur: row.secteur || '',
+      taille: row.taille || 'PME',
+      contact_principal: row.contact_principal || null,
+      contexte_specifique: row.contexte_specifique || '',
+      statut: row.statut || 'actif',
       projets_count: parseInt(row.projets_count) || 0,
       projets_actifs: parseInt(row.projets_actifs) || 0,
       created_at: row.created_at,
@@ -68,8 +68,8 @@ export const GET = withAdminAuth(['viewer'])(async (req, user, { params }) => {
 });
 
 // PUT /api/admin/clients/[id] - Update client
-export const PUT = withAdminAuth(['operator'])(async (req, user, { params }) => {
-  const clientId = params.id;
+export const PUT = withAdminAuth(['admin', 'manager', 'operator'])(async (req, user, { params }) => {
+  const clientId = params.id as string;
   
   try {
     const body = await req.json();
@@ -79,9 +79,6 @@ export const PUT = withAdminAuth(['operator'])(async (req, user, { params }) => 
       taille,
       contact_principal,
       contexte_specifique,
-      site_web,
-      effectifs,
-      chiffre_affaires,
       statut 
     } = body;
 
@@ -114,28 +111,28 @@ export const PUT = withAdminAuth(['operator'])(async (req, user, { params }) => 
       );
     }
     
-    // Update client with new metadata
-    const metadata = {
-      secteur,
-      taille,
-      contact_principal,
-      contexte_specifique,
-      site_web,
-      effectifs,
-      chiffre_affaires,
-      statut: statut || 'actif'
-    };
-    
+    // Update client with Neon structure
     const result = await db.query(`
       UPDATE clients 
       SET 
         nom = $2,
-        email = $3,
-        metadata = $4,
+        secteur = $3,
+        taille = $4,
+        contact_principal = $5,
+        contexte_specifique = $6,
+        statut = $7,
         updated_at = CURRENT_TIMESTAMP
       WHERE id = $1 AND deleted_at IS NULL
-      RETURNING *
-    `, [clientId, nom, contact_principal.email, JSON.stringify(metadata)]);
+      RETURNING id, nom, secteur, taille, contact_principal, contexte_specifique, statut, updated_at
+    `, [
+      clientId, 
+      nom, 
+      secteur,
+      taille || 'PME',
+      JSON.stringify(contact_principal),
+      contexte_specifique || '',
+      statut || 'actif'
+    ]);
     
     const client = result.rows[0];
     
@@ -143,8 +140,11 @@ export const PUT = withAdminAuth(['operator'])(async (req, user, { params }) => 
       success: true,
       id: client.id,
       nom: client.nom,
-      email: client.email,
-      ...metadata,
+      secteur: client.secteur,
+      taille: client.taille,
+      contact_principal: client.contact_principal,
+      contexte_specifique: client.contexte_specifique,
+      statut: client.statut,
       updated_at: client.updated_at
     });
     
@@ -159,7 +159,7 @@ export const PUT = withAdminAuth(['operator'])(async (req, user, { params }) => 
 
 // DELETE /api/admin/clients/[id] - Delete client (soft delete)
 export const DELETE = withAdminAuth(['admin'])(async (req, user, { params }) => {
-  const clientId = params.id;
+  const clientId = params.id as string;
   
   try {
     const db = getDb();

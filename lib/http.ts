@@ -4,11 +4,17 @@ export async function apiFetch(input: RequestInfo, init: RequestInit = {}) {
   const url = typeof input === 'string' ? input : input.toString();
   const headers = new Headers(init.headers || {});
   if (url.startsWith('/api/')) {
-    const token = getToken();
-    if (token) headers.set('Authorization', `Bearer ${token}`);
+    // Ne pas ajouter Authorization header - nous utilisons les cookies HTTPOnly maintenant
+    // const token = getToken();
+    // if (token) headers.set('Authorization', `Bearer ${token}`);
     if (!headers.has(TRACE_HEADER)) headers.set(TRACE_HEADER, generateTraceId());
   }
-  const res = await fetch(input, { ...init, headers });
+  // Toujours inclure les cookies pour l'authentification
+  const res = await fetch(input, { 
+    ...init, 
+    headers,
+    credentials: 'include' // Important: toujours inclure les cookies
+  });
   if (url.startsWith('/api/') && res.status === 401 && typeof window !== 'undefined') {
     showToast('Session expirée');
     window.location.href = '/login';

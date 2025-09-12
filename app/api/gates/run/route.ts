@@ -58,8 +58,7 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: 
     status: 'running',
     started_at: new Date().toISOString(),
     progress: { total: 1, done: 0 },
-    trace_id: traceId,
-  };
+    trace_id: traceId};
   jobs.set(jobId, job);
   logs.set(jobId, []);
   appendLog(jobId, { t: 'gate:start', gate_id: gateId, inputs });
@@ -77,8 +76,7 @@ export const POST = withAuth(['admin', 'owner'], async (req: NextRequest, user: 
       gate_id: gateId,
       status: 'pass',
       metrics: { p95_ms: 123 },
-      evidence: [],
-    });
+      evidence: []});
     appendLog(jobId, { t: 'gate:pass', summary: { p95_ms: 123 } });
     appendLog(jobId, { t: 'done', status: 'pass' });
   }, 800);

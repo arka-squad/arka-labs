@@ -27,8 +27,8 @@ export default function ObservabilitePage() {
     const loadKpis = async () => {
       const traceId = crypto.randomUUID();
       const res = await fetch(`/api/metrics/kpis?lot=${lot}&sprint=${sprint}`, {
-        headers: { 'X-Trace-Id': traceId },
-      });
+        headers: { 'X-Trace-Id': traceId ,
+        credentials: 'include'}});
       const data = await res.json();
       setKpis(data);
     };
@@ -40,7 +40,8 @@ export default function ObservabilitePage() {
       const traceId = crypto.randomUUID();
       const res = await fetch(
         `/api/metrics/runs?lot=${lot}&sprint=${sprint}&page=${page}&limit=${limit}`,
-        { headers: { 'X-Trace-Id': traceId } }
+        { headers: { 'X-Trace-Id': traceId ,
+        credentials: 'include'} }
       );
       const data = await res.json();
       setRows(data.runs);
@@ -65,20 +66,17 @@ export default function ObservabilitePage() {
       label: 'TTFT',
       value: kpis.ttft_ms.toFixed(1),
       unit: 'ms',
-      gradient: 'var(--arka-grad-ttft)',
-    },
+      gradient: 'var(--arka-grad-ttft)'},
     {
       label: 'RTT',
       value: kpis.rtt_ms.toFixed(1),
       unit: 'ms',
-      gradient: 'var(--arka-grad-rtt)',
-    },
+      gradient: 'var(--arka-grad-rtt)'},
     {
       label: '% Err',
       value: kpis.error_rate_percent.toFixed(1),
       unit: '%',
-      gradient: 'var(--arka-grad-err)',
-    },
+      gradient: 'var(--arka-grad-err)'},
   ];
 
   return (

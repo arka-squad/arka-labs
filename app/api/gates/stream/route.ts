@@ -34,16 +34,13 @@ export const GET = withAuth(['viewer', 'editor', 'admin', 'owner'], async (req: 
         }
       }, 200);
     },
-    cancel() { /* no-op */ },
-  });
+    cancel() { /* no-op */ }});
   return new NextResponse(stream, {
     status: 200,
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache, no-transform',
       Connection: 'keep-alive',
-      [TRACE_HEADER]: traceId,
-    },
-  });
+      [TRACE_HEADER]: traceId}});
 });
 

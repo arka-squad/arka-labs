@@ -9,8 +9,7 @@ import Watermark from '../../components/system/Watermark';
 
 export const metadata: Metadata = {
   title: 'Arka Console',
-  description: 'Espace projet : chat multi‑agents, documents et observabilité.',
-};
+  description: 'Espace projet : chat multi‑agents, documents et observabilité.'};
 
 export default function ConsoleLayout({ children }: { children: ReactNode }) {
   return (

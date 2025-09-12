@@ -48,10 +48,8 @@ export default function ClientDetailPage() {
     try {
       setLoading(true);
       const response = await fetch(`/api/admin/clients/${clientId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-          'X-Trace-Id': `trace-${Date.now()}`
-        }
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -82,10 +80,10 @@ export default function ClientDetailPage() {
       const response = await fetch(`/api/admin/clients/${clientId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
           'X-Trace-Id': `trace-${Date.now()}`,
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(form)
       });
 
@@ -114,10 +112,10 @@ export default function ClientDetailPage() {
       const response = await fetch(`/api/admin/clients/${clientId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
           'X-Trace-Id': `trace-${Date.now()}`,
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({ ...form, statut: 'archive' })
       });
 

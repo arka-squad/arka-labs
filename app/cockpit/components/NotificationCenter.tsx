@@ -65,7 +65,8 @@ export default function NotificationCenter() {
   const loadNotifications = async () => {
     try {
       const response = await fetch('/api/notifications', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` }
+        credentials: 'include',
+        headers: {}
       });
       
       if (response.ok) {

@@ -7,14 +7,12 @@ import Topbar from '../../components/Topbar';
 
 export const metadata: Metadata = {
   title: 'Arka Backoffice',
-  description: 'Backoffice Admin - Gestion des squads, agents, projets et clients.',
-};
+  description: 'Backoffice Admin - Gestion des squads, agents, projets et clients.'};
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 export default function BackofficeLayout({
-  children,
-}: {
+  children}: {
   children: React.ReactNode;
 }) {
   // Layout aligned with cockpit: full page, no body scroll

@@ -17,8 +17,7 @@ export const POST = withAuth(
       route: '/api/threads/[id]/stream',
       threadId: params.threadId,
       trace_id: traceId,
-      status: 200,
-    });
+      status: 200});
 
     const { prompt } = await req.json();
 
@@ -36,8 +35,7 @@ export const POST = withAuth(
         try {
           for await (const chunk of openaiStream(prompt, {
             signal: req.signal,
-            traceId,
-          })) {
+            traceId})) {
             send('delta', chunk);
           }
           send('done');
@@ -45,16 +43,13 @@ export const POST = withAuth(
           send('error', err.name === 'AbortError' ? 'aborted' : err.message);
         }
         controller.close();
-      },
-    });
+      }});
 
     return new NextResponse(stream as any, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         Connection: 'keep-alive',
-        [TRACE_HEADER]: traceId,
-      },
-    });
+        [TRACE_HEADER]: traceId}});
   }
 );

@@ -9,8 +9,7 @@ export type KpiProps = {
 
 const formatter = new Intl.NumberFormat('fr-FR', {
   minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
+  maximumFractionDigits: 1});
 
 function Sparkline({ series = [], id, unit }: { series: number[]; id: string; unit: 'ms' | '%' }) {
   const W = 300, H = 60, M = 5;

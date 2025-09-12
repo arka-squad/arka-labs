@@ -244,6 +244,29 @@ export async function POST(req: NextRequest) {
       maxAge: 2 * 60 * 60 // 2 hours
     });
     
+    // Cookie alternatif pour compatibilité
+    response.cookies.set('arka_token', tokens.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 2 * 60 * 60 // 2 hours
+    });
+    
+    // Cookie user pour le frontend
+    response.cookies.set('arka_user', JSON.stringify({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      full_name: user.full_name
+    }), {
+      httpOnly: false, // Accessible au JS frontend
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 2 * 60 * 60 // 2 hours
+    });
+    
     response.cookies.set('arka_refresh_token', tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

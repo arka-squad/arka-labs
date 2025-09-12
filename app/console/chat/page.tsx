@@ -55,9 +55,9 @@ export default function ChatPage() {
             'content-type': 'application/json',
             'x-idempotency-key': crypto.randomUUID(),
             [TRACE_HEADER]: trace_id,
-            authorization: `Bearer ${localStorage.getItem('token') || ''}`,
           },
-          body: JSON.stringify({ gate_id: id, inputs: {} }),
+          credentials: 'include',
+          body: JSON.stringify({ gate_id: id, inputs: {} })
         });
         if (res.ok) {
           const data = await res.json();
@@ -70,9 +70,9 @@ export default function ChatPage() {
             'content-type': 'application/json',
             'x-idempotency-key': crypto.randomUUID(),
             [TRACE_HEADER]: trace_id,
-            authorization: `Bearer ${localStorage.getItem('token') || ''}`,
           },
-          body: JSON.stringify({ recipe_id: id, inputs: {} }),
+          credentials: 'include',
+          body: JSON.stringify({ recipe_id: id, inputs: {} })
         });
         if (res.ok) {
           const data = await res.json();

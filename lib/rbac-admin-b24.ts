@@ -29,10 +29,10 @@ export function withAdminAuth(
       (req as any)._startTime = startTime;
       
       try {
-        // Extraire le token du header ou des cookies
-        const authHeader = req.headers.get('authorization');
-        const token = extractTokenFromHeader(authHeader || '') || 
-                     req.cookies.get('arka_access_token')?.value;
+        // Extraire le token du cookie d'abord, puis du header en fallback
+        const token = req.cookies.get('arka_access_token')?.value || 
+                     req.cookies.get('arka_token')?.value ||
+                     extractTokenFromHeader(req.headers.get('authorization') || '');
         
         if (!token) {
           await logAuditEvent(req, 401, 'missing_token');

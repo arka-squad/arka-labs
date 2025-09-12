@@ -54,8 +54,8 @@ export default function ClientsPage() {
       if (searchTerm) params.append('search', searchTerm);
       
       const response = await fetch(`/api/backoffice/clients?${params.toString()}`, {
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
           'X-Trace-Id': `trace-${Date.now()}`
         }
       });

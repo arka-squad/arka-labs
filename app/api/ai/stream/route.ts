@@ -47,13 +47,11 @@ export async function GET(req: Request) {
         await sleep(40 + Math.random() * 60);
       }
       controller.close();
-    },
-  });
+    }});
 
   const headers: Record<string, string> = {
     'x-trace-id': traceId,
-    'cache-control': 'no-store',
-  };
+    'cache-control': 'no-store'};
   if (format === 'es') headers['content-type'] = 'text/event-stream; charset=utf-8';
   else headers['content-type'] = 'text/plain; charset=utf-8';
 
@@ -68,8 +66,7 @@ export async function GET(req: Request) {
       role,
       ttft_ms: ttftMs,
       tokens: tokens.length,
-      trace_id: traceId,
-    };
+      trace_id: traceId};
     try {
       if (process.env.AI_LOG_TO_FS === '1') {
         // Lazy import fs only if requested

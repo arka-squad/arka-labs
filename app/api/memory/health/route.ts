@@ -8,8 +8,7 @@ export async function GET() {
     kv: 'ok',
     db: 'ok',
     blob: 'ok',
-    write_enabled: writeEnabled,
-  } as const;
+    write_enabled: writeEnabled} as const;
   return NextResponse.json(body, { status: 200 });
 }
 

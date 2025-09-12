@@ -26,17 +26,17 @@ const PERMISSIONS_MATRIX = {
   },
   manager: {
     projects: ['create', 'read', 'update:own', 'delete:own'],
-    clients: ['read'],
-    agents: ['read', 'assign:own'],
-    squads: ['read', 'assign:own'],
+    clients: ['create', 'read', 'update', 'delete'],
+    agents: ['create', 'read', 'update', 'delete'],
+    squads: ['create', 'read', 'update', 'delete'],
     users: ['read'],
     all: false
   },
   operator: {
     projects: ['read:assigned', 'update:assigned'],
-    clients: ['read'],
-    agents: ['read'],
-    squads: ['read'],
+    clients: ['read', 'update'],
+    agents: ['read', 'update'],
+    squads: ['read', 'update'],
     users: [],
     all: false
   },

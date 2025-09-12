@@ -4,20 +4,24 @@ import { withAdminAuth } from '../../../../lib/rbac-admin-b24';
 
 export const GET = withAdminAuth(['viewer'])(async (req: NextRequest) => {
   try {
-    const db = getDb();
     const searchParams = req.nextUrl.searchParams;
     const search = searchParams.get('search') || '';
     const statut = searchParams.get('statut') || '';
     const taille = searchParams.get('taille') || '';
     const secteur = searchParams.get('secteur') || '';
     
-    // Build dynamic query with filters
+    const db = getDb();
+    
+    // Build dynamic query with filters for Neon structure
     let query = `
       SELECT 
         c.id,
         c.nom,
-        c.email,
-        c.metadata,
+        c.secteur,
+        c.taille,
+        c.contact_principal,
+        c.contexte_specifique,
+        c.statut,
         c.created_at,
         c.updated_at,
         c.created_by,
@@ -33,25 +37,25 @@ export const GET = withAdminAuth(['viewer'])(async (req: NextRequest) => {
     
     if (search) {
       paramCount++;
-      query += ` AND (LOWER(c.nom) LIKE LOWER($${paramCount}) OR LOWER(c.email) LIKE LOWER($${paramCount}))`;
+      query += ` AND (LOWER(c.nom) LIKE LOWER($${paramCount}) OR LOWER((c.contact_principal->>'email')::text) LIKE LOWER($${paramCount}))`;
       params.push(`%${search}%`);
     }
     
     if (statut && statut !== '') {
       paramCount++;
-      query += ` AND c.metadata->>'statut' = $${paramCount}`;
+      query += ` AND c.statut = $${paramCount}`;
       params.push(statut);
     }
     
     if (taille && taille !== '') {
       paramCount++;
-      query += ` AND c.metadata->>'taille' = $${paramCount}`;
+      query += ` AND c.taille = $${paramCount}`;
       params.push(taille);
     }
     
     if (secteur && secteur !== '') {
       paramCount++;
-      query += ` AND LOWER(c.metadata->>'secteur') LIKE LOWER($${paramCount})`;
+      query += ` AND LOWER(c.secteur) LIKE LOWER($${paramCount})`;
       params.push(`%${secteur}%`);
     }
     
@@ -63,17 +67,16 @@ export const GET = withAdminAuth(['viewer'])(async (req: NextRequest) => {
     const items = result.rows.map((row: any) => ({
       id: row.id,
       nom: row.nom,
-      email: row.email,
-      secteur: row.metadata?.secteur || '',
-      taille: row.metadata?.taille || 'PME',
-      contact_principal: row.metadata?.contact_principal || null,
-      contexte_specifique: row.metadata?.contexte_specifique || '',
-      statut: row.metadata?.statut || 'actif',
-      site_web: row.metadata?.site_web || '',
-      effectifs: row.metadata?.effectifs || null,
+      email: row.contact_principal?.email || '',
+      secteur: row.secteur || '',
+      taille: row.taille || 'PME',
+      contact_principal: row.contact_principal || null,
+      contexte_specifique: row.contexte_specifique || '',
+      statut: row.statut || 'actif',
       projets_count: parseInt(row.projets_count) || 0,
       projets_actifs: parseInt(row.projets_actifs) || 0,
       created_at: row.created_at,
+      updated_at: row.updated_at,
       created_by: row.created_by || 'system'
     }));
     
@@ -95,7 +98,7 @@ export const GET = withAdminAuth(['viewer'])(async (req: NextRequest) => {
   }
 });
 
-export const POST = withAdminAuth(['manager'])(async (req: NextRequest, user) => {
+export const POST = withAdminAuth(['admin', 'manager'])(async (req: NextRequest, user) => {
   try {
     const body = await req.json();
     const { 
@@ -104,9 +107,6 @@ export const POST = withAdminAuth(['manager'])(async (req: NextRequest, user) =>
       taille,
       contact_principal,
       contexte_specifique,
-      site_web,
-      effectifs,
-      chiffre_affaires,
       statut 
     } = body;
 
@@ -126,24 +126,35 @@ export const POST = withAdminAuth(['manager'])(async (req: NextRequest, user) =>
 
     const db = getDb();
     
-    // Store additional data in metadata JSONB column
-    const metadata = {
-      secteur,
-      taille,
-      contact_principal,
-      contexte_specifique,
-      site_web,
-      effectifs,
-      chiffre_affaires,
-      statut: statut || 'actif'
-    };
+    // Generate UUID for the client
+    const clientId = crypto.randomUUID();
     
-    // Insert client with metadata
+    // Insert client with Neon structure
     const result = await db.query(`
-      INSERT INTO clients (nom, email, metadata, created_by)
-      VALUES ($1, $2, $3, $4)
-      RETURNING *
-    `, [nom, contact_principal.email, JSON.stringify(metadata), user?.id || 'system']);
+      INSERT INTO clients (
+        id,
+        nom,
+        secteur,
+        taille,
+        contact_principal,
+        contexte_specifique,
+        statut,
+        created_by,
+        created_at,
+        updated_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      RETURNING id, nom, secteur, taille, contact_principal, contexte_specifique, statut, created_at, created_by
+    `, [
+      clientId,
+      nom,
+      secteur,
+      taille || 'PME',
+      JSON.stringify(contact_principal),
+      contexte_specifique || '',
+      statut || 'actif',
+      user?.id || 'system'
+    ]);
 
     const client = result.rows[0];
     
@@ -151,8 +162,11 @@ export const POST = withAdminAuth(['manager'])(async (req: NextRequest, user) =>
       success: true,
       id: client.id,
       nom: client.nom,
-      email: client.email,
-      ...metadata,
+      secteur: client.secteur,
+      taille: client.taille,
+      contact_principal: client.contact_principal,
+      contexte_specifique: client.contexte_specifique,
+      statut: client.statut,
       created_at: client.created_at,
       created_by: client.created_by
     });

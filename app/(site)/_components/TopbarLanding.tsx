@@ -64,8 +64,7 @@ export default function TopbarLanding({ links = DEFAULT_LINKS, onOpenCockpit, on
         background: 'rgba(227,224,219,0.80)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        borderColor,
-      }}
+        borderColor}}
     >
       {/* Skip link (option) */}
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-white text-[var(--site-text)] px-3 py-1 rounded" aria-label="Aller au contenu">
