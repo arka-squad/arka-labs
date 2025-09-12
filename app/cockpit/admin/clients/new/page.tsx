@@ -95,7 +95,7 @@ export default function AdminNewClientPage() {
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Nouveau Client</h1>
                 <p className="text-sm text-gray-500 mt-1">
-                  Administration - Création d'un nouveau client
+                  Administration - Création d&apos;un nouveau client
                 </p>
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function AdminNewClientPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nom de l'entreprise *
+                    Nom de l&apos;entreprise *
                   </label>
                   <input
                     type="text"
@@ -136,7 +136,7 @@ export default function AdminNewClientPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Secteur d'activité *
+                    Secteur d&apos;activité *
                   </label>
                   <input
                     type="text"
@@ -150,7 +150,7 @@ export default function AdminNewClientPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Taille de l'entreprise *
+                    Taille de l&apos;entreprise *
                   </label>
                   <select
                     value={form.taille}
