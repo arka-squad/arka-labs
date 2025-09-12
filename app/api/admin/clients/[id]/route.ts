@@ -4,6 +4,7 @@ import { getDb } from '../../../../../lib/db';
 
 // GET /api/admin/clients/[id] - Get client details
 export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req, user, { params }) => {
+
   const clientId = params.id as string;
   
   try {
