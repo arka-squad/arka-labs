@@ -55,9 +55,11 @@ export default function ChatPage() {
             'content-type': 'application/json',
             'x-idempotency-key': crypto.randomUUID(),
             [TRACE_HEADER]: trace_id,
-            authorization: `Bearer ${localStorage.getItem('token') || '',
-        credentials: 'include'}`},
-          body: JSON.stringify({ gate_id: id, inputs: {} })});
+            authorization: `Bearer ${localStorage.getItem('token') || ''}`
+          },
+          credentials: 'include',
+          body: JSON.stringify({ gate_id: id, inputs: {} })
+        });
         if (res.ok) {
           const data = await res.json();
           uiLog('chat.intent.gate', { id, job_id: data.job_id, trace_id });
@@ -69,9 +71,11 @@ export default function ChatPage() {
             'content-type': 'application/json',
             'x-idempotency-key': crypto.randomUUID(),
             [TRACE_HEADER]: trace_id,
-            authorization: `Bearer ${localStorage.getItem('token') || '',
-        credentials: 'include'}`},
-          body: JSON.stringify({ recipe_id: id, inputs: {} })});
+            authorization: `Bearer ${localStorage.getItem('token') || ''}`
+          },
+          credentials: 'include',
+          body: JSON.stringify({ recipe_id: id, inputs: {} })
+        });
         if (res.ok) {
           const data = await res.json();
           uiLog('chat.intent.test', { id, job_id: data.job_id, trace_id });

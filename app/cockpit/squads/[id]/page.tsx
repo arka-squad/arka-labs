@@ -70,8 +70,8 @@ export default function SquadDetailPage({ params }: { params: { id: string } }) 
     try {
       setLoading(true);
       const response = await fetch(`/api/admin/squads/${params.id}`, {
-        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include'
-        }
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` },
+        credentials: 'include'
       });
 
       if (!response.ok) {

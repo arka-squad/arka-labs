@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Activity, CalendarRange, Layers, FileText, Gauge, Users, Inbox, Menu, GitCommit, Settings, LogOut } from 'lucide-react';
 
-type NavId = 'dashboard'|'roadmap'|'builder'|'gouv'|'docdesk'|'docs'|'observa'|'obs'|'runs'|'roster';
+type NavId = 'dashboard'|'roadmap'|'builder'|'gouv'|'docdesk'|'docs'|'observa'|'obs'|'runs'|'roster'|'agents';
 type Item = { id: NavId; label: string };
 
 type LeftbarProps = {

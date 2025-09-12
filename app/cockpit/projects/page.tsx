@@ -53,12 +53,11 @@ export default function ProjectsPage() {
       if (priorityFilter) params.append('priorite', priorityFilter);
       if (searchTerm) params.append('search', searchTerm);
       
-      const response = await fetch(`/api/admin/projects?${params.toString(),
-        credentials: 'include'}`, {
+      const response = await fetch(`/api/admin/projects?${params.toString()}`, {
         headers: {
-          ,
           'X-Trace-Id': `trace-${Date.now()}`
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) throw new Error('Failed to fetch projects');

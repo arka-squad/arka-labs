@@ -140,8 +140,8 @@ export default function MemoryDashboardPage() {
   const exportMemory = async () => {
     try {
       const response = await fetch(`/api/memory/export/${project_id}`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('RBAC_TOKEN'),
-        credentials: 'include'}` }
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('RBAC_TOKEN')}` },
+        credentials: 'include'
       });
       
       if (response.ok) {

@@ -75,7 +75,8 @@ export default function InstructionsPage() {
     try {
       setLoading(true);
       const response = await fetch('/api/admin/instructions', {
-  , headers: {  }
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` },
+        credentials: 'include'
       });
 
       if (!response.ok) throw new Error('Failed to fetch instructions');
@@ -92,7 +93,8 @@ export default function InstructionsPage() {
   const loadSquads = async () => {
     try {
       const response = await fetch('/api/admin/squads?status=active', {
-  , headers: {  }
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` },
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
@@ -106,7 +108,8 @@ export default function InstructionsPage() {
   const loadProjects = async () => {
     try {
       const response = await fetch('/api/projects?status=active', {
-  , headers: {  }
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` },
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
@@ -122,12 +125,14 @@ export default function InstructionsPage() {
       const response = await fetch('/api/admin/instructions', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'},
+          'X-Trace-Id': `trace-${Date.now()}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
         body: JSON.stringify({
           ...newInstruction,
           project_id: newInstruction.project_id || undefined
-        ,
-        credentials: 'include'})
+        })
       });
 
       if (response.ok) {
@@ -154,9 +159,11 @@ export default function InstructionsPage() {
       const response = await fetch(`/api/admin/instructions/${instructionId}`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json'},
-        body: JSON.stringify({ status: newStatus ,
-        credentials: 'include'})
+          'X-Trace-Id': `trace-${Date.now()}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ status: newStatus })
       });
 
       if (response.ok) {
@@ -174,9 +181,9 @@ export default function InstructionsPage() {
 
     try {
       const response = await fetch(`/api/admin/instructions/${instructionId}`, {
-  ,
-        credentials: 'include'      method: 'DELETE',
-        headers: {  }
+        method: 'DELETE',
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` },
+        credentials: 'include'
       });
 
       if (response.ok) {

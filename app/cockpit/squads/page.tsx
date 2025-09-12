@@ -43,8 +43,8 @@ export default function SquadsPage() {
       if (filter.status) params.append('status', filter.status);
       
       const response = await fetch(`/api/admin/squads?${params}`, {
-        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include'
-        }
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` },
+        credentials: 'include'
       });
 
       if (!response.ok) throw new Error('Failed to fetch squads');

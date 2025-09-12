@@ -65,8 +65,8 @@ export default function NewSquadPage() {
     try {
       setProjectsLoading(true);
       const response = await fetch('/api/admin/projects', {
-        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include'
-        }
+        headers: { 'X-Trace-Id': `trace-${Date.now()}` },
+        credentials: 'include'
       });
 
       if (!response.ok) throw new Error('Échec du chargement des projets');
@@ -99,9 +99,11 @@ export default function NewSquadPage() {
     try {
       const response = await fetch('/api/admin/squads', {
         method: 'POST',
-        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include',
+        headers: {
+          'X-Trace-Id': `trace-${Date.now()}`,
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(form)
       });
 

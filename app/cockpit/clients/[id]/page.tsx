@@ -79,9 +79,11 @@ export default function ClientDetailPage() {
     try {
       const response = await fetch(`/api/admin/clients/${clientId}`, {
         method: 'PUT',
-        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include',
+        headers: {
+          'X-Trace-Id': `trace-${Date.now()}`,
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(form)
       });
 
@@ -109,9 +111,11 @@ export default function ClientDetailPage() {
     try {
       const response = await fetch(`/api/admin/clients/${clientId}`, {
         method: 'PUT',
-        headers: { 'X-Trace-Id': `trace-${Date.now()}` }, credentials: 'include',
+        headers: {
+          'X-Trace-Id': `trace-${Date.now()}`,
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({ ...form, statut: 'archive' })
       });
 

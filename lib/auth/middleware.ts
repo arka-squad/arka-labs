@@ -35,9 +35,22 @@ export function withAuth(options: AuthOptions = {}) {
     (req as any)._startTime = startTime;
     
     try {
-      // Extraire le token du header
-      const authHeader = req.headers.get('authorization');
-      const token = extractTokenFromHeader(authHeader || '');
+      // Extraire le token du cookie ou du header (fallback)
+      let token: string | null = null;
+      
+      // D'abord essayer de récupérer depuis les cookies
+      const cookies = req.cookies;
+      if (cookies.get('arka_access_token')) {
+        token = cookies.get('arka_access_token')?.value || null;
+      } else if (cookies.get('arka_token')) {
+        token = cookies.get('arka_token')?.value || null;
+      }
+      
+      // Fallback sur le header Authorization si pas de cookie
+      if (!token) {
+        const authHeader = req.headers.get('authorization');
+        token = extractTokenFromHeader(authHeader || '');
+      }
       
       if (!token) {
         if (!options.skipAudit) {
