@@ -14,7 +14,13 @@ interface Client {
   email: string;
   secteur: string;
   taille: 'TPE' | 'PME' | 'ETI' | 'GE';
-  contact_principal: string;
+  contact_principal: {
+    nom: string;
+    email: string;
+    fonction?: string;
+    telephone?: string;
+  } | string;
+  contact_nom: string;
   contexte_specifique: string;
   statut: 'actif' | 'inactif' | 'prospect' | 'archive';
   projets_count: number;
@@ -222,7 +228,9 @@ export default function AdminClientsPage() {
                   <div className="space-y-3 mb-4">
                     <div className="flex items-center text-sm text-gray-600">
                       <User size={16} className="mr-2 text-gray-400" />
-                      <span className="truncate">{client.contact_principal}</span>
+                      <span className="truncate">
+                        {client.contact_nom || 'Non défini'}
+                      </span>
                     </div>
                     
                     {client.email && (

@@ -13,7 +13,12 @@ interface Client {
   nom: string;
   secteur: string;
   taille: string;
-  contact_principal: string;
+  contact_principal: {
+    nom: string;
+    email?: string;
+    fonction?: string;
+    telephone?: string;
+  } | string;
   email?: string;
   telephone?: string;
   adresse?: string;
@@ -242,7 +247,12 @@ export default function AdminClientDetailPage() {
               <dl className="space-y-3">
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Nom</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{client.contact_principal}</dd>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {typeof client.contact_principal === 'string' 
+                      ? client.contact_principal 
+                      : client.contact_principal?.nom || 'Non défini'
+                    }
+                  </dd>
                 </div>
                 {client.email && (
                   <div>

@@ -71,6 +71,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       secteur: row.secteur || '',
       taille: row.taille || 'PME',
       contact_principal: row.contact_principal || null,
+      contact_nom: row.contact_principal?.nom || '',
       contexte_specifique: row.contexte_specifique || '',
       statut: row.statut || 'actif',
       projets_count: parseInt(row.projets_count) || 0,
