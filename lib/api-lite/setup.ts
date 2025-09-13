@@ -180,7 +180,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } }
+        params: { id: { type: 'number', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -371,7 +371,7 @@ export function setupAPIRoutes(): APILite {
     .put()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } },
+        params: { id: { type: 'number', required: true } },
         body: {
           nom: { type: 'string', min: 1, max: 255 },
           secteur: { type: 'string', min: 1, max: 255 },
@@ -460,7 +460,7 @@ export function setupAPIRoutes(): APILite {
     .delete()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } }
+        params: { id: { type: 'number', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin'] })
     )
@@ -629,7 +629,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } }
+        params: { id: { type: 'number', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -773,7 +773,7 @@ export function setupAPIRoutes(): APILite {
     .put()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } },
+        params: { id: { type: 'number', required: true } },
         body: {
           nom: { type: 'string', min: 1, max: 255 },
           description: { type: 'string', max: 2000 },
@@ -869,7 +869,7 @@ export function setupAPIRoutes(): APILite {
     .delete()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } }
+        params: { id: { type: 'number', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin'] })
     )
@@ -1034,7 +1034,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } }
+        params: { id: { type: 'number', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -1198,7 +1198,7 @@ export function setupAPIRoutes(): APILite {
     .put()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } },
+        params: { id: { type: 'number', required: true } },
         body: {
           name: { type: 'string', min: 2, max: 100 },
           role: { type: 'string', min: 3, max: 100 },
@@ -1310,7 +1310,7 @@ export function setupAPIRoutes(): APILite {
     .delete()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } }
+        params: { id: { type: 'number', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin'] })
     )
@@ -1500,7 +1500,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } }
+        params: { id: { type: 'number', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -1616,7 +1616,7 @@ export function setupAPIRoutes(): APILite {
     .put()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } },
+        params: { id: { type: 'number', required: true } },
         body: {
           name: { type: 'string', min: 3, max: 100 },
           mission: { type: 'string', max: 800 },
@@ -1713,7 +1713,7 @@ export function setupAPIRoutes(): APILite {
     .delete()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } }
+        params: { id: { type: 'number', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin'] })
     )
@@ -1802,7 +1802,7 @@ export function setupAPIRoutes(): APILite {
     .post()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } },
+        params: { id: { type: 'number', required: true } },
         body: {
           agent_id: { type: 'uuid', required: true },
           status: { type: 'enum', values: ['active', 'inactive'] }
@@ -1961,7 +1961,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } }
+        params: { id: { type: 'number', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -2039,7 +2039,7 @@ export function setupAPIRoutes(): APILite {
     .post()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } },
+        params: { id: { type: 'number', required: true } },
         body: {
           instruction: { type: 'string', required: true, min: 10, max: 1000 },
           priority: { type: 'enum', values: ['low', 'medium', 'high', 'urgent'] },
@@ -2316,7 +2316,7 @@ export function setupAPIRoutes(): APILite {
     .post()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } },
+        params: { id: { type: 'number', required: true } },
         body: {
           name: { type: 'string', required: true, min: 3, max: 100 },
           project_id: { type: 'uuid', required: false }
@@ -2669,7 +2669,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } }
+        params: { id: { type: 'number', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -2727,7 +2727,7 @@ export function setupAPIRoutes(): APILite {
     .delete()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } },
+        params: { id: { type: 'number', required: true } },
         query: {
           force: { type: 'enum', values: ['true', 'false'], required: false }
         }
@@ -3026,7 +3026,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } },
+        params: { id: { type: 'number', required: true } },
         query: {
           page: { type: 'number', required: false },
           limit: { type: 'number', required: false },
@@ -3127,7 +3127,7 @@ export function setupAPIRoutes(): APILite {
     .post()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'integer', required: true } },
+        params: { id: { type: 'number', required: true } },
         body: {
           content: { type: 'string', required: true, min: 1, max: 4000 },
           sender_type: { type: 'enum', values: ['user', 'agent', 'system'], required: false }

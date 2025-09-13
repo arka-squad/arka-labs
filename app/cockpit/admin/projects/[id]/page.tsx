@@ -272,7 +272,7 @@ export default function AdminProjectDetailPage() {
                     )}
                   </div>
 
-                  {project.tags.length > 0 && (
+                  {project.tags && project.tags.length > 0 && (
                     <div>
                       <h3 className="text-sm font-medium text-gray-400 mb-2">Tags</h3>
                       <div className="flex flex-wrap gap-2">
@@ -285,7 +285,7 @@ export default function AdminProjectDetailPage() {
                     </div>
                   )}
 
-                  {project.requirements.length > 0 && (
+                  {project.requirements && project.requirements.length > 0 && (
                     <div>
                       <h3 className="text-sm font-medium text-gray-400 mb-2">Exigences techniques</h3>
                       <ul className="space-y-1">
@@ -302,12 +302,12 @@ export default function AdminProjectDetailPage() {
               </div>
 
               {/* Assigned Agents */}
-              {project.assigned_agents.length > 0 && (
+              {project.assigned_agents && project.assigned_agents.length > 0 && (
                 <div className="bg-gray-800 rounded-lg border border-gray-700">
                   <div className="p-6 border-b border-gray-700">
                     <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                       <Users className="w-5 h-5 text-gray-400" />
-                      Agents assignés ({project.assigned_agents.length})
+                      Agents assignés ({project.assigned_agents?.length || 0})
                     </h2>
                   </div>
                   <div className="p-6">
@@ -363,7 +363,7 @@ export default function AdminProjectDetailPage() {
               </div>
 
               {/* Recent Activity */}
-              {project.recent_activity.length > 0 && (
+              {project.recent_activity && project.recent_activity.length > 0 && (
                 <div className="bg-gray-800 rounded-lg border border-gray-700">
                   <div className="p-6 border-b border-gray-700">
                     <h2 className="text-lg font-semibold text-white flex items-center gap-2">
