@@ -30,7 +30,8 @@
       "Bash(npm run type-check:*)",
       "Bash(grep:*)",
       "Bash(npm run:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(PORT=3006 npm run dev)"
     ],
     "deny": [],
     "ask": []

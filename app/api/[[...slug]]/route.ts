@@ -54,7 +54,8 @@ async function handler(
       method: req.method,
       headers: req.headers,
       body: req.body,
-    });
+      duplex: 'half'
+    } as any);
 
     // Délégation au manager
     return await api.handleRequest(modifiedReq);
