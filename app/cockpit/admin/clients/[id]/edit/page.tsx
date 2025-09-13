@@ -220,7 +220,7 @@ export default function AdminEditClientPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Nom de l'entreprise *
+                  Nom de l&apos;entreprise *
                 </label>
                 <div className="relative">
                   <Building className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
@@ -237,7 +237,7 @@ export default function AdminEditClientPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Secteur d'activité *
+                  Secteur d&apos;activité *
                 </label>
                 <input
                   type="text"
@@ -251,7 +251,7 @@ export default function AdminEditClientPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Taille de l'entreprise
+                  Taille de l&apos;entreprise
                 </label>
                 <select
                   value={form.taille}

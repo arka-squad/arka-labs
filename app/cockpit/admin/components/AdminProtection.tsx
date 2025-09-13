@@ -76,7 +76,7 @@ export default function AdminProtection({
           </div>
           <h1 className="text-xl font-bold text-white mb-2">Accès refusé</h1>
           <p className="text-gray-400 mb-4">
-            Vous n'avez pas les permissions nécessaires pour accéder à cette section.
+            Vous n&apos;avez pas les permissions nécessaires pour accéder à cette section.
           </p>
           <p className="text-sm text-gray-500 mb-6">
             Rôle actuel: <span className="font-medium text-gray-300">{currentRole}</span><br />
@@ -86,7 +86,7 @@ export default function AdminProtection({
             onClick={() => router.push('/')}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Retour à l'accueil
+            Retour à l&apos;accueil
           </button>
         </div>
       </div>
