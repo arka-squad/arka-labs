@@ -24,7 +24,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
     `;
     console.log(`[API DEBUG] Existence check result:`, existsCheck);
     
-    // Use IDENTICAL query structure as listing, just add ID filter
+    // SIMPLIFIED query without JOIN to avoid read replica issues
     const result = await sql`
       SELECT 
         c.id,
@@ -36,16 +36,33 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
         c.statut,
         c.created_at,
         c.updated_at,
-        c.created_by,
-        COUNT(DISTINCT p.id) as projets_count,
-        COUNT(DISTINCT p.id) FILTER (WHERE p.status = 'active') as projets_actifs
+        c.created_by
       FROM clients c
-      LEFT JOIN projects p ON p.client_id = c.id
       WHERE c.deleted_at IS NULL AND c.id = ${clientId}::uuid
-      GROUP BY c.id
-      ORDER BY c.nom ASC 
       LIMIT 1
     `;
+    
+    // Get project counts separately if needed
+    let projets_count = 0;
+    let projets_actifs = 0;
+    
+    if (result.length > 0) {
+      try {
+        const projectsResult = await sql`
+          SELECT 
+            COUNT(*) as total,
+            COUNT(*) FILTER (WHERE status = 'active') as actifs
+          FROM projects 
+          WHERE client_id = ${clientId}::uuid AND deleted_at IS NULL
+        `;
+        if (projectsResult.length > 0) {
+          projets_count = parseInt(projectsResult[0].total) || 0;
+          projets_actifs = parseInt(projectsResult[0].actifs) || 0;
+        }
+      } catch (projectError) {
+        console.warn('Could not fetch project counts:', projectError);
+      }
+    }
     
     console.log(`[API DEBUG] Main query result length:`, result.length);
     console.log(`[API DEBUG] Main query result:`, result);
@@ -76,8 +93,8 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       contact_principal: row.contact_principal || null,
       contexte_specifique: row.contexte_specifique || '',
       statut: row.statut || 'actif',
-      projets_count: parseInt(row.projets_count) || 0,
-      projets_actifs: parseInt(row.projets_actifs) || 0,
+      projets_count,
+      projets_actifs,
       created_at: row.created_at,
       updated_at: row.updated_at,
       created_by: row.created_by || 'system'
