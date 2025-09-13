@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:clean": "node scripts/clean-ports.js && next dev",
     "build:css": "tailwindcss -i ./styles/base.css -o ./.next/tailwind.css",
     "build": "npm run build:css && next build",
     "start": "next start",

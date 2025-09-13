@@ -27,3 +27,38 @@
 .scroller:hover::-webkit-scrollbar-thumb { background: var(--scroll-thumb, #18212B); }
 .scroller:hover::-webkit-scrollbar-thumb:active { background: var(--scroll-thumb-hover, #223042); }
 .scroller::-webkit-scrollbar-corner { background: var(--scroll-track, transparent); }
+
+/* Cockpit layout spacing fixes */
+.cockpit-main {
+  /* Ajout d'espacement entre le chat et le contenu */
+  margin-left: 16px;
+}
+
+.cockpit-main > div {
+  /* Éviter le débordement des blocs à droite */
+  max-width: calc(100% - 32px); /* Laisse de l'espace des deux côtés */
+  margin-left: 0;
+  margin-right: 0;
+  padding-right: 16px; /* Marge droite similaire à gauche */
+}
+
+/* Quand le chat est fermé, retirer la marge gauche */
+body:has(.cockpit-main) .cockpit-main {
+  margin-left: 0px;
+}
+
+/* Si la variable --cockpit-chat-w est définie et > 0 */
+:root:has([style*="--cockpit-chat-w"]:not([style*="--cockpit-chat-w: 0px"])) .cockpit-main {
+  margin-left: 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .cockpit-main {
+    margin-left: 8px;
+  }
+  .cockpit-main > div {
+    max-width: calc(100% - 16px);
+    padding-right: 8px;
+  }
+}

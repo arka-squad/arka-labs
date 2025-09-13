@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Bot, Info, Settings, Layers, Save, Search, User, Building, Briefcase, Zap, Cpu } from 'lucide-react';
 import Link from 'next/link';
+import AdminNavigation from '../../components/AdminNavigation';
+import AdminProtection from '../../components/AdminProtection';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -140,25 +142,25 @@ export default function NewAgentPage() {
   const getSelectedDomaine = () => domaines.find(d => d.value === form.domaine) || domaines[0];
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <div className="bg-gray-900 border-b border-gray-800">
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/cockpit/admin/agents"
-                className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 text-gray-400" />
-              </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-white">Nouvel Agent IA</h1>
-                <p className="text-sm text-gray-300 mt-1">
-                  Administration - Création d&apos;un nouvel agent intelligent
-                </p>
-              </div>
-            </div>
+    <AdminProtection allowedRoles={['admin', 'manager']}>
+          <div className="min-h-screen console-theme">
+      {/* Admin Navigation */}
+      <div className="px-4 sm:px-6 lg:px-8 py-4">
+        <AdminNavigation />
+        
+        {/* Page Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <Link
+            href="/cockpit/admin/agents"
+            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-400" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Nouvel Agent IA</h1>
+            <p className="text-sm text-gray-300 mt-1">
+              Administration - Création d&apos;un nouvel agent intelligent
+            </p>
           </div>
         </div>
       </div>
@@ -412,5 +414,6 @@ export default function NewAgentPage() {
         </form>
       </div>
     </div>
+  </AdminProtection>
   );
 }

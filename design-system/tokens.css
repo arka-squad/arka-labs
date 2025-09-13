@@ -1,6 +1,6 @@
 :root {
   /* Spec tokens (v12) */
-  --bg:#0C1117; --surface:#10161D; --elevated:#141B23; --border:#1F2A33;
+  --bg:#0f1621; --surface:#10161D; --elevated:#141B23; --border:#1F2A33;
   --ring-soft: rgb(51 65 85 / 0.60);
   --fg:#FFFFFF; --fgdim:#CBD5E1; --muted:#94A3B8;
   --success:#10B981; --danger:#E11D48; --warn:#F59E0B;

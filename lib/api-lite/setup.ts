@@ -180,7 +180,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } }
+        params: { id: { type: 'integer', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -371,7 +371,7 @@ export function setupAPIRoutes(): APILite {
     .put()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } },
+        params: { id: { type: 'integer', required: true } },
         body: {
           nom: { type: 'string', min: 1, max: 255 },
           secteur: { type: 'string', min: 1, max: 255 },
@@ -460,7 +460,7 @@ export function setupAPIRoutes(): APILite {
     .delete()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } }
+        params: { id: { type: 'integer', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin'] })
     )
@@ -629,7 +629,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } }
+        params: { id: { type: 'integer', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -773,7 +773,7 @@ export function setupAPIRoutes(): APILite {
     .put()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } },
+        params: { id: { type: 'integer', required: true } },
         body: {
           nom: { type: 'string', min: 1, max: 255 },
           description: { type: 'string', max: 2000 },
@@ -796,7 +796,7 @@ export function setupAPIRoutes(): APILite {
         // Check if project exists
         const [existingProject] = await sql`
           SELECT id FROM projects 
-          WHERE id = ${projectId}::uuid AND deleted_at IS NULL
+          WHERE id = ${projectId}::integer AND deleted_at IS NULL
         `;
 
         if (!existingProject) {
@@ -829,7 +829,7 @@ export function setupAPIRoutes(): APILite {
         const result = await sql`
           UPDATE projects 
           SET ${sql(updateData)}
-          WHERE id = ${projectId}::uuid AND deleted_at IS NULL
+          WHERE id = ${projectId}::integer AND deleted_at IS NULL
           RETURNING *
         `;
 
@@ -869,7 +869,7 @@ export function setupAPIRoutes(): APILite {
     .delete()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } }
+        params: { id: { type: 'integer', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin'] })
     )
@@ -881,7 +881,7 @@ export function setupAPIRoutes(): APILite {
         // Check if project exists
         const [existingProject] = await sql`
           SELECT id, nom FROM projects 
-          WHERE id = ${projectId}::uuid AND deleted_at IS NULL
+          WHERE id = ${projectId}::integer AND deleted_at IS NULL
         `;
 
         if (!existingProject) {
@@ -895,7 +895,7 @@ export function setupAPIRoutes(): APILite {
         await sql`
           UPDATE projects 
           SET deleted_at = NOW(), updated_at = NOW()
-          WHERE id = ${projectId}::uuid AND deleted_at IS NULL
+          WHERE id = ${projectId}::integer AND deleted_at IS NULL
         `;
 
         // Clear cache après suppression
@@ -1034,7 +1034,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } }
+        params: { id: { type: 'integer', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -1198,7 +1198,7 @@ export function setupAPIRoutes(): APILite {
     .put()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } },
+        params: { id: { type: 'integer', required: true } },
         body: {
           name: { type: 'string', min: 2, max: 100 },
           role: { type: 'string', min: 3, max: 100 },
@@ -1310,7 +1310,7 @@ export function setupAPIRoutes(): APILite {
     .delete()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } }
+        params: { id: { type: 'integer', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin'] })
     )
@@ -1500,7 +1500,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } }
+        params: { id: { type: 'integer', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -1616,7 +1616,7 @@ export function setupAPIRoutes(): APILite {
     .put()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } },
+        params: { id: { type: 'integer', required: true } },
         body: {
           name: { type: 'string', min: 3, max: 100 },
           mission: { type: 'string', max: 800 },
@@ -1713,7 +1713,7 @@ export function setupAPIRoutes(): APILite {
     .delete()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } }
+        params: { id: { type: 'integer', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin'] })
     )
@@ -1802,7 +1802,7 @@ export function setupAPIRoutes(): APILite {
     .post()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } },
+        params: { id: { type: 'integer', required: true } },
         body: {
           agent_id: { type: 'uuid', required: true },
           status: { type: 'enum', values: ['active', 'inactive'] }
@@ -1961,7 +1961,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } }
+        params: { id: { type: 'integer', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -2039,7 +2039,7 @@ export function setupAPIRoutes(): APILite {
     .post()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } },
+        params: { id: { type: 'integer', required: true } },
         body: {
           instruction: { type: 'string', required: true, min: 10, max: 1000 },
           priority: { type: 'enum', values: ['low', 'medium', 'high', 'urgent'] },
@@ -2221,7 +2221,7 @@ export function setupAPIRoutes(): APILite {
         if (project_id) {
           const [project] = await sql`
             SELECT id FROM projects 
-            WHERE id = ${project_id}::uuid AND deleted_at IS NULL
+            WHERE id = ${project_id}::integer AND deleted_at IS NULL
           `;
           
           if (!project) {
@@ -2276,7 +2276,7 @@ export function setupAPIRoutes(): APILite {
         if (project_id) {
           await sql`
             INSERT INTO project_agents (project_id, agent_id, created_at)
-            VALUES (${project_id}::uuid, ${agentId}, NOW())
+            VALUES (${project_id}::integer, ${agentId}, NOW())
           `;
         }
 
@@ -2316,7 +2316,7 @@ export function setupAPIRoutes(): APILite {
     .post()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } },
+        params: { id: { type: 'integer', required: true } },
         body: {
           name: { type: 'string', required: true, min: 3, max: 100 },
           project_id: { type: 'uuid', required: false }
@@ -2349,7 +2349,7 @@ export function setupAPIRoutes(): APILite {
         if (project_id) {
           const [project] = await sql`
             SELECT id FROM projects 
-            WHERE id = ${project_id}::uuid AND deleted_at IS NULL
+            WHERE id = ${project_id}::integer AND deleted_at IS NULL
           `;
           
           if (!project) {
@@ -2400,7 +2400,7 @@ export function setupAPIRoutes(): APILite {
         if (project_id) {
           await sql`
             INSERT INTO project_agents (project_id, agent_id, created_at)
-            VALUES (${project_id}::uuid, ${newAgentId}, NOW())
+            VALUES (${project_id}::integer, ${newAgentId}, NOW())
           `;
         }
 
@@ -2500,7 +2500,7 @@ export function setupAPIRoutes(): APILite {
           LEFT JOIN projects p ON d.project_id = p.id
           LEFT JOIN users u ON d.uploaded_by = u.id
           WHERE d.deleted_at IS NULL
-          ${project_id ? sql`AND d.project_id = ${project_id}::uuid` : sql``}
+          ${project_id ? sql`AND d.project_id = ${project_id}::integer` : sql``}
           ${type ? sql`AND d.type = ${type}` : sql``}
           ${status ? sql`AND d.status = ${status}` : sql``}
           ORDER BY d.created_at DESC
@@ -2510,7 +2510,7 @@ export function setupAPIRoutes(): APILite {
         const countResult = await sql`
           SELECT COUNT(*) as count FROM documents d
           WHERE d.deleted_at IS NULL
-          ${project_id ? sql`AND d.project_id = ${project_id}::uuid` : sql``}
+          ${project_id ? sql`AND d.project_id = ${project_id}::integer` : sql``}
           ${type ? sql`AND d.type = ${type}` : sql``}
           ${status ? sql`AND d.status = ${status}` : sql``}
         `;
@@ -2580,7 +2580,7 @@ export function setupAPIRoutes(): APILite {
         if (project_id) {
           const [project] = await sql`
             SELECT id FROM projects 
-            WHERE id = ${project_id}::uuid AND deleted_at IS NULL
+            WHERE id = ${project_id}::integer AND deleted_at IS NULL
           `;
           
           if (!project) {
@@ -2669,7 +2669,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } }
+        params: { id: { type: 'integer', required: true } }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager', 'operator', 'viewer'] })
     )
@@ -2727,7 +2727,7 @@ export function setupAPIRoutes(): APILite {
     .delete()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } },
+        params: { id: { type: 'integer', required: true } },
         query: {
           force: { type: 'enum', values: ['true', 'false'], required: false }
         }
@@ -2836,7 +2836,7 @@ export function setupAPIRoutes(): APILite {
           LEFT JOIN users u ON t.created_by = u.id
           LEFT JOIN thread_messages m ON t.id = m.thread_id
           WHERE t.deleted_at IS NULL
-          ${project_id ? sql`AND t.project_id = ${project_id}::uuid` : sql``}
+          ${project_id ? sql`AND t.project_id = ${project_id}::integer` : sql``}
           ${agent_id ? sql`AND t.agent_id = ${agent_id}::uuid` : sql``}
           ${status ? sql`AND t.status = ${status}` : sql``}
           GROUP BY t.id, p.name, a.name, u.email
@@ -2847,7 +2847,7 @@ export function setupAPIRoutes(): APILite {
         const countResult = await sql`
           SELECT COUNT(*) as count FROM threads t
           WHERE t.deleted_at IS NULL
-          ${project_id ? sql`AND t.project_id = ${project_id}::uuid` : sql``}
+          ${project_id ? sql`AND t.project_id = ${project_id}::integer` : sql``}
           ${agent_id ? sql`AND t.agent_id = ${agent_id}::uuid` : sql``}
           ${status ? sql`AND t.status = ${status}` : sql``}
         `;
@@ -2915,7 +2915,7 @@ export function setupAPIRoutes(): APILite {
         if (project_id) {
           const [project] = await sql`
             SELECT id FROM projects 
-            WHERE id = ${project_id}::uuid AND deleted_at IS NULL
+            WHERE id = ${project_id}::integer AND deleted_at IS NULL
           `;
           
           if (!project) {
@@ -3026,7 +3026,7 @@ export function setupAPIRoutes(): APILite {
     .get()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } },
+        params: { id: { type: 'integer', required: true } },
         query: {
           page: { type: 'number', required: false },
           limit: { type: 'number', required: false },
@@ -3127,7 +3127,7 @@ export function setupAPIRoutes(): APILite {
     .post()
     .middleware(
       validationMiddleware({
-        params: { id: { type: 'uuid', required: true } },
+        params: { id: { type: 'integer', required: true } },
         body: {
           content: { type: 'string', required: true, min: 1, max: 4000 },
           sender_type: { type: 'enum', values: ['user', 'agent', 'system'], required: false }
@@ -3263,7 +3263,7 @@ export function setupAPIRoutes(): APILite {
             COUNT(DISTINCT a.id) as agents_count,
             COUNT(DISTINCT t.id) as threads_count,
             COALESCE(AVG(CASE WHEN p.status = 'completed' AND p.deadline IS NOT NULL 
-              THEN EXTRACT(EPOCH FROM (p.completed_at - p.created_at)) / 3600 
+              THEN EXTRACT(EPOCH FROM (p.updated_at - p.created_at)) / 3600 
               END), 0) as avg_completion_hours
           FROM projects p
           LEFT JOIN project_agents pa ON p.id = pa.project_id
@@ -4312,7 +4312,7 @@ async function getSingleProject(projectId: string) {
         CASE 
           WHEN p.deadline IS NOT NULL AND p.created_at IS NOT NULL THEN
             COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') * 400 * 
-            GREATEST(1, EXTRACT(DAYS FROM (p.deadline - p.created_at)))
+            GREATEST(1, EXTRACT(DAYS FROM (COALESCE(p.deadline, p.created_at + INTERVAL '30 days') - p.created_at)))
           ELSE 0
         END as estimated_cost,
         CASE 
@@ -4332,7 +4332,7 @@ async function getSingleProject(projectId: string) {
         END as deadline_status,
         CASE 
           WHEN p.created_at IS NOT NULL AND p.deadline IS NOT NULL THEN
-            EXTRACT(DAYS FROM (p.deadline - p.created_at))
+            EXTRACT(DAYS FROM (COALESCE(p.deadline, p.created_at + INTERVAL '30 days') - p.created_at))
           ELSE NULL
         END as total_duration_days,
         CASE 
@@ -4344,7 +4344,7 @@ async function getSingleProject(projectId: string) {
       JOIN clients c ON p.client_id = c.id
       LEFT JOIN project_assignments pa ON p.id = pa.project_id
       LEFT JOIN project_squads ps ON p.id = ps.project_id
-      WHERE p.id = ${projectId}::uuid AND p.deleted_at IS NULL
+      WHERE p.id = ${projectId}::integer AND p.deleted_at IS NULL
       GROUP BY p.id, c.nom, c.secteur, c.taille, c.contact_principal
     `;
 

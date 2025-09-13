@@ -20,11 +20,26 @@ const UpdateProjectSchema = z.object({
   requirements: z.array(z.string()).optional()
 });
 
+// UUID validation regex
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 // GET /api/admin/projects/[id] - Get project details with assignments
 export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req, user, { params }) => {
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const projectId = params.id;
+
+  // Validate UUID format
+  if (!UUID_REGEX.test(projectId)) {
+    return NextResponse.json(
+      {
+        error: 'Invalid project ID format',
+        code: 'INVALID_UUID',
+        trace_id: traceId
+      },
+      { status: 400 }
+    );
+  }
   
   try {
     // Get project with comprehensive details
@@ -101,10 +116,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
         pa.created_at as assigned_at,
         -- Agent performance on this project could be calculated here
         COUNT(DISTINCT other_pa.project_id) as total_projects,
-        CASE 
-          WHEN a.performance_score IS NOT NULL THEN a.performance_score
-          ELSE 50 -- Default score if not calculated yet
-        END as performance_score
+        50 as performance_score -- Default score (performance_score column doesn't exist yet)
       FROM project_assignments pa
       JOIN agents a ON pa.agent_id = a.id
       LEFT JOIN project_assignments other_pa ON a.id = other_pa.agent_id AND other_pa.status = 'active'
@@ -180,6 +192,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
 
     const formattedProject = {
       ...projectDetails,
+      nom: projectDetails.name, // Map database 'name' to frontend 'nom'
       tags: JSON.parse(projectDetails.tags || '[]'),
       requirements: JSON.parse(projectDetails.requirements || '[]'),
       agents_assigned: parseInt(projectDetails.agents_assigned),
@@ -245,6 +258,18 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const projectId = params.id;
+
+  // Validate UUID format
+  if (!UUID_REGEX.test(projectId)) {
+    return NextResponse.json(
+      {
+        error: 'Invalid project ID format',
+        code: 'INVALID_UUID',
+        trace_id: traceId
+      },
+      { status: 400 }
+    );
+  }
   
   try {
     const body = await req.json();
@@ -252,7 +277,7 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
 
     // Check if project exists
     const [existingProject] = await sql`
-      SELECT id, nom, client_id FROM projects 
+      SELECT id, name, client_id FROM projects 
       WHERE id = ${projectId} AND deleted_at IS NULL
     `;
 
@@ -268,10 +293,10 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
     }
 
     // Check for name conflicts if name is being updated
-    if (updates.nom && updates.nom !== existingProject.nom) {
+    if (updates.nom && updates.nom !== existingProject.name) {
       const [conflictingProject] = await sql`
-        SELECT id FROM projects 
-        WHERE LOWER(nom) = LOWER(${updates.nom}) 
+        SELECT id FROM projects
+        WHERE LOWER(name) = LOWER(${updates.nom}) 
         AND client_id = ${existingProject.client_id}
         AND id != ${projectId}
         AND deleted_at IS NULL
@@ -296,14 +321,17 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
 
     Object.entries(updates).forEach(([key, value]) => {
       if (value !== undefined) {
+        // Map frontend field names to database column names
+        const dbColumn = key === 'nom' ? 'name' : key;
+
         if (key === 'deadline') {
-          updateFields.push(`${key} = $${paramIndex}`);
+          updateFields.push(`${dbColumn} = $${paramIndex}`);
           updateValues.push(value ? new Date(value as string) : null);
         } else if (key === 'tags' || key === 'requirements') {
-          updateFields.push(`${key} = $${paramIndex}`);
+          updateFields.push(`${dbColumn} = $${paramIndex}`);
           updateValues.push(JSON.stringify(value));
         } else {
-          updateFields.push(`${key} = $${paramIndex}`);
+          updateFields.push(`${dbColumn} = $${paramIndex}`);
           updateValues.push(value);
         }
         paramIndex++;
@@ -347,6 +375,7 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
 
     const response = NextResponse.json({
       ...updatedProject,
+      nom: updatedProject.name, // Map database 'name' to frontend 'nom'
       tags: JSON.parse(updatedProject.tags || '[]'),
       requirements: JSON.parse(updatedProject.requirements || '[]'),
       agents_assigned: parseInt(projectMetrics?.agents_assigned || '0'),
@@ -406,6 +435,18 @@ export const DELETE = withAdminAuth(['admin'])(async (req, user, { params }) => 
   const start = Date.now();
   const traceId = req.headers.get(TRACE_HEADER) || 'unknown';
   const projectId = params.id;
+
+  // Validate UUID format
+  if (!UUID_REGEX.test(projectId)) {
+    return NextResponse.json(
+      {
+        error: 'Invalid project ID format',
+        code: 'INVALID_UUID',
+        trace_id: traceId
+      },
+      { status: 400 }
+    );
+  }
   const url = new URL(req.url);
   const force = url.searchParams.get('force') === 'true';
   
@@ -462,7 +503,7 @@ export const DELETE = withAdminAuth(['admin'])(async (req, user, { params }) => 
       UPDATE projects 
       SET deleted_at = NOW(), updated_at = NOW()
       WHERE id = ${projectId} AND deleted_at IS NULL
-      RETURNING id, nom
+      RETURNING id, name
     `;
 
     // Deactivate assignments when force deleting
@@ -489,14 +530,14 @@ export const DELETE = withAdminAuth(['admin'])(async (req, user, { params }) => 
       trace_id: traceId,
       user_id: user.id,
       project_id: projectId,
-      project_name: deletedProject.nom,
+      project_name: deletedProject.name,
       force_used: force
     });
 
     return NextResponse.json({
       deleted: true,
       project_id: projectId,
-      project_name: deletedProject.nom,
+      project_name: deletedProject.name,
       force_used: force
     });
 

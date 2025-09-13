@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Bot, Settings, Activity, Trash2, Copy, Pause, Play, Archive, Layers, Info } from 'lucide-react';
 import Link from 'next/link';
+import AdminNavigation from '../../components/AdminNavigation';
+import AdminProtection from '../../components/AdminProtection';
 
 interface Agent {
   id: number;
@@ -177,9 +179,11 @@ export default function AgentDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+    <AdminProtection allowedRoles={['admin', 'manager']}>
+            <div className="min-h-screen console-theme flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
+    </AdminProtection>
     );
   }
 
@@ -195,82 +199,83 @@ export default function AgentDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/cockpit/admin/agents"
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </Link>
-              <div>
-                <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold text-white">{agent.name}</h1>
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(agent.status)}`}>
-                    {agent.status === 'active' ? 'Actif' : agent.status === 'paused' ? 'En pause' : 'Archivé'}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-300 mt-1">
-                  {agent.role} • {agent.domaine} • Créé le {new Date(agent.created_at).toLocaleDateString()}
-                </p>
+    <div className="min-h-screen console-theme">
+      {/* Admin Navigation */}
+      <div className="px-4 sm:px-6 lg:px-8 py-4">
+        <AdminNavigation />
+        
+        {/* Page Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/cockpit/admin/agents"
+              className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-400" />
+            </Link>
+            <div>
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-white">{agent.name}</h1>
+                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(agent.status)}`}>
+                  {agent.status === 'active' ? 'Actif' : agent.status === 'paused' ? 'En pause' : 'Archivé'}
+                </span>
               </div>
+              <p className="text-sm text-gray-300 mt-1">
+                {agent.role} • {agent.domaine} • Créé le {new Date(agent.created_at).toLocaleDateString()}
+              </p>
             </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            {agent.status === 'active' ? (
+              <button
+                onClick={() => handleStatusChange('paused')}
+                className="px-3 py-1.5 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 flex items-center gap-2"
+              >
+                <Pause className="w-4 h-4" />
+                Pause
+              </button>
+            ) : agent.status === 'paused' ? (
+              <button
+                onClick={() => handleStatusChange('active')}
+                className="px-3 py-1.5 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 flex items-center gap-2"
+              >
+                <Play className="w-4 h-4" />
+                Activer
+              </button>
+            ) : null}
             
-            <div className="flex items-center gap-2">
-              {agent.status === 'active' ? (
-                <button
-                  onClick={() => handleStatusChange('paused')}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-900 flex items-center gap-2"
-                >
-                  <Pause className="w-4 h-4" />
-                  Pause
-                </button>
-              ) : agent.status === 'paused' ? (
-                <button
-                  onClick={() => handleStatusChange('active')}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-900 flex items-center gap-2"
-                >
-                  <Play className="w-4 h-4" />
-                  Activer
-                </button>
-              ) : null}
-              
+            <button
+              onClick={handleDuplicate}
+              className="px-3 py-1.5 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 flex items-center gap-2"
+            >
+              <Copy className="w-4 h-4" />
+              Dupliquer
+            </button>
+            
+            {agent.status !== 'archived' && (
               <button
-                onClick={handleDuplicate}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-900 flex items-center gap-2"
+                onClick={() => handleStatusChange('archived')}
+                className="px-3 py-1.5 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 flex items-center gap-2"
               >
-                <Copy className="w-4 h-4" />
-                Dupliquer
+                <Archive className="w-4 h-4" />
+                Archiver
               </button>
-              
-              {agent.status !== 'archived' && (
-                <button
-                  onClick={() => handleStatusChange('archived')}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-900 flex items-center gap-2"
-                >
-                  <Archive className="w-4 h-4" />
-                  Archiver
-                </button>
-              )}
-              
-              <button
-                onClick={handleDelete}
-                className="px-3 py-1.5 border border-red-300 text-red-600 rounded-lg hover:bg-red-900/20 flex items-center gap-2"
-              >
-                <Trash2 className="w-4 h-4" />
-                Supprimer
-              </button>
-            </div>
+            )}
+            
+            <button
+              onClick={handleDelete}
+              className="px-3 py-1.5 border border-red-600 text-red-400 rounded-lg hover:bg-red-900/20 flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Supprimer
+            </button>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-8">
             {['config', 'context', 'metrics'].map((tab) => (
@@ -279,8 +284,8 @@ export default function AgentDetailPage() {
                 onClick={() => setActiveTab(tab)}
                 className={`py-3 px-1 border-b-2 font-medium text-sm ${
                   activeTab === tab
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-300 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-gray-300 hover:text-white hover:border-gray-500'
                 }`}
               >
                 {tab === 'config' && 'Configuration'}
@@ -295,40 +300,40 @@ export default function AgentDetailPage() {
       <div className="px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'config' && (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Settings className="w-5 h-5" />
+            <div className="bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-700">
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
+                <Settings className="w-5 h-5 text-gray-400" />
                 Configuration de l&apos;agent
               </h2>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Nom de l&apos;agent
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Instructions (Wake Prompt)
                   </label>
                   <textarea
                     value={formData.wake_prompt}
                     onChange={(e) => setFormData({...formData, wake_prompt: e.target.value})}
                     rows={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
                       Température
                     </label>
                     <input
@@ -344,12 +349,12 @@ export default function AgentDetailPage() {
                           temperature: parseFloat(e.target.value)
                         }
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
                       Tokens maximum
                     </label>
                     <input
@@ -364,7 +369,7 @@ export default function AgentDetailPage() {
                           max_tokens: parseInt(e.target.value)
                         }
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
                     />
                   </div>
                 </div>
@@ -385,21 +390,21 @@ export default function AgentDetailPage() {
 
         {activeTab === 'context' && (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Layers className="w-5 h-5" />
+            <div className="bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-700">
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
+                <Layers className="w-5 h-5 text-gray-400" />
                 Hiérarchie de contexte
               </h2>
 
               <div className="space-y-4">
                 {contexts.map((ctx, idx) => (
                   <div key={idx} className={`pl-${idx * 4} border-l-2 border-gray-200 ml-1`}>
-                    <div className="p-4 bg-gray-900 rounded-lg">
+                    <div className="p-4 bg-gray-700 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-medium">{ctx.level.charAt(0).toUpperCase() + ctx.level.slice(1)}</h3>
+                        <h3 className="font-medium text-white">{ctx.level.charAt(0).toUpperCase() + ctx.level.slice(1)}</h3>
                         <span className="text-sm text-gray-300">ID: {ctx.entity_id}</span>
                       </div>
-                      <pre className="text-xs bg-white p-2 rounded border border-gray-200 overflow-x-auto">
+                      <pre className="text-xs console-theme text-gray-300 p-2 rounded border border-gray-600 overflow-x-auto">
                         {JSON.stringify(ctx.configuration, null, 2)}
                       </pre>
                     </div>
@@ -407,10 +412,10 @@ export default function AgentDetailPage() {
                 ))}
               </div>
 
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-4 p-4 bg-blue-900/20 border border-blue-500/50 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <Info className="w-4 h-4 text-blue-600 mt-0.5" />
-                  <div className="text-sm text-blue-800">
+                  <Info className="w-4 h-4 text-blue-400 mt-0.5" />
+                  <div className="text-sm text-blue-300">
                     <p className="font-medium mb-1">Configuration effective</p>
                     <p>La configuration finale de l&apos;agent combine tous les niveaux de contexte, du plus général au plus spécifique.</p>
                   </div>
@@ -422,30 +427,30 @@ export default function AgentDetailPage() {
 
         {activeTab === 'metrics' && (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Activity className="w-5 h-5" />
+            <div className="bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-700">
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
+                <Activity className="w-5 h-5 text-gray-400" />
                 Métriques de performance
               </h2>
 
               {agent.performance_metrics ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="p-4 bg-gray-900 rounded-lg">
+                  <div className="p-4 bg-gray-700 rounded-lg">
                     <p className="text-sm text-gray-300 mb-1">Tâches complétées</p>
-                    <p className="text-2xl font-bold">{agent.performance_metrics.tasks_completed || 0}</p>
+                    <p className="text-2xl font-bold text-white">{agent.performance_metrics.tasks_completed || 0}</p>
                   </div>
-                  <div className="p-4 bg-gray-900 rounded-lg">
+                  <div className="p-4 bg-gray-700 rounded-lg">
                     <p className="text-sm text-gray-300 mb-1">Taux de succès</p>
-                    <p className="text-2xl font-bold">{agent.performance_metrics.success_rate || 0}%</p>
+                    <p className="text-2xl font-bold text-white">{agent.performance_metrics.success_rate || 0}%</p>
                   </div>
-                  <div className="p-4 bg-gray-900 rounded-lg">
+                  <div className="p-4 bg-gray-700 rounded-lg">
                     <p className="text-sm text-gray-300 mb-1">Temps de réponse moyen</p>
-                    <p className="text-2xl font-bold">{agent.performance_metrics.avg_response_time || 0}s</p>
+                    <p className="text-2xl font-bold text-white">{agent.performance_metrics.avg_response_time || 0}s</p>
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-12 text-gray-300">
-                  <Activity className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <div className="text-center py-12 text-gray-400">
+                  <Activity className="w-12 h-12 mx-auto mb-4 text-gray-500" />
                   <p>Aucune métrique disponible pour le moment</p>
                 </div>
               )}

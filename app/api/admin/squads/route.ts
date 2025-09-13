@@ -54,50 +54,118 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       return res;
     }
 
-    // Build dynamic WHERE clause
-    let whereConditions = ['s.deleted_at IS NULL'];
-    let params: any[] = [];
-    let paramIndex = 1;
+    // Build dynamic query with proper parameterization
+    let rows;
+    let countRows;
 
-    if (domain) {
-      whereConditions.push(`s.domain = $${paramIndex++}`);
-      params.push(domain);
+    if (domain && status) {
+      // Both filters
+      rows = await sql`
+        SELECT 
+          s.id, s.name, s.slug, s.mission, s.domain, s.status,
+          s.created_by, s.created_at, s.updated_at,
+          COUNT(DISTINCT sm.agent_id) FILTER (WHERE sm.status = 'active') as members_count,
+          COUNT(DISTINCT ps.project_id) FILTER (WHERE ps.status = 'active') as projects_count,
+          COALESCE(perf.avg_completion_hours, 0) as avg_completion_hours
+        FROM squads s
+        LEFT JOIN squad_members sm ON s.id = sm.squad_id
+        LEFT JOIN project_squads ps ON s.id = ps.squad_id
+        LEFT JOIN LATERAL (
+          SELECT AVG(EXTRACT(EPOCH FROM (completed_at - created_at)) / 3600) as avg_completion_hours
+          FROM squad_instructions si
+          WHERE si.squad_id = s.id AND si.completed_at IS NOT NULL
+            AND si.created_at >= NOW() - INTERVAL '30 days'
+        ) perf ON true
+        WHERE s.deleted_at IS NULL AND s.domain = ${domain} AND s.status = ${status}
+        GROUP BY s.id, perf.avg_completion_hours
+        ORDER BY s.created_at DESC
+        LIMIT ${limitNum} OFFSET ${offset}
+      `;
+      countRows = await sql`
+        SELECT COUNT(*) as count FROM squads s 
+        WHERE s.deleted_at IS NULL AND s.domain = ${domain} AND s.status = ${status}
+      `;
+    } else if (domain) {
+      // Domain filter only
+      rows = await sql`
+        SELECT 
+          s.id, s.name, s.slug, s.mission, s.domain, s.status,
+          s.created_by, s.created_at, s.updated_at,
+          COUNT(DISTINCT sm.agent_id) FILTER (WHERE sm.status = 'active') as members_count,
+          COUNT(DISTINCT ps.project_id) FILTER (WHERE ps.status = 'active') as projects_count,
+          COALESCE(perf.avg_completion_hours, 0) as avg_completion_hours
+        FROM squads s
+        LEFT JOIN squad_members sm ON s.id = sm.squad_id
+        LEFT JOIN project_squads ps ON s.id = ps.squad_id
+        LEFT JOIN LATERAL (
+          SELECT AVG(EXTRACT(EPOCH FROM (completed_at - created_at)) / 3600) as avg_completion_hours
+          FROM squad_instructions si
+          WHERE si.squad_id = s.id AND si.completed_at IS NOT NULL
+            AND si.created_at >= NOW() - INTERVAL '30 days'
+        ) perf ON true
+        WHERE s.deleted_at IS NULL AND s.domain = ${domain}
+        GROUP BY s.id, perf.avg_completion_hours
+        ORDER BY s.created_at DESC
+        LIMIT ${limitNum} OFFSET ${offset}
+      `;
+      countRows = await sql`
+        SELECT COUNT(*) as count FROM squads s 
+        WHERE s.deleted_at IS NULL AND s.domain = ${domain}
+      `;
+    } else if (status) {
+      // Status filter only
+      rows = await sql`
+        SELECT 
+          s.id, s.name, s.slug, s.mission, s.domain, s.status,
+          s.created_by, s.created_at, s.updated_at,
+          COUNT(DISTINCT sm.agent_id) FILTER (WHERE sm.status = 'active') as members_count,
+          COUNT(DISTINCT ps.project_id) FILTER (WHERE ps.status = 'active') as projects_count,
+          COALESCE(perf.avg_completion_hours, 0) as avg_completion_hours
+        FROM squads s
+        LEFT JOIN squad_members sm ON s.id = sm.squad_id
+        LEFT JOIN project_squads ps ON s.id = ps.squad_id
+        LEFT JOIN LATERAL (
+          SELECT AVG(EXTRACT(EPOCH FROM (completed_at - created_at)) / 3600) as avg_completion_hours
+          FROM squad_instructions si
+          WHERE si.squad_id = s.id AND si.completed_at IS NOT NULL
+            AND si.created_at >= NOW() - INTERVAL '30 days'
+        ) perf ON true
+        WHERE s.deleted_at IS NULL AND s.status = ${status}
+        GROUP BY s.id, perf.avg_completion_hours
+        ORDER BY s.created_at DESC
+        LIMIT ${limitNum} OFFSET ${offset}
+      `;
+      countRows = await sql`
+        SELECT COUNT(*) as count FROM squads s 
+        WHERE s.deleted_at IS NULL AND s.status = ${status}
+      `;
+    } else {
+      // No filters
+      rows = await sql`
+        SELECT 
+          s.id, s.name, s.slug, s.mission, s.domain, s.status,
+          s.created_by, s.created_at, s.updated_at,
+          COUNT(DISTINCT sm.agent_id) FILTER (WHERE sm.status = 'active') as members_count,
+          COUNT(DISTINCT ps.project_id) FILTER (WHERE ps.status = 'active') as projects_count,
+          COALESCE(perf.avg_completion_hours, 0) as avg_completion_hours
+        FROM squads s
+        LEFT JOIN squad_members sm ON s.id = sm.squad_id
+        LEFT JOIN project_squads ps ON s.id = ps.squad_id
+        LEFT JOIN LATERAL (
+          SELECT AVG(EXTRACT(EPOCH FROM (completed_at - created_at)) / 3600) as avg_completion_hours
+          FROM squad_instructions si
+          WHERE si.squad_id = s.id AND si.completed_at IS NOT NULL
+            AND si.created_at >= NOW() - INTERVAL '30 days'
+        ) perf ON true
+        WHERE s.deleted_at IS NULL
+        GROUP BY s.id, perf.avg_completion_hours
+        ORDER BY s.created_at DESC
+        LIMIT ${limitNum} OFFSET ${offset}
+      `;
+      countRows = await sql`
+        SELECT COUNT(*) as count FROM squads s WHERE s.deleted_at IS NULL
+      `;
     }
-    
-    if (status) {
-      whereConditions.push(`s.status = $${paramIndex++}`);
-      params.push(status);
-    }
-
-    const whereClause = whereConditions.join(' AND ');
-
-    // Get squads with counts
-    const rows = await sql`
-      SELECT 
-        s.id, s.name, s.slug, s.mission, s.domain, s.status,
-        s.created_by, s.created_at, s.updated_at,
-        COUNT(DISTINCT sm.agent_id) FILTER (WHERE sm.status = 'active') as members_count,
-        COUNT(DISTINCT ps.project_id) FILTER (WHERE ps.status = 'active') as projects_count,
-        COALESCE(perf.avg_completion_hours, 0) as avg_completion_hours
-      FROM squads s
-      LEFT JOIN squad_members sm ON s.id = sm.squad_id
-      LEFT JOIN project_squads ps ON s.id = ps.squad_id
-      LEFT JOIN LATERAL (
-        SELECT AVG(EXTRACT(EPOCH FROM (completed_at - created_at)) / 3600) as avg_completion_hours
-        FROM squad_instructions si
-        WHERE si.squad_id = s.id AND si.completed_at IS NOT NULL
-          AND si.created_at >= NOW() - INTERVAL '30 days'
-      ) perf ON true
-      WHERE ${whereClause}
-      GROUP BY s.id, perf.avg_completion_hours
-      ORDER BY s.created_at DESC
-      LIMIT ${limitNum} OFFSET ${offset}
-    `;
-
-    // Get total count for pagination
-    const countRows = await sql`
-      SELECT COUNT(*) as count FROM squads s WHERE ${whereClause}
-    `;
 
     const items = rows.map(row => ({
       id: row.id,

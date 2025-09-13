@@ -8,11 +8,15 @@ import {
   GitCommit,
   Users,
   AlertTriangle,
-  Settings} from "lucide-react";
+  Settings,
+  Shield} from "lucide-react";
 import ResponsiveWrapper from "./components/ResponsiveWrapper";
+import { getCurrentRole } from "../../lib/auth/role";
+import Link from "next/link";
 
 export default function CockpitPage() {
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<'admin' | 'manager' | 'operator' | 'viewer' | 'owner'>('viewer');
 
   const [metrics] = useState({
     ttft: { value: 1.5, unit: "ms", color: "#F59E0B" },
@@ -129,6 +133,7 @@ export default function CockpitPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 200);
+    setUserRole(getCurrentRole());
     return () => clearTimeout(timer);
   }, []);
 
@@ -169,6 +174,19 @@ export default function CockpitPage() {
               </div>
             </div>
           </div>
+          
+          {/* Admin Link - Only show for admin users */}
+          {userRole === 'admin' && (
+            <div className="flex items-center">
+              <Link
+                href="/cockpit/admin"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 rounded-lg transition-colors text-white"
+              >
+                <Shield size={18} className="text-blue-400" />
+                <span className="font-medium">Admin</span>
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* 3 metrics cards */}

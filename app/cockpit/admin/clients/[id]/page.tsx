@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Edit, Building, User, Mail, Phone, Globe, Briefcase, Users, Calendar } from 'lucide-react';
+import { ArrowLeft, Edit, Building, User, Mail, Phone, Globe, Briefcase, Users, Calendar, Trash2 } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import AdminNavigation from '../../components/AdminNavigation';
+import AdminProtection from '../../components/AdminProtection';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -51,6 +53,8 @@ export default function AdminClientDetailPage() {
   const [client, setClient] = useState<ClientDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const fetchClient = async () => {
@@ -78,17 +82,46 @@ export default function AdminClientDetailPage() {
     }
   }, [clientId]);
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/admin/clients/${clientId}`, {
+        method: 'DELETE',
+        headers: {
+          'X-Trace-Id': `trace-${Date.now()}`
+        },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Erreur lors de la suppression');
+      }
+
+      router.push('/cockpit/admin/clients');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      setShowDeleteModal(false);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+    <AdminProtection allowedRoles={['admin', 'manager']}>
+            <div className="min-h-screen console-theme flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
+    </AdminProtection>
     );
   }
 
   if (error || !client) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen console-theme flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-400 text-lg mb-4">{error || 'Client introuvable'}</div>
           <Link href="/cockpit/admin/clients" className="text-blue-400 hover:text-blue-300">
@@ -108,34 +141,42 @@ export default function AdminClientDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <div className="bg-gray-900 border-b border-gray-800">
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/cockpit/admin/clients"
-                className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 text-gray-400" />
-              </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-white">{client.nom}</h1>
-                <p className="text-sm text-gray-300 mt-1">
-                  Client · {client.secteur} · Créé le {formatDate(client.created_at)}
-                </p>
-              </div>
+    <div className="min-h-screen console-theme">
+      {/* Admin Navigation */}
+      <div className="px-4 sm:px-6 lg:px-8 py-4">
+        <AdminNavigation />
+        
+        {/* Page Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/cockpit/admin/clients"
+              className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-400" />
+            </Link>
+            <div>
+              <h1 className="text-2xl font-bold text-white">{client.nom}</h1>
+              <p className="text-sm text-gray-300 mt-1">
+                Client · {client.secteur} · Créé le {formatDate(client.created_at)}
+              </p>
             </div>
-            <div className="flex items-center gap-3">
-              <Link
-                href={`/cockpit/admin/clients/${client.id}/edit`}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Edit className="w-4 h-4" />
-                Modifier
-              </Link>
-            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/cockpit/admin/clients/${client.id}/edit`}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Edit className="w-4 h-4" />
+              Modifier
+            </Link>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              Supprimer
+            </button>
           </div>
         </div>
       </div>
@@ -367,6 +408,49 @@ export default function AdminClientDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-800 rounded-xl p-6 w-full max-w-md border border-gray-700">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                <Trash2 className="w-5 h-5 text-red-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white">Supprimer le client</h3>
+                <p className="text-sm text-gray-400">Cette action est irréversible</p>
+              </div>
+            </div>
+            
+            <p className="text-gray-300 mb-6">
+              Êtes-vous sûr de vouloir supprimer le client "{client?.nom}" ? Tous les projets associés seront également affectés.
+            </p>
+            
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleting}
+                className="px-4 py-2 text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {deleting ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+                {deleting ? 'Suppression...' : 'Supprimer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

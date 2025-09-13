@@ -42,8 +42,10 @@ export default function CockpitShell({ children }: CockpitShellProps) {
         <GlobalChat />
         
         {/* Contenu principal */}
-        <main className="flex-1 overflow-y-auto bg-gray-900 scroller">
-          {children}
+        <main className="flex-1 overflow-y-auto scroller cockpit-main" style={{ backgroundColor: 'var(--bg)' }}>
+          <div className="px-4 sm:px-6 lg:px-8 py-6">
+            {children}
+          </div>
         </main>
       </div>
     </div>

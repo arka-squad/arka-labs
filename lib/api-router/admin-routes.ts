@@ -307,12 +307,12 @@ async function adminProjectsQueryGET(req: NextRequest, params: RouteParams) {
       return await getSingleProjectQuery(projectId, req, user);
     }
     
-    // Return projects listing (from existing route.ts)
+    // Return projects listing (with French naming convention to match frontend)
     try {
       const result = await sql`
         SELECT 
           p.id,
-          p.nom,
+          p.name AS nom,
           p.description,
           p.client_id,
           p.budget,
@@ -323,18 +323,53 @@ async function adminProjectsQueryGET(req: NextRequest, params: RouteParams) {
           p.requirements,
           p.created_at,
           p.updated_at,
-          c.nom as client_name
+          p.created_by,
+          c.nom as client_name,
+          c.secteur as client_secteur,
+          c.taille as client_taille,
+          COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') as agents_count,
+          COUNT(DISTINCT ps.squad_id) FILTER (WHERE ps.status = 'active') as squads_count
         FROM projects p
         JOIN clients c ON p.client_id = c.id
+        LEFT JOIN project_assignments pa ON p.id = pa.project_id
+        LEFT JOIN project_squads ps ON p.id = ps.project_id
         WHERE p.deleted_at IS NULL
+        GROUP BY p.id, c.nom, c.secteur, c.taille
         ORDER BY p.created_at DESC
         LIMIT 50
       `;
       
+      const formattedItems = result.map(row => ({
+        id: row.id,
+        nom: row.nom,
+        client: {
+          id: row.client_id,
+          nom: row.client_name,
+          secteur: row.client_secteur
+        },
+        statut: row.status, // Map status -> statut
+        priorite: row.priority, // Map priority -> priorite  
+        budget: row.budget,
+        deadline: row.deadline,
+        agents_count: parseInt(row.agents_count) || 0,
+        squads_count: parseInt(row.squads_count) || 0,
+        created_at: row.created_at,
+        created_by: row.created_by,
+        // Add deadline alert calculation
+        deadline_alert: row.deadline ? (() => {
+          const deadline = new Date(row.deadline);
+          const now = new Date();
+          const diffDays = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          if (diffDays < 0) return 'depassee';
+          if (diffDays <= 3) return 'proche';
+          return 'ok';
+        })() : undefined
+      }));
+      
       return NextResponse.json({
         success: true,
-        items: result,
-        total: result.length,
+        items: formattedItems,
+        total: formattedItems.length,
         page: 1,
         limit: 50,
         totalPages: 1
@@ -393,7 +428,7 @@ async function adminProjectsQueryPOST(req: NextRequest, params: RouteParams) {
       }
 
       const result = await sql`
-        INSERT INTO projects (nom, description, client_id, budget, deadline, priority, status, tags, requirements, created_by)
+        INSERT INTO projects (name, description, client_id, budget, deadline, priority, status, tags, requirements, created_by)
         VALUES (
           ${nom}, 
           ${description}, 

@@ -225,46 +225,70 @@ export const PATCH = withAdminAuth(['admin', 'manager', 'operator'])(async (req,
       }
     }
 
-    // Build update query
-    const updateFields: string[] = [];
-    const updateValues: any[] = [];
-    let paramIndex = 1;
-
-    if (updates.name) {
-      updateFields.push(`name = $${paramIndex++}`);
-      updateValues.push(updates.name);
-    }
+    // Build update query with safe parameterization
+    let rows;
     
-    if (updates.mission !== undefined) {
-      updateFields.push(`mission = $${paramIndex++}`);
-      updateValues.push(updates.mission);
-    }
-    
-    if (updates.domain) {
-      updateFields.push(`domain = $${paramIndex++}`);
-      updateValues.push(updates.domain);
-    }
-    
-    if (updates.status) {
-      updateFields.push(`status = $${paramIndex++}`);
-      updateValues.push(updates.status);
-    }
-
-    updateFields.push(`updated_at = NOW()`);
-    updateValues.push(squadId); // For WHERE clause
-
-    if (updateFields.length === 1) { // Only updated_at
+    if (updates.name && updates.mission !== undefined && updates.domain && updates.status) {
+      // All fields
+      rows = await sql`
+        UPDATE squads 
+        SET name = ${updates.name}, mission = ${updates.mission}, domain = ${updates.domain}, status = ${updates.status}, updated_at = NOW()
+        WHERE id = ${squadId} AND deleted_at IS NULL
+        RETURNING id, name, slug, mission, domain, status, created_by, created_at, updated_at
+      `;
+    } else if (updates.name && updates.mission !== undefined && updates.domain) {
+      // Name, mission, domain
+      rows = await sql`
+        UPDATE squads 
+        SET name = ${updates.name}, mission = ${updates.mission}, domain = ${updates.domain}, updated_at = NOW()
+        WHERE id = ${squadId} AND deleted_at IS NULL
+        RETURNING id, name, slug, mission, domain, status, created_by, created_at, updated_at
+      `;
+    } else if (updates.name && updates.status) {
+      // Name, status
+      rows = await sql`
+        UPDATE squads 
+        SET name = ${updates.name}, status = ${updates.status}, updated_at = NOW()
+        WHERE id = ${squadId} AND deleted_at IS NULL
+        RETURNING id, name, slug, mission, domain, status, created_by, created_at, updated_at
+      `;
+    } else if (updates.name) {
+      // Name only
+      rows = await sql`
+        UPDATE squads 
+        SET name = ${updates.name}, updated_at = NOW()
+        WHERE id = ${squadId} AND deleted_at IS NULL
+        RETURNING id, name, slug, mission, domain, status, created_by, created_at, updated_at
+      `;
+    } else if (updates.mission !== undefined) {
+      // Mission only
+      rows = await sql`
+        UPDATE squads 
+        SET mission = ${updates.mission}, updated_at = NOW()
+        WHERE id = ${squadId} AND deleted_at IS NULL
+        RETURNING id, name, slug, mission, domain, status, created_by, created_at, updated_at
+      `;
+    } else if (updates.domain) {
+      // Domain only
+      rows = await sql`
+        UPDATE squads 
+        SET domain = ${updates.domain}, updated_at = NOW()
+        WHERE id = ${squadId} AND deleted_at IS NULL
+        RETURNING id, name, slug, mission, domain, status, created_by, created_at, updated_at
+      `;
+    } else if (updates.status) {
+      // Status only
+      rows = await sql`
+        UPDATE squads 
+        SET status = ${updates.status}, updated_at = NOW()
+        WHERE id = ${squadId} AND deleted_at IS NULL
+        RETURNING id, name, slug, mission, domain, status, created_by, created_at, updated_at
+      `;
+    } else {
       return NextResponse.json({ 
         error: 'no_updates_provided' 
       }, { status: 400 });
     }
-
-    const rows = await sql`
-      UPDATE squads 
-      SET ${updateFields.join(', ')}
-      WHERE id = $${paramIndex} AND deleted_at IS NULL
-      RETURNING id, name, slug, mission, domain, status, created_by, created_at, updated_at
-    `;
 
     if (rows.length === 0) {
       return NextResponse.json({ error: 'squad_not_found' }, { status: 404 });

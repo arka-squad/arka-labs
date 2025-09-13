@@ -57,12 +57,10 @@ export default function ResponsiveWrapper({
       {/* Main Content with proper mobile padding */}
       <div className={`
         ${showMobileNav ? 'pt-4 md:pt-6' : 'pt-6'}
-        px-4 sm:px-6 lg:px-8
         pb-6
-        pr-0 md:pr-0 lg:pr-0
         ${contentClassName}
       `}>
-        <div className={`max-w-7xl mx-auto ${innerClassName}`}>
+        <div className={`${innerClassName}`}>
           {children}
         </div>
       </div>

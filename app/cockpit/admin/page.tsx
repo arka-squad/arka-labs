@@ -8,10 +8,11 @@ import {
 import { getCurrentRole } from '../../../lib/auth/role';
 import ResponsiveWrapper from '../components/ResponsiveWrapper';
 import { useRealTimeUpdates, LiveDataBadge } from '../components/RealTimeUpdates';
+import AdminNavigation from './components/AdminNavigation';
+import AdminProtection from './components/AdminProtection';
 
 // Dashboard principal B23 - Cockpit Admin
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'squads' | 'agents' | 'projets' | 'clients' | 'analytics'>('squads');
   const [stats, setStats] = useState({
     squads: { total: 0, active: 0, inactive: 0 },
     projects: { total: 0, active: 0, disabled: 0 },
@@ -116,133 +117,6 @@ export default function AdminDashboard() {
   });
 
   const canManageSquads = ['admin', 'manager'].includes(userRole);
-
-  if (loading) {
-    return (
-      <div className="console-theme min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
-          <p className="text-gray-400">Chargement du cockpit...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const tabs = [
-    { id: 'squads' as const, label: '🔷 Squads', count: stats?.squads?.total || 0 },
-    { id: 'agents' as const, label: '👤 Agents', count: 0 },
-    { id: 'projets' as const, label: '📋 Projets', count: stats?.projects?.total || 0 },
-    { id: 'clients' as const, label: '🏢 Clients', count: 0 },
-    { id: 'analytics' as const, label: '📊 Analytics' }
-  ];
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'squads':
-        return renderSquadsSection();
-      case 'agents':
-        return renderAgentsSection();
-      case 'projets':
-        return renderProjetsSection();
-      case 'clients':
-        return renderClientsSection();
-      case 'analytics':
-        return renderAnalyticsSection();
-      default:
-        return renderSquadsSection();
-    }
-  };
-
-  return (
-    <ResponsiveWrapper 
-      currentPath="/cockpit/admin" 
-      userRole={userRole} 
-      contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
-      innerClassName="max-w-none mx-0"
-    >
-        {/* Header avec Tabs - Mobile Responsive */}
-        <div className="mb-6 md:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">🏢</span>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                  ARKA Backoffice Admin
-                </h1>
-              </div>
-              <p className="text-gray-400 text-sm sm:text-base mt-1">
-                Gestion des squads, agents, projets et clients
-              </p>
-            </div>
-            <div className="flex items-center space-x-6 self-start sm:self-center">
-              <div className="flex items-center space-x-4">
-                <div className="text-center">
-                  <div className="text-xs text-gray-400">SQUADS</div>
-                  <div className="text-lg font-bold text-green-400">{stats?.squads?.total || 0}</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xs text-gray-400">AGENTS</div>
-                  <div className="text-lg font-bold text-blue-400">0</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xs text-gray-400">PROJETS</div>
-                  <div className="text-lg font-bold text-yellow-400">{stats?.projects?.total || 0}</div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <div className="px-3 py-1 bg-blue-900/30 text-blue-300 rounded-full">
-                  {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
-                </div>
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-gray-400 hidden sm:inline">En ligne</span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Tabs Navigation */}
-          <div className="flex space-x-8">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 ${
-                  activeTab === tab.id
-                    ? 'border-blue-400 text-blue-400'
-                    : 'border-transparent text-gray-400 hover:text-white'
-                }`}
-              >
-                <span>{tab.label}</span>
-                {tab.count && (
-                  <span className={`px-2 py-0.5 rounded text-xs ${
-                    activeTab === tab.id 
-                      ? 'bg-blue-400 text-white' 
-                      : 'bg-gray-600 text-gray-300'
-                  }`}>
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Tab Content */}
-        <div>
-          {renderTabContent()}
-        </div>
-
-        {/* Quick Access Footer */}
-        <div className="mt-8 flex justify-center">
-          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-300 text-center">
-            <span>B23 Console Admin v2.5</span>
-            <span className="hidden sm:inline">•</span>
-            <span>Architecture simplifiée</span>
-            <span className="hidden sm:inline">•</span>
-            <span>Performance optimisée</span>
-          </div>
-        </div>
-    </ResponsiveWrapper>
-  );
 
   // Section renders
   function renderSquadsSection() {
@@ -549,4 +423,45 @@ export default function AdminDashboard() {
       </div>
     );
   }
+
+  if (loading) {
+    return (
+      <div className="console-theme min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+          <p className="text-gray-400">Chargement du cockpit...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <AdminProtection allowedRoles={['admin', 'manager']}>
+      <ResponsiveWrapper 
+        currentPath="/cockpit/admin" 
+        userRole={userRole} 
+        contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
+        innerClassName="max-w-none mx-0"
+      >
+        {/* Admin Navigation */}
+        <AdminNavigation />
+        
+        {/* Dashboard Content */}
+        <div>
+          {renderSquadsSection()}
+        </div>
+
+        {/* Quick Access Footer */}
+        <div className="mt-8 flex justify-center">
+          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-300 text-center">
+            <span>B23 Console Admin v2.5</span>
+            <span className="hidden sm:inline">•</span>
+            <span>Architecture simplifiée</span>
+            <span className="hidden sm:inline">•</span>
+            <span>Performance optimisée</span>
+          </div>
+        </div>
+      </ResponsiveWrapper>
+    </AdminProtection>
+  );
 }

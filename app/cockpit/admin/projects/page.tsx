@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { Plus, Users, Settings, AlertCircle, Calendar, Briefcase, Search, Filter, ArrowRight } from 'lucide-react';
 import ResponsiveWrapper from '../../components/ResponsiveWrapper';
+import AdminNavigation from '../components/AdminNavigation';
+import AdminProtection from '../components/AdminProtection';
 
 interface Project {
-  id: number;
+  id: string; // UUID format
   nom: string;
   client: {
     id: string;
@@ -112,7 +114,8 @@ export default function ProjectsPage() {
 
   if (loading) {
     return (
-      <ResponsiveWrapper 
+      <AdminProtection allowedRoles={['admin', 'manager']}>
+        <ResponsiveWrapper 
         currentPath="/cockpit/admin/projects"
         contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
         innerClassName="max-w-none mx-0"
@@ -123,49 +126,34 @@ export default function ProjectsPage() {
             <p>Chargement des projets...</p>
           </div>
         </div>
-      </ResponsiveWrapper>
+        </ResponsiveWrapper>
+      </AdminProtection>
     );
   }
 
   return (
-    <ResponsiveWrapper 
+    <AdminProtection allowedRoles={['admin', 'manager']}>
+      <ResponsiveWrapper 
       currentPath="/cockpit/admin/projects"
       contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
       innerClassName="max-w-none mx-0"
     >
-        {/* Header - Mobile Responsive */}
-        <div className="mb-6 md:mb-8">
-          <div className="flex flex-col space-y-4">
-            <div className="flex items-center space-x-4 pl-16 md:pl-0">
-              <button
-                onClick={() => window.location.href = '/cockpit/admin'}
-                className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
-              >
-                ← Dashboard
-              </button>
-              <div className="w-px h-6 bg-gray-600 hidden sm:block"></div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold mb-2">📋 Gestion Projets</h1>
-                <p className="text-gray-400 text-sm sm:text-base">Pilotez vos projets clients et leurs squads assignées</p>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-              <button
-                onClick={() => window.location.href = '/cockpit/admin/squads'}
-                className="flex items-center justify-center space-x-2 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors"
-              >
-                <Users size={16} />
-                <span>Gérer Squads</span>
-              </button>
-              <button 
-                onClick={() => window.location.href = '/cockpit/admin/projects/new'}
-                className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
-              >
-                <Plus size={16} />
-                <span>Nouveau Projet</span>
-              </button>
-            </div>
+        {/* Admin Navigation */}
+        <AdminNavigation />
+        
+        {/* Action Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">📋 Gestion Projets</h1>
+            <p className="text-gray-400">Pilotez vos projets clients et leurs squads assignées</p>
           </div>
+          <button 
+            onClick={() => window.location.href = '/cockpit/admin/projects/new'}
+            className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition-colors font-medium"
+          >
+            <Plus size={18} />
+            <span>Nouveau Projet</span>
+          </button>
         </div>
 
         {/* Barre de recherche et filtres - Mobile Responsive */}
@@ -407,5 +395,6 @@ export default function ProjectsPage() {
           </div>
         </div>
     </ResponsiveWrapper>
+    </AdminProtection>
   );
 }

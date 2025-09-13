@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Edit, Trash2, Users, Target, Calendar, DollarSign, Flag, Briefcase, Building, User, Clock, Activity } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import AdminNavigation from '../../components/AdminNavigation';
+import AdminProtection from '../../components/AdminProtection';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 interface ProjectDetails {
-  id: string;
+  id: string; // UUID format
   nom: string;
   description: string;
   client_id: string;
@@ -97,15 +99,17 @@ export default function AdminProjectDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+    <AdminProtection allowedRoles={['admin', 'manager']}>
+            <div className="min-h-screen console-theme flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
+    </AdminProtection>
     );
   }
 
   if (error || !project) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen console-theme flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-400 text-lg mb-4">{error || 'Projet introuvable'}</div>
           <Link href="/cockpit/admin/projects" className="text-blue-400 hover:text-blue-300">
@@ -132,34 +136,36 @@ export default function AdminProjectDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <div className="bg-gray-900 border-b border-gray-800">
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/cockpit/admin/projects"
-                className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 text-gray-400" />
-              </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-white">{project.nom}</h1>
-                <p className="text-sm text-gray-300 mt-1">
-                  Projet · {project.client_name} · Créé le {formatDate(project.created_at)}
-                </p>
-              </div>
+    <AdminProtection allowedRoles={['admin', 'manager']}>
+      <div className="min-h-screen console-theme">
+      {/* Admin Navigation */}
+      <div className="px-4 sm:px-6 lg:px-8 py-4">
+        <AdminNavigation />
+        
+        {/* Page Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/cockpit/admin/projects"
+              className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-400" />
+            </Link>
+            <div>
+              <h1 className="text-2xl font-bold text-white">{project.nom}</h1>
+              <p className="text-sm text-gray-300 mt-1">
+                Projet · {project.client_name} · Créé le {formatDate(project.created_at)}
+              </p>
             </div>
-            <div className="flex items-center gap-3">
-              <Link
-                href={`/cockpit/admin/projects/${project.id}/edit`}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Edit className="w-4 h-4" />
-                Modifier
-              </Link>
-            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/cockpit/admin/projects/${project.id}/edit`}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Edit className="w-4 h-4" />
+              Modifier
+            </Link>
           </div>
         </div>
       </div>
@@ -387,5 +393,6 @@ export default function AdminProjectDetailPage() {
         </div>
       </div>
     </div>
+    </AdminProtection>
   );
 }

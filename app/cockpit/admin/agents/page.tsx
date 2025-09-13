@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Plus, Bot, Search, Filter, Zap, Users, Target, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import AdminNavigation from '../components/AdminNavigation';
+import AdminProtection from '../components/AdminProtection';
 
 interface AgentTemplate {
   id: number;
@@ -103,25 +105,27 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700">
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white">Gestion des Agents</h1>
-              <p className="text-sm text-gray-300 mt-1">
-                {agents.length} agents configurés • {templates.length} templates disponibles
-              </p>
-            </div>
-            <Link
-              href="/cockpit/admin/agents/new"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Nouvel Agent
-            </Link>
+    <AdminProtection allowedRoles={['admin', 'manager']}>
+          <div className="min-h-screen console-theme">
+      {/* Admin Navigation */}
+      <div className="px-4 sm:px-6 lg:px-8 py-4">
+        <AdminNavigation />
+        
+        {/* Action Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-white">👤 Gestion des Agents</h1>
+            <p className="text-sm text-gray-300 mt-1">
+              {agents.length} agents configurés • {templates.length} templates disponibles
+            </p>
           </div>
+          <Link
+            href="/cockpit/admin/agents/new"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Nouvel Agent
+          </Link>
         </div>
       </div>
 
@@ -164,7 +168,7 @@ export default function AgentsPage() {
               ))}
             </select>
 
-            <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-900 flex items-center justify-center gap-2">
+            <button className="px-4 py-2 border border-gray-300 rounded-lg hover:console-theme flex items-center justify-center gap-2">
               <Filter className="w-4 h-4" />
               Plus de filtres
             </button>
@@ -265,5 +269,6 @@ export default function AgentsPage() {
         )}
       </div>
     </div>
+  </AdminProtection>
   );
 }

@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Plus, Users, Settings, Zap, AlertCircle, Filter, Search } from 'lucide-react';
 import ResponsiveWrapper from '../../components/ResponsiveWrapper';
+import AdminNavigation from '../components/AdminNavigation';
+import AdminProtection from '../components/AdminProtection';
 
 interface Squad {
   id: string;
@@ -109,7 +111,8 @@ export default function SquadsPage() {
 
   if (loading && squads.length === 0) {
     return (
-      <ResponsiveWrapper 
+    <AdminProtection allowedRoles={['admin', 'manager']}>
+            <ResponsiveWrapper 
         currentPath="/cockpit/admin/squads"
         contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
         innerClassName="max-w-none mx-0"
@@ -121,6 +124,7 @@ export default function SquadsPage() {
           </div>
         </div>
       </ResponsiveWrapper>
+    </AdminProtection>
     );
   }
 
@@ -130,20 +134,14 @@ export default function SquadsPage() {
       contentClassName="pl-0 sm:pl-0 md:pl-0 lg:pl-0" 
       innerClassName="max-w-none mx-0"
     >
-        {/* Header avec navigation */}
+        {/* Admin Navigation */}
+        <AdminNavigation />
+        
+        {/* Action Header */}
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => window.location.href = '/cockpit/admin'}
-              className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
-            >
-              ← Dashboard
-            </button>
-            <div className="w-px h-6 bg-gray-600"></div>
-            <div>
-              <h1 className="text-3xl font-bold mb-2">🛡️ Gestion des Squads</h1>
-              <p className="text-gray-400">Orchestrez vos équipes d&apos;agents IA spécialisés</p>
-            </div>
+          <div>
+            <h1 className="text-3xl font-bold mb-2">🛡️ Gestion des Squads</h1>
+            <p className="text-gray-400">Orchestrez vos équipes d&apos;agents IA spécialisés</p>
           </div>
           <button
             onClick={() => window.location.href = '/cockpit/admin/squads/new'}
