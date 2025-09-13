@@ -15,9 +15,9 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
     console.log(`[API DEBUG] Fetching client with ID: ${clientId}`);
     console.log(`[API DEBUG] Client ID type: ${typeof clientId}, length: ${clientId.length}`);
     
-    // First, check if client exists at all (try with explicit UUID cast)
+    // First, check if client exists at all
     const existsCheck = await sql`
-      SELECT id, nom, deleted_at FROM clients WHERE id = ${clientId}::uuid
+      SELECT id, nom, deleted_at FROM clients WHERE id = ${clientId}
     `;
     console.log(`[API DEBUG] Existence check result:`, existsCheck);
     
@@ -38,7 +38,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
         COUNT(DISTINCT p.id) FILTER (WHERE p.status = 'active') as projets_actifs
       FROM clients c
       LEFT JOIN projects p ON p.client_id = c.id
-      WHERE c.deleted_at IS NULL AND c.id = ${clientId}::uuid
+      WHERE c.deleted_at IS NULL AND c.id = ${clientId}
       GROUP BY c.id
       ORDER BY c.nom ASC 
       LIMIT 1
