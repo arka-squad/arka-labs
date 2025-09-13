@@ -28,7 +28,9 @@
       "Bash(fi)",
       "Bash(while IFS= read -r dir)",
       "Bash(npm run type-check:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm run:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

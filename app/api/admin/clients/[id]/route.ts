@@ -5,6 +5,9 @@ import { sql } from '../../../../../lib/db';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+// Vercel deployment debug - forced rebuild
+export const revalidate = 0;
+
 // GET /api/admin/clients/[id] - Get client details
 export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(async (req, user, { params }) => {
 
