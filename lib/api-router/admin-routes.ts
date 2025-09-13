@@ -248,49 +248,6 @@ export const adminClientsPOST = createRoute({
   }
 });
 
-// =====================
-// AGENTS ROUTES
-// =====================
-
-export const adminAgentsGET = createRoute({
-  path: '/api/admin/agents',
-  method: 'GET',
-  strategies: {
-    query: adminAgentsQueryGET,
-    dynamic: adminAgentsDynamicGET,
-    hybrid: adminAgentsHybridGET
-  }
-});
-
-export const adminAgentsPOST = createRoute({
-  path: '/api/admin/agents',
-  method: 'POST',
-  strategies: {
-    query: adminAgentsQueryPOST,
-    dynamic: adminAgentsQueryPOST,
-    hybrid: adminAgentsQueryPOST
-  }
-});
-
-export const adminAgentsPUT = createRoute({
-  path: '/api/admin/agents',
-  method: 'PUT',
-  strategies: {
-    query: adminAgentsQueryPUT,
-    dynamic: adminAgentsDynamicPUT,
-    hybrid: adminAgentsHybridPUT
-  }
-});
-
-export const adminAgentsDELETE = createRoute({
-  path: '/api/admin/agents',
-  method: 'DELETE',
-  strategies: {
-    query: adminAgentsQueryDELETE,
-    dynamic: adminAgentsDynamicDELETE,
-    hybrid: adminAgentsHybridDELETE
-  }
-});
 
 // =====================
 // PROJECTS ROUTES

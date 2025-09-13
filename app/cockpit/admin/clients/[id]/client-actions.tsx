@@ -202,7 +202,7 @@ export function ClientActions({ client, onClientUpdated }: ClientActionsProps) {
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-bold text-white mb-4">Confirmer la suppression</h3>
             <p className="text-gray-300 mb-6">
-              Êtes-vous sûr de vouloir supprimer le client <strong>"{client.nom}"</strong> ?
+              Êtes-vous sûr de vouloir supprimer le client <strong>&quot;{client.nom}&quot;</strong> ?
               <br />
               <span className="text-sm text-yellow-400 mt-2 block">
                 Cette action ne peut pas être annulée.
@@ -271,7 +271,7 @@ function EditForm({ editData, setEditData }: EditFormProps) {
           {/* Secteur */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
-              Secteur d'activité *
+              Secteur d&apos;activité *
             </label>
             <input
               type="text"
@@ -285,7 +285,7 @@ function EditForm({ editData, setEditData }: EditFormProps) {
           {/* Taille */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
-              Taille de l'entreprise
+              Taille de l&apos;entreprise
             </label>
             <select
               value={editData.taille}
