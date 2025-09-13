@@ -3,7 +3,7 @@
 **Date :** 14 septembre 2025
 **Session :** B28 Post-Migration UUID
 **Problème initial :** Pages projet affichent erreur 500 intermittente
-**Status :** ✅ RÉSOLU
+**Status :** ⚠️ PARTIELLEMENT RÉSOLU - ERREURS PERSISTANTES
 
 ---
 
@@ -101,10 +101,11 @@ curl http://localhost:3006/api/admin/projects ✅ Retourne 401 (auth requise - n
 ```
 
 ### Résultat
-- ✅ **Erreur 500 éliminée** : Plus de crash sur `undefined.length`
-- ✅ **Interface robuste** : Gestion gracieuse des données manquantes
+- ⚠️ **Erreur 500 partiellement corrigée** : Crash `undefined.length` éliminé MAIS erreurs 500 persistantes
+- ✅ **Interface robuste** : Gestion gracieuse des données manquantes améliorée
 - ✅ **TypeScript propre** : Compilation sans erreurs
 - ✅ **Backward compatible** : Aucune régression fonctionnelle
+- ❌ **Problème sous-jacent** : Erreurs 500 intermittentes non résolues (autres causes)
 
 ---
 
@@ -142,9 +143,9 @@ Profité de la session pour corriger erreurs build Vercel :
 ## 🏆 RÉSULTAT FINAL
 
 ### Impact Business
-- ✅ **Pages projets stables** : Plus d'erreur 500 intermittente
-- ✅ **Expérience utilisateur** : Interface robuste et prévisible
-- ✅ **Déploiement bloqué** : Build Vercel maintenant réussi
+- ⚠️ **Pages projets partiellement stables** : Erreur 500 `undefined.length` corrigée mais autres erreurs 500 persistent
+- ⚠️ **Expérience utilisateur** : Interface plus robuste mais problème sous-jacent non résolu
+- ✅ **Déploiement débloqué** : Build Vercel maintenant réussi
 
 ### Impact Technique
 - ✅ **Code défensif** : Patterns robustes pour accès propriétés
@@ -175,4 +176,30 @@ Profité de la session pour corriger erreurs build Vercel :
 
 **Résolution complète en 2h30 incluant audit architecture B28 et corrections ESLint connexes.**
 
-**Status final : ✅ PRODUCTION READY**
+---
+
+## ⚠️ ERREURS PERSISTANTES
+
+### Observations Post-Correction
+D'après les logs DevTools fournis, **les erreurs 500 persistent encore** malgré les corrections appliquées :
+- Screenshot montre erreurs **be14558b-8dcc-4fce-a398-73cf2d204c5** (500)
+- Pattern intermittent toujours présent
+- **Root cause réelle non identifiée**
+
+### Hypothèses Causes Restantes
+1. **Backend API** : Erreurs dans l'endpoint `/api/admin/projects/[id]`
+2. **Base de données** : Contraintes corrompues (cf. audit B28)
+3. **Race conditions** : Problèmes concurrence/timing
+4. **Data integrity** : Données corrompues post-migration UUID
+
+### Actions Requises
+- ❌ **Investigation backend** : Analyser logs serveur API
+- ❌ **Fix DB schema** : Corriger contraintes dupliquées identifiées
+- ❌ **Tests endpoint** : Validation complète API projets
+- ❌ **Data audit** : Vérifier intégrité données post-migration
+
+---
+
+**Status final : ⚠️ INVESTIGATION BACKEND REQUISE**
+
+*Correction frontend appliquée mais problème sous-jacent backend/DB non résolu.*
