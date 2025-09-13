@@ -52,36 +52,34 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
         c.contact_principal as client_contact,
         COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') as agents_assigned,
         COUNT(DISTINCT ps.squad_id) FILTER (WHERE ps.status = 'active') as squads_assigned,
-        -- Budget analysis
-        CASE 
+        -- Budget analysis (simplified - no complex date calculations)
+        CASE
           WHEN p.deadline IS NOT NULL AND p.created_at IS NOT NULL THEN
-            COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') * 400 * 
-            GREATEST(1, EXTRACT(DAYS FROM (p.deadline - p.created_at)))
+            COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') * 400 *
+            GREATEST(1, (DATE(p.deadline) - DATE(p.created_at)))
           ELSE 0
         END as estimated_cost,
-        CASE 
+        CASE
           WHEN p.budget IS NOT NULL AND p.budget > 0 THEN
-            ((COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') * 400 * 
-              GREATEST(1, EXTRACT(DAYS FROM (COALESCE(p.deadline, p.created_at + INTERVAL '30 days') - p.created_at)))) 
-              / p.budget) * 100
+            ((COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') * 400 * 30) / p.budget) * 100
           ELSE 0
         END as budget_utilization_percent,
-        -- Timeline analysis
-        CASE 
+        -- Timeline analysis (simplified)
+        CASE
           WHEN p.deadline IS NULL THEN 'no_deadline'
           WHEN p.deadline < CURRENT_DATE THEN 'overdue'
           WHEN p.deadline <= CURRENT_DATE + INTERVAL '3 days' THEN 'critical'
           WHEN p.deadline <= CURRENT_DATE + INTERVAL '7 days' THEN 'warning'
           ELSE 'ok'
         END as deadline_status,
-        CASE 
+        CASE
           WHEN p.created_at IS NOT NULL AND p.deadline IS NOT NULL THEN
-            EXTRACT(DAYS FROM (p.deadline - p.created_at))
+            (DATE(p.deadline) - DATE(p.created_at))
           ELSE NULL
         END as total_duration_days,
-        CASE 
+        CASE
           WHEN p.deadline IS NOT NULL THEN
-            EXTRACT(DAYS FROM (p.deadline - CURRENT_DATE))
+            (DATE(p.deadline) - CURRENT_DATE)
           ELSE NULL
         END as days_remaining
       FROM projects p
