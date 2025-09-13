@@ -55,7 +55,7 @@ export default function AdminClientDetailPage() {
   useEffect(() => {
     const fetchClient = async () => {
       try {
-        const response = await fetch(`/api/admin/clients/${clientId}`);
+        const response = await fetch(`/api/admin/clients?id=${clientId}`);
         if (!response.ok) {
           if (response.status === 404) {
             setError('Client introuvable');
