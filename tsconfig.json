@@ -73,6 +73,7 @@
     "apps/**/stories",
     "apps/**/stories/**",
     "**/*.stories.*",
-    "tests"
+    "tests",
+    "local/grim/specs/**"
   ]
 }
