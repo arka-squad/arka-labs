@@ -48,7 +48,10 @@ export async function handleSquadsGET(req: NextRequest) {
       `;
 
       console.log(`✅ Direct Squads GET - ${squads.length} squads`);
-      return NextResponse.json(squads);
+      return NextResponse.json({
+        items: squads,
+        total: squads.length
+      });
     }
 
   } catch (error) {

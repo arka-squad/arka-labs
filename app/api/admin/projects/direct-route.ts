@@ -46,7 +46,10 @@ export async function handleProjectsGET(req: NextRequest) {
       `;
 
       console.log(`✅ Direct Projects GET - ${projects.length} projets`);
-      return NextResponse.json(projects);
+      return NextResponse.json({
+        items: projects,
+        total: projects.length
+      });
     }
 
   } catch (error) {
