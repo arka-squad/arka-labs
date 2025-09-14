@@ -3,7 +3,7 @@
 
 interface ClientData {
   id: number | string;
-  nom: string;
+  name: string;
   email: string;
   metadata: any;
   created_at: string;
@@ -19,14 +19,14 @@ const clientsStore = new Map<string, ClientData>();
 const demoClients: ClientData[] = [
   {
     id: 'demo-1',
-    nom: 'Arka Labs Demo',
+    name: 'Arka Labs Demo',
     email: 'demo@arka-labs.com',
     metadata: {
       secteur: 'Technologie',
       taille: 'Startup',
       statut: 'actif',
       contact_principal: {
-        nom: 'John Doe',
+        name: 'John Doe',
         email: 'demo@arka-labs.com',
         telephone: '+33 1 23 45 67 89',
         poste: 'CEO'
@@ -40,14 +40,14 @@ const demoClients: ClientData[] = [
   },
   {
     id: 'demo-2',
-    nom: 'Enterprise Corp',
+    name: 'Enterprise Corp',
     email: 'contact@enterprise.com',
     metadata: {
       secteur: 'Finance',
       taille: 'Grande entreprise',
       statut: 'actif',
       contact_principal: {
-        nom: 'Jane Smith',
+        name: 'Jane Smith',
         email: 'contact@enterprise.com',
         telephone: '+33 1 98 76 54 32',
         poste: 'CTO'
@@ -79,7 +79,7 @@ export const clientsFallbackStore = {
     if (filters?.search) {
       const searchLower = filters.search.toLowerCase();
       clients = clients.filter(c => 
-        c.nom.toLowerCase().includes(searchLower) ||
+        c.name.toLowerCase().includes(searchLower) ||
         c.email.toLowerCase().includes(searchLower)
       );
     }
@@ -99,7 +99,7 @@ export const clientsFallbackStore = {
       );
     }
     
-    return clients.sort((a, b) => a.nom.localeCompare(b.nom));
+    return clients.sort((a, b) => a.name.localeCompare(b.name));
   },
 
   // Get client by ID
@@ -113,7 +113,7 @@ export const clientsFallbackStore = {
 
   // Create new client
   async create(data: {
-    nom: string;
+    name: string;
     email: string;
     metadata: any;
     created_by?: string;
@@ -121,7 +121,7 @@ export const clientsFallbackStore = {
     const id = String(Date.now());
     const client: ClientData = {
       id,
-      nom: data.nom,
+      name: data.name,
       email: data.email,
       metadata: data.metadata,
       created_at: new Date().toISOString(),
@@ -136,7 +136,7 @@ export const clientsFallbackStore = {
 
   // Update client
   async update(id: string, data: {
-    nom?: string;
+    name?: string;
     email?: string;
     metadata?: any;
   }): Promise<ClientData | null> {
@@ -144,8 +144,8 @@ export const clientsFallbackStore = {
     if (!client || client.deleted_at) {
       return null;
     }
-    
-    if (data.nom !== undefined) client.nom = data.nom;
+
+    if (data.name !== undefined) client.name = data.name;
     if (data.email !== undefined) client.email = data.email;
     if (data.metadata !== undefined) client.metadata = data.metadata;
     client.updated_at = new Date().toISOString();

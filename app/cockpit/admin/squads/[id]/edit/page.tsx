@@ -339,7 +339,7 @@ export default function AdminSquadEditPage() {
               </div>
 
               <p className="text-gray-300 mb-6">
-                Êtes-vous sûr de vouloir supprimer la squad "{squadData?.name}" ?
+                Êtes-vous sûr de vouloir supprimer la squad &quot;{squadData?.name}&quot; ?
                 Tous les membres seront également dissociés.
               </p>
 

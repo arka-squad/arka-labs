@@ -12,19 +12,19 @@ export const runtime = 'nodejs';
 
 interface Client {
   id: string;
-  nom: string;
+  name: string;
   email: string;
-  secteur: string;
-  taille: 'TPE' | 'PME' | 'ETI' | 'GE';
+  sector: string;
+  size: 'TPE' | 'PME' | 'ETI' | 'GE';
   contact_principal: {
-    nom: string;
+    name: string;
     email: string;
-    fonction?: string;
-    telephone?: string;
+    role?: string;
+    phone?: string;
   } | string;
-  contact_nom: string;
-  contexte_specifique: string;
-  statut: 'actif' | 'inactif' | 'prospect' | 'archive';
+  contact_name: string;
+  specific_context: string;
+  status: 'active' | 'inactive' | 'prospect' | 'archived';
   projets_count: number;
   projets_actifs: number;
   created_at: string;
@@ -37,8 +37,8 @@ export default function AdminClientsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statutFilter, setStatutFilter] = useState('');
-  const [tailleFilter, setTailleFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [sizeFilter, setSizeFilter] = useState('');
 
   useEffect(() => {
     fetchClients();
@@ -50,7 +50,7 @@ export default function AdminClientsPage() {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, statutFilter, tailleFilter]);
+  }, [searchTerm, statusFilter, sizeFilter]);
 
   const fetchClients = async () => {
     try {
@@ -58,8 +58,8 @@ export default function AdminClientsPage() {
       
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
-      if (statutFilter) params.append('statut', statutFilter);
-      if (tailleFilter) params.append('taille', tailleFilter);
+      if (statusFilter) params.append('status', statusFilter);
+      if (sizeFilter) params.append('size', sizeFilter);
       
       const response = await fetch(`/api/admin/clients?${params.toString()}`);
       if (!response.ok) {
@@ -77,38 +77,38 @@ export default function AdminClientsPage() {
     }
   };
 
-  const getStatutColor = (statut: string) => {
-    switch (statut) {
-      case 'actif': return 'bg-green-500/20 text-green-400 border-green-500/50';
-      case 'inactif': return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-500/20 text-green-400 border-green-500/50';
+      case 'inactive': return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
       case 'prospect': return 'bg-blue-500/20 text-blue-400 border-blue-500/50';
-      case 'archive': return 'bg-red-500/20 text-red-400 border-red-500/50';
+      case 'archived': return 'bg-red-500/20 text-red-400 border-red-500/50';
       default: return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
     }
   };
 
-  const getTailleLabel = (taille: string) => {
+  const getSizeLabel = (size: string) => {
     const labels = {
       'TPE': 'TPE (1-10)',
-      'PME': 'PME (10-250)', 
+      'PME': 'PME (10-250)',
       'ETI': 'ETI (250-5K)',
       'GE': 'GE (5K+)'
     };
-    return labels[taille as keyof typeof labels] || taille;
+    return labels[size as keyof typeof labels] || size;
   };
 
   const getContactInfo = (client: Client) => {
     if (typeof client.contact_principal === 'object' && client.contact_principal) {
       return {
-        nom: client.contact_principal.nom,
+        name: client.contact_principal.name,
         email: client.contact_principal.email,
-        telephone: client.contact_principal.telephone
+        phone: client.contact_principal.phone
       };
     }
     return {
-      nom: client.contact_nom || 'N/A',
+      name: client.contact_name || 'N/A',
       email: client.email || 'N/A',
-      telephone: ''
+      phone: ''
     };
   };
 
@@ -162,19 +162,19 @@ export default function AdminClientsPage() {
               </div>
             </div>
             <select
-              value={statutFilter}
-              onChange={(e) => setStatutFilter(e.target.value)}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Tous les statuts</option>
-              <option value="actif">Actif</option>
+              <option value="active">Actif</option>
               <option value="prospect">Prospect</option>
-              <option value="inactif">Inactif</option>
-              <option value="archive">Archivé</option>
+              <option value="inactive">Inactif</option>
+              <option value="archived">Archivé</option>
             </select>
             <select
-              value={tailleFilter}
-              onChange={(e) => setTailleFilter(e.target.value)}
+              value={sizeFilter}
+              onChange={(e) => setSizeFilter(e.target.value)}
               className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Toutes les tailles</option>
@@ -200,12 +200,12 @@ export default function AdminClientsPage() {
             <Building className="w-16 h-16 text-gray-600 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-white mb-2">Aucun client trouvé</h3>
             <p className="text-gray-400 mb-6">
-              {searchTerm || statutFilter || tailleFilter 
-                ? 'Essayez de modifier vos filtres de recherche.' 
+              {searchTerm || statusFilter || sizeFilter
+                ? 'Essayez de modifier vos filtres de recherche.'
                 : 'Commencez par créer votre premier client.'
               }
             </p>
-            {!searchTerm && !statutFilter && !tailleFilter && (
+            {!searchTerm && !statusFilter && !sizeFilter && (
               <Link
                 href="/cockpit/admin/clients/new"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -226,13 +226,13 @@ export default function AdminClientsPage() {
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors truncate">
-                          {client.nom}
+                          {client.name}
                         </h3>
-                        <p className="text-sm text-gray-400 truncate">{client.secteur}</p>
+                        <p className="text-sm text-gray-400 truncate">{client.sector}</p>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatutColor(client.statut)}`}>
-                          {client.statut}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(client.status)}`}>
+                          {client.status}
                         </span>
                         <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-blue-400 transition-colors" />
                       </div>
@@ -242,16 +242,16 @@ export default function AdminClientsPage() {
                     <div className="space-y-3 mb-4">
                       <div className="flex items-center gap-2 text-sm text-gray-300">
                         <User className="w-4 h-4 text-gray-500" />
-                        <span className="truncate">{contact.nom}</span>
+                        <span className="truncate">{contact.name}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-300">
                         <Mail className="w-4 h-4 text-gray-500" />
                         <span className="truncate">{contact.email}</span>
                       </div>
-                      {contact.telephone && (
+                      {contact.phone && (
                         <div className="flex items-center gap-2 text-sm text-gray-300">
                           <Phone className="w-4 h-4 text-gray-500" />
-                          <span>{contact.telephone}</span>
+                          <span>{contact.phone}</span>
                         </div>
                       )}
                     </div>
@@ -260,7 +260,7 @@ export default function AdminClientsPage() {
                     <div className="flex items-center justify-between pt-4 border-t border-gray-700">
                       <div className="flex items-center gap-2 text-sm text-gray-400">
                         <Building className="w-4 h-4" />
-                        <span>{getTailleLabel(client.taille)}</span>
+                        <span>{getSizeLabel(client.size)}</span>
                       </div>
                       <div className="flex items-center gap-4 text-sm text-gray-400">
                         <div className="flex items-center gap-1">

@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-09-14T06:59:10.633Z",
+  "originalLocation": "C:\\Users\\grimo\\Documents\\Projets\\arka-labs",
+  "totalFiles": 79,
+  "archived": 53,
+  "deleted": 10,
+  "errors": [],
+  "structure": {
+    "scripts": 33,
+    "legacy": 1,
+    "temp": 8,
+    "docs": 11
+  }
+}

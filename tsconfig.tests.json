@@ -1,27 +1,25 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
-    "outDir": "dist-tests",
-
-    "rootDir": ".",
+    "module": "commonjs",
+    "target": "es2020",
+    "outDir": "./dist-tests",
+    "rootDir": "./",
     "esModuleInterop": true,
-    "moduleResolution": "Node",
-    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "jsx": "react-jsx"
+    "types": ["jest", "node"]
   },
-
-
   "include": [
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "app/api/metrics/**/*.ts",
-    "app/api/documents/**/*.ts",
-    "app/api/gates/**/*.ts",
-    "services/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
-
-
-  "exclude": ["lib/storage.ts"]
+  "exclude": [
+    "node_modules",
+    ".next",
+    "dist",
+    "coverage"
+  ]
 }

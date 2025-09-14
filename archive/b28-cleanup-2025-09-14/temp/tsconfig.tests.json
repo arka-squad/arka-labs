@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "outDir": "dist-tests",
+
+    "rootDir": ".",
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx"
+  },
+
+
+  "include": [
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "app/api/metrics/**/*.ts",
+    "app/api/documents/**/*.ts",
+    "app/api/gates/**/*.ts",
+    "services/**/*.ts"
+  ],
+
+
+  "exclude": ["lib/storage.ts"]
+}

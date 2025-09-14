@@ -424,7 +424,7 @@ export default function AdminClientDetailPage() {
             </div>
             
             <p className="text-gray-300 mb-6">
-              Êtes-vous sûr de vouloir supprimer le client "{client?.nom}" ? Tous les projets associés seront également affectés.
+              Êtes-vous sûr de vouloir supprimer le client &quot;{client?.nom}&quot; ? Tous les projets associés seront également affectés.
             </p>
             
             <div className="flex justify-end gap-3">

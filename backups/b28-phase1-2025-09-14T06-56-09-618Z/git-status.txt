@@ -1,0 +1,11 @@
+ M .claude/settings.local.json
+ M app/api/admin/projects/[id]/route.ts
+ D arka-meta/reports/audit/B28/ARCHITECTURE-ARKA-LABS.md
+ D arka-meta/reports/audit/B28/B28-AUDIT-TECHNIQUE-COMPLET.md
+ D arka-meta/reports/audit/B28/B28-CR-BUG-PROJETS-RESOLUTION.md
+ D arka-meta/reports/audit/B28/B28-HANDOVER-ARCHITECTE.md
+ D arka-meta/reports/audit/B28/B28-PLAN-ACTION-ULTRA-PRECIS.md
+?? .claude/agents/
+?? PHASE1-LOG.md
+?? backups/
+?? scripts/b28/
