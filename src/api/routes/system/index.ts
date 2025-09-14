@@ -55,7 +55,7 @@ export function registerSystemRoutes(router: Router) {
       const env = process.env.VERCEL_ENV || process.env.NODE_ENV || '';
       let version = '';
       try {
-        const pkg = require('../../../package.json');
+        const pkg = require('../../../../package.json');
         version = pkg.version || '';
       } catch {}
 

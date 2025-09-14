@@ -177,7 +177,7 @@ export function withAdminAuth(
   resourceType?: 'squad' | 'project' | 'instruction'
 ) {
   return function(handler: (req: AuthenticatedRequest, user: User, context: { params: Record<string, string> }) => Promise<NextResponse> | NextResponse) {
-    return async (req: NextRequest, context: { params: Record<string, string> } = {}): Promise<NextResponse> => {
+    return async (req: NextRequest, context: { params: Record<string, string> } = { params: {} }): Promise<NextResponse> => {
       const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
       const start = Date.now();
 

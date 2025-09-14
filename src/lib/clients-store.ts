@@ -85,17 +85,17 @@ export const clientsFallbackStore = {
     }
     
     if (filters?.statut) {
-      clients = clients.filter(c => c.metadata?.statut === filters.statut);
+      clients = clients.filter(c => (c.metadata as any)?.statut === filters.statut);
     }
     
     if (filters?.taille) {
-      clients = clients.filter(c => c.metadata?.taille === filters.taille);
+      clients = clients.filter(c => (c.metadata as any)?.taille === filters.taille);
     }
     
     if (filters?.secteur) {
       const secteurLower = filters.secteur.toLowerCase();
-      clients = clients.filter(c => 
-        c.metadata?.secteur?.toLowerCase().includes(secteurLower)
+      clients = clients.filter(c =>
+        (c.metadata as any)?.secteur?.toLowerCase().includes(secteurLower)
       );
     }
     

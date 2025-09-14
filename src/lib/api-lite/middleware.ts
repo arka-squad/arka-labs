@@ -409,7 +409,7 @@ function maskSensitiveData(data: unknown): any {
 
   for (const field of sensitiveFields) {
     if (field in masked) {
-      masked[field] = '***MASKED***';
+      (masked as any)[field] = '***MASKED***';
     }
   }
 

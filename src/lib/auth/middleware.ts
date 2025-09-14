@@ -73,7 +73,7 @@ export function withAuth(options: AuthOptions = {}) {
         payload = jwtManager.verifyToken(token);
       } catch (error: Error | unknown) {
         if (!options.skipAudit) {
-          await logAuditEvent(req, 401, 'invalid_token', error.message);
+          await logAuditEvent(req, 401, 'invalid_token', (error as Error).message);
         }
         
         return NextResponse.json(

@@ -39,7 +39,7 @@ class CacheManager {
         console.log('🔄 Redis not available, using local cache');
       }
     } catch (error) {
-      console.log('⚠️ Redis initialization failed, using local cache:', error.message);
+      console.log('⚠️ Redis initialization failed, using local cache:', (error as Error).message);
       this.isRedisAvailable = false;
     }
   }
@@ -57,7 +57,7 @@ class CacheManager {
             return JSON.parse(value);
           }
         } catch (error) {
-          console.log('⚠️ Redis get error:', error.message);
+          console.log('⚠️ Redis get error:', (error as Error).message);
           this.isRedisAvailable = false;
         }
       }
@@ -90,7 +90,7 @@ class CacheManager {
           await this.redis.setex(key, ttl, serialized);
           console.log(`📊 Cache SET (Redis): ${key} - ${Date.now() - startTime}ms`);
         } catch (error) {
-          console.log('⚠️ Redis set error:', error.message);
+          console.log('⚠️ Redis set error:', (error as Error).message);
           this.isRedisAvailable = false;
         }
       }
@@ -123,7 +123,7 @@ class CacheManager {
             console.log(`📊 Cache INVALIDATE (Redis): ${keys.length} keys - ${Date.now() - startTime}ms`);
           }
         } catch (error) {
-          console.log('⚠️ Redis invalidate error:', error.message);
+          console.log('⚠️ Redis invalidate error:', (error as Error).message);
           this.isRedisAvailable = false;
         }
       }

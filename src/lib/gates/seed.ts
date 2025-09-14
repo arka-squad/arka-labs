@@ -16,7 +16,7 @@ export const GATES_SEED = [
     scope: 'safe',
     est_duration_ms: 15000,
     tags: ['perf', 'lighthouse'],
-    module: () => import('../../gates/catalog/perf.lighthouse.basic.mjs')
+    module: () => import('../../../gates/catalog/perf.lighthouse.basic.mjs')
   },
   {
     id: 'perf.api.ttft_p95',
@@ -29,7 +29,7 @@ export const GATES_SEED = [
     scope: 'safe',
     est_duration_ms: 5000,
     tags: ['perf', 'api'],
-    module: () => import('../../gates/catalog/perf.api.ttft_p95.mjs')
+    module: () => import('../../../gates/catalog/perf.api.ttft_p95.mjs')
   },
   {
     id: 'contracts.schema.documents',
@@ -42,7 +42,7 @@ export const GATES_SEED = [
     scope: 'safe',
     est_duration_ms: 10000,
     tags: ['contracts'],
-    module: () => import('../../gates/catalog/contracts.schema.documents.mjs')
+    module: () => import('../../../gates/catalog/contracts.schema.documents.mjs')
   },
   {
     id: 'security.webhook.hmac',
@@ -55,7 +55,7 @@ export const GATES_SEED = [
     scope: 'owner-only',
     est_duration_ms: 3000,
     tags: ['security'],
-    module: () => import('../../gates/catalog/security.webhook.hmac.mjs')
+    module: () => import('../../../gates/catalog/security.webhook.hmac.mjs')
   },
   {
     id: 'ops.kpis.kpi_snapshot',
@@ -72,7 +72,7 @@ export const GATES_SEED = [
     scope: 'safe',
     est_duration_ms: 2000,
     tags: ['kpis'],
-    module: () => import('../../gates/catalog/ops.kpis.kpi_snapshot.mjs')
+    module: () => import('../../../gates/catalog/ops.kpis.kpi_snapshot.mjs')
   }
 ];
 

@@ -65,7 +65,7 @@ export function withAuth(
   handler: (req: NextRequest, user: User | null, context: { params: Record<string, string> }) => Promise<NextResponse> | NextResponse,
   opts: { scope?: 'safe' | 'owner-only' } = {}
 ) {
-  return async (req: NextRequest, context: { params: Record<string, string> } = {}): Promise<NextResponse> => {
+  return async (req: NextRequest, context: { params: Record<string, string> } = { params: {} }): Promise<NextResponse> => {
     const traceId = req.headers.get(TRACE_HEADER) || generateTraceId();
     const start = Date.now();
     let res: NextResponse;
