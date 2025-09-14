@@ -399,7 +399,7 @@ export const loggingMiddleware = (options: {
 };
 
 // Mask sensitive data in logs
-function maskSensitiveData(data: any): any {
+function maskSensitiveData(data: unknown): any {
   if (typeof data !== 'object' || data === null) {
     return data;
   }

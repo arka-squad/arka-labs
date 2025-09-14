@@ -26,7 +26,7 @@ export function createAPI() {
   return router;
 }
 
-export async function apiHandler(req: NextRequest, context: any) {
+export async function apiHandler(req: NextRequest, context: { params: Record<string, string> }) {
   const api = createAPI();
   return api.handle(req, context);
 }

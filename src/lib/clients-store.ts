@@ -5,7 +5,7 @@ interface ClientData {
   id: number | string;
   nom: string;
   email: string;
-  metadata: any;
+  metadata: unknown;
   created_at: string;
   updated_at: string;
   created_by: string;
@@ -115,7 +115,7 @@ export const clientsFallbackStore = {
   async create(data: {
     nom: string;
     email: string;
-    metadata: any;
+    metadata: unknown;
     created_by?: string;
   }): Promise<ClientData> {
     const id = String(Date.now());

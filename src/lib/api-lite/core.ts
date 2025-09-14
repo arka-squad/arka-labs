@@ -133,7 +133,7 @@ class SimpleMatcher {
 // ============================================
 
 interface CacheEntry {
-  data: any;
+  data: unknown;
   expiry: number;
 }
 
@@ -158,7 +158,7 @@ class MemoryCache {
     return entry.data;
   }
 
-  set(key: string, data: any, ttlSeconds: number): void {
+  set(key: string, data: unknown, ttlSeconds: number): void {
     const expiry = Date.now() + (ttlSeconds * 1000);
     this.cache.set(key, { data, expiry });
   }

@@ -51,7 +51,7 @@ export function withAdminAuth(
         let payload;
         try {
           payload = jwtManager.verifyToken(token);
-        } catch (error: any) {
+        } catch (error: Error | unknown) {
           await logAuditEvent(req, 401, 'invalid_token', error.message);
           
           return NextResponse.json(

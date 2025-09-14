@@ -1,8 +1,8 @@
 // Router Core - B28 Phase 2
 import { NextRequest, NextResponse } from 'next/server';
 
-type RouteHandler = (req: NextRequest, context: any) => Promise<NextResponse>;
-type Middleware = (req: NextRequest, context: any) => Promise<NextResponse | void>;
+type RouteHandler = (req: NextRequest, context: { params: Record<string, string> }) => Promise<NextResponse>;
+type Middleware = (req: NextRequest, context: { params: Record<string, string> }) => Promise<NextResponse | void>;
 
 export interface Route {
   method: string;
@@ -39,7 +39,7 @@ export class Router {
     return this;
   }
 
-  async handle(req: NextRequest, context: any): Promise<NextResponse> {
+  async handle(req: NextRequest, context: { params: Record<string, string> }): Promise<NextResponse> {
     const { method } = req;
     const pathname = new URL(req.url).pathname.replace('/api', '');
 

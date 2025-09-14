@@ -2464,7 +2464,7 @@ export function setupAPIRoutes(): APILite {
 
       try {
         let whereConditions = ['d.deleted_at IS NULL'];
-        let params: any[] = [];
+        let params: Record<string, string>[] = [];
 
         if (project_id) {
           whereConditions.push(`d.project_id = $${params.length + 1}`);
@@ -3859,7 +3859,7 @@ export function setupAPIRoutes(): APILite {
       const { type, format = 'json', date_from, date_to } = context.query;
 
       try {
-        let data: any = {};
+        let data: unknown = {};
         const dateFilter = date_from && date_to ? 
           sql`AND created_at BETWEEN ${date_from} AND ${date_to}` : sql``;
 

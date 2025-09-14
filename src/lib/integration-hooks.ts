@@ -123,7 +123,7 @@ async function captureMembershipChange(squadId: string, agentId: string): Promis
   });
 }
 
-async function callB22MemoryAPI(endpoint: string, data: any): Promise<void> {
+async function callB22MemoryAPI(endpoint: string, data: unknown): Promise<void> {
   const baseUrl = process.env.B22_MEMORY_BASE_URL;
   if (!baseUrl) {
     throw new Error('B22_MEMORY_BASE_URL not configured');
