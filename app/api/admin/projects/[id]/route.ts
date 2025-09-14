@@ -42,25 +42,175 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
   }
   
   try {
-    // ULTRA BASIC test - no database query
-    const testResponse = {
-      id: projectId,
-      nom: "Test Project",
-      status: "active",
-      description: "Description de test",
-      tags: [], // Propriété manquante qui causait l'erreur frontend
-      requirements: [],
-      budget: null,
-      deadline: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      client_name: "Client Test",
-      assigned_agents: [],
-      assigned_squads: [],
-      recent_activity: []
+    // VRAIE REQUÊTE avec corrections UUID + colonnes
+    const [projectDetails] = await sql`
+      SELECT
+        p.*,
+        c.nom as client_name,
+        c.secteur as client_secteur,
+        c.taille as client_taille,
+        c.contact_principal as client_contact,
+        COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') as agents_assigned,
+        COUNT(DISTINCT ps.squad_id) FILTER (WHERE ps.status = 'active') as squads_assigned,
+        -- Timeline analysis
+        CASE
+          WHEN p.deadline IS NULL THEN 'no_deadline'
+          WHEN p.deadline < CURRENT_DATE THEN 'overdue'
+          WHEN p.deadline <= CURRENT_DATE + INTERVAL '3 days' THEN 'critical'
+          WHEN p.deadline <= CURRENT_DATE + INTERVAL '7 days' THEN 'warning'
+          ELSE 'ok'
+        END as deadline_status,
+        CASE
+          WHEN p.created_at IS NOT NULL AND p.deadline IS NOT NULL THEN
+            (DATE(p.deadline) - DATE(p.created_at))
+          ELSE NULL
+        END as total_duration_days,
+        CASE
+          WHEN p.deadline IS NOT NULL THEN
+            (DATE(p.deadline) - CURRENT_DATE)
+          ELSE NULL
+        END as days_remaining
+      FROM projects p
+      JOIN clients c ON p.client_id = c.id
+      LEFT JOIN project_assignments pa ON p.id = pa.project_id
+      LEFT JOIN project_squads ps ON p.id = ps.project_id
+      WHERE p.id = ${projectId}::uuid AND p.deleted_at IS NULL
+      GROUP BY p.id, c.nom, c.secteur, c.taille, c.contact_principal
+    `;
+
+    if (!projectDetails) {
+      return NextResponse.json(
+        {
+          error: 'Projet introuvable',
+          code: 'PROJECT_NOT_FOUND',
+          trace_id: traceId
+        },
+        { status: 404 }
+      );
+    }
+
+    // Get assigned agents (avec colonnes corrigées)
+    const assignedAgents = await sql`
+      SELECT
+        a.id,
+        a.name,
+        a.role,
+        a.domaine,
+        a.version,
+        a.status as agent_status,
+        pa.status as assignment_status,
+        pa.assigned_at,
+        COUNT(DISTINCT other_pa.project_id) as total_projects,
+        50 as performance_score
+      FROM project_assignments pa
+      JOIN agents a ON pa.agent_id = a.id
+      LEFT JOIN project_assignments other_pa ON a.id = other_pa.agent_id AND other_pa.status = 'active'
+      WHERE pa.project_id = ${projectId}::uuid
+      AND pa.status = 'active'
+      AND a.deleted_at IS NULL
+      GROUP BY a.id, pa.status, pa.assigned_at
+      ORDER BY pa.assigned_at ASC
+    `;
+
+    // Get assigned squads (avec colonnes corrigées)
+    const assignedSquads = await sql`
+      SELECT
+        s.id,
+        s.name,
+        s.slug,
+        s.mission,
+        s.domain,
+        s.status as squad_status,
+        ps.status as assignment_status,
+        ps.attached_at as assigned_at,
+        COUNT(DISTINCT sm.agent_id) FILTER (WHERE sm.status = 'active') as members_count,
+        COUNT(DISTINCT si.id) FILTER (WHERE si.created_at >= CURRENT_DATE - INTERVAL '7 days') as recent_instructions
+      FROM project_squads ps
+      JOIN squads s ON ps.squad_id = s.id
+      LEFT JOIN squad_members sm ON s.id = sm.squad_id
+      LEFT JOIN squad_instructions si ON s.id = si.squad_id
+      WHERE ps.project_id = ${projectId}::uuid
+      AND ps.status = 'active'
+      AND s.deleted_at IS NULL
+      GROUP BY s.id, ps.status, ps.attached_at
+      ORDER BY ps.attached_at ASC
+    `;
+
+    // Get project activity (avec colonnes corrigées)
+    const projectActivity = await sql`
+      SELECT
+        'assignment_added' as activity_type,
+        CONCAT('Agent: ', a.name) as activity_subject,
+        pa.assigned_at as activity_date,
+        pa.assigned_by as activity_user
+      FROM project_assignments pa
+      JOIN agents a ON pa.agent_id = a.id
+      WHERE pa.project_id = ${projectId}::uuid
+
+      UNION ALL
+
+      SELECT
+        'squad_assigned' as activity_type,
+        CONCAT('Squad: ', s.name) as activity_subject,
+        ps.attached_at as activity_date,
+        ps.attached_by as activity_user
+      FROM project_squads ps
+      JOIN squads s ON ps.squad_id = s.id
+      WHERE ps.project_id = ${projectId}::uuid
+
+      UNION ALL
+
+      SELECT
+        'instruction_sent' as activity_type,
+        LEFT(si.content, 100) as activity_subject,
+        si.created_at as activity_date,
+        si.created_by as activity_user
+      FROM squad_instructions si
+      JOIN project_squads ps ON si.squad_id = ps.squad_id
+      WHERE ps.project_id = ${projectId}::uuid
+      AND si.created_at >= CURRENT_DATE - INTERVAL '30 days'
+
+      ORDER BY activity_date DESC
+      LIMIT 20
+    `;
+
+    const formattedProject = {
+      ...projectDetails,
+      nom: projectDetails.name, // Map database 'name' to frontend 'nom'
+      tags: JSON.parse(projectDetails.tags || '[]'),
+      requirements: JSON.parse(projectDetails.requirements || '[]'),
+      agents_assigned: parseInt(projectDetails.agents_assigned),
+      squads_assigned: parseInt(projectDetails.squads_assigned),
+      total_duration_days: projectDetails.total_duration_days ? parseInt(projectDetails.total_duration_days) : null,
+      days_remaining: projectDetails.days_remaining ? parseInt(projectDetails.days_remaining) : null,
+      assigned_agents: assignedAgents.map(agent => ({
+        ...agent,
+        total_projects: parseInt(agent.total_projects),
+        performance_score: parseInt(agent.performance_score)
+      })),
+      assigned_squads: assignedSquads.map(squad => ({
+        ...squad,
+        members_count: parseInt(squad.members_count),
+        recent_instructions: parseInt(squad.recent_instructions)
+      })),
+      recent_activity: projectActivity
     };
 
-    return NextResponse.json(testResponse);
+    const response = NextResponse.json(formattedProject);
+
+    log('info', 'project_detail_success', {
+      route: '/api/admin/projects/[id]',
+      method: 'GET',
+      status: response.status,
+      duration_ms: Date.now() - start,
+      trace_id: traceId,
+      user_id: user.id,
+      project_id: projectId,
+      agents_count: formattedProject.agents_assigned,
+      squads_count: formattedProject.squads_assigned
+    });
+
+    return response;
 
   } catch (error) {
     log('error', 'project_detail_error', {

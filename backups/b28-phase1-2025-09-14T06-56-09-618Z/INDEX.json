@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-09-14T06-56-09-618Z",
+  "backupDir": "backups\\b28-phase1-2025-09-14T06-56-09-618Z",
+  "purpose": "B28 Phase 1 - Pre-stabilisation backup",
+  "contents": {
+    "schema": true,
+    "migrations": true,
+    "git": true,
+    "configs": [
+      "package.json",
+      "tsconfig.json",
+      "next.config.js",
+      "tailwind.config.js"
+    ],
+    "environment": true
+  },
+  "restoreInstructions": [
+    "1. Stop application",
+    "2. Restore schema: cp schema_export_backup.sql ../db/20250914schema_export.sql",
+    "3. Restore configs: cp *.json *.js ../",
+    "4. Git reset if needed: git reset --hard [commit]",
+    "5. Restart application"
+  ]
+}

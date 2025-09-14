@@ -1,0 +1,20 @@
+353f9eb docs: add B28 handover document for technical architect
+e0d1dab fix: correct CR status - bug NOT fully resolved, 500 errors persist
+470b9fd docs: add CR for project pages 500 error resolution
+ca7c3aa fix: resolve ESLint unescaped quotes errors blocking Vercel build
+bb11b6b docs: add B28 technical audit and architecture analysis
+ee85104 fix: resolve 'Cannot read properties of undefined (reading length)' error in project pages
+5ccf508 🎯 CRITICAL FIX: B27 UUID Migration + Projects API Resolution
+b949e16 fix(api): Correct SQL EXTRACT functions for UUID projects
+918e574 🏆 B27: Migration UUID Projects - ZERO SECURITY FLAWS
+f55383e 🏆 CRITICAL FIX: B26 API Lite Production Ready - ZERO 500 ERRORS
+7eb13a7 feat: implement B26 API Manager Lite with 15/42 routes migrated
+6b09375 fix: resolve ESLint errors blocking Vercel build
+e48c5d5 feat: implement centralized API router system with Vercel fallback
+703d0be feat: implement centralized API router with strategy switching
+9038735 fix: update frontend to use query parameter API
+b6fbc0f fix: implement client detail via query parameter workaround
+20ba847 fix: simplify client detail query to avoid read replica issues
+f7a26f2 debug: add alternative route to test dynamic routing issue
+b9540fb debug: add env test route to compare local vs prod config
+b94455a debug: force Vercel dynamic route rebuild with explicit config

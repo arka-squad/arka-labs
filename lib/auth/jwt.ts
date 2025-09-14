@@ -51,9 +51,8 @@ class JWTSecretManager {
     
     return jwt.sign(payload, keyManager.current, {
       algorithm: 'HS256',
-      expiresIn: JWT_EXPIRY,
-      header: { kid: JWT_KID }
-    });
+      expiresIn: JWT_EXPIRY
+    } as jwt.SignOptions);
   }
   
   signRefreshToken(userId: string): string {
@@ -70,9 +69,8 @@ class JWTSecretManager {
     
     return jwt.sign(payload, keyManager.current, {
       algorithm: 'HS256',
-      expiresIn: REFRESH_EXPIRY,
-      header: { kid: JWT_KID }
-    });
+      expiresIn: REFRESH_EXPIRY
+    } as jwt.SignOptions);
   }
   
   verifyToken(token: string): JWTPayload {
