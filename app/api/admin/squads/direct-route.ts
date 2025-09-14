@@ -90,33 +90,36 @@ export async function handleSquadsPOST(req: NextRequest) {
       }
     }
 
-    // Adapter format formulaire vers DB
+    // Adapter format formulaire vers DB RÉEL
     const squadData = {
-      nom: body.name, // name -> nom
-      mission: body.mission || '', // mission (description dans certains cas)
-      domain: body.domain || 'Tech', // domain spécifique squads
-      project_id: body.project_id || null, // optionnel
-      statut: 'active'
+      name: body.name, // garder name
+      slug: body.name.toLowerCase().replace(/[^a-z0-9]/g, '-'), // générer slug
+      mission: body.mission || '',
+      domain: body.domain || 'Tech',
+      status: 'active', // status pas statut
+      created_by: 'admin_user' // obligatoire
     };
 
-    // Créer squad
+    // Créer squad avec schéma DB réel
     const squad = await sql`
       INSERT INTO squads (
         id,
-        nom,
+        name,
+        slug,
         mission,
         domain,
-        project_id,
-        statut,
+        status,
+        created_by,
         created_at,
         updated_at
       ) VALUES (
         gen_random_uuid(),
-        ${squadData.nom},
+        ${squadData.name},
+        ${squadData.slug},
         ${squadData.mission},
         ${squadData.domain},
-        ${squadData.project_id},
-        ${squadData.statut},
+        ${squadData.status},
+        ${squadData.created_by},
         NOW(),
         NOW()
       ) RETURNING *
@@ -127,6 +130,7 @@ export async function handleSquadsPOST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       squad: squad[0],
+      id: squad[0].id, // pour compatibilité frontend
       message: 'Squad créée avec succès'
     });
 

@@ -92,45 +92,48 @@ export async function handleProjectsPOST(req: NextRequest) {
       }, { status: 404 });
     }
 
-    // Adapter format formulaire vers DB
+    // Adapter format formulaire vers DB RÉEL
     const projectData = {
-      nom: body.nom,
+      name: body.nom, // nom -> name
       description: body.description || '',
       client_id: body.client_id,
-      statut: body.status || 'draft', // status -> statut
-      priorite: body.priority || 'normal', // priority -> priorite
+      status: body.status || 'draft', // garder status
+      priority: body.priority || 'normal', // garder priority
       budget: body.budget || null,
-      date_fin_prevue: body.deadline ? new Date(body.deadline) : null, // deadline -> date_fin_prevue
-      tags: Array.isArray(body.tags) ? body.tags.join(',') : '',
-      requirements: Array.isArray(body.requirements) ? body.requirements.join(',') : ''
+      deadline: body.deadline ? new Date(body.deadline) : null, // garder deadline
+      tags: Array.isArray(body.tags) ? JSON.stringify(body.tags) : '[]',
+      requirements: Array.isArray(body.requirements) ? JSON.stringify(body.requirements) : '[]',
+      created_by: 'admin_user' // obligatoire
     };
 
-    // Créer projet
+    // Créer projet avec schéma DB réel
     const project = await sql`
       INSERT INTO projects (
         id,
-        nom,
+        name,
         description,
         client_id,
-        statut,
-        priorite,
+        status,
+        priority,
         budget,
-        date_fin_prevue,
+        deadline,
         tags,
         requirements,
+        created_by,
         created_at,
         updated_at
       ) VALUES (
         gen_random_uuid(),
-        ${projectData.nom},
+        ${projectData.name},
         ${projectData.description},
         ${projectData.client_id},
-        ${projectData.statut},
-        ${projectData.priorite},
+        ${projectData.status},
+        ${projectData.priority},
         ${projectData.budget},
-        ${projectData.date_fin_prevue},
+        ${projectData.deadline},
         ${projectData.tags},
         ${projectData.requirements},
+        ${projectData.created_by},
         NOW(),
         NOW()
       ) RETURNING *
@@ -141,6 +144,7 @@ export async function handleProjectsPOST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       project: project[0],
+      id: project[0].id, // pour compatibilité frontend
       message: 'Projet créé avec succès'
     });
 
