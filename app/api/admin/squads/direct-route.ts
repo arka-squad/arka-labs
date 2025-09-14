@@ -14,11 +14,11 @@ export async function handleSquadsGET(req: NextRequest) {
     const id = url.searchParams.get('id');
 
     if (id) {
-      // Squad spécifique avec projet et client
+      // Squad spécifique avec projet et client (schéma DB réel)
       const squad = await sql`
         SELECT
           s.*,
-          p.nom as project_nom,
+          p.name as project_nom,
           c.nom as client_nom
         FROM squads s
         LEFT JOIN projects p ON s.project_id = p.id
@@ -34,11 +34,11 @@ export async function handleSquadsGET(req: NextRequest) {
       console.log('✅ Direct Squads GET - Squad trouvée');
       return NextResponse.json(squad[0]);
     } else {
-      // Liste squads avec projets et clients
+      // Liste squads avec projets et clients (schéma DB réel)
       const squads = await sql`
         SELECT
           s.*,
-          p.nom as project_nom,
+          p.name as project_nom,
           c.nom as client_nom
         FROM squads s
         LEFT JOIN projects p ON s.project_id = p.id

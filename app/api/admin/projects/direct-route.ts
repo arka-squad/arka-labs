@@ -14,12 +14,12 @@ export async function handleProjectsGET(req: NextRequest) {
     const id = url.searchParams.get('id');
 
     if (id) {
-      // Projet spécifique avec client
+      // Projet spécifique avec client (schéma DB réel)
       const project = await sql`
         SELECT
           p.*,
           c.nom as client_nom,
-          c.secteur_activite as client_secteur
+          c.secteur as client_secteur
         FROM projects p
         LEFT JOIN clients c ON p.client_id = c.id
         WHERE p.id = ${id}
@@ -33,12 +33,12 @@ export async function handleProjectsGET(req: NextRequest) {
       console.log('✅ Direct Projects GET - Projet trouvé');
       return NextResponse.json(project[0]);
     } else {
-      // Liste projets avec clients
+      // Liste projets avec clients (schéma DB réel)
       const projects = await sql`
         SELECT
           p.*,
           c.nom as client_nom,
-          c.secteur_activite as client_secteur
+          c.secteur as client_secteur
         FROM projects p
         LEFT JOIN clients c ON p.client_id = c.id
         ORDER BY p.created_at DESC
