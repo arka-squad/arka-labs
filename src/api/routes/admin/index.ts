@@ -1,5 +1,5 @@
 // Routes admin - B28 Phase 2
-import { Router } from '../core/router';
+import { Router } from '../../core/router';
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/src/lib/auth/middleware';
 
