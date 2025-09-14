@@ -65,63 +65,55 @@ export async function handleSquadsPOST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    console.log('📝 Squad data:', {
-      nom: body.nom,
-      project_id: body.project_id
-    });
+    console.log('📝 Squad data reçu:', body);
 
-    // Validation
-    if (!body.nom) {
+    // Validation format formulaire
+    if (!body.name) {
       return NextResponse.json({
         error: 'Nom de la squad requis'
       }, { status: 400 });
     }
 
-    if (!body.project_id) {
-      return NextResponse.json({
-        error: 'Projet requis pour créer une squad'
-      }, { status: 400 });
+    // project_id est optionnel (squad peut être créée puis assignée)
+    let projectExists = true;
+    if (body.project_id) {
+      const project = await sql`
+        SELECT id FROM projects WHERE id = ${body.project_id} LIMIT 1
+      `;
+      if (project.length === 0) {
+        return NextResponse.json({
+          error: 'Projet non trouvé'
+        }, { status: 404 });
+      }
     }
 
-    // Vérifier que le projet existe
-    const projectExists = await sql`
-      SELECT id FROM projects WHERE id = ${body.project_id} LIMIT 1
-    `;
-
-    if (projectExists.length === 0) {
-      return NextResponse.json({
-        error: 'Projet non trouvé'
-      }, { status: 404 });
-    }
+    // Adapter format formulaire vers DB
+    const squadData = {
+      nom: body.name, // name -> nom
+      mission: body.mission || '', // mission (description dans certains cas)
+      domain: body.domain || 'Tech', // domain spécifique squads
+      project_id: body.project_id || null, // optionnel
+      statut: 'active'
+    };
 
     // Créer squad
     const squad = await sql`
       INSERT INTO squads (
         id,
         nom,
-        description,
+        mission,
+        domain,
         project_id,
         statut,
-        objectif,
-        competences_requises,
-        budget_alloue,
-        date_creation,
-        date_fin_prevue,
-        responsable,
         created_at,
         updated_at
       ) VALUES (
         gen_random_uuid(),
-        ${body.nom},
-        ${body.description || ''},
-        ${body.project_id},
-        ${body.statut || 'active'},
-        ${body.objectif || ''},
-        ${body.competences_requises || ''},
-        ${body.budget_alloue || null},
-        NOW(),
-        ${body.date_fin_prevue ? new Date(body.date_fin_prevue) : null},
-        ${body.responsable || ''},
+        ${squadData.nom},
+        ${squadData.mission},
+        ${squadData.domain},
+        ${squadData.project_id},
+        ${squadData.statut},
         NOW(),
         NOW()
       ) RETURNING *

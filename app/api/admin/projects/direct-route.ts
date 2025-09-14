@@ -63,12 +63,9 @@ export async function handleProjectsPOST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    console.log('📝 Project data:', {
-      nom: body.nom,
-      client_id: body.client_id
-    });
+    console.log('📝 Project data reçu:', body);
 
-    // Validation
+    // Validation format formulaire
     if (!body.nom) {
       return NextResponse.json({
         error: 'Nom du projet requis'
@@ -92,6 +89,19 @@ export async function handleProjectsPOST(req: NextRequest) {
       }, { status: 404 });
     }
 
+    // Adapter format formulaire vers DB
+    const projectData = {
+      nom: body.nom,
+      description: body.description || '',
+      client_id: body.client_id,
+      statut: body.status || 'draft', // status -> statut
+      priorite: body.priority || 'normal', // priority -> priorite
+      budget: body.budget || null,
+      date_fin_prevue: body.deadline ? new Date(body.deadline) : null, // deadline -> date_fin_prevue
+      tags: Array.isArray(body.tags) ? body.tags.join(',') : '',
+      requirements: Array.isArray(body.requirements) ? body.requirements.join(',') : ''
+    };
+
     // Créer projet
     const project = await sql`
       INSERT INTO projects (
@@ -102,24 +112,22 @@ export async function handleProjectsPOST(req: NextRequest) {
         statut,
         priorite,
         budget,
-        date_debut,
         date_fin_prevue,
-        objectifs,
-        contexte,
+        tags,
+        requirements,
         created_at,
         updated_at
       ) VALUES (
         gen_random_uuid(),
-        ${body.nom},
-        ${body.description || ''},
-        ${body.client_id},
-        ${body.statut || 'draft'},
-        ${body.priorite || 'medium'},
-        ${body.budget || null},
-        ${body.date_debut ? new Date(body.date_debut) : null},
-        ${body.date_fin_prevue ? new Date(body.date_fin_prevue) : null},
-        ${body.objectifs || ''},
-        ${body.contexte || ''},
+        ${projectData.nom},
+        ${projectData.description},
+        ${projectData.client_id},
+        ${projectData.statut},
+        ${projectData.priorite},
+        ${projectData.budget},
+        ${projectData.date_fin_prevue},
+        ${projectData.tags},
+        ${projectData.requirements},
         NOW(),
         NOW()
       ) RETURNING *

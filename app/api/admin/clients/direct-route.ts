@@ -52,17 +52,30 @@ export async function handleClientsPOST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    console.log('📝 Client data:', {
-      nom: body.nom,
-      secteur: body.secteur_activite
-    });
+    console.log('📝 Client data reçu:', body);
 
-    // Validation basique
-    if (!body.nom || !body.secteur_activite) {
+    // Validation avec format exact du formulaire
+    if (!body.nom || !body.secteur) {
       return NextResponse.json({
-        error: 'Nom et secteur d\'activité requis'
+        error: 'Nom et secteur requis',
+        debug: { recu: Object.keys(body) }
       }, { status: 400 });
     }
+
+    // Adapter le format formulaire vers DB
+    const clientData = {
+      nom: body.nom,
+      secteur_activite: body.secteur,
+      taille_entreprise: body.taille || 'PME',
+      contact_principal: body.contact_principal?.nom || '',
+      email_contact: body.contact_principal?.email || '',
+      telephone_contact: body.contact_principal?.telephone || '',
+      adresse: body.adresse || '',
+      site_web: body.site_web || '',
+      contexte_specifique: body.contexte_specifique || '',
+      budget_annuel: body.budget_annuel || null,
+      statut: body.statut || 'actif'
+    };
 
     // Insert client
     const client = await sql`
@@ -75,21 +88,25 @@ export async function handleClientsPOST(req: NextRequest) {
         email_contact,
         telephone_contact,
         adresse,
-        ville,
+        site_web,
         contexte_specifique,
+        budget_annuel,
+        statut,
         created_at,
         updated_at
       ) VALUES (
         gen_random_uuid(),
-        ${body.nom},
-        ${body.secteur_activite || ''},
-        ${body.taille_entreprise || ''},
-        ${body.contact_principal || ''},
-        ${body.email_contact || ''},
-        ${body.telephone_contact || ''},
-        ${body.adresse || ''},
-        ${body.ville || ''},
-        ${body.contexte_specifique || ''},
+        ${clientData.nom},
+        ${clientData.secteur_activite},
+        ${clientData.taille_entreprise},
+        ${clientData.contact_principal},
+        ${clientData.email_contact},
+        ${clientData.telephone_contact},
+        ${clientData.adresse},
+        ${clientData.site_web},
+        ${clientData.contexte_specifique},
+        ${clientData.budget_annuel},
+        ${clientData.statut},
         NOW(),
         NOW()
       ) RETURNING *
@@ -124,17 +141,34 @@ export async function handleClientsPUT(req: NextRequest) {
       return NextResponse.json({ error: 'ID client requis' }, { status: 400 });
     }
 
+    // Adapter le format formulaire vers DB
+    const clientData = {
+      nom: body.nom,
+      secteur_activite: body.secteur,
+      taille_entreprise: body.taille || 'PME',
+      contact_principal: body.contact_principal?.nom || '',
+      email_contact: body.contact_principal?.email || '',
+      telephone_contact: body.contact_principal?.telephone || '',
+      adresse: body.adresse || '',
+      site_web: body.site_web || '',
+      contexte_specifique: body.contexte_specifique || '',
+      budget_annuel: body.budget_annuel || null,
+      statut: body.statut || 'actif'
+    };
+
     const client = await sql`
       UPDATE clients SET
-        nom = ${body.nom},
-        secteur_activite = ${body.secteur_activite},
-        taille_entreprise = ${body.taille_entreprise || ''},
-        contact_principal = ${body.contact_principal || ''},
-        email_contact = ${body.email_contact || ''},
-        telephone_contact = ${body.telephone_contact || ''},
-        adresse = ${body.adresse || ''},
-        ville = ${body.ville || ''},
-        contexte_specifique = ${body.contexte_specifique || ''},
+        nom = ${clientData.nom},
+        secteur_activite = ${clientData.secteur_activite},
+        taille_entreprise = ${clientData.taille_entreprise},
+        contact_principal = ${clientData.contact_principal},
+        email_contact = ${clientData.email_contact},
+        telephone_contact = ${clientData.telephone_contact},
+        adresse = ${clientData.adresse},
+        site_web = ${clientData.site_web},
+        contexte_specifique = ${clientData.contexte_specifique},
+        budget_annuel = ${clientData.budget_annuel},
+        statut = ${clientData.statut},
         updated_at = NOW()
       WHERE id = ${id}
       RETURNING *
