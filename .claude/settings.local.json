@@ -15,7 +15,9 @@
       "Bash(git commit:*)",
       "Bash(npm install:*)",
       "Bash(npm run type-check:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(for f in *.ts)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
