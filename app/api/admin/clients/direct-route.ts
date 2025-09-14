@@ -35,7 +35,10 @@ export async function handleClientsGET(req: NextRequest) {
       `;
 
       console.log(`✅ Direct Clients GET - ${clients.length} clients`);
-      return NextResponse.json(clients);
+      return NextResponse.json({
+        items: clients,
+        total: clients.length
+      });
     }
 
   } catch (error) {
