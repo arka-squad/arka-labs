@@ -16,7 +16,7 @@ interface Client {
 }
 
 interface ProjectForm {
-  nom: string;
+  name: string; // schéma DB réel
   description: string;
   client_id: string;
   budget?: number;
@@ -28,7 +28,7 @@ interface ProjectForm {
 }
 
 const initialForm: ProjectForm = {
-  nom: '',
+  name: '',
   description: '',
   client_id: '',
   budget: undefined,
@@ -72,7 +72,7 @@ export default function AdminEditProjectPage() {
       const project = await response.json();
       
       setForm({
-        nom: project.nom || '',
+        name: project.name || '',
         description: project.description || '',
         client_id: project.client_id || '',
         budget: project.budget || undefined,
@@ -107,7 +107,7 @@ export default function AdminEditProjectPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.nom.length < 2) {
+    if (form.name.length < 2) {
       setError('Le nom doit contenir au moins 2 caractères');
       return;
     }
@@ -277,8 +277,8 @@ export default function AdminEditProjectPage() {
                     <input
                       type="text"
                       required
-                      value={form.nom}
-                      onChange={(e) => setForm(prev => ({ ...prev, nom: e.target.value }))}
+                      value={form.name}
+                      onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
                       className="w-full bg-gray-700 border border-gray-600 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="ex: Refonte site web"
                     />

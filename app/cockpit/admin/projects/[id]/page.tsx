@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 
 interface ProjectDetails {
   id: string; // UUID format
-  nom: string;
+  name: string; // schéma DB réel
   description: string;
   client_id: string;
   client_name: string;
@@ -152,7 +152,7 @@ export default function AdminProjectDetailPage() {
               <ArrowLeft className="w-5 h-5 text-gray-400" />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-white">{project.nom}</h1>
+              <h1 className="text-2xl font-bold text-white">{project.name}</h1>
               <p className="text-sm text-gray-300 mt-1">
                 Projet · {project.client_name} · Créé le {formatDate(project.created_at)}
               </p>
