@@ -10,7 +10,7 @@ export const runtime = 'nodejs';
 
 // Validation schema for project updates
 const UpdateProjectSchema = z.object({
-  nom: z.string().min(3).max(200).optional(),
+  name: z.string().min(3).max(200).optional(), // schéma DB réel
   description: z.string().max(2000).optional(),
   budget: z.number().min(0).optional(),
   deadline: z.string().optional(),
@@ -176,7 +176,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
 
     const formattedProject = {
       ...projectDetails,
-      nom: projectDetails.name, // Map database 'name' to frontend 'nom'
+      name: projectDetails.name, // schéma DB réel
       tags: JSON.parse(projectDetails.tags || '[]'),
       requirements: JSON.parse(projectDetails.requirements || '[]'),
       agents_assigned: parseInt(projectDetails.agents_assigned),
@@ -275,10 +275,10 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
     }
 
     // Check for name conflicts if name is being updated
-    if (updates.nom && updates.nom !== existingProject.name) {
+    if (updates.name && updates.name !== existingProject.name) {
       const [conflictingProject] = await sql`
         SELECT id FROM projects
-        WHERE LOWER(name) = LOWER(${updates.nom}) 
+        WHERE LOWER(name) = LOWER(${updates.name}) 
         AND client_id = ${existingProject.client_id}
         AND id != ${projectId}::uuid
         AND deleted_at IS NULL
@@ -357,7 +357,7 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
 
     const response = NextResponse.json({
       ...updatedProject,
-      nom: updatedProject.name, // Map database 'name' to frontend 'nom'
+      name: updatedProject.name, // schéma DB réel
       tags: JSON.parse(updatedProject.tags || '[]'),
       requirements: JSON.parse(updatedProject.requirements || '[]'),
       agents_assigned: parseInt(projectMetrics?.agents_assigned || '0'),

@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 const UpdateAgentSchema = z.object({
   name: z.string().min(2).max(100).optional(),
   role: z.string().min(3).max(100).optional(),
-  domaine: z.enum(['RH', 'Tech', 'Marketing', 'Finance', 'Ops']).optional(),
+  domain: z.enum(['RH', 'Tech', 'Marketing', 'Finance', 'Ops']).optional(),
   version: z.string().regex(/^\d+\.\d+$/).optional(),
   description: z.string().max(1000).optional(),
   tags: z.array(z.string()).optional(),
@@ -73,14 +73,14 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
     const projectAssignments = await sql`
       SELECT 
         p.id,
-        p.nom,
+        p.name,
         p.status,
         p.priority,
         p.budget,
         p.deadline,
         pa.status as assignment_status,
         pa.created_at as assigned_at,
-        c.nom as client_name,
+        c.name as client_name,
         CASE 
           WHEN p.deadline < CURRENT_DATE THEN 'depassee'
           WHEN p.deadline <= CURRENT_DATE + INTERVAL '7 days' THEN 'proche'
@@ -241,9 +241,9 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
       updateParts.push(`role = $${paramIndex++}`);
       updateValues.push(updates.role);
     }
-    if (updates.domaine !== undefined) {
-      updateParts.push(`domaine = $${paramIndex++}`);
-      updateValues.push(updates.domaine);
+    if (updates.domain !== undefined) {
+      updateParts.push(`domain = $${paramIndex++}`);
+      updateValues.push(updates.domain);
     }
     if (updates.version !== undefined) {
       updateParts.push(`version = $${paramIndex++}`);

@@ -57,56 +57,56 @@ export async function handleClientsPOST(req: NextRequest) {
     const body = await req.json();
     console.log('📝 Client data reçu:', body);
 
-    // Validation avec format exact du formulaire
-    if (!body.nom || !body.secteur) {
+    // Validation avec format exact du formulaire (normalized to english)
+    if (!body.name || !body.sector) {
       return NextResponse.json({
-        error: 'Nom et secteur requis',
-        debug: { recu: Object.keys(body) }
+        error: 'Name and sector required',
+        debug: { received: Object.keys(body) }
       }, { status: 400 });
     }
 
-    // Adapter le format formulaire vers DB réel
+    // Adapter le format formulaire vers DB réel (normalized to english)
     const clientData = {
-      nom: body.nom,
-      secteur: body.secteur, // secteur direct (pas secteur_activite)
-      taille: body.taille || 'PME',
-      // contact_principal as JSONB object avec toutes les infos
+      name: body.name,
+      sector: body.sector, // sector direct
+      size: body.size || 'PME',
+      // contact_principal as JSONB object (normalized)
       contact_principal: {
-        nom: body.contact_principal?.nom || '',
+        name: body.contact_principal?.name || '',
         email: body.contact_principal?.email || '',
-        telephone: body.contact_principal?.telephone || '',
-        fonction: body.contact_principal?.fonction || ''
+        phone: body.contact_principal?.phone || '',
+        role: body.contact_principal?.role || ''
       },
-      // Combiner description + adresse + site_web dans contexte_specifique
-      contexte_specifique: [
+      // Combiner description + address + website dans specific_context
+      specific_context: [
         body.description || '',
-        body.adresse ? `Adresse: ${body.adresse}` : '',
-        body.site_web ? `Site: ${body.site_web}` : '',
-        body.contexte_specifique || ''
+        body.address ? `Address: ${body.address}` : '',
+        body.website ? `Website: ${body.website}` : '',
+        body.specific_context || ''
       ].filter(x => x).join('\n\n'),
-      statut: body.statut || 'actif'
+      status: body.status || 'active'
     };
 
     // Insert client avec schéma DB réel
     const client = await sql`
       INSERT INTO clients (
         id,
-        nom,
-        secteur,
-        taille,
+        name,
+        sector,
+        size,
         contact_principal,
-        contexte_specifique,
-        statut,
+        specific_context,
+        status,
         created_at,
         updated_at
       ) VALUES (
         gen_random_uuid(),
-        ${clientData.nom},
-        ${clientData.secteur},
-        ${clientData.taille},
+        ${clientData.name},
+        ${clientData.sector},
+        ${clientData.size},
         ${JSON.stringify(clientData.contact_principal)},
-        ${clientData.contexte_specifique},
-        ${clientData.statut},
+        ${clientData.specific_context},
+        ${clientData.status},
         NOW(),
         NOW()
       ) RETURNING *
@@ -141,34 +141,34 @@ export async function handleClientsPUT(req: NextRequest) {
       return NextResponse.json({ error: 'ID client requis' }, { status: 400 });
     }
 
-    // Adapter le format formulaire vers DB réel
+    // Adapter le format formulaire vers DB réel (normalized)
     const clientData = {
-      nom: body.nom,
-      secteur: body.secteur,
-      taille: body.taille || 'PME',
+      name: body.name,
+      sector: body.sector,
+      size: body.size || 'PME',
       contact_principal: {
-        nom: body.contact_principal?.nom || '',
+        name: body.contact_principal?.name || '',
         email: body.contact_principal?.email || '',
-        telephone: body.contact_principal?.telephone || '',
-        fonction: body.contact_principal?.fonction || ''
+        phone: body.contact_principal?.phone || '',
+        role: body.contact_principal?.role || ''
       },
-      contexte_specifique: [
+      specific_context: [
         body.description || '',
-        body.adresse ? `Adresse: ${body.adresse}` : '',
-        body.site_web ? `Site: ${body.site_web}` : '',
-        body.contexte_specifique || ''
+        body.address ? `Address: ${body.address}` : '',
+        body.website ? `Website: ${body.website}` : '',
+        body.specific_context || ''
       ].filter(x => x).join('\n\n'),
-      statut: body.statut || 'actif'
+      status: body.status || 'active'
     };
 
     const client = await sql`
       UPDATE clients SET
-        nom = ${clientData.nom},
-        secteur = ${clientData.secteur},
-        taille = ${clientData.taille},
+        name = ${clientData.name},
+        sector = ${clientData.sector},
+        size = ${clientData.size},
         contact_principal = ${JSON.stringify(clientData.contact_principal)},
-        contexte_specifique = ${clientData.contexte_specifique},
-        statut = ${clientData.statut},
+        specific_context = ${clientData.specific_context},
+        status = ${clientData.status},
         updated_at = NOW()
       WHERE id = ${id}
       RETURNING *
