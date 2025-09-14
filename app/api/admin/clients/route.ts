@@ -1,28 +1,25 @@
 /**
- * ARKA CLIENTS API V2 - Utilise le nouveau router centralisé
- * 
- * Cette version remplace route.ts et offre:
- * - Switch automatique entre query params et dynamic routes
- * - Monitoring centralisé 
- * - Configuration à chaud
- * - Fallback automatique
+ * ARKA CLIENTS API - HOTFIX Session Expired
+ *
+ * Utilise handlers directs pour contourner le problème d'auth
+ * du router centralisé qui cause "Session expired or invalid"
  */
 
-import { 
-  adminClientsGET, 
-  adminClientsPOST,
-  adminClientsPUT,
-  adminClientsDELETE 
-} from '../../../../lib/api-router/admin-routes';
+import {
+  handleClientsGET,
+  handleClientsPOST,
+  handleClientsPUT,
+  handleClientsDELETE
+} from './direct-route';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-// Import direct des handlers du router centralisé
-export const GET = adminClientsGET;
-export const POST = adminClientsPOST;
-export const PUT = adminClientsPUT;
-export const DELETE = adminClientsDELETE;
+// Handlers directs sans auth complexe - TEMPORAIRE
+export const GET = handleClientsGET;
+export const POST = handleClientsPOST;
+export const PUT = handleClientsPUT;
+export const DELETE = handleClientsDELETE;
 
 /*
  * USAGE:

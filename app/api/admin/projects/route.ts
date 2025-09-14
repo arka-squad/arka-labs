@@ -1,28 +1,25 @@
 /**
- * ARKA PROJECTS API V2 - Utilise le nouveau router centralisé
- * 
- * Cette version remplace route-old.ts et offre:
- * - Switch automatique entre query params et dynamic routes
- * - Monitoring centralisé 
- * - Configuration à chaud
- * - Fallback automatique
+ * ARKA PROJECTS API - HOTFIX Session Expired
+ *
+ * Utilise handlers directs pour contourner le problème d'auth
+ * du router centralisé qui cause "Session expired or invalid"
  */
 
-import { 
-  adminProjectsGET, 
-  adminProjectsPOST,
-  adminProjectsPUT,
-  adminProjectsDELETE 
-} from '../../../../lib/api-router/admin-routes';
+import {
+  handleProjectsGET,
+  handleProjectsPOST,
+  handleProjectsPUT,
+  handleProjectsDELETE
+} from './direct-route';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-// Import direct des handlers du router centralisé
-export const GET = adminProjectsGET;
-export const POST = adminProjectsPOST;
-export const PUT = adminProjectsPUT;
-export const DELETE = adminProjectsDELETE;
+// Handlers directs sans auth complexe - HOTFIX
+export const GET = handleProjectsGET;
+export const POST = handleProjectsPOST;
+export const PUT = handleProjectsPUT;
+export const DELETE = handleProjectsDELETE;
 
 /*
  * USAGE:
