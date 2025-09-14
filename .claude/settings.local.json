@@ -6,7 +6,8 @@
       "Bash(npx jest:*)",
       "Bash(npm run build:*)",
       "Read(//c/Users/grimo/Pictures/Screenshots/**)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(gh pr view:*)"
     ],
     "deny": [],
     "ask": []

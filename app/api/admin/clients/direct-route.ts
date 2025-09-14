@@ -62,53 +62,47 @@ export async function handleClientsPOST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Adapter le format formulaire vers DB
+    // Adapter le format formulaire vers DB réel
     const clientData = {
       nom: body.nom,
-      secteur_activite: body.secteur,
-      taille_entreprise: body.taille || 'PME',
-      contact_principal: body.contact_principal?.nom || '',
-      email_contact: body.contact_principal?.email || '',
-      telephone_contact: body.contact_principal?.telephone || '',
-      adresse: body.adresse || '',
-      site_web: body.site_web || '',
-      description: body.description || '', // Fix: description manquant
-      contexte_specifique: body.contexte_specifique || '',
-      budget_annuel: body.budget_annuel || null,
+      secteur: body.secteur, // secteur direct (pas secteur_activite)
+      taille: body.taille || 'PME',
+      // contact_principal as JSONB object avec toutes les infos
+      contact_principal: {
+        nom: body.contact_principal?.nom || '',
+        email: body.contact_principal?.email || '',
+        telephone: body.contact_principal?.telephone || '',
+        fonction: body.contact_principal?.fonction || ''
+      },
+      // Combiner description + adresse + site_web dans contexte_specifique
+      contexte_specifique: [
+        body.description || '',
+        body.adresse ? `Adresse: ${body.adresse}` : '',
+        body.site_web ? `Site: ${body.site_web}` : '',
+        body.contexte_specifique || ''
+      ].filter(x => x).join('\n\n'),
       statut: body.statut || 'actif'
     };
 
-    // Insert client
+    // Insert client avec schéma DB réel
     const client = await sql`
       INSERT INTO clients (
         id,
         nom,
-        secteur_activite,
-        taille_entreprise,
+        secteur,
+        taille,
         contact_principal,
-        email_contact,
-        telephone_contact,
-        adresse,
-        site_web,
-        description,
         contexte_specifique,
-        budget_annuel,
         statut,
         created_at,
         updated_at
       ) VALUES (
         gen_random_uuid(),
         ${clientData.nom},
-        ${clientData.secteur_activite},
-        ${clientData.taille_entreprise},
-        ${clientData.contact_principal},
-        ${clientData.email_contact},
-        ${clientData.telephone_contact},
-        ${clientData.adresse},
-        ${clientData.site_web},
-        ${clientData.description},
+        ${clientData.secteur},
+        ${clientData.taille},
+        ${JSON.stringify(clientData.contact_principal)},
         ${clientData.contexte_specifique},
-        ${clientData.budget_annuel},
         ${clientData.statut},
         NOW(),
         NOW()
@@ -144,35 +138,33 @@ export async function handleClientsPUT(req: NextRequest) {
       return NextResponse.json({ error: 'ID client requis' }, { status: 400 });
     }
 
-    // Adapter le format formulaire vers DB
+    // Adapter le format formulaire vers DB réel
     const clientData = {
       nom: body.nom,
-      secteur_activite: body.secteur,
-      taille_entreprise: body.taille || 'PME',
-      contact_principal: body.contact_principal?.nom || '',
-      email_contact: body.contact_principal?.email || '',
-      telephone_contact: body.contact_principal?.telephone || '',
-      adresse: body.adresse || '',
-      site_web: body.site_web || '',
-      description: body.description || '', // Fix: description manquant
-      contexte_specifique: body.contexte_specifique || '',
-      budget_annuel: body.budget_annuel || null,
+      secteur: body.secteur,
+      taille: body.taille || 'PME',
+      contact_principal: {
+        nom: body.contact_principal?.nom || '',
+        email: body.contact_principal?.email || '',
+        telephone: body.contact_principal?.telephone || '',
+        fonction: body.contact_principal?.fonction || ''
+      },
+      contexte_specifique: [
+        body.description || '',
+        body.adresse ? `Adresse: ${body.adresse}` : '',
+        body.site_web ? `Site: ${body.site_web}` : '',
+        body.contexte_specifique || ''
+      ].filter(x => x).join('\n\n'),
       statut: body.statut || 'actif'
     };
 
     const client = await sql`
       UPDATE clients SET
         nom = ${clientData.nom},
-        secteur_activite = ${clientData.secteur_activite},
-        taille_entreprise = ${clientData.taille_entreprise},
-        contact_principal = ${clientData.contact_principal},
-        email_contact = ${clientData.email_contact},
-        telephone_contact = ${clientData.telephone_contact},
-        adresse = ${clientData.adresse},
-        site_web = ${clientData.site_web},
-        description = ${clientData.description},
+        secteur = ${clientData.secteur},
+        taille = ${clientData.taille},
+        contact_principal = ${JSON.stringify(clientData.contact_principal)},
         contexte_specifique = ${clientData.contexte_specifique},
-        budget_annuel = ${clientData.budget_annuel},
         statut = ${clientData.statut},
         updated_at = NOW()
       WHERE id = ${id}
