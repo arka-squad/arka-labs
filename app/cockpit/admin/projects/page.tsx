@@ -8,14 +8,14 @@ import AdminProtection from '../components/AdminProtection';
 
 interface Project {
   id: string; // UUID format
-  nom: string;
+  name: string; // schéma DB réel
   client: {
     id: string;
     nom: string;
     secteur: string;
   };
-  statut: 'actif' | 'inactif' | 'archive' | 'termine';
-  priorite: 'basse' | 'normale' | 'haute' | 'urgente';
+  status: 'draft' | 'active' | 'on_hold' | 'completed'; // schéma DB réel
+  priority: 'low' | 'normal' | 'high' | 'urgent'; // schéma DB réel
   budget: number;
   deadline: string;
   agents_count: number;
@@ -51,8 +51,8 @@ export default function ProjectsPage() {
       
       // Construire les paramètres de filtrage
       const params = new URLSearchParams();
-      if (statusFilter) params.append('statut', statusFilter);
-      if (priorityFilter) params.append('priorite', priorityFilter);
+      if (statusFilter) params.append('status', statusFilter);
+      if (priorityFilter) params.append('priority', priorityFilter);
       if (searchTerm) params.append('search', searchTerm);
       
       const response = await fetch(`/api/admin/projects?${params.toString()}`, {
@@ -73,22 +73,22 @@ export default function ProjectsPage() {
     }
   };
 
-  const getStatusColor = (statut: string) => {
-    switch (statut) {
-      case 'actif': return '#10B981';
-      case 'inactif': return '#F59E0B';
-      case 'archive': return '#6B7280';
-      case 'termine': return '#8B5CF6';
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return '#10B981';
+      case 'draft': return '#F59E0B';
+      case 'on_hold': return '#6B7280';
+      case 'completed': return '#8B5CF6';
       default: return '#6B7280';
     }
   };
 
-  const getPriorityColor = (priorite?: string) => {
-    switch (priorite) {
-      case 'urgente': return '#EF4444';
-      case 'haute': return '#F59E0B';
-      case 'normale': return '#10B981';
-      case 'basse': return '#6B7280';
+  const getPriorityColor = (priority?: string) => {
+    switch (priority) {
+      case 'urgent': return '#EF4444';
+      case 'high': return '#F59E0B';
+      case 'normal': return '#10B981';
+      case 'low': return '#6B7280';
       default: return '#6B7280';
     }
   };
@@ -103,12 +103,12 @@ export default function ProjectsPage() {
   };
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          project.client?.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          project.client?.secteur?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = !statusFilter || project.statut === statusFilter;
-    const matchesPriority = !priorityFilter || project.priorite === priorityFilter;
-    
+    const matchesStatus = !statusFilter || project.status === statusFilter;
+    const matchesPriority = !priorityFilter || project.priority === priorityFilter;
+
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
@@ -232,18 +232,18 @@ export default function ProjectsPage() {
                 <div className="flex items-center space-x-2">
                   <div
                     className="w-3 h-3 rounded-full animate-pulse"
-                    style={{ backgroundColor: getStatusColor(project.statut) }}
+                    style={{ backgroundColor: getStatusColor(project.status) }}
                   />
-                  <span className="text-sm text-gray-400 capitalize">{project.statut}</span>
-                  {project.priorite && (
+                  <span className="text-sm text-gray-400 capitalize">{project.status}</span>
+                  {project.priority && (
                     <span
                       className="px-2 py-1 rounded text-xs font-medium"
                       style={{ 
-                        backgroundColor: getPriorityColor(project.priorite) + '20',
-                        color: getPriorityColor(project.priorite)
+                        backgroundColor: getPriorityColor(project.priority) + '20',
+                        color: getPriorityColor(project.priority)
                       }}
                     >
-                      {project.priorite}
+                      {project.priority}
                     </span>
                   )}
                   {project.deadline_alert && project.deadline_alert !== 'ok' && (
@@ -264,7 +264,7 @@ export default function ProjectsPage() {
                 </div>
               </div>
 
-              <h3 className="text-lg font-semibold mb-2 text-white">{project.nom}</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">{project.name}</h3>
               <p className="text-gray-400 text-sm mb-4">Projet #{project.id}</p>
 
               {project.client && (
@@ -347,14 +347,14 @@ export default function ProjectsPage() {
           <div className="mt-8 md:mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             <div className="bg-gray-800 rounded-xl p-6 text-center border border-gray-700">
               <div className="text-2xl font-bold text-green-400 mb-1">
-                {projects.filter(p => p.statut === 'actif').length}
+                {projects.filter(p => p.status === 'active').length}
               </div>
               <div className="text-gray-400 text-sm">Projets Actifs</div>
             </div>
             
             <div className="bg-gray-800 rounded-xl p-6 text-center border border-gray-700">
               <div className="text-2xl font-bold text-yellow-400 mb-1">
-                {projects.filter(p => p.statut === 'inactif').length}
+                {projects.filter(p => p.status === 'draft').length}
               </div>
               <div className="text-gray-400 text-sm">Projets Inactifs</div>
             </div>
