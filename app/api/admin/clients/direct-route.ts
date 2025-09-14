@@ -72,6 +72,7 @@ export async function handleClientsPOST(req: NextRequest) {
       telephone_contact: body.contact_principal?.telephone || '',
       adresse: body.adresse || '',
       site_web: body.site_web || '',
+      description: body.description || '', // Fix: description manquant
       contexte_specifique: body.contexte_specifique || '',
       budget_annuel: body.budget_annuel || null,
       statut: body.statut || 'actif'
@@ -89,6 +90,7 @@ export async function handleClientsPOST(req: NextRequest) {
         telephone_contact,
         adresse,
         site_web,
+        description,
         contexte_specifique,
         budget_annuel,
         statut,
@@ -104,6 +106,7 @@ export async function handleClientsPOST(req: NextRequest) {
         ${clientData.telephone_contact},
         ${clientData.adresse},
         ${clientData.site_web},
+        ${clientData.description},
         ${clientData.contexte_specifique},
         ${clientData.budget_annuel},
         ${clientData.statut},
@@ -151,6 +154,7 @@ export async function handleClientsPUT(req: NextRequest) {
       telephone_contact: body.contact_principal?.telephone || '',
       adresse: body.adresse || '',
       site_web: body.site_web || '',
+      description: body.description || '', // Fix: description manquant
       contexte_specifique: body.contexte_specifique || '',
       budget_annuel: body.budget_annuel || null,
       statut: body.statut || 'actif'
@@ -166,6 +170,7 @@ export async function handleClientsPUT(req: NextRequest) {
         telephone_contact = ${clientData.telephone_contact},
         adresse = ${clientData.adresse},
         site_web = ${clientData.site_web},
+        description = ${clientData.description},
         contexte_specifique = ${clientData.contexte_specifique},
         budget_annuel = ${clientData.budget_annuel},
         statut = ${clientData.statut},
