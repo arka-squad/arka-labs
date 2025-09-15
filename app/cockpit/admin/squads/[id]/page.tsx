@@ -24,7 +24,7 @@ interface SquadDetails {
     id: string;
     name: string;
     role: string;
-    domaine: string;
+    domain: string;
     status: string;
     joined_at: string;
     performance_score?: number;
@@ -52,8 +52,14 @@ const domainIcons = {
 
 const statusColors = {
   'active': 'bg-green-100 text-green-800',
-  'inactive': 'bg-yellow-100 text-yellow-800', 
+  'inactive': 'bg-yellow-100 text-yellow-800',
   'archived': 'bg-gray-100 text-gray-800'
+};
+
+const statusLabels = {
+  'active': 'Actif',
+  'inactive': 'Inactif',
+  'archived': 'Archivé'
 };
 
 export default function AdminSquadDetailPage() {
@@ -176,13 +182,13 @@ export default function AdminSquadDetailPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-400">Statut</p>
-                  <p className="text-2xl font-semibold text-white mt-2 capitalize">{squad.status}</p>
+                  <p className="text-2xl font-semibold text-white mt-2">{statusLabels[squad.status as keyof typeof statusLabels] || squad.status}</p>
                 </div>
                 <Target className="w-8 h-8 text-blue-400" />
               </div>
               <div className="mt-4">
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[squad.status as keyof typeof statusColors]}`}>
-                  {squad.status}
+                  {statusLabels[squad.status as keyof typeof statusLabels] || squad.status}
                 </span>
               </div>
             </div>
@@ -295,7 +301,7 @@ export default function AdminSquadDetailPage() {
                             <User className="w-8 h-8 text-gray-400" />
                             <div>
                               <p className="font-medium text-white">{member.name}</p>
-                              <p className="text-sm text-gray-400">{member.role} · {member.domaine}</p>
+                              <p className="text-sm text-gray-400">{member.role} · {member.domain}</p>
                             </div>
                           </div>
                           <div className="text-right">
@@ -303,7 +309,7 @@ export default function AdminSquadDetailPage() {
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 member.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                               }`}>
-                                {member.status}
+                                {member.status === 'active' ? 'Actif' : member.status === 'inactive' ? 'Inactif' : member.status}
                               </span>
                             </div>
                             {member.performance_score && (

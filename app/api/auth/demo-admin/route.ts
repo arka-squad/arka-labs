@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { signToken } from '../../../../lib/auth';
+import { generateTokenPair } from '../../../../lib/auth/jwt';
 import { log } from '../../../../lib/logger';
 
 // DEMO endpoint for admin token generation - REMOVE IN PRODUCTION
@@ -8,25 +8,30 @@ export async function GET() {
   
   try {
     const adminUser = {
-      sub: 'demo-admin-user-id',
+      id: 'demo-admin-user-id',
+      email: 'admin@demo.local',
       role: 'admin' as const
     };
-    
-    const token = signToken(adminUser);
+
+    const tokenPair = generateTokenPair(adminUser);
     
     log('info', 'demo_admin_token_generated', {
       route: '/api/auth/demo-admin',
       method: 'GET',
       status: 200,
       duration_ms: Date.now() - start,
-      user_id: adminUser.sub
+      user_id: adminUser.id
     });
 
     return NextResponse.json({
       message: 'Demo admin token generated - REMOVE IN PRODUCTION',
-      token,
+      accessToken: tokenPair.accessToken,
+      refreshToken: tokenPair.refreshToken,
+      jti: tokenPair.jti,
+      accessExpiry: tokenPair.accessExpiry,
+      refreshExpiry: tokenPair.refreshExpiry,
       user: adminUser,
-      usage: 'Add this token as Bearer authorization header'
+      usage: 'Add accessToken as Bearer authorization header'
     });
 
   } catch (error) {

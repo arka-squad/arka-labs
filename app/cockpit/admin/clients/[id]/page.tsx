@@ -12,18 +12,18 @@ export const runtime = 'nodejs';
 
 interface ClientDetails {
   id: string;
-  nom: string;
+  name: string;
   email: string;
-  secteur: string;
-  taille: 'TPE' | 'PME' | 'ETI' | 'GE';
-  contact_principal: {
-    nom: string;
+  sector: string;
+  size: 'small' | 'medium' | 'large' | 'enterprise';
+  primary_contact: {
+    name: string;
     email: string;
     fonction?: string;
-    telephone?: string;
+    phone?: string;
   };
-  contexte_specifique: string;
-  statut: 'actif' | 'inactif' | 'prospect' | 'archive';
+  specific_context: string;
+  status: 'active' | 'inactive' | 'pending';
   projets_count: number;
   projets_actifs: number;
   created_at: string;
@@ -31,18 +31,17 @@ interface ClientDetails {
   created_by: string;
 }
 
-const statutColors = {
-  'actif': 'bg-green-500/20 text-green-400 border-green-500/50',
-  'inactif': 'bg-gray-500/20 text-gray-400 border-gray-500/50',
-  'prospect': 'bg-blue-500/20 text-blue-400 border-blue-500/50',
-  'archive': 'bg-red-500/20 text-red-400 border-red-500/50'
+const statusColors = {
+  'active': 'bg-green-500/20 text-green-400 border-green-500/50',
+  'inactive': 'bg-gray-500/20 text-gray-400 border-gray-500/50',
+  'pending': 'bg-blue-500/20 text-blue-400 border-blue-500/50'
 };
 
-const tailleLabels = {
-  'TPE': 'TPE (1-10 employés)',
-  'PME': 'PME (10-250 employés)',
-  'ETI': 'ETI (250-5000 employés)',
-  'GE': 'Grande Entreprise (5000+ employés)'
+const sizeLabels = {
+  'small': 'TPE (1-10 employés)',
+  'medium': 'PME (10-250 employés)',
+  'large': 'ETI (250-5000 employés)',
+  'enterprise': 'Grande Entreprise (5000+ employés)'
 };
 
 export default function AdminClientDetailPage() {
@@ -156,9 +155,9 @@ export default function AdminClientDetailPage() {
               <ArrowLeft className="w-5 h-5 text-gray-400" />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-white">{client.nom}</h1>
+              <h1 className="text-2xl font-bold text-white">{client.name}</h1>
               <p className="text-sm text-gray-300 mt-1">
-                Client · {client.secteur} · Créé le {formatDate(client.created_at)}
+                Client · {client.sector} · Créé le {formatDate(client.created_at)}
               </p>
             </div>
           </div>
@@ -189,13 +188,13 @@ export default function AdminClientDetailPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-400">Statut</p>
-                  <p className="text-2xl font-semibold text-white mt-2 capitalize">{client.statut}</p>
+                  <p className="text-2xl font-semibold text-white mt-2 capitalize">{client.status}</p>
                 </div>
                 <Building className="w-8 h-8 text-blue-400" />
               </div>
               <div className="mt-4">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${statutColors[client.statut]}`}>
-                  {client.statut}
+                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${statusColors[client.status]}`}>
+                  {client.status}
                 </span>
               </div>
             </div>
@@ -204,12 +203,12 @@ export default function AdminClientDetailPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-400">Taille</p>
-                  <p className="text-2xl font-semibold text-white mt-2">{client.taille}</p>
+                  <p className="text-2xl font-semibold text-white mt-2">{client.size}</p>
                 </div>
                 <Users className="w-8 h-8 text-green-400" />
               </div>
               <p className="text-sm text-gray-400 mt-4">
-                {tailleLabels[client.taille]}
+                {sizeLabels[client.size]}
               </p>
             </div>
 
@@ -255,28 +254,28 @@ export default function AdminClientDetailPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <h3 className="text-sm font-medium text-gray-400 mb-2">Nom de l&apos;entreprise</h3>
-                      <p className="text-white font-medium">{client.nom}</p>
+                      <p className="text-white font-medium">{client.name}</p>
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-gray-400 mb-2">Secteur d&apos;activité</h3>
-                      <p className="text-white">{client.secteur}</p>
+                      <p className="text-white">{client.sector}</p>
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-gray-400 mb-2">Taille</h3>
-                      <p className="text-white">{tailleLabels[client.taille]}</p>
+                      <p className="text-white">{sizeLabels[client.size]}</p>
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-gray-400 mb-2">Statut</h3>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium border ${statutColors[client.statut]}`}>
-                        {client.statut}
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium border ${statusColors[client.status]}`}>
+                        {client.status}
                       </span>
                     </div>
                   </div>
 
-                  {client.contexte_specifique && (
+                  {client.specific_context && (
                     <div>
                       <h3 className="text-sm font-medium text-gray-400 mb-2">Contexte spécifique</h3>
-                      <p className="text-white">{client.contexte_specifique}</p>
+                      <p className="text-white">{client.specific_context}</p>
                     </div>
                   )}
                 </div>
@@ -344,9 +343,9 @@ export default function AdminClientDetailPage() {
                   <div className="flex items-center gap-3">
                     <User className="w-5 h-5 text-gray-400" />
                     <div>
-                      <p className="font-medium text-white">{client.contact_principal.nom}</p>
-                      {client.contact_principal.fonction && (
-                        <p className="text-sm text-gray-400">{client.contact_principal.fonction}</p>
+                      <p className="font-medium text-white">{client.primary_contact?.name || 'Nom non renseigné'}</p>
+                      {client.primary_contact?.fonction && (
+                        <p className="text-sm text-gray-400">{client.primary_contact?.fonction}</p>
                       )}
                     </div>
                   </div>
@@ -354,21 +353,21 @@ export default function AdminClientDetailPage() {
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-gray-400" />
                     <a 
-                      href={`mailto:${client.contact_principal.email}`}
+                      href={`mailto:${client.primary_contact?.email || ''}`}
                       className="text-blue-400 hover:text-blue-300"
                     >
-                      {client.contact_principal.email}
+                      {client.primary_contact?.email || 'Email non renseigné'}
                     </a>
                   </div>
 
-                  {client.contact_principal.telephone && (
+                  {client.primary_contact?.phone && (
                     <div className="flex items-center gap-3">
                       <Phone className="w-5 h-5 text-gray-400" />
                       <a 
-                        href={`tel:${client.contact_principal.telephone}`}
+                        href={`tel:${client.primary_contact?.phone || ''}`}
                         className="text-blue-400 hover:text-blue-300"
                       >
-                        {client.contact_principal.telephone}
+                        {client.primary_contact?.phone || 'Téléphone non renseigné'}
                       </a>
                     </div>
                   )}
@@ -396,7 +395,7 @@ export default function AdminClientDetailPage() {
                     Modifier le client
                   </Link>
                   <a
-                    href={`mailto:${client.contact_principal.email}`}
+                    href={`mailto:${client.primary_contact?.email}`}
                     className="flex items-center gap-2 w-full p-3 text-left bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white"
                   >
                     <Mail className="w-4 h-4" />
@@ -424,7 +423,7 @@ export default function AdminClientDetailPage() {
             </div>
             
             <p className="text-gray-300 mb-6">
-              Êtes-vous sûr de vouloir supprimer le client &quot;{client?.nom}&quot; ? Tous les projets associés seront également affectés.
+              Êtes-vous sûr de vouloir supprimer le client &quot;{client?.name}&quot; ? Tous les projets associés seront également affectés.
             </p>
             
             <div className="flex justify-end gap-3">

@@ -59,16 +59,16 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
 
     // Get squad members with agent details
     const memberRows = await sql`
-      SELECT 
-        sm.agent_id, sm.role, sm.specializations, sm.status,
-        sm.created_at as joined_at,
+      SELECT
+        sm.agent_id, sm.role, sm.status,
+        NOW() as joined_at,
         a.name as agent_name
       FROM squad_members sm
       LEFT JOIN agents a ON sm.agent_id = a.id
       WHERE sm.squad_id = ${squadId} AND sm.status = 'active'
-      ORDER BY 
+      ORDER BY
         CASE sm.role WHEN 'lead' THEN 1 WHEN 'specialist' THEN 2 ELSE 3 END,
-        sm.created_at
+        sm.agent_id
     `;
 
     // Get attached projects
@@ -84,12 +84,11 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
 
     // Get recent instructions
     const instructionRows = await sql`
-      SELECT 
+      SELECT
         si.id, si.content, si.status, si.priority,
         si.created_at, si.completed_at,
-        p.name as project_name
+        null as project_name
       FROM squad_instructions si
-      LEFT JOIN projects p ON si.project_id = p.id
       WHERE si.squad_id = ${squadId}
       ORDER BY si.created_at DESC
       LIMIT 10
@@ -113,7 +112,6 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
         agent_id: row.agent_id,
         agent_name: row.agent_name,
         role: row.role,
-        specializations: row.specializations || [],
         status: row.status,
         joined_at: row.joined_at
       })),

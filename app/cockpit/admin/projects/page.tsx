@@ -8,14 +8,14 @@ import AdminProtection from '../components/AdminProtection';
 
 interface Project {
   id: string; // UUID format
-  nom: string;
+  name: string;
   client: {
     id: string;
-    nom: string;
-    secteur: string;
+    name: string;
+    sector: string;
   };
-  statut: 'actif' | 'inactif' | 'archive' | 'termine';
-  priorite: 'basse' | 'normale' | 'haute' | 'urgente';
+  status: 'active' | 'inactive' | 'archived' | 'completed';
+  priority: 'low' | 'normal' | 'high' | 'urgent';
   budget: number;
   deadline: string;
   agents_count: number;
@@ -51,8 +51,8 @@ export default function ProjectsPage() {
       
       // Construire les paramètres de filtrage
       const params = new URLSearchParams();
-      if (statusFilter) params.append('statut', statusFilter);
-      if (priorityFilter) params.append('priorite', priorityFilter);
+      if (statusFilter) params.append('status', statusFilter);
+      if (priorityFilter) params.append('priority', priorityFilter);
       if (searchTerm) params.append('search', searchTerm);
       
       const response = await fetch(`/api/admin/projects?${params.toString()}`, {
@@ -73,22 +73,22 @@ export default function ProjectsPage() {
     }
   };
 
-  const getStatusColor = (statut: string) => {
-    switch (statut) {
-      case 'actif': return '#10B981';
-      case 'inactif': return '#F59E0B';
-      case 'archive': return '#6B7280';
-      case 'termine': return '#8B5CF6';
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return '#10B981';
+      case 'inactive': return '#F59E0B';
+      case 'archived': return '#6B7280';
+      case 'completed': return '#8B5CF6';
       default: return '#6B7280';
     }
   };
 
-  const getPriorityColor = (priorite?: string) => {
-    switch (priorite) {
-      case 'urgente': return '#EF4444';
-      case 'haute': return '#F59E0B';
-      case 'normale': return '#10B981';
-      case 'basse': return '#6B7280';
+  const getPriorityColor = (priority?: string) => {
+    switch (priority) {
+      case 'urgent': return '#EF4444';
+      case 'high': return '#F59E0B';
+      case 'normal': return '#10B981';
+      case 'low': return '#6B7280';
       default: return '#6B7280';
     }
   };
@@ -103,12 +103,12 @@ export default function ProjectsPage() {
   };
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.client?.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.client?.secteur?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = !statusFilter || project.statut === statusFilter;
-    const matchesPriority = !priorityFilter || project.priorite === priorityFilter;
-    
+    const matchesSearch = project.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.client?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.client?.sector?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = !statusFilter || project.status === statusFilter;
+    const matchesPriority = !priorityFilter || project.priority === priorityFilter;
+
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
@@ -178,10 +178,10 @@ export default function ProjectsPage() {
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm"
               >
                 <option value="">Tous statuts</option>
-                <option value="actif">Actifs</option>
-                <option value="inactif">Inactifs</option>
-                <option value="archive">Archivés</option>
-                <option value="termine">Terminés</option>
+                <option value="active">Actifs</option>
+                <option value="inactive">Inactifs</option>
+                <option value="archived">Archivés</option>
+                <option value="completed">Terminés</option>
               </select>
             </div>
             
@@ -191,10 +191,10 @@ export default function ProjectsPage() {
               className="w-full sm:w-auto bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm"
             >
               <option value="">Toutes priorités</option>
-              <option value="urgente">Urgente</option>
-              <option value="haute">Haute</option>
-              <option value="normale">Normale</option>
-              <option value="basse">Basse</option>
+              <option value="urgent">Urgente</option>
+              <option value="high">Haute</option>
+              <option value="normal">Normale</option>
+              <option value="low">Basse</option>
             </select>
           </div>
         </div>
@@ -232,18 +232,18 @@ export default function ProjectsPage() {
                 <div className="flex items-center space-x-2">
                   <div
                     className="w-3 h-3 rounded-full animate-pulse"
-                    style={{ backgroundColor: getStatusColor(project.statut) }}
+                    style={{ backgroundColor: getStatusColor(project.status) }}
                   />
-                  <span className="text-sm text-gray-400 capitalize">{project.statut}</span>
-                  {project.priorite && (
+                  <span className="text-sm text-gray-400 capitalize">{project.status}</span>
+                  {project.priority && (
                     <span
                       className="px-2 py-1 rounded text-xs font-medium"
-                      style={{ 
-                        backgroundColor: getPriorityColor(project.priorite) + '20',
-                        color: getPriorityColor(project.priorite)
+                      style={{
+                        backgroundColor: getPriorityColor(project.priority) + '20',
+                        color: getPriorityColor(project.priority)
                       }}
                     >
-                      {project.priorite}
+                      {project.priority}
                     </span>
                   )}
                   {project.deadline_alert && project.deadline_alert !== 'ok' && (
@@ -264,15 +264,15 @@ export default function ProjectsPage() {
                 </div>
               </div>
 
-              <h3 className="text-lg font-semibold mb-2 text-white">{project.nom}</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">{project.name}</h3>
               <p className="text-gray-400 text-sm mb-4">Projet #{project.id}</p>
 
               {project.client && (
                 <div className="flex items-center space-x-2 text-sm text-blue-400 mb-4">
                   <Briefcase size={14} />
-                  <span>{project.client.nom}</span>
-                  {project.client.secteur && (
-                    <span className="text-gray-300">• {project.client.secteur}</span>
+                  <span>{project.client.name}</span>
+                  {project.client.sector && (
+                    <span className="text-gray-300">• {project.client.sector}</span>
                   )}
                 </div>
               )}
@@ -347,14 +347,14 @@ export default function ProjectsPage() {
           <div className="mt-8 md:mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             <div className="bg-gray-800 rounded-xl p-6 text-center border border-gray-700">
               <div className="text-2xl font-bold text-green-400 mb-1">
-                {projects.filter(p => p.statut === 'actif').length}
+                {projects.filter(p => p.status === 'active').length}
               </div>
               <div className="text-gray-400 text-sm">Projets Actifs</div>
             </div>
             
             <div className="bg-gray-800 rounded-xl p-6 text-center border border-gray-700">
               <div className="text-2xl font-bold text-yellow-400 mb-1">
-                {projects.filter(p => p.statut === 'inactif').length}
+                {projects.filter(p => p.status === 'inactive').length}
               </div>
               <div className="text-gray-400 text-sm">Projets Inactifs</div>
             </div>

@@ -94,12 +94,12 @@ export function setupAPIRoutes(): APILite {
         const result = await sql`
           SELECT 
             c.id,
-            c.nom,
-            c.secteur,
-            c.taille,
-            c.contact_principal,
-            c.contexte_specifique,
-            c.statut,
+            c.name,
+            c.sector,
+            c.size,
+            c.primary_contact,
+            c.specific_context,
+            c.status,
             c.created_at,
             c.updated_at,
             c.created_by,
@@ -109,7 +109,7 @@ export function setupAPIRoutes(): APILite {
           LEFT JOIN projects p ON p.client_id = c.id
           WHERE c.deleted_at IS NULL
           GROUP BY c.id
-          ORDER BY c.nom ASC 
+          ORDER BY c.name ASC 
           LIMIT 100
         `;
 
@@ -119,36 +119,36 @@ export function setupAPIRoutes(): APILite {
         if (search) {
           const searchLower = search.toLowerCase();
           filteredResult = filteredResult.filter((row: any) =>
-            row.nom?.toLowerCase().includes(searchLower) ||
-            row.contact_principal?.email?.toLowerCase().includes(searchLower)
+            row.name?.toLowerCase().includes(searchLower) ||
+            row.primary_contact?.email?.toLowerCase().includes(searchLower)
           );
         }
 
         if (statut && statut !== '') {
-          filteredResult = filteredResult.filter((row: any) => row.statut === statut);
+          filteredResult = filteredResult.filter((row: any) => row.status === statut);
         }
 
         if (taille && taille !== '') {
-          filteredResult = filteredResult.filter((row: any) => row.taille === taille);
+          filteredResult = filteredResult.filter((row: any) => row.size === taille);
         }
 
         if (secteur && secteur !== '') {
           const secteurLower = secteur.toLowerCase();
           filteredResult = filteredResult.filter((row: any) =>
-            row.secteur?.toLowerCase().includes(secteurLower)
+            row.sector?.toLowerCase().includes(secteurLower)
           );
         }
 
         const items = filteredResult.map((row: any) => ({
           id: row.id,
-          nom: row.nom,
-          email: row.contact_principal?.email || '',
-          secteur: row.secteur || '',
-          taille: row.taille || 'PME',
-          contact_principal: row.contact_principal || null,
-          contact_nom: row.contact_principal?.nom || '',
-          contexte_specifique: row.contexte_specifique || '',
-          statut: row.statut || 'actif',
+          name: row.name,
+          email: row.primary_contact?.email || '',
+          sector: row.sector || '',
+          size: row.size || 'medium',
+          primary_contact: row.primary_contact || null,
+          contact_nom: row.primary_contact?.name || '',
+          specific_context: row.specific_context || '',
+          status: row.status || 'active',
           projets_count: parseInt(row.projets_count) || 0,
           projets_actifs: parseInt(row.projets_actifs) || 0,
           created_at: row.created_at,
@@ -192,12 +192,12 @@ export function setupAPIRoutes(): APILite {
         const result = await sql`
           SELECT 
             c.id,
-            c.nom,
-            c.secteur,
-            c.taille,
-            c.contact_principal,
-            c.contexte_specifique,
-            c.statut,
+            c.name,
+            c.sector,
+            c.size,
+            c.primary_contact,
+            c.specific_context,
+            c.status,
             c.created_at,
             c.updated_at,
             c.created_by
@@ -237,13 +237,13 @@ export function setupAPIRoutes(): APILite {
 
         const client = {
           id: row.id,
-          nom: row.nom,
-          email: row.contact_principal?.email || '',
-          secteur: row.secteur || '',
-          taille: row.taille || 'PME',
-          contact_principal: row.contact_principal || null,
-          contexte_specifique: row.contexte_specifique || '',
-          statut: row.statut || 'actif',
+          name: row.name,
+          email: row.primary_contact?.email || '',
+          sector: row.sector || '',
+          size: row.size || 'medium',
+          primary_contact: row.primary_contact || null,
+          specific_context: row.specific_context || '',
+          status: row.status || 'active',
           projets_count,
           projets_actifs,
           created_at: row.created_at,
@@ -269,12 +269,12 @@ export function setupAPIRoutes(): APILite {
     .middleware(
       validationMiddleware({
         body: {
-          nom: { type: 'string', required: true, min: 1, max: 255 },
-          secteur: { type: 'string', required: true, min: 1, max: 255 },
-          taille: { type: 'enum', values: ['TPE', 'PME', 'ETI', 'GE'] },
-          contact_principal: { type: 'string', required: true }, // JSON object validation would need custom logic
-          contexte_specifique: { type: 'string', max: 2000 },
-          statut: { type: 'enum', values: ['actif', 'inactif', 'prospect', 'archive'] }
+          name: { type: 'string', required: true, min: 1, max: 255 },
+          sector: { type: 'string', required: true, min: 1, max: 255 },
+          size: { type: 'enum', values: ['small', 'medium', 'large', 'enterprise'] },
+          primary_contact: { type: 'string', required: true }, // JSON object validation would need custom logic
+          specific_context: { type: 'string', max: 2000 },
+          status: { type: 'enum', values: ['active', 'inactive', 'pending'] }
         }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager'] })
@@ -284,24 +284,24 @@ export function setupAPIRoutes(): APILite {
       const body = context.metadata.get('body');
 
       const {
-        nom,
-        secteur,
-        taille = 'PME',
-        contact_principal,
-        contexte_specifique = '',
-        statut = 'actif'
+        name,
+        sector,
+        size = 'medium',
+        primary_contact,
+        specific_context = '',
+        status = 'active'
       } = body;
 
       try {
-        // Validate contact_principal structure
+        // Validate primary_contact structure
         let parsedContact;
-        if (typeof contact_principal === 'string') {
-          parsedContact = JSON.parse(contact_principal);
+        if (typeof primary_contact === 'string') {
+          parsedContact = JSON.parse(primary_contact);
         } else {
-          parsedContact = contact_principal;
+          parsedContact = primary_contact;
         }
 
-        if (!parsedContact.nom || !parsedContact.email) {
+        if (!parsedContact.name || !parsedContact.email) {
           return NextResponse.json(
             { error: 'Le nom et l\'email du contact principal sont obligatoires' },
             { status: 400 }
@@ -313,29 +313,29 @@ export function setupAPIRoutes(): APILite {
         const result = await sql`
           INSERT INTO clients (
             id,
-            nom,
-            secteur,
-            taille,
-            contact_principal,
-            contexte_specifique,
-            statut,
+            name,
+            sector,
+            size,
+            primary_contact,
+            specific_context,
+            status,
             created_by,
             created_at,
             updated_at
           )
           VALUES (
             ${clientId},
-            ${nom},
-            ${secteur},
-            ${taille},
+            ${name},
+            ${sector},
+            ${size},
             ${JSON.stringify(parsedContact)},
-            ${contexte_specifique},
-            ${statut},
+            ${specific_context},
+            ${status},
             ${user?.id || 'system'},
             CURRENT_TIMESTAMP,
             CURRENT_TIMESTAMP
           )
-          RETURNING id, nom, secteur, taille, contact_principal, contexte_specifique, statut, created_at, created_by
+          RETURNING id, name, sector, size, primary_contact, specific_context, status, created_at, created_by
         `;
 
         const client = result[0];
@@ -346,12 +346,12 @@ export function setupAPIRoutes(): APILite {
         return NextResponse.json({
           success: true,
           id: client.id,
-          nom: client.nom,
-          secteur: client.secteur,
-          taille: client.taille,
-          contact_principal: client.contact_principal,
-          contexte_specifique: client.contexte_specifique,
-          statut: client.statut,
+          name: client.name,
+          sector: client.sector,
+          size: client.size,
+          primary_contact: client.primary_contact,
+          specific_context: client.specific_context,
+          status: client.status,
           created_at: client.created_at,
           created_by: client.created_by
         });
@@ -373,11 +373,11 @@ export function setupAPIRoutes(): APILite {
       validationMiddleware({
         params: { id: { type: 'number', required: true } },
         body: {
-          nom: { type: 'string', min: 1, max: 255 },
-          secteur: { type: 'string', min: 1, max: 255 },
-          taille: { type: 'enum', values: ['TPE', 'PME', 'ETI', 'GE'] },
-          contexte_specifique: { type: 'string', max: 2000 },
-          statut: { type: 'enum', values: ['actif', 'inactif', 'prospect', 'archive'] }
+          name: { type: 'string', min: 1, max: 255 },
+          sector: { type: 'string', min: 1, max: 255 },
+          size: { type: 'enum', values: ['small', 'medium', 'large', 'enterprise'] },
+          specific_context: { type: 'string', max: 2000 },
+          status: { type: 'enum', values: ['active', 'inactive', 'pending'] }
         }
       }),
       rbacMiddleware({ required: true, roles: ['admin', 'manager'] })
@@ -403,17 +403,17 @@ export function setupAPIRoutes(): APILite {
 
         // Build update object
         const updateData: any = { updated_at: sql`NOW()` };
-        
-        if (body.nom) updateData.nom = body.nom;
-        if (body.secteur) updateData.secteur = body.secteur;
-        if (body.taille) updateData.taille = body.taille;
-        if (body.contexte_specifique !== undefined) updateData.contexte_specifique = body.contexte_specifique;
-        if (body.statut) updateData.statut = body.statut;
-        if (body.contact_principal) {
-          const parsedContact = typeof body.contact_principal === 'string' 
-            ? JSON.parse(body.contact_principal) 
-            : body.contact_principal;
-          updateData.contact_principal = JSON.stringify(parsedContact);
+
+        if (body.name) updateData.name = body.name;
+        if (body.sector) updateData.sector = body.sector;
+        if (body.size) updateData.size = body.size;
+        if (body.specific_context !== undefined) updateData.specific_context = body.specific_context;
+        if (body.status) updateData.status = body.status;
+        if (body.primary_contact) {
+          const parsedContact = typeof body.primary_contact === 'string'
+            ? JSON.parse(body.primary_contact)
+            : body.primary_contact;
+          updateData.primary_contact = JSON.stringify(parsedContact);
         }
 
         const result = await sql`
@@ -432,9 +432,9 @@ export function setupAPIRoutes(): APILite {
 
         const updatedClient = {
           ...result[0],
-          contact_principal: typeof result[0].contact_principal === 'string' 
-            ? JSON.parse(result[0].contact_principal) 
-            : result[0].contact_principal
+          primary_contact: typeof result[0].primary_contact === 'string'
+            ? JSON.parse(result[0].primary_contact)
+            : result[0].primary_contact
         };
 
         // Clear cache après modification
@@ -545,9 +545,9 @@ export function setupAPIRoutes(): APILite {
             p.created_at,
             p.updated_at,
             p.created_by,
-            c.nom as client_name,
-            c.secteur as client_secteur,
-            c.taille as client_taille,
+            c.name as client_name,
+            c.sector as client_sector,
+            c.size as client_size,
             COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') as agents_count,
             COUNT(DISTINCT ps.squad_id) FILTER (WHERE ps.status = 'active') as squads_count
           FROM projects p
@@ -555,7 +555,7 @@ export function setupAPIRoutes(): APILite {
           LEFT JOIN project_assignments pa ON p.id = pa.project_id
           LEFT JOIN project_squads ps ON p.id = ps.project_id
           WHERE p.deleted_at IS NULL AND c.deleted_at IS NULL
-          GROUP BY p.id, c.nom, c.secteur, c.taille
+          GROUP BY p.id, c.name, c.sector, c.size
           ORDER BY p.created_at DESC
           LIMIT 100
         `;
@@ -590,8 +590,8 @@ export function setupAPIRoutes(): APILite {
           description: row.description || '',
           client_id: row.client_id,
           client_name: row.client_name,
-          client_secteur: row.client_secteur || '',
-          client_taille: row.client_taille || '',
+          client_sector: row.client_sector || '',
+          client_size: row.client_size || '',
           status: row.status || 'draft',
           priority: row.priority || 'medium',
           budget: row.budget || null,
@@ -4230,7 +4230,7 @@ async function getSingleAgent(agentId: string) {
         p.deadline,
         pa.status as assignment_status,
         pa.created_at as assigned_at,
-        c.nom as client_name,
+        c.name as client_name,
         CASE 
           WHEN p.deadline < CURRENT_DATE THEN 'depassee'
           WHEN p.deadline <= CURRENT_DATE + INTERVAL '7 days' THEN 'proche'
@@ -4302,10 +4302,10 @@ async function getSingleProject(projectId: string) {
     const result = await sql`
       SELECT 
         p.*,
-        c.nom as client_name,
-        c.secteur as client_secteur,
-        c.taille as client_taille,
-        c.contact_principal as client_contact,
+        c.name as client_name,
+        c.sector as client_sector,
+        c.size as client_size,
+        c.primary_contact as client_contact,
         COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') as agents_assigned,
         COUNT(DISTINCT ps.squad_id) FILTER (WHERE ps.status = 'active') as squads_assigned,
         -- Budget analysis
@@ -4345,7 +4345,7 @@ async function getSingleProject(projectId: string) {
       LEFT JOIN project_assignments pa ON p.id = pa.project_id
       LEFT JOIN project_squads ps ON p.id = ps.project_id
       WHERE p.id = ${projectId}::integer AND p.deleted_at IS NULL
-      GROUP BY p.id, c.nom, c.secteur, c.taille, c.contact_principal
+      GROUP BY p.id, c.name, c.sector, c.size, c.primary_contact
     `;
 
     if (result.length === 0) {
@@ -4363,8 +4363,8 @@ async function getSingleProject(projectId: string) {
       description: row.description || '',
       client_id: row.client_id,
       client_name: row.client_name,
-      client_secteur: row.client_secteur || '',
-      client_taille: row.client_taille || '',
+      client_sector: row.client_sector || '',
+      client_size: row.client_size || '',
       client_contact: row.client_contact || null,
       status: row.status || 'draft',
       priority: row.priority || 'medium',

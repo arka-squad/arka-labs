@@ -105,8 +105,8 @@ export default function SquadsPage() {
   };
 
   const filteredSquads = squads.filter(squad =>
-    squad.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    squad.domain.toLowerCase().includes(searchTerm.toLowerCase())
+    squad.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    squad.domain?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading && squads.length === 0) {
@@ -264,7 +264,7 @@ export default function SquadsPage() {
                 <div>
                   <div className="text-lg font-bold text-yellow-400">
                     {squad.avg_completion_hours > 0 
-                      ? `${squad.avg_completion_hours.toFixed(1)}h` 
+                      ? `${(squad.avg_completion_hours || 0).toFixed(1)}h` 
                       : '—'}
                   </div>
                   <div className="text-xs text-gray-300">Moy.</div>
@@ -274,7 +274,7 @@ export default function SquadsPage() {
               <div className="pt-4 border-t border-gray-700">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-gray-300">
-                    Par {squad.created_by.split('@')[0]}
+                    Par {squad.created_by?.split('@')[0] || 'Utilisateur'}
                   </span>
                   <span className="text-gray-300">
                     {new Date(squad.created_at).toLocaleDateString('fr-FR')}
@@ -334,7 +334,7 @@ export default function SquadsPage() {
             <div className="bg-gray-800 rounded-xl p-4 text-center border border-gray-700">
               <div className="text-xl font-bold text-yellow-400 mb-1">
                 {squads.length > 0 
-                  ? (squads.reduce((sum, s) => sum + s.avg_completion_hours, 0) / squads.length).toFixed(1)
+                  ? (squads.reduce((sum, s) => sum + (s.avg_completion_hours || 0), 0) / squads.length).toFixed(1)
                   : '0'}h
               </div>
               <div className="text-gray-400 text-sm">Temps Moyen</div>

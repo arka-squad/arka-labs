@@ -13,7 +13,6 @@ export const runtime = 'nodejs';
 const AddMemberSchema = z.object({
   agent_id: z.string().uuid(),
   role: z.enum(['lead', 'specialist', 'contributor']),
-  specializations: z.array(z.string()).default([]),
   permissions: z.record(z.boolean()).default({})
 });
 
@@ -25,7 +24,7 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { para
   
   try {
     const body = await req.json();
-    const { agent_id, role, specializations, permissions } = AddMemberSchema.parse(body);
+    const { agent_id, role, permissions } = AddMemberSchema.parse(body);
     
     // Validate squad state (must be active)
     const squadValidation = await validateSquadState(squadId, ['active']);
@@ -66,10 +65,10 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { para
       const rows = await sql`
         UPDATE squad_members 
         SET status = 'active', role = ${role}, 
-            specializations = ${specializations}, permissions = ${JSON.stringify(permissions)},
+            permissions = ${JSON.stringify(permissions)},
             created_at = NOW()
         WHERE squad_id = ${squadId} AND agent_id = ${agent_id}
-        RETURNING id, squad_id, agent_id, role, specializations, permissions, status, created_at
+        RETURNING id, squad_id, agent_id, role, permissions, status, created_at
       `;
       
       const membership = rows[0];
@@ -79,7 +78,6 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { para
         agent_id: membership.agent_id,
         agent_name: agent.name,
         role: membership.role,
-        specializations: membership.specializations || [],
         permissions: membership.permissions || {},
         created_at: membership.created_at
       };
@@ -116,9 +114,9 @@ export const POST = withAdminAuth(['admin', 'manager'])(async (req, user, { para
 
     // Add new member
     const rows = await sql`
-      INSERT INTO squad_members (squad_id, agent_id, role, specializations, permissions)
-      VALUES (${squadId}, ${agent_id}, ${role}, ${specializations}, ${JSON.stringify(permissions)})
-      RETURNING id, squad_id, agent_id, role, specializations, permissions, status, created_at
+      INSERT INTO squad_members (squad_id, agent_id, role, permissions)
+      VALUES (${squadId}, ${agent_id}, ${role}, ${JSON.stringify(permissions)})
+      RETURNING id, squad_id, agent_id, role, permissions, status, created_at
     `;
 
     const membership = rows[0];

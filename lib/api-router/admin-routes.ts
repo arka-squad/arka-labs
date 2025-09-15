@@ -310,9 +310,9 @@ async function adminProjectsQueryGET(req: NextRequest, params: RouteParams) {
     // Return projects listing (with French naming convention to match frontend)
     try {
       const result = await sql`
-        SELECT 
+        SELECT
           p.id,
-          p.name AS nom,
+          p.name,
           p.description,
           p.client_id,
           p.budget,
@@ -324,9 +324,9 @@ async function adminProjectsQueryGET(req: NextRequest, params: RouteParams) {
           p.created_at,
           p.updated_at,
           p.created_by,
-          c.nom as client_name,
-          c.secteur as client_secteur,
-          c.taille as client_taille,
+          c.name as client_name,
+          c.sector as client_sector,
+          c.size as client_size,
           COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') as agents_count,
           COUNT(DISTINCT ps.squad_id) FILTER (WHERE ps.status = 'active') as squads_count
         FROM projects p
@@ -334,21 +334,21 @@ async function adminProjectsQueryGET(req: NextRequest, params: RouteParams) {
         LEFT JOIN project_assignments pa ON p.id = pa.project_id
         LEFT JOIN project_squads ps ON p.id = ps.project_id
         WHERE p.deleted_at IS NULL
-        GROUP BY p.id, c.nom, c.secteur, c.taille
+        GROUP BY p.id, c.name, c.sector, c.size
         ORDER BY p.created_at DESC
         LIMIT 50
       `;
       
       const formattedItems = result.map(row => ({
         id: row.id,
-        nom: row.nom,
+        name: row.name,
         client: {
           id: row.client_id,
-          nom: row.client_name,
-          secteur: row.client_secteur
+          name: row.client_name,
+          sector: row.client_sector
         },
-        statut: row.status, // Map status -> statut
-        priorite: row.priority, // Map priority -> priorite  
+        status: row.status,
+        priority: row.priority,
         budget: row.budget,
         deadline: row.deadline,
         agents_count: parseInt(row.agents_count) || 0,
@@ -418,9 +418,9 @@ async function adminProjectsQueryPOST(req: NextRequest, params: RouteParams) {
   return withAdminAuth(['admin', 'manager'])(async (request: NextRequest, user: any) => {
     try {
       const body = await req.json();
-      const { nom, description, client_id, budget, deadline, priority = 'normal', status = 'active', tags = [], requirements = [] } = body;
+      const { name, description, client_id, budget, deadline, priority = 'normal', status = 'active', tags = [], requirements = [] } = body;
 
-      if (!nom || !client_id) {
+      if (!name || !client_id) {
         return NextResponse.json(
           { error: 'Project name and client ID are required' },
           { status: 400 }
@@ -430,7 +430,7 @@ async function adminProjectsQueryPOST(req: NextRequest, params: RouteParams) {
       const result = await sql`
         INSERT INTO projects (name, description, client_id, budget, deadline, priority, status, tags, requirements, created_by)
         VALUES (
-          ${nom}, 
+          ${name}, 
           ${description}, 
           ${client_id}::uuid, 
           ${budget || null}, 
@@ -577,10 +577,10 @@ async function getSingleProjectQuery(projectId: string, req: NextRequest, user: 
     const [projectDetails] = await sql`
       SELECT 
         p.*,
-        c.nom as client_name,
-        c.secteur as client_secteur,
-        c.taille as client_taille,
-        c.contact_principal as client_contact,
+        c.name as client_name,
+        c.sector as client_sector,
+        c.size as client_size,
+        c.primary_contact as client_contact,
         COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') as agents_assigned,
         COUNT(DISTINCT ps.squad_id) FILTER (WHERE ps.status = 'active') as squads_assigned,
         -- Budget analysis
@@ -620,7 +620,7 @@ async function getSingleProjectQuery(projectId: string, req: NextRequest, user: 
       LEFT JOIN project_assignments pa ON p.id = pa.project_id
       LEFT JOIN project_squads ps ON p.id = ps.project_id
       WHERE p.id = ${projectId} AND p.deleted_at IS NULL
-      GROUP BY p.id, c.nom, c.secteur, c.taille, c.contact_principal
+      GROUP BY p.id, c.name, c.sector, c.size, c.primary_contact
     `;
 
     if (!projectDetails) {
@@ -916,12 +916,12 @@ async function getSingleClientQuery(clientId: string) {
   const result = await sql`
     SELECT 
       c.id,
-      c.nom,
-      c.secteur,
-      c.taille,
-      c.contact_principal,
-      c.contexte_specifique,
-      c.statut,
+      c.name,
+      c.sector,
+      c.size,
+      c.primary_contact,
+      c.specific_context,
+      c.status,
       c.created_at,
       c.updated_at,
       c.created_by
@@ -962,13 +962,14 @@ async function getSingleClientQuery(clientId: string) {
   
   const client = {
     id: row.id,
-    nom: row.nom,
-    email: row.contact_principal?.email || '',
-    secteur: row.secteur || '',
-    taille: row.taille || 'PME',
-    contact_principal: row.contact_principal || null,
-    contexte_specifique: row.contexte_specifique || '',
-    statut: row.statut || 'actif',
+    name: row.name,
+    email: row.primary_contact?.email || '',
+    sector: row.sector || '',
+    size: row.size || 'medium',
+    primary_contact: row.primary_contact || null,
+    contact_nom: row.primary_contact?.name || '',
+    specific_context: row.specific_context || '',
+    status: row.status || 'active',
     projets_count,
     projets_actifs,
     created_at: row.created_at,
@@ -985,19 +986,19 @@ async function getClientsList(query: Record<string, string>) {
   console.log(`[API Router] Getting clients list with filters:`, query);
   
   const search = query.search || '';
-  const statut = query.statut || '';
-  const taille = query.taille || '';
-  const secteur = query.secteur || '';
+  const status = query.status || '';
+  const size = query.size || '';
+  const sector = query.sector || '';
   
   const result = await sql`
     SELECT 
       c.id,
-      c.nom,
-      c.secteur,
-      c.taille,
-      c.contact_principal,
-      c.contexte_specifique,
-      c.statut,
+      c.name,
+      c.sector,
+      c.size,
+      c.primary_contact,
+      c.specific_context,
+      c.status,
       c.created_at,
       c.updated_at,
       c.created_by,
@@ -1007,7 +1008,7 @@ async function getClientsList(query: Record<string, string>) {
     LEFT JOIN projects p ON p.client_id = c.id
     WHERE c.deleted_at IS NULL
     GROUP BY c.id
-    ORDER BY c.nom ASC 
+    ORDER BY c.name ASC 
     LIMIT 100
   `;
   
@@ -1016,37 +1017,37 @@ async function getClientsList(query: Record<string, string>) {
   
   if (search) {
     const searchLower = search.toLowerCase();
-    filteredResult = filteredResult.filter((row: any) => 
-      row.nom?.toLowerCase().includes(searchLower) ||
-      row.contact_principal?.email?.toLowerCase().includes(searchLower)
+    filteredResult = filteredResult.filter((row: any) =>
+      row.name?.toLowerCase().includes(searchLower) ||
+      row.primary_contact?.email?.toLowerCase().includes(searchLower)
     );
   }
-  
-  if (statut && statut !== '') {
-    filteredResult = filteredResult.filter((row: any) => row.statut === statut);
+
+  if (status && status !== '') {
+    filteredResult = filteredResult.filter((row: any) => row.status === status);
   }
-  
-  if (taille && taille !== '') {
-    filteredResult = filteredResult.filter((row: any) => row.taille === taille);
+
+  if (size && size !== '') {
+    filteredResult = filteredResult.filter((row: any) => row.size === size);
   }
-  
-  if (secteur && secteur !== '') {
-    const secteurLower = secteur.toLowerCase();
-    filteredResult = filteredResult.filter((row: any) => 
-      row.secteur?.toLowerCase().includes(secteurLower)
+
+  if (sector && sector !== '') {
+    const sectorLower = sector.toLowerCase();
+    filteredResult = filteredResult.filter((row: any) =>
+      row.sector?.toLowerCase().includes(sectorLower)
     );
   }
   
   const items = filteredResult.map((row: any) => ({
     id: row.id,
-    nom: row.nom,
-    email: row.contact_principal?.email || '',
-    secteur: row.secteur || '',
-    taille: row.taille || 'PME',
-    contact_principal: row.contact_principal || null,
-    contact_nom: row.contact_principal?.nom || '',
-    contexte_specifique: row.contexte_specifique || '',
-    statut: row.statut || 'actif',
+    name: row.name,
+    email: row.primary_contact?.email || '',
+    sector: row.sector || '',
+    size: row.size || 'medium',
+    primary_contact: row.primary_contact || null,
+    contact_nom: row.primary_contact?.name || '',
+    specific_context: row.specific_context || '',
+    status: row.status || 'active',
     projets_count: parseInt(row.projets_count) || 0,
     projets_actifs: parseInt(row.projets_actifs) || 0,
     created_at: row.created_at,
@@ -1068,24 +1069,24 @@ async function getClientsList(query: Record<string, string>) {
 // Mettre à jour un client
 async function updateClient(clientId: string, body: any, user: any) {
   console.log(`[API Router] Updating client ${clientId} for user:`, user?.id);
-  
-  const { 
-    nom, 
-    secteur,
-    taille,
-    contact_principal,
-    contexte_specifique,
-    statut 
+
+  const {
+    name,
+    sector,
+    size,
+    primary_contact,
+    specific_context,
+    status
   } = body;
 
-  if (!nom || !secteur) {
+  if (!name || !sector) {
     return NextResponse.json(
       { error: 'Le nom et le secteur sont obligatoires' },
       { status: 400 }
     );
   }
 
-  if (!contact_principal?.nom || !contact_principal?.email) {
+  if (!primary_contact?.name || !primary_contact?.email) {
     return NextResponse.json(
       { error: 'Le nom et l\'email du contact principal sont obligatoires' },
       { status: 400 }
@@ -1106,17 +1107,17 @@ async function updateClient(clientId: string, body: any, user: any) {
   
   // Mettre à jour le client
   const result = await sql`
-    UPDATE clients 
-    SET 
-      nom = ${nom},
-      secteur = ${secteur},
-      taille = ${taille || 'PME'},
-      contact_principal = ${JSON.stringify(contact_principal)},
-      contexte_specifique = ${contexte_specifique || ''},
-      statut = ${statut || 'actif'},
+    UPDATE clients
+    SET
+      name = ${name},
+      sector = ${sector},
+      size = ${size || 'medium'},
+      primary_contact = ${JSON.stringify(primary_contact)},
+      specific_context = ${specific_context || ''},
+      status = ${status || 'active'},
       updated_at = CURRENT_TIMESTAMP
     WHERE id = ${clientId}::uuid AND deleted_at IS NULL
-    RETURNING id, nom, secteur, taille, contact_principal, contexte_specifique, statut, updated_at
+    RETURNING id, name, sector, size, primary_contact, specific_context, status, updated_at
   `;
   
   const client = result[0];
@@ -1124,12 +1125,12 @@ async function updateClient(clientId: string, body: any, user: any) {
   return NextResponse.json({
     success: true,
     id: client.id,
-    nom: client.nom,
-    secteur: client.secteur,
-    taille: client.taille,
-    contact_principal: client.contact_principal,
-    contexte_specifique: client.contexte_specifique,
-    statut: client.statut,
+    name: client.name,
+    sector: client.sector,
+    size: client.size,
+    primary_contact: client.primary_contact,
+    specific_context: client.specific_context,
+    status: client.status,
     updated_at: client.updated_at,
     _strategy: 'update'
   });
@@ -1179,24 +1180,24 @@ async function deleteClient(clientId: string, user: any) {
 // Créer un nouveau client
 async function createClient(body: any, user: any) {
   console.log(`[API Router] Creating client for user:`, user?.id);
-  
-  const { 
-    nom, 
-    secteur,
-    taille,
-    contact_principal,
-    contexte_specifique,
-    statut 
+
+  const {
+    name,
+    sector,
+    size,
+    primary_contact,
+    specific_context,
+    status
   } = body;
 
-  if (!nom || !secteur) {
+  if (!name || !sector) {
     return NextResponse.json(
       { error: 'Le nom et le secteur sont obligatoires' },
       { status: 400 }
     );
   }
 
-  if (!contact_principal?.nom || !contact_principal?.email) {
+  if (!primary_contact?.name || !primary_contact?.email) {
     return NextResponse.json(
       { error: 'Le nom et l\'email du contact principal sont obligatoires' },
       { status: 400 }
@@ -1208,29 +1209,29 @@ async function createClient(body: any, user: any) {
   const result = await sql`
     INSERT INTO clients (
       id,
-      nom,
-      secteur,
-      taille,
-      contact_principal,
-      contexte_specifique,
-      statut,
+      name,
+      sector,
+      size,
+      primary_contact,
+      specific_context,
+      status,
       created_by,
       created_at,
       updated_at
     )
     VALUES (
       ${clientId},
-      ${nom},
-      ${secteur},
-      ${taille || 'PME'},
-      ${JSON.stringify(contact_principal)},
-      ${contexte_specifique || ''},
-      ${statut || 'actif'},
+      ${name},
+      ${sector},
+      ${size || 'medium'},
+      ${JSON.stringify(primary_contact)},
+      ${specific_context || ''},
+      ${status || 'active'},
       ${user?.id || 'system'},
       CURRENT_TIMESTAMP,
       CURRENT_TIMESTAMP
     )
-    RETURNING id, nom, secteur, taille, contact_principal, contexte_specifique, statut, created_at, created_by
+    RETURNING id, name, sector, size, primary_contact, specific_context, status, created_at, created_by
   `;
 
   const client = result[0];

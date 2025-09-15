@@ -11,31 +11,31 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 interface ClientForm {
-  nom: string;
-  secteur: string;
-  taille: 'TPE' | 'PME' | 'ETI' | 'GE';
-  contact_principal: {
-    nom: string;
+  name: string;
+  sector: string;
+  size: 'small' | 'medium' | 'large' | 'enterprise';
+  primary_contact: {
+    name: string;
     email: string;
-    telephone?: string;
-    fonction?: string;
+    phone?: string;
+    function?: string;
   };
-  contexte_specifique?: string;
-  statut: 'actif' | 'inactif' | 'prospect' | 'archive';
+  specific_context?: string;
+  status: 'active' | 'inactive' | 'pending';
 }
 
 const initialForm: ClientForm = {
-  nom: '',
-  secteur: '',
-  taille: 'PME',
-  contact_principal: {
-    nom: '',
+  name: '',
+  sector: '',
+  size: 'medium',
+  primary_contact: {
+    name: '',
     email: '',
-    telephone: '',
-    fonction: ''
+    phone: '',
+    function: ''
   },
-  contexte_specifique: '',
-  statut: 'actif'
+  specific_context: '',
+  status: 'active'
 };
 
 export default function AdminEditClientPage() {
@@ -69,23 +69,23 @@ export default function AdminEditClientPage() {
 
       const client = await response.json();
       
-      // Parse contact_principal if it's a string
-      let contactPrincipal = client.contact_principal;
-      if (typeof contactPrincipal === 'string') {
+      // Parse primary_contact if it's a string
+      let primaryContact = client.primary_contact;
+      if (typeof primaryContact === 'string') {
         try {
-          contactPrincipal = JSON.parse(contactPrincipal);
+          primaryContact = JSON.parse(primaryContact);
         } catch {
-          contactPrincipal = { nom: '', email: '', telephone: '', fonction: '' };
+          primaryContact = { name: '', email: '', phone: '', function: '' };
         }
       }
 
       setForm({
-        nom: client.nom || '',
-        secteur: client.secteur || '',
-        taille: client.taille || 'PME',
-        contact_principal: contactPrincipal || { nom: '', email: '', telephone: '', fonction: '' },
-        contexte_specifique: client.contexte_specifique || '',
-        statut: client.statut || 'actif'
+        name: client.name || '',
+        sector: client.sector || '',
+        size: client.size || 'medium',
+        primary_contact: primaryContact || { name: '', email: '', phone: '', function: '' },
+        specific_context: client.specific_context || '',
+        status: client.status || 'active'
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de chargement');
@@ -96,7 +96,7 @@ export default function AdminEditClientPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.nom.length < 2) {
+    if (form.name.length < 2) {
       setError('Le nom doit contenir au moins 2 caractères');
       return;
     }
@@ -174,10 +174,11 @@ export default function AdminEditClientPage() {
   }
 
   return (
-    <div className="min-h-screen console-theme">
-      {/* Admin Navigation */}
-      <div className="px-4 sm:px-6 lg:px-8 py-4">
-        <AdminNavigation />
+    <AdminProtection allowedRoles={['admin', 'manager']}>
+      <div className="min-h-screen console-theme">
+        {/* Admin Navigation */}
+        <div className="px-4 sm:px-6 lg:px-8 py-4">
+          <AdminNavigation />
         
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
@@ -227,8 +228,8 @@ export default function AdminEditClientPage() {
                   <input
                     type="text"
                     required
-                    value={form.nom}
-                    onChange={(e) => setForm(prev => ({ ...prev, nom: e.target.value }))}
+                    value={form.name}
+                    onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full bg-gray-700 border border-gray-600 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="ex: Acme Corporation"
                   />
@@ -242,8 +243,8 @@ export default function AdminEditClientPage() {
                 <input
                   type="text"
                   required
-                  value={form.secteur}
-                  onChange={(e) => setForm(prev => ({ ...prev, secteur: e.target.value }))}
+                  value={form.sector}
+                  onChange={(e) => setForm(prev => ({ ...prev, sector: e.target.value }))}
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="ex: Technologie, Finance, Santé..."
                 />
@@ -254,14 +255,14 @@ export default function AdminEditClientPage() {
                   Taille de l&apos;entreprise
                 </label>
                 <select
-                  value={form.taille}
-                  onChange={(e) => setForm(prev => ({ ...prev, taille: e.target.value as any }))}
+                  value={form.size}
+                  onChange={(e) => setForm(prev => ({ ...prev, size: e.target.value as any }))}
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="TPE">TPE (1-10 employés)</option>
-                  <option value="PME">PME (10-250 employés)</option>
-                  <option value="ETI">ETI (250-5000 employés)</option>
-                  <option value="GE">Grande Entreprise (5000+ employés)</option>
+                  <option value="small">TPE (1-10 employés)</option>
+                  <option value="medium">PME (10-250 employés)</option>
+                  <option value="large">ETI (250-5000 employés)</option>
+                  <option value="enterprise">Grande Entreprise (5000+ employés)</option>
                 </select>
               </div>
 
@@ -270,14 +271,14 @@ export default function AdminEditClientPage() {
                   Statut
                 </label>
                 <select
-                  value={form.statut}
-                  onChange={(e) => setForm(prev => ({ ...prev, statut: e.target.value as any }))}
+                  value={form.status}
+                  onChange={(e) => setForm(prev => ({ ...prev, status: e.target.value as any }))}
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="prospect">Prospect</option>
-                  <option value="actif">Actif</option>
-                  <option value="inactif">Inactif</option>
-                  <option value="archive">Archivé</option>
+                  <option value="pending">Prospect</option>
+                  <option value="active">Actif</option>
+                  <option value="inactive">Inactif</option>
+                  <option value="inactive">Archivé</option>
                 </select>
               </div>
             </div>
@@ -295,10 +296,10 @@ export default function AdminEditClientPage() {
                   </label>
                   <input
                     type="text"
-                    value={form.contact_principal.nom}
+                    value={form.primary_contact.name}
                     onChange={(e) => setForm(prev => ({
                       ...prev,
-                      contact_principal: { ...prev.contact_principal, nom: e.target.value }
+                      primary_contact: { ...prev.primary_contact, name: e.target.value }
                     }))}
                     className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="ex: Jean Dupont"
@@ -313,10 +314,10 @@ export default function AdminEditClientPage() {
                     <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                     <input
                       type="email"
-                      value={form.contact_principal.email}
+                      value={form.primary_contact.email}
                       onChange={(e) => setForm(prev => ({
                         ...prev,
-                        contact_principal: { ...prev.contact_principal, email: e.target.value }
+                        primary_contact: { ...prev.primary_contact, email: e.target.value }
                       }))}
                       className="w-full bg-gray-700 border border-gray-600 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="ex: jean@acme.com"
@@ -332,10 +333,10 @@ export default function AdminEditClientPage() {
                     <Phone className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                     <input
                       type="tel"
-                      value={form.contact_principal.telephone}
+                      value={form.primary_contact.phone}
                       onChange={(e) => setForm(prev => ({
                         ...prev,
-                        contact_principal: { ...prev.contact_principal, telephone: e.target.value }
+                        primary_contact: { ...prev.primary_contact, phone: e.target.value }
                       }))}
                       className="w-full bg-gray-700 border border-gray-600 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="ex: +33 1 23 45 67 89"
@@ -349,10 +350,10 @@ export default function AdminEditClientPage() {
                   </label>
                   <input
                     type="text"
-                    value={form.contact_principal.fonction}
+                    value={form.primary_contact.function}
                     onChange={(e) => setForm(prev => ({
                       ...prev,
-                      contact_principal: { ...prev.contact_principal, fonction: e.target.value }
+                      primary_contact: { ...prev.primary_contact, function: e.target.value }
                     }))}
                     className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="ex: Directeur Général"
@@ -367,8 +368,8 @@ export default function AdminEditClientPage() {
                 Contexte spécifique
               </label>
               <textarea
-                value={form.contexte_specifique}
-                onChange={(e) => setForm(prev => ({ ...prev, contexte_specifique: e.target.value }))}
+                value={form.specific_context}
+                onChange={(e) => setForm(prev => ({ ...prev, specific_context: e.target.value }))}
                 rows={4}
                 className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 placeholder="Informations supplémentaires sur le client, ses besoins spécifiques..."
@@ -442,6 +443,7 @@ export default function AdminEditClientPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </AdminProtection>
   );
 }

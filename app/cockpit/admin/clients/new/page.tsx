@@ -10,42 +10,43 @@ import AdminProtection from '../../components/AdminProtection';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+// Structure B29 anglaise cohérente avec BDD
 interface ClientForm {
-  nom: string;
-  secteur: string;
-  taille: 'TPE' | 'PME' | 'ETI' | 'GE';
-  contact_principal: {
-    nom: string;
+  name: string;                    // ✅ Plus nom → name
+  sector: string;                  // ✅ Plus secteur → sector
+  size: 'small' | 'medium' | 'large' | 'enterprise';  // ✅ Plus taille → size
+  primary_contact: {               // ✅ Plus contact_principal → primary_contact
+    name: string;                  // ✅ Plus nom → name
     email: string;
-    telephone?: string;
-    fonction?: string;
+    phone?: string;                // ✅ Plus telephone → phone
+    function?: string;             // ✅ Plus fonction → function
   };
-  adresse?: string;
-  site_web?: string;
+  address?: string;                // ✅ Plus adresse → address
+  website?: string;                // ✅ Plus site_web → website
   description?: string;
-  contexte_specifique?: string;
+  specific_context?: string;       // ✅ Plus contexte_specifique → specific_context
   tags?: string[];
-  budget_annuel?: number;
-  statut: 'actif' | 'inactif' | 'prospect' | 'archive';
+  annual_budget?: number;          // ✅ Plus budget_annuel → annual_budget
+  status: 'active' | 'inactive' | 'pending';  // ✅ Plus statut → status
 }
 
 const initialForm: ClientForm = {
-  nom: '',
-  secteur: '',
-  taille: 'PME',
-  contact_principal: {
-    nom: '',
+  name: '',                        // ✅ Structure anglaise
+  sector: '',
+  size: 'medium',                  // ✅ medium au lieu de PME
+  primary_contact: {
+    name: '',                      // ✅ Structure anglaise
     email: '',
-    telephone: '',
-    fonction: ''
+    phone: '',                     // ✅ phone au lieu de telephone
+    function: ''
   },
-  adresse: '',
-  site_web: '',
+  address: '',                     // ✅ Structure anglaise
+  website: '',
   description: '',
-  contexte_specifique: '',
+  specific_context: '',            // ✅ Structure anglaise
   tags: [],
-  budget_annuel: undefined,
-  statut: 'actif'
+  annual_budget: undefined,        // ✅ Structure anglaise
+  status: 'active'                 // ✅ Structure anglaise
 };
 
 export default function AdminNewClientPage() {
@@ -57,11 +58,13 @@ export default function AdminNewClientPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
-    if (!form.nom || !form.secteur || !form.contact_principal.nom || !form.contact_principal.email) {
-      setError('Veuillez remplir tous les champs obligatoires (nom, secteur, nom du contact et email)');
+    // Validation - Structure B29 anglaise
+    if (!form.name || !form.sector || !form.primary_contact.name || !form.primary_contact.email) {
+      setError('Veuillez remplir tous les champs obligatoires (name, sector, nom du contact et email)');
       return;
     }
+
+    console.log('🔄 Creating client with B29 structure:', form);
 
     setLoading(true);
     setError(null);
@@ -137,8 +140,8 @@ export default function AdminNewClientPage() {
                   </label>
                   <input
                     type="text"
-                    value={form.nom}
-                    onChange={(e) => setForm({ ...form, nom: e.target.value })}
+                    value={form.name}    // ✅ Structure B29
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     required
                   />
@@ -150,8 +153,8 @@ export default function AdminNewClientPage() {
                   </label>
                   <input
                     type="text"
-                    value={form.secteur}
-                    onChange={(e) => setForm({ ...form, secteur: e.target.value })}
+                    value={form.sector}    // ✅ Structure B29
+                    onChange={(e) => setForm({ ...form, sector: e.target.value })}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Ex: Finance, Santé, E-commerce..."
                     required
@@ -163,14 +166,14 @@ export default function AdminNewClientPage() {
                     Taille de l&apos;entreprise *
                   </label>
                   <select
-                    value={form.taille}
-                    onChange={(e) => setForm({ ...form, taille: e.target.value as any })}
+                    value={form.size}    // ✅ Structure B29
+                    onChange={(e) => setForm({ ...form, size: e.target.value as any })}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                   >
-                    <option value="TPE">TPE (1-10 employés)</option>
-                    <option value="PME">PME (10-250 employés)</option>
-                    <option value="ETI">ETI (250-5000 employés)</option>
-                    <option value="GE">Grande Entreprise (5000+ employés)</option>
+                    <option value="small">Petite (1-50 employés)</option>
+                    <option value="medium">Moyenne (50-250 employés)</option>
+                    <option value="large">Grande (250-1000 employés)</option>
+                    <option value="enterprise">Entreprise (1000+ employés)</option>
                   </select>
                 </div>
 
@@ -179,14 +182,13 @@ export default function AdminNewClientPage() {
                     Statut
                   </label>
                   <select
-                    value={form.statut}
-                    onChange={(e) => setForm({ ...form, statut: e.target.value as any })}
+                    value={form.status}    // ✅ Structure B29
+                    onChange={(e) => setForm({ ...form, status: e.target.value as any })}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                   >
-                    <option value="prospect">Prospect</option>
-                    <option value="actif">Actif</option>
-                    <option value="inactif">Inactif</option>
-                    <option value="archive">Archivé</option>
+                    <option value="pending">En attente</option>
+                    <option value="active">Actif</option>
+                    <option value="inactive">Inactif</option>
                   </select>
                 </div>
               </div>
@@ -205,10 +207,10 @@ export default function AdminNewClientPage() {
                   </label>
                   <input
                     type="text"
-                    value={form.contact_principal.nom}
-                    onChange={(e) => setForm({ 
-                      ...form, 
-                      contact_principal: { ...form.contact_principal, nom: e.target.value }
+                    value={form.primary_contact.name}    // ✅ Structure B29
+                    onChange={(e) => setForm({
+                      ...form,
+                      primary_contact: { ...form.primary_contact, name: e.target.value }
                     })}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     required
@@ -222,10 +224,10 @@ export default function AdminNewClientPage() {
                   </label>
                   <input
                     type="email"
-                    value={form.contact_principal.email}
-                    onChange={(e) => setForm({ 
-                      ...form, 
-                      contact_principal: { ...form.contact_principal, email: e.target.value }
+                    value={form.primary_contact.email}    // ✅ Structure B29
+                    onChange={(e) => setForm({
+                      ...form,
+                      primary_contact: { ...form.primary_contact, email: e.target.value }
                     })}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     required
@@ -239,11 +241,11 @@ export default function AdminNewClientPage() {
                   </label>
                   <input
                     type="tel"
-                    value={form.contact_principal.telephone || ''}
-                    onChange={(e) => setForm({ 
-                      ...form, 
-                      contact_principal: { ...form.contact_principal, telephone: e.target.value }
-                    })}
+                    value={form.primary_contact.phone || ''}    // ✅ Structure B29
+                    onChange={(e) => setForm({
+                      ...form,
+                      primary_contact: { ...form.primary_contact, phone: e.target.value }
+                    })}    // ✅ Structure B29
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                   />
                 </div>
@@ -254,10 +256,10 @@ export default function AdminNewClientPage() {
                   </label>
                   <input
                     type="text"
-                    value={form.contact_principal.fonction || ''}
-                    onChange={(e) => setForm({ 
-                      ...form, 
-                      contact_principal: { ...form.contact_principal, fonction: e.target.value }
+                    value={form.primary_contact.function || ''}    // ✅ Structure B29
+                    onChange={(e) => setForm({
+                      ...form,
+                      primary_contact: { ...form.primary_contact, function: e.target.value }
                     })}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Ex: Directeur, Manager, etc."
@@ -277,8 +279,8 @@ export default function AdminNewClientPage() {
                     </label>
                     <input
                       type="text"
-                      value={form.adresse || ''}
-                      onChange={(e) => setForm({ ...form, adresse: e.target.value })}
+                      value={form.address || ''}    // ✅ Structure B29
+                      onChange={(e) => setForm({ ...form, address: e.target.value })}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                       placeholder="Adresse complète de l'entreprise"
                     />
@@ -291,8 +293,8 @@ export default function AdminNewClientPage() {
                     </label>
                     <input
                       type="url"
-                      value={form.site_web || ''}
-                      onChange={(e) => setForm({ ...form, site_web: e.target.value })}
+                      value={form.website || ''}    // ✅ Structure B29
+                      onChange={(e) => setForm({ ...form, website: e.target.value })}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                       placeholder="https://..."
                     />
@@ -317,8 +319,8 @@ export default function AdminNewClientPage() {
                     Contexte spécifique
                   </label>
                   <textarea
-                    value={form.contexte_specifique || ''}
-                    onChange={(e) => setForm({ ...form, contexte_specifique: e.target.value })}
+                    value={form.specific_context || ''}    // ✅ Structure B29
+                    onChange={(e) => setForm({ ...form, specific_context: e.target.value })}
                     rows={3}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Contexte spécifique au client, besoins particuliers..."
@@ -331,8 +333,8 @@ export default function AdminNewClientPage() {
                   </label>
                   <input
                     type="number"
-                    value={form.budget_annuel || ''}
-                    onChange={(e) => setForm({ ...form, budget_annuel: parseInt(e.target.value) || undefined })}
+                    value={form.annual_budget || ''}    // ✅ Structure B29
+                    onChange={(e) => setForm({ ...form, annual_budget: parseInt(e.target.value) || undefined })}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Ex: 50000"
                   />

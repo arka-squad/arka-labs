@@ -12,12 +12,12 @@ export const runtime = 'nodejs';
 
 interface Client {
   id: string;
-  nom: string;
+  name: string;
 }
 
 interface Project {
   id: string;
-  nom: string;
+  name: string;
   client_id: string;
 }
 
@@ -279,7 +279,7 @@ export default function NewAgentPage() {
                       <option value="">Aucun client spécifique</option>
                       {clients.map((client) => (
                         <option key={client.id} value={client.id}>
-                          {client.nom}
+                          {client.name}
                         </option>
                       ))}
                     </select>

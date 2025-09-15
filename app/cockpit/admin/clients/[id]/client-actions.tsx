@@ -10,17 +10,17 @@ import { Edit, Trash2, Save, X } from 'lucide-react';
 
 interface ClientDetails {
   id: string;
-  nom: string;
-  secteur: string;
-  taille: string;
+  name: string;
+  sector: string;
+  size: string;
   contact_principal: {
-    nom: string;
+    name: string;
     email: string;
     fonction?: string;
     telephone?: string;
   };
   contexte_specifique: string;
-  statut: string;
+  status: string;
 }
 
 interface ClientActionsProps {
@@ -37,17 +37,17 @@ export function ClientActions({ client, onClientUpdated }: ClientActionsProps) {
   
   // État pour les données d'édition
   const [editData, setEditData] = useState({
-    nom: client.nom,
-    secteur: client.secteur,
-    taille: client.taille,
+    name: client.name,
+    sector: client.sector,
+    size: client.size,
     contact_principal: {
-      nom: client.contact_principal.nom,
+      name: client.contact_principal.nom,
       email: client.contact_principal.email,
       fonction: client.contact_principal.fonction || '',
       telephone: client.contact_principal.telephone || ''
     },
     contexte_specifique: client.contexte_specifique,
-    statut: client.statut
+    status: client.status
   });
 
   // Sauvegarder les modifications
@@ -90,7 +90,7 @@ export function ClientActions({ client, onClientUpdated }: ClientActionsProps) {
 
   // Supprimer le client
   const handleDelete = async () => {
-    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer le client "${client.nom}" ?`)) {
+    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer le client "${client.name}" ?`)) {
       return;
     }
     
@@ -124,17 +124,17 @@ export function ClientActions({ client, onClientUpdated }: ClientActionsProps) {
   // Annuler les modifications
   const handleCancel = () => {
     setEditData({
-      nom: client.nom,
-      secteur: client.secteur,
-      taille: client.taille,
+      name: client.name,
+      sector: client.sector,
+      size: client.size,
       contact_principal: {
-        nom: client.contact_principal.nom,
+        name: client.contact_principal.nom,
         email: client.contact_principal.email,
         fonction: client.contact_principal.fonction || '',
         telephone: client.contact_principal.telephone || ''
       },
       contexte_specifique: client.contexte_specifique,
-      statut: client.statut
+      status: client.status
     });
     setIsEditing(false);
     setError(null);
@@ -202,7 +202,7 @@ export function ClientActions({ client, onClientUpdated }: ClientActionsProps) {
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-bold text-white mb-4">Confirmer la suppression</h3>
             <p className="text-gray-300 mb-6">
-              Êtes-vous sûr de vouloir supprimer le client <strong>&quot;{client.nom}&quot;</strong> ?
+              Êtes-vous sûr de vouloir supprimer le client <strong>&quot;{client.name}&quot;</strong> ?
               <br />
               <span className="text-sm text-yellow-400 mt-2 block">
                 Cette action ne peut pas être annulée.
@@ -262,7 +262,7 @@ function EditForm({ editData, setEditData }: EditFormProps) {
             <input
               type="text"
               value={editData.nom}
-              onChange={(e) => setEditData({...editData, nom: e.target.value})}
+              onChange={(e) => setEditData({...editData, name: e.target.value})}
               className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
@@ -276,7 +276,7 @@ function EditForm({ editData, setEditData }: EditFormProps) {
             <input
               type="text"
               value={editData.secteur}
-              onChange={(e) => setEditData({...editData, secteur: e.target.value})}
+              onChange={(e) => setEditData({...editData, sector: e.target.value})}
               className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
@@ -289,7 +289,7 @@ function EditForm({ editData, setEditData }: EditFormProps) {
             </label>
             <select
               value={editData.taille}
-              onChange={(e) => setEditData({...editData, taille: e.target.value})}
+              onChange={(e) => setEditData({...editData, size: e.target.value})}
               className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="TPE">TPE (Très Petite Entreprise)</option>
@@ -310,7 +310,7 @@ function EditForm({ editData, setEditData }: EditFormProps) {
                 value={editData.contact_principal.nom}
                 onChange={(e) => setEditData({
                   ...editData, 
-                  contact_principal: {...editData.contact_principal, nom: e.target.value}
+                  contact_principal: {...editData.contact_principal, name: e.target.value}
                 })}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
@@ -385,7 +385,7 @@ function EditForm({ editData, setEditData }: EditFormProps) {
             </label>
             <select
               value={editData.statut}
-              onChange={(e) => setEditData({...editData, statut: e.target.value})}
+              onChange={(e) => setEditData({...editData, status: e.target.value})}
               className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="actif">Actif</option>

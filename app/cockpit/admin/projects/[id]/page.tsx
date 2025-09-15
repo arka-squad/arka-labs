@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Edit, Trash2, Users, Target, Calendar, DollarSign, Flag, Briefcase, Building, User, Clock, Activity } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Users, Target, Calendar, DollarSign, Flag, Briefcase, Building, User, Clock, Activity, Mail } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import AdminNavigation from '../../components/AdminNavigation';
@@ -12,12 +12,12 @@ export const runtime = 'nodejs';
 
 interface ProjectDetails {
   id: string; // UUID format
-  nom: string;
+  name: string;
   description: string;
   client_id: string;
   client_name: string;
-  client_secteur: string;
-  client_taille: string;
+  client_sector: string;
+  client_size: string;
   budget?: number;
   deadline?: string;
   priority: string;
@@ -60,6 +60,22 @@ const deadlineStatusColors = {
   warning: 'bg-yellow-100 text-yellow-800',
   critical: 'bg-orange-100 text-orange-800',
   overdue: 'bg-red-100 text-red-800'
+};
+
+const statusLabels = {
+  draft: 'Brouillon',
+  active: 'Actif',
+  on_hold: 'En pause',
+  completed: 'Terminé',
+  cancelled: 'Annulé'
+};
+
+const deadlineStatusLabels = {
+  no_deadline: 'Aucune échéance',
+  ok: 'Dans les temps',
+  warning: 'Attention',
+  critical: 'Critique',
+  overdue: 'En retard'
 };
 
 export default function AdminProjectDetailPage() {
@@ -121,6 +137,9 @@ export default function AdminProjectDetailPage() {
   }
 
   const formatDate = (dateString: string) => {
+    if (!dateString || dateString === 'null' || dateString === 'undefined') {
+      return 'Aucune échéance';
+    }
     return new Date(dateString).toLocaleDateString('fr-FR', {
       day: 'numeric',
       month: 'long',
@@ -152,7 +171,7 @@ export default function AdminProjectDetailPage() {
               <ArrowLeft className="w-5 h-5 text-gray-400" />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-white">{project.nom}</h1>
+              <h1 className="text-2xl font-bold text-white">{project.name}</h1>
               <p className="text-sm text-gray-300 mt-1">
                 Projet · {project.client_name} · Créé le {formatDate(project.created_at)}
               </p>
@@ -178,13 +197,13 @@ export default function AdminProjectDetailPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-400">Statut</p>
-                  <p className="text-2xl font-semibold text-white mt-2">{project.status}</p>
+                  <p className="text-2xl font-semibold text-white mt-2">{statusLabels[project.status as keyof typeof statusLabels] || project.status}</p>
                 </div>
                 <Target className="w-8 h-8 text-blue-400" />
               </div>
               <div className="mt-4">
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[project.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}`}>
-                  {project.status}
+                  {statusLabels[project.status as keyof typeof statusLabels] || project.status}
                 </span>
               </div>
             </div>
@@ -214,7 +233,7 @@ export default function AdminProjectDetailPage() {
               </div>
               {project.budget && (
                 <p className="text-sm text-gray-400 mt-4">
-                  Utilisation: {project.budget_utilization_percent.toFixed(1)}%
+                  Utilisation: {(project.budget_utilization_percent || 0).toFixed(1)}%
                 </p>
               )}
             </div>
@@ -224,7 +243,7 @@ export default function AdminProjectDetailPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-400">Échéance</p>
                   <p className="text-2xl font-semibold text-white mt-2">
-                    {project.days_remaining !== undefined ? `${project.days_remaining}j` : 'N/A'}
+                    {project.deadline && project.deadline !== 'null' ? formatDate(project.deadline) : 'Aucune échéance'}
                   </p>
                 </div>
                 <Calendar className="w-8 h-8 text-orange-400" />
@@ -232,7 +251,7 @@ export default function AdminProjectDetailPage() {
               {project.deadline_status && (
                 <div className="mt-4">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${deadlineStatusColors[project.deadline_status as keyof typeof deadlineStatusColors]}`}>
-                    {project.deadline_status}
+                    {deadlineStatusLabels[project.deadline_status as keyof typeof deadlineStatusLabels] || project.deadline_status}
                   </span>
                 </div>
               )}
@@ -264,12 +283,10 @@ export default function AdminProjectDetailPage() {
                       </span>
                     </div>
 
-                    {project.deadline && (
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-400 mb-2">Date limite</h3>
-                        <p className="text-white">{formatDate(project.deadline)}</p>
-                      </div>
-                    )}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-400 mb-2">Date limite</h3>
+                      <p className="text-white">{formatDate(project.deadline)}</p>
+                    </div>
                   </div>
 
                   {project.tags && project.tags.length > 0 && (
@@ -347,10 +364,10 @@ export default function AdminProjectDetailPage() {
                   <div className="space-y-3">
                     <div>
                       <p className="font-medium text-white">{project.client_name}</p>
-                      <p className="text-sm text-gray-400">{project.client_secteur}</p>
+                      <p className="text-sm text-gray-400">{project.client_sector}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-400">Taille: {project.client_taille}</p>
+                      <p className="text-sm text-gray-400">Taille: {project.client_size}</p>
                     </div>
                     <Link 
                       href={`/cockpit/admin/clients/${project.client_id}`}
@@ -388,6 +405,36 @@ export default function AdminProjectDetailPage() {
                   </div>
                 </div>
               )}
+
+              {/* Actions rapides */}
+              <div className="bg-gray-800 rounded-lg border border-gray-700">
+                <div className="p-6 border-b border-gray-700">
+                  <h2 className="text-lg font-semibold text-white">Actions rapides</h2>
+                </div>
+                <div className="p-6 space-y-3">
+                  <Link
+                    href={`/cockpit/admin/projects/new?client=${project.client_id}`}
+                    className="flex items-center gap-2 w-full p-3 text-left bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white"
+                  >
+                    <Briefcase className="w-4 h-4" />
+                    Créer un projet
+                  </Link>
+                  <Link
+                    href={`/cockpit/admin/clients/${project.client_id}/edit`}
+                    className="flex items-center gap-2 w-full p-3 text-left bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white"
+                  >
+                    <Edit className="w-4 h-4" />
+                    Modifier le client
+                  </Link>
+                  <a
+                    href={`mailto:${project.client_name}@example.com`}
+                    className="flex items-center gap-2 w-full p-3 text-left bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white"
+                  >
+                    <Mail className="w-4 h-4" />
+                    Envoyer un email
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>

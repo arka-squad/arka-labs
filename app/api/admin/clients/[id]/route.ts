@@ -20,7 +20,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
     
     // First, check if client exists at all (explicit UUID cast for Neon DB)
     const existsCheck = await sql`
-      SELECT id, nom, deleted_at FROM clients WHERE id = ${clientId}::uuid
+      SELECT id, name, deleted_at FROM clients WHERE id = ${clientId}::uuid
     `;
     console.log(`[API DEBUG] Existence check result:`, existsCheck);
     
@@ -28,12 +28,12 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
     const result = await sql`
       SELECT 
         c.id,
-        c.nom,
-        c.secteur,
-        c.taille,
-        c.contact_principal,
-        c.contexte_specifique,
-        c.statut,
+        c.name,
+        c.sector,
+        c.size,
+        c.primary_contact,
+        c.specific_context,
+        c.status,
         c.created_at,
         c.updated_at,
         c.created_by
@@ -86,13 +86,13 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
     // Format the client data
     const client = {
       id: row.id,
-      nom: row.nom,
-      email: row.contact_principal?.email || '',
-      secteur: row.secteur || '',
-      taille: row.taille || 'PME',
-      contact_principal: row.contact_principal || null,
-      contexte_specifique: row.contexte_specifique || '',
-      statut: row.statut || 'actif',
+      name: row.name,
+      email: row.primary_contact?.email || '',
+      sector: row.sector || '',
+      size: row.size || 'medium',
+      primary_contact: row.primary_contact || null,
+      specific_context: row.specific_context || '',
+      status: row.status || 'active',
       projets_count,
       projets_actifs,
       created_at: row.created_at,
@@ -118,22 +118,22 @@ export const PUT = withAdminAuth(['admin', 'manager', 'operator'])(async (req, u
   try {
     const body = await req.json();
     const { 
-      nom, 
-      secteur,
-      taille,
-      contact_principal,
-      contexte_specifique,
-      statut 
+      name,
+      sector,
+      size,
+      primary_contact,
+      specific_context,
+      status 
     } = body;
 
-    if (!nom || !secteur) {
+    if (!name || !sector) {
       return NextResponse.json(
         { error: 'Le nom et le secteur sont obligatoires' },
         { status: 400 }
       );
     }
 
-    if (!contact_principal?.nom || !contact_principal?.email) {
+    if (!primary_contact?.name || !primary_contact?.email) {
       return NextResponse.json(
         { error: 'Le nom et l\'email du contact principal sont obligatoires' },
         { status: 400 }
@@ -156,15 +156,15 @@ export const PUT = withAdminAuth(['admin', 'manager', 'operator'])(async (req, u
     const result = await sql`
       UPDATE clients 
       SET 
-        nom = ${nom},
-        secteur = ${secteur},
-        taille = ${taille || 'PME'},
-        contact_principal = ${JSON.stringify(contact_principal)},
-        contexte_specifique = ${contexte_specifique || ''},
-        statut = ${statut || 'actif'},
+        name = ${name},
+        sector = ${sector},
+        size = ${size || 'medium'},
+        primary_contact = ${JSON.stringify(primary_contact)},
+        specific_context = ${specific_context || ''},
+        status = ${status || 'active'},
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ${clientId} AND deleted_at IS NULL
-      RETURNING id, nom, secteur, taille, contact_principal, contexte_specifique, statut, updated_at
+      RETURNING id, name, sector, size, primary_contact, specific_context, status, updated_at
     `;
     
     const client = result[0];
@@ -172,12 +172,12 @@ export const PUT = withAdminAuth(['admin', 'manager', 'operator'])(async (req, u
     return NextResponse.json({
       success: true,
       id: client.id,
-      nom: client.nom,
-      secteur: client.secteur,
-      taille: client.taille,
-      contact_principal: client.contact_principal,
-      contexte_specifique: client.contexte_specifique,
-      statut: client.statut,
+      name: client.name,
+      sector: client.sector,
+      size: client.size,
+      primary_contact: client.primary_contact,
+      specific_context: client.specific_context,
+      status: client.status,
       updated_at: client.updated_at
     });
     

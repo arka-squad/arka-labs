@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 interface ProjectForm {
-  nom: string;
+  name: string;
   description: string;
   client_id: string;
   budget?: number;
@@ -24,11 +24,11 @@ interface ProjectForm {
 
 interface Client {
   id: string;
-  nom: string;
+  name: string;
 }
 
 const initialForm: ProjectForm = {
-  nom: '',
+  name: '',
   description: '',
   client_id: '',
   budget: undefined,
@@ -69,7 +69,7 @@ export default function AdminNewProjectPage() {
     e.preventDefault();
     
     // Validation
-    if (!form.nom || !form.client_id) {
+    if (!form.name || !form.client_id) {
       setError('Veuillez remplir tous les champs obligatoires (nom du projet et client)');
       return;
     }
@@ -148,8 +148,8 @@ export default function AdminNewProjectPage() {
                   </label>
                   <input
                     type="text"
-                    value={form.nom}
-                    onChange={(e) => setForm({ ...form, nom: e.target.value })}
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Ex: Refonte site web, App mobile..."
                     required
@@ -172,7 +172,7 @@ export default function AdminNewProjectPage() {
                     </option>
                     {clients.map((client) => (
                       <option key={client.id} value={client.id}>
-                        {client.nom}
+                        {client.name}
                       </option>
                     ))}
                   </select>

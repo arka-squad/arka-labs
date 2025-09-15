@@ -8,6 +8,19 @@ import { TRACE_HEADER } from '../../../../../lib/trace';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+// Safe JSON parse helper
+function safeJSONParse(jsonString: any, defaultValue: any = null) {
+  if (!jsonString || typeof jsonString !== 'string' || jsonString.trim() === '') {
+    return defaultValue;
+  }
+  try {
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.warn(`JSON parse error: ${error}. Input: ${jsonString}`);
+    return defaultValue;
+  }
+}
+
 // Validation schema for project updates
 const UpdateProjectSchema = z.object({
   nom: z.string().min(3).max(200).optional(),
@@ -46,10 +59,10 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
     const [projectDetails] = await sql`
       SELECT
         p.*,
-        c.nom as client_name,
-        c.secteur as client_secteur,
-        c.taille as client_taille,
-        c.contact_principal as client_contact,
+        c.name as client_name,
+        c.sector as client_sector,
+        c.size as client_size,
+        c.primary_contact as client_contact,
         COUNT(DISTINCT pa.agent_id) FILTER (WHERE pa.status = 'active') as agents_assigned,
         COUNT(DISTINCT ps.squad_id) FILTER (WHERE ps.status = 'active') as squads_assigned,
         -- Timeline analysis
@@ -75,7 +88,7 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
       LEFT JOIN project_assignments pa ON p.id = pa.project_id
       LEFT JOIN project_squads ps ON p.id = ps.project_id
       WHERE p.id = ${projectId}::uuid AND p.deleted_at IS NULL
-      GROUP BY p.id, c.nom, c.secteur, c.taille, c.contact_principal
+      GROUP BY p.id, c.name, c.sector, c.size, c.primary_contact
     `;
 
     if (!projectDetails) {
@@ -177,8 +190,8 @@ export const GET = withAdminAuth(['admin', 'manager', 'operator', 'viewer'])(asy
     const formattedProject = {
       ...projectDetails,
       nom: projectDetails.name, // Map database 'name' to frontend 'nom'
-      tags: JSON.parse(projectDetails.tags || '[]'),
-      requirements: JSON.parse(projectDetails.requirements || '[]'),
+      tags: safeJSONParse(projectDetails.tags, []),
+      requirements: safeJSONParse(projectDetails.requirements, []),
       agents_assigned: parseInt(projectDetails.agents_assigned),
       squads_assigned: parseInt(projectDetails.squads_assigned),
       total_duration_days: projectDetails.total_duration_days ? parseInt(projectDetails.total_duration_days) : null,
@@ -275,10 +288,10 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
     }
 
     // Check for name conflicts if name is being updated
-    if (updates.nom && updates.nom !== existingProject.name) {
+    if (updates.name && updates.name !== existingProject.name) {
       const [conflictingProject] = await sql`
         SELECT id FROM projects
-        WHERE LOWER(name) = LOWER(${updates.nom}) 
+        WHERE LOWER(name) = LOWER(${updates.name})
         AND client_id = ${existingProject.client_id}
         AND id != ${projectId}::uuid
         AND deleted_at IS NULL
@@ -304,7 +317,7 @@ export const PATCH = withAdminAuth(['admin', 'manager'])(async (req, user, { par
     Object.entries(updates).forEach(([key, value]) => {
       if (value !== undefined) {
         // Map frontend field names to database column names
-        const dbColumn = key === 'nom' ? 'name' : key;
+        const dbColumn = key;
 
         if (key === 'deadline') {
           updateFields.push(`${dbColumn} = $${paramIndex}`);
