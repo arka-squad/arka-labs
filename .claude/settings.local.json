@@ -11,7 +11,15 @@
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_NgHpnVad4xP9@ep-tiny-king-a292mq2e-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require\" node fix-final-project-errors.js)",
       "Bash(git add:*)",
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_NgHpnVad4xP9@ep-tiny-king-a292mq2e-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require\" npx tsx check-squad-members.ts)",
-      "Bash(git tag:*)"
+      "Bash(git tag:*)",
+      "Bash(cat:*)",
+      "Read(//c/Users/grimo/Pictures/Screenshots/**)",
+      "Bash(npm run dev:*)",
+      "Read(//z/Arka/Pack R2.5/**)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm install:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []

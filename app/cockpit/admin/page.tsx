@@ -14,8 +14,10 @@ import AdminProtection from './components/AdminProtection';
 // Dashboard principal B23 - Cockpit Admin
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
-    squads: { total: 0, active: 0, inactive: 0 },
+    profils: { total: 23, active: 23, created_this_month: 5 }, // B30 Profils
+    clients: { total: 0, active: 0, disabled: 0 },
     projects: { total: 0, active: 0, disabled: 0 },
+    squads: { total: 0, active: 0, inactive: 0 },
     instructions: { total: 0, pending: 0, completed: 0, failed: 0 },
     performance: { avg_completion_hours: 0, success_rate: 0 }
   });
@@ -93,6 +95,8 @@ export default function AdminDashboard() {
         const projectStats = calculateProjectStats(projectsData);
         
         setStats({
+          profils: { total: 23, active: 23, created_this_month: 5 }, // B30 Profils
+          clients: { total: 0, active: 0, disabled: 0 },
           squads: squadStats,
           projects: projectStats,
           instructions: { total: 45, pending: 8, completed: 35, failed: 2 }, // Mock data
@@ -122,18 +126,90 @@ export default function AdminDashboard() {
   function renderSquadsSection() {
     return (
       <div className="space-y-6">
-        {/* Quick Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Squads Stats */}
+        {/* Quick Stats Grid - 5 cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          {/* PROFILS Stats - B30 */}
+          <LiveDataBadge isLive={!realtimeLoading}>
+            <div className="bg-gray-800 rounded-xl p-6 border border-emerald-600/30">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 bg-emerald-900/30 rounded-lg">
+                  <Settings size={24} className="text-emerald-400" />
+                </div>
+                <ArrowRight
+                  size={16}
+                  className="text-gray-300 cursor-pointer hover:text-emerald-400"
+                  onClick={() => window.location.href = '/cockpit/admin/profils'}
+                />
+              </div>
+              <div className="mb-2">
+                <div className="text-2xl font-bold text-white mb-1">{stats?.profils?.total || 0}</div>
+                <div className="text-gray-400 text-sm">Profils totaux</div>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-emerald-400">+{stats?.profils?.created_this_month || 0} ce mois</span>
+                <span className="text-green-400">{stats?.profils?.active || 0} actifs</span>
+              </div>
+            </div>
+          </LiveDataBadge>
+
+          {/* CLIENTS Stats */}
+          <LiveDataBadge isLive={!realtimeLoading}>
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 bg-blue-900/30 rounded-lg">
+                  <Building size={24} className="text-blue-400" />
+                </div>
+                <ArrowRight
+                  size={16}
+                  className="text-gray-300 cursor-pointer hover:text-blue-400"
+                  onClick={() => window.location.href = '/cockpit/admin/clients'}
+                />
+              </div>
+              <div className="mb-2">
+                <div className="text-2xl font-bold text-white mb-1">{stats?.clients?.total || 0}</div>
+                <div className="text-gray-400 text-sm">Clients totaux</div>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-green-400">{stats?.clients?.active || 0} actifs</span>
+                <span className="text-red-400">{stats?.clients?.disabled || 0} désactivés</span>
+              </div>
+            </div>
+          </LiveDataBadge>
+
+          {/* PROJETS Stats */}
+          <LiveDataBadge isLive={!realtimeLoading}>
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 bg-green-900/30 rounded-lg">
+                  <Briefcase size={24} className="text-green-400" />
+                </div>
+                <ArrowRight
+                  size={16}
+                  className="text-gray-300 cursor-pointer hover:text-green-400"
+                  onClick={() => window.location.href = '/cockpit/admin/projects'}
+                />
+              </div>
+              <div className="mb-2">
+                <div className="text-2xl font-bold text-white mb-1">{stats?.projects?.total || 0}</div>
+                <div className="text-gray-400 text-sm">Projets totaux</div>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-green-400">{stats?.projects?.active || 0} actifs</span>
+                <span className="text-red-400">{stats?.projects?.disabled || 0} désactivés</span>
+              </div>
+            </div>
+          </LiveDataBadge>
+
+          {/* SQUADS Stats */}
           <LiveDataBadge isLive={!realtimeLoading}>
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-2 bg-blue-900/30 rounded-lg">
                   <Users size={24} className="text-blue-400" />
                 </div>
-                <ArrowRight 
-                  size={16} 
-                  className="text-gray-300 cursor-pointer hover:text-blue-400" 
+                <ArrowRight
+                  size={16}
+                  className="text-gray-300 cursor-pointer hover:text-blue-400"
                   onClick={() => window.location.href = '/cockpit/admin/squads'}
                 />
               </div>
@@ -148,61 +224,13 @@ export default function AdminDashboard() {
             </div>
           </LiveDataBadge>
 
-          {/* Projects Stats */}
-          <LiveDataBadge isLive={!realtimeLoading}>
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-green-900/30 rounded-lg">
-                  <Briefcase size={24} className="text-green-400" />
-                </div>
-                <ArrowRight 
-                  size={16} 
-                  className="text-gray-300 cursor-pointer hover:text-green-400"
-                  onClick={() => window.location.href = '/cockpit/admin/projects'}
-                />
-              </div>
-              <div className="mb-2">
-                <div className="text-2xl font-bold text-white mb-1">{stats?.projects?.total || 0}</div>
-                <div className="text-gray-400 text-sm">Projets</div>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-green-400">{stats?.projects?.active || 0} actifs</span>
-                <span className="text-red-400">{stats?.projects?.disabled || 0} désactivés</span>
-              </div>
-            </div>
-          </LiveDataBadge>
-
-          {/* Instructions Stats */}
-          <LiveDataBadge isLive={!realtimeLoading}>
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-purple-900/30 rounded-lg">
-                  <Zap size={24} className="text-purple-400" />
-                </div>
-                <ArrowRight 
-                  size={16} 
-                  className="text-gray-300 cursor-pointer hover:text-purple-400"
-                  onClick={() => window.location.href = '/cockpit/admin/instructions'}
-                />
-              </div>
-              <div className="mb-2">
-                <div className="text-2xl font-bold text-white mb-1">{stats?.instructions?.total || 0}</div>
-                <div className="text-gray-400 text-sm">Instructions</div>
-              </div>
-              <div className="grid grid-cols-3 gap-1 text-xs">
-                <span className="text-yellow-400">{stats?.instructions?.pending || 0} en cours</span>
-                <span className="text-green-400">{stats?.instructions?.completed || 0} OK</span>
-                <span className="text-red-400">{stats?.instructions?.failed || 0} KO</span>
-              </div>
-            </div>
-          </LiveDataBadge>
 
           {/* Performance Stats */}
           <LiveDataBadge isLive={!realtimeLoading}>
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-orange-900/30 rounded-lg">
-                  <TrendingUp size={24} className="text-orange-400" />
+                <div className="p-2 bg-emerald-900/30 rounded-lg">
+                  <TrendingUp size={24} className="text-emerald-400" />
                 </div>
                 <Activity size={16} className="text-gray-300" />
               </div>
@@ -212,7 +240,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="text-gray-400 text-sm">Taux de succès</div>
               </div>
-              <div className="text-xs text-orange-400">
+              <div className="text-xs text-emerald-400">
                 Moy: {(stats?.performance?.avg_completion_hours || 0).toFixed(1)}h
               </div>
             </div>
@@ -221,9 +249,29 @@ export default function AdminDashboard() {
 
         {/* Action Cards - Mobile Responsive */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+          {/* B30 Marketplace Profils - PREMIÈRE POSITION */}
+          <div
+            className="bg-gradient-to-br from-orange-900/20 to-orange-800/10 rounded-xl p-6 border border-emerald-700/30 cursor-pointer hover:border-emerald-600/50 transition-all"
+            onClick={() => window.location.href = '/cockpit/admin/profils'}
+          >
+            <div className="flex items-center space-x-3 mb-4">
+              <Settings size={24} className="text-emerald-400" />
+              <h3 className="text-lg font-semibold text-white">🟠 Marketplace Profils d&apos;Expertise</h3>
+            </div>
+            <p className="text-gray-400 text-sm mb-4">
+              Créer et gérer des profils d&apos;agents IA spécialisés. Bibliothèque d&apos;expertises réutilisables et modulaires
+            </p>
+            <div className="flex justify-between items-center">
+              <span className="text-emerald-400 text-sm font-medium">Explorer →</span>
+              <div className="text-xs text-gray-300">
+                Templates • Versions • Compositions
+              </div>
+            </div>
+          </div>
+
           {/* Manage Squads */}
           {canManageSquads && (
-            <div 
+            <div
               className="bg-gradient-to-br from-blue-900/20 to-blue-800/10 rounded-xl p-6 border border-blue-700/30 cursor-pointer hover:border-blue-600/50 transition-all"
               onClick={() => window.location.href = '/cockpit/admin/squads'}
             >

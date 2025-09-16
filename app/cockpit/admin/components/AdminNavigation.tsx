@@ -11,6 +11,7 @@ interface AdminNavigationProps {
 
 export default function AdminNavigation({ className = "" }: AdminNavigationProps) {
   const [stats, setStats] = useState({
+    profils: { total: 23 }, // B30 Profils
     squads: { total: 0 },
     agents: { total: 0 },
     projects: { total: 0 },
@@ -78,6 +79,7 @@ export default function AdminNavigation({ className = "" }: AdminNavigationProps
 
   // Déterminer la section active basée sur le pathname
   const getActiveTab = () => {
+    if (pathname.includes('/profils')) return 'profils';
     if (pathname.includes('/squads')) return 'squads';
     if (pathname.includes('/agents')) return 'agents';
     if (pathname.includes('/projects')) return 'projects';
@@ -89,32 +91,39 @@ export default function AdminNavigation({ className = "" }: AdminNavigationProps
   const activeTab = getActiveTab();
 
   const tabs = [
-    { 
-      id: 'squads', 
-      label: '🔷 Squads', 
-      count: stats.squads.total,
-      href: '/cockpit/admin/squads'
+    {
+      id: 'profils',
+      label: '💎 Profils',
+      count: stats.profils.total,
+      href: '/cockpit/admin/profils',
+      badge: 'NEW!'
     },
-    { 
-      id: 'agents', 
-      label: '👤 Agents', 
-      count: stats.agents.total,
-      href: '/cockpit/admin/agents'
-    },
-    { 
-      id: 'projects', 
-      label: '📋 Projects', 
-      count: stats.projects.total,
-      href: '/cockpit/admin/projects'
-    },
-    { 
-      id: 'clients', 
-      label: '🏢 Clients', 
+    {
+      id: 'clients',
+      label: '🏢 Clients',
       count: stats.clients.total,
       href: '/cockpit/admin/clients'
     },
-    { 
-      id: 'analytics', 
+    {
+      id: 'projects',
+      label: '📋 Projects',
+      count: stats.projects.total,
+      href: '/cockpit/admin/projects'
+    },
+    {
+      id: 'squads',
+      label: '🔷 Squads',
+      count: stats.squads.total,
+      href: '/cockpit/admin/squads'
+    },
+    {
+      id: 'agents',
+      label: '👤 Agents',
+      count: stats.agents.total,
+      href: '/cockpit/admin/agents'
+    },
+    {
+      id: 'analytics',
       label: '📊 Analytics',
       href: '/cockpit/analytics'
     }
@@ -140,15 +149,15 @@ export default function AdminNavigation({ className = "" }: AdminNavigationProps
         <div className="flex items-center space-x-6 self-start sm:self-center">
           <div className="flex items-center space-x-4">
             <div className="text-center">
-              <div className="text-xs text-gray-400">SQUADS</div>
-              <div className="text-lg font-bold text-green-400">
-                {loading ? '...' : stats.squads.total}
+              <div className="text-xs text-gray-400">PROFILS</div>
+              <div className="text-lg font-bold text-emerald-400">
+                {loading ? '...' : stats.profils.total}
               </div>
             </div>
             <div className="text-center">
-              <div className="text-xs text-gray-400">AGENTS</div>
+              <div className="text-xs text-gray-400">CLIENTS</div>
               <div className="text-lg font-bold text-blue-400">
-                {loading ? '...' : stats.agents.total}
+                {loading ? '...' : stats.clients.total}
               </div>
             </div>
             <div className="text-center">
@@ -178,15 +187,20 @@ export default function AdminNavigation({ className = "" }: AdminNavigationProps
             href={tab.href}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 whitespace-nowrap ${
               activeTab === tab.id
-                ? 'border-blue-400 text-blue-400'
+                ? tab.id === 'profils' ? 'border-emerald-400 text-emerald-400' : 'border-blue-400 text-blue-400'
                 : 'border-transparent text-gray-400 hover:text-white'
             }`}
           >
             <span>{tab.label}</span>
+            {tab.badge && (
+              <span className="px-1.5 py-0.5 bg-emerald-500 text-white text-xs rounded font-medium">
+                {tab.badge}
+              </span>
+            )}
             {tab.count !== undefined && (
               <span className={`px-2 py-0.5 rounded text-xs ${
-                activeTab === tab.id 
-                  ? 'bg-blue-400 text-white' 
+                activeTab === tab.id
+                  ? tab.id === 'profils' ? 'bg-emerald-400 text-white' : 'bg-blue-400 text-white'
                   : 'bg-gray-600 text-gray-300'
               }`}>
                 {tab.count}
